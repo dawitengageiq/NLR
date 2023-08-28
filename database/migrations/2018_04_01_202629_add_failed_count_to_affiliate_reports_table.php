@@ -1,0 +1,31 @@
+<?php
+
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class AddFailedCountToAffiliateReportsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::table('affiliate_reports', function (Blueprint $table) {
+            $table->integer('failed_count')->default(0)->after('reject_count');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::table('affiliate_reports', function (Blueprint $table) {
+            $table->dropColumn('failed_count');
+        });
+    }
+}

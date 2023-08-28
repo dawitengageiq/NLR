@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Resources;
+
+use \Illuminate\Http\Request;
+
+use App\Http\Services\Helpers\Reflection;
+
+class UserActionLogDetails extends Resource
+{
+
+    /**
+     * Transform the resource into an array.
+     *
+     * @param  \Illuminate\Http\Request
+     * @return array
+     */
+    public function toArray($request)
+    {
+        return [
+            'section_id' => $this->getValue('section_id'),
+            'reference_id' => $this->getValue('reference_id'),
+            'summary' => $this->getValue('summary'),
+            'old_value' => $this->getValue('old_value'),
+            'new_value' => $this->getValue('new_value'),
+            'created_at' => $this->getValue('created_at')->toFormattedDateString()
+        ];
+
+    }
+
+}

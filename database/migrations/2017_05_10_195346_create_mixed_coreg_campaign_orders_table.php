@@ -1,0 +1,34 @@
+<?php
+
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class CreateMixedCoregCampaignOrdersTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('mixed_coreg_campaign_orders', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('revenue_tracker_id')->unsigned()->nullable()->index();
+            $table->text('campaign_id_order');
+            $table->dateTime('reorder_reference_date');
+
+            $table->foreign('revenue_tracker_id')->references('revenue_tracker_id')->on('affiliate_revenue_trackers')->onDelete('cascade');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::drop('mixed_coreg_campaign_orders');
+    }
+}

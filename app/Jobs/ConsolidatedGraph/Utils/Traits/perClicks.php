@@ -1,0 +1,98 @@
+<?php
+namespace App\Jobs\ConsolidatedGraph\Utils\Traits;
+
+trait perClicks
+{
+    /**
+     * Legends value needs to convert to percentage.
+     *
+     * @var array
+     */
+    protected $clicksValue2Percent = [];
+
+    /**
+     * Division
+     * @param  string $idx
+     * @param  float $dividend
+     * @param  float $divisor
+     */
+    protected function perClicks ($idx, $dividend, $divisor)
+    {
+        $total = ($divisor > 0) ? ($dividend/$divisor) : 0;
+        if(array_key_exists($idx, $this->clicksValue2Percent)) $this->consolidatedData->$idx = number_format(($total * 100), 2, '.', '');
+        else $this->consolidatedData->$idx = number_format($total, 2, '.', '');
+    }
+
+    /**
+     * Value for revenue per all clicks.
+     *
+     * @param string $idx
+     * @return void
+     */
+    protected function sourceRevenuePerAllClicks($idx)
+    {
+        if(!array_key_exists('source_revenue', $this->params)
+        || !array_key_exists('all_clicks', $this->params)) {
+            $this->consolidatedData->$idx = number_format(0, 2, '.', '');
+
+            return;
+        }
+
+        $this->perClicks (
+            $idx,
+            $this->params['source_revenue'],
+            $this->params['all_clicks']
+        );
+
+        return;
+    }
+
+    /**
+     * Value for survey takers per clicks.
+     *
+     * @param string $idx
+     * @return void
+     */
+    protected function surveyTakersPerClicks($idx)
+    {
+        if(!array_key_exists('survey_takers', $this->params)
+        || !array_key_exists('all_clicks', $this->params)) {
+            $this->consolidatedData->$idx = number_format(0, 2, '.', '');
+
+            return;
+        }
+
+        $this->perClicks (
+            $idx,
+            $this->params['survey_takers'],
+            $this->params['all_clicks']
+        );
+
+        return;
+    }
+
+    /**
+     * Value for cost per clicks.
+     *
+     * @param string $idx
+     * @return void
+     */
+    protected function costPerAllClicks($idx)
+    {
+        if(!array_key_exists('cost', $this->params)
+        || !array_key_exists('all_clicks', $this->params)) {
+            $this->consolidatedData->$idx = number_format(0, 2, '.', '');
+
+            return;
+        }
+
+        $this->perClicks (
+            $idx,
+            $this->params['cost'],
+            $this->params['all_clicks']
+        );
+
+
+        return;
+    }
+}

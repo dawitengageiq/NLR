@@ -1,0 +1,33 @@
+<?php
+
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class AddMorePixelDetailsInAffiliateRevenueTrackerTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::table('affiliate_revenue_trackers', function (Blueprint $table) {
+            $table->text('pixel_header')->nullable();
+            $table->text('pixel_body')->nullable();
+            $table->text('pixel_footer')->nullable();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::table('affiliate_revenue_trackers', function (Blueprint $table) {
+            $table->dropColumn(['pixel_header','pixel_body','pixel_footer']);
+        });
+    }
+}
