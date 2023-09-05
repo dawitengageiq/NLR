@@ -48,7 +48,7 @@ class EventServiceProvider extends ServiceProvider
         });
 
         // Fired on successful logins...
-        $events->listen('auth.login', function ($user, $remember) {
+        $events->listen(\Illuminate\Auth\Events\Login::class, function ($user, $remember) {
             event(new UserActionEvent([
                 'section_id' => null,
                 'sub_section_id' => null,
@@ -61,7 +61,7 @@ class EventServiceProvider extends ServiceProvider
         });
 
         // Fired on logouts...
-        $events->listen('auth.logout', function ($user) {
+        $events->listen(\Illuminate\Auth\Events\Logout::class, function ($user) {
             event(new UserActionEvent([
                 'section_id' => null,
                 'sub_section_id' => null,
