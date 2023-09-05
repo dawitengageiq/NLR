@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class CampaignContent extends Model
 {
     protected $connection;
+
     protected $table = 'campaign_contents';
 
     protected $fillable = [
-    	'id',
+        'id',
         'content',
         'name',
         'deal',
@@ -19,7 +20,7 @@ class CampaignContent extends Model
         'additional_fields',
         'rules',
         'sticker',
-        'cpa_creative_id'
+        'cpa_creative_id',
 
     ];
 
@@ -27,20 +28,22 @@ class CampaignContent extends Model
         'fields' => 'array',
         'additional_fields' => 'array',
         'rules' => 'array',
-   ];
+    ];
 
-    public function campaign(){
+    public function campaign()
+    {
         return $this->belongsTo('App\Campaign', 'id', 'id');
     }
 
-    public function campaign_type(){
-        return $this->belongsTo('App\Campaign', 'id', 'id')->select(['id','campaign_type']);
+    public function campaign_type()
+    {
+        return $this->belongsTo('App\Campaign', 'id', 'id')->select(['id', 'campaign_type']);
     }
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') == 'reports') {
+        if (config('app.type') == 'reports') {
             $this->connection = 'secondary';
         }
     }

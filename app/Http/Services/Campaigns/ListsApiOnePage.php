@@ -1,40 +1,45 @@
 <?php
-namespace App\Http\Services\Campaigns;
 
-use CampaignList;
+namespace App\Http\Services\Campaigns;
 
 class ListsApiOnePage extends Factories\ListsFactory implements \App\Http\Services\Contracts\CampaignListContract
 {
     /**
      * Injected class
-     *
      */
     protected $uniCap;
+
     protected $affCap;
+
     protected $limit;
+
     protected $filter;
+
     protected $noTracker;
+
     protected $creatives;
+
     protected $campaignContent;
+
     protected $campaignTypeOrder;
+
     protected $repo;
 
     /**
      * excluded campaign id container
-     *
      */
     protected $excludedCampaignIds = [];
 
     /**
      * Initialize
      *
-     * @var object $campaignContent
-     * @var object $noTracker
-     * @var object $uniCap
-     * @var object $affCap
-     * @var object $limit
-     * @var object $filter
-     * @var object $creatives
+     * @var object
+     * @var object
+     * @var object
+     * @var object
+     * @var object
+     * @var object
+     * @var object
      */
     public function __construct(
         Utils\Lists\Contracts\StackContract $stack,
@@ -45,9 +50,8 @@ class ListsApiOnePage extends Factories\ListsFactory implements \App\Http\Servic
         Utils\Lists\Caping\Affilate $affCap,
         Utils\Lists\Limit\FirstLevel\ByRevenueTracker $revenueTrackerLimit,
         Content $campaignContent,
-        \App\Http\Services\Campaigns\Repos\CampaignList $repo
-    )
-    {
+        Repos\CampaignList $repo
+    ) {
         $this->stacking = $stack;
         $this->uniCap = $uniCap;
         $this->affCap = $affCap;
@@ -61,9 +65,8 @@ class ListsApiOnePage extends Factories\ListsFactory implements \App\Http\Servic
 
     /**
      * Set the campaign that will be excluded
-     *
      */
-    public function setfirstLevelLimit ($limit)
+    public function setfirstLevelLimit($limit)
     {
         $this->revenueTrackerLimit->set($limit);
     }
@@ -71,20 +74,24 @@ class ListsApiOnePage extends Factories\ListsFactory implements \App\Http\Servic
     /**
      * Set the campaign that will be excluded
      *
-     * @param array $campaign_type
-     * @var array $campaign_type
+     * @param  array  $campaign_type
+     *
+     * @var array
      */
-    public function setExcludedCampaignIds($campaignIDs) {
+    public function setExcludedCampaignIds($campaignIDs)
+    {
         $this->excludedCampaignIds = $campaignIDs;
     }
 
     /**
      * Set the campaign type order, will be used in campaign query
      *
-     * @param array $campaignType
-     * @var array $campaignType
+     * @param  array  $campaignType
+     *
+     * @var array
      */
-    public function setTypeOrdering($typeOrdering) {
+    public function setTypeOrdering($typeOrdering)
+    {
         $this->campaignType = $typeOrdering;
         $this->stacking->setTypeOrdering($typeOrdering);
     }
@@ -92,22 +99,22 @@ class ListsApiOnePage extends Factories\ListsFactory implements \App\Http\Servic
     /**
      * Query campaigns with relationship
      *
-     * @param integer $affiliateID;
+     * @param  int  $affiliateID;
      */
-    public function getCampaigns ($affiliateID)
+    public function getCampaigns($affiliateID)
     {
         $campaigns = $this->repo->setParams([
-                'select' => '',
-                'status' => '',
-                'exclude_campaignIDs' => $this->excludedCampaignIds,
-                'in_campaign_type' => $this->campaignType,
-                'with_affiliate_campaign' => $affiliateID,
-                // 'with_no_tracker' => $this->userDetails['email'],
-                'with_filter_groups' => '',
-                'with_creatives' => '',
-                'with_config' => '',
-                'order_by' => ['priority','ASC'],
-            ])->get();
+            'select' => '',
+            'status' => '',
+            'exclude_campaignIDs' => $this->excludedCampaignIds,
+            'in_campaign_type' => $this->campaignType,
+            'with_affiliate_campaign' => $affiliateID,
+            // 'with_no_tracker' => $this->userDetails['email'],
+            'with_filter_groups' => '',
+            'with_creatives' => '',
+            'with_config' => '',
+            'order_by' => ['priority', 'ASC'],
+        ])->get();
 
         $this->campaigns = ($campaigns) ? $campaigns : [];
     }
@@ -115,24 +122,24 @@ class ListsApiOnePage extends Factories\ListsFactory implements \App\Http\Servic
     /**
      * Get the qualified campaigns
      *
-     * @param array $userDetails
-     * @param integer $limit
-     * @param array $qualifiedCampaigns
+     * @param  array  $userDetails
+     * @param  int  $limit
+     * @param  array  $qualifiedCampaigns
      * @return array
      */
-    public function getCampaignsContent (
+    public function getCampaignsContent(
         $userDetails,
         $limit,
-        $qualifiedCampaigns )
+        $qualifiedCampaigns)
     {
         // Set the campaigns
         $this->campaignContent->setCampaigns($qualifiedCampaigns);
         // set affiliate id
         $this->campaignContent->setAffiliateID($userDetails['affiliate_id']);
         // Process only campaigns that exists
-        if($this->campaignContent->hasCampaigns() && $this->campaignContent->hasCampaignType()) {
+        if ($this->campaignContent->hasCampaigns() && $this->campaignContent->hasCampaignType()) {
             // Set the campaign creatives
-            $this->campaignContent->creativeContent->setCreativeIDS ($this->creatives->get());
+            $this->campaignContent->creativeContent->setCreativeIDS($this->creatives->get());
             // Get the stack content of each campaign
             // Process campaigns with given limit
             $this->campaignContent->process(

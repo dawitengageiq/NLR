@@ -2,10 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-
-// use Log;
 use Carbon\Carbon;
+// use Log;
+use Illuminate\Console\Command;
 
 class ConsolidatedGraphGenerator extends Command
 {
@@ -46,6 +45,6 @@ class ConsolidatedGraphGenerator extends Command
         dispatch($job);
 
         $this->info('The Consolidated Graph for '.$date.' is being processed. Results will be available soon!');
-        
+
     }
 }

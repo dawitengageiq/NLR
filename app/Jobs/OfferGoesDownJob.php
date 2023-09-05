@@ -2,17 +2,13 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Job;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
+use App\OfferGoesDown;
+use Carbon\Carbon;
+use DB;
 use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Carbon\Carbon;
-use App\Lead;
-use App\LeadArchive;
-use App\OfferGoesDown;
-use App\AffiliateReport;
-use DB;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Log;
 
 class OfferGoesDownJob extends Job implements SelfHandling, ShouldQueue
@@ -20,11 +16,17 @@ class OfferGoesDownJob extends Job implements SelfHandling, ShouldQueue
     use InteractsWithQueue, SerializesModels;
 
     protected $campaign;
+
     protected $affiliates;
+
     protected $start_date;
+
     protected $end_date;
+
     protected $lead_conn;
+
     protected $now;
+
     protected $option;
 
     /**
@@ -53,39 +55,39 @@ class OfferGoesDownJob extends Job implements SelfHandling, ShouldQueue
      */
     public function handle()
     {
-        if($this->option == 'p2p') { //Public to Private Option
+        if ($this->option == 'p2p') { //Public to Private Option
             //Get Removed Affilaites
             $stats = DB::select("SELECT revenue_tracker_id FROM affiliate_reports 
             LEFT JOIN affiliate_campaign ON affiliate_campaign.campaign_id = affiliate_reports.campaign_id  AND affiliate_campaign.affiliate_id = affiliate_reports.revenue_tracker_id  
             WHERE affiliate_reports.campaign_id = $this->campaign AND affiliate_reports.created_at BETWEEN '$this->start_date' AND '$this->end_date' AND affiliate_campaign.id IS NULL GROUP BY revenue_tracker_id");
             $affiliates = [];
-            foreach($stats as $st) {
+            foreach ($stats as $st) {
                 $affiliates[] = $st->revenue_tracker_id;
             }
 
-            if(count($affiliates)) return;
-            else {
+            if (count($affiliates)) {
+                return;
+            } else {
                 $this->affiliates = $affiliates;
             }
         }
 
-
         $data = OfferGoesDown::firstOrNew([
             'campaign_id' => $this->campaign,
-            'date' => $this->now
+            'date' => $this->now,
         ]);
 
-        if($data->exists) { //Check if has existing;
-            if($this->affiliates != null) {
+        if ($data->exists) { //Check if has existing;
+            if ($this->affiliates != null) {
                 $existing_affiliates = explode(',', $data->affiliates);
                 $this->affiliates = array_merge($existing_affiliates, $this->affiliates);
             }
         }
 
-        if($this->affiliates == null) { //ALL
+        if ($this->affiliates == null) { //ALL
             $hasAffQry = '';
             $isAll = true;
-        }else {
+        } else {
             $affs = implode(',', $this->affiliates);
             $hasAffQry = 'AND affiliate_id IN ('.$affs.')';
             $isAll = false;
@@ -96,11 +98,11 @@ class OfferGoesDownJob extends Job implements SelfHandling, ShouldQueue
         $connect = config('app.type') == 'reports' ? 'mysql' : 'secondary';
         $stats = DB::connection($connect)->select($qry);
         $affiliates = [];
-        foreach($stats as $st) {
+        foreach ($stats as $st) {
             $affiliates[] = $st->affiliate_id;
         }
 
-        if(is_array($this->affiliates)) {
+        if (is_array($this->affiliates)) {
             $diff = array_diff($this->affiliates, $affiliates);
             $affiliates = array_merge($affiliates, $diff);
         }
@@ -115,7 +117,7 @@ class OfferGoesDownJob extends Job implements SelfHandling, ShouldQueue
         // Log::info($connect);
         // Log::info($qry);
         // Log::info($average);
-        if($isAll) {
+        if ($isAll) {
             $affiliates = array_merge(['All'], $affiliates);
         }
         $data->affiliates = implode(',', $affiliates);

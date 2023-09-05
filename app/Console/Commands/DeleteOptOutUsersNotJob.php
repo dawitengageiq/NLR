@@ -2,28 +2,23 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-
-use ErrorException;
-use Illuminate\Database\QueryException;
-use Carbon\Carbon;
-use Log;
-
 use App\Lead;
 use App\LeadArchive;
+use App\LeadDataAdv;
+use App\LeadDataAdvArchive;
+use App\LeadDataCsv;
+use App\LeadDataCsvArchive;
+use App\LeadMessage;
+use App\LeadMessageArchive;
+use App\LeadSentResult;
+use App\LeadSentResultArchive;
 use App\LeadUser;
 use App\LeadUserRequest;
-
-use App\LeadDataAdv;
-use App\LeadDataCsv;
-use App\LeadMessage;
-use App\LeadSentResult;
-
-use App\LeadDataAdvArchive;
-use App\LeadDataCsvArchive;
-use App\LeadDuplicateArchive;
-use App\LeadMessageArchive;
-use App\LeadSentResultArchive;
+use Carbon\Carbon;
+use ErrorException;
+use Illuminate\Console\Command;
+use Illuminate\Database\QueryException;
+use Log;
 
 class DeleteOptOutUsersNotJob extends Command
 {
@@ -62,11 +57,12 @@ class DeleteOptOutUsersNotJob extends Command
         Log::info('Deleting Opt out users');
         $status = 1;
         $end_date = Carbon::now()->endOfDay();
-        $users = LeadUserRequest::where('is_sent','=', 1)->where('is_deleted','=',0)->where('request_type', 'like', '%Delet%')->lists('email', 'id')->toArray();
+        $users = LeadUserRequest::where('is_sent', '=', 1)->where('is_deleted', '=', 0)->where('request_type', 'like', '%Delet%')->lists('email', 'id')->toArray();
 
-        if(count($users) == 0) {
+        if (count($users) == 0) {
             $this->info('No requests found.');
             Log::info('No requests found.');
+
             return;
         }
 
@@ -77,7 +73,7 @@ class DeleteOptOutUsersNotJob extends Command
         // \Log::info($ids);
         $this->info('Deleting Leads.');
         Log::info('Deleting Leads');
-        try{
+        try {
             //Lead
             $leads = Lead::whereIn('lead_email', $emails)->whereBetween('created_at', ['2018-01-01 00:00:00', $end_date])->lists('id')->toArray();
             LeadDataAdv::destroy($leads);
@@ -100,24 +96,20 @@ class DeleteOptOutUsersNotJob extends Command
             Log::info('Deleting Survey Takers');
             //Lead User
             LeadUser::whereIn('email', $emails)->whereBetween('created_at', ['2018-01-01 00:00:00', $end_date])->delete();
-        }
-        catch(ErrorException $e)
-        {
+        } catch (ErrorException $e) {
             $this->info('Error encountered.');
             Log::info('Error encounterd');
             Log::info($e->getMessage());
             Log::info($e->getCode());
             $status = 0;
-        }
-        catch(QueryException $e)
-        {
+        } catch (QueryException $e) {
             $this->info('Error encountered.');
             Log::info('Error encountered');
             Log::info($e->getMessage());
             Log::info($e->getCode());
             $status = 0;
         }
-        
+
         $this->info('Updating Requests.');
         Log::info('Updating Request');
         //Update Status

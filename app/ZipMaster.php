@@ -13,6 +13,6 @@ class ZipMaster extends Model
         'city',
         'state',
         'area_code',
-        'time_zone'
+        'time_zone',
     ];
 }

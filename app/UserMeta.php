@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class UserMeta extends Model
 {
     protected $connection;
+
     protected $table = 'user_metas';
 
     /**
@@ -20,10 +21,10 @@ class UserMeta extends Model
         'value',
     ];
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') == 'reports') {
+        if (config('app.type') == 'reports') {
             $this->connection = 'secondary';
         }
     }
@@ -31,6 +32,7 @@ class UserMeta extends Model
     public function user()
     {
         $con = config('app.type') == 'reports' ? 'secondary' : 'mysql';
+
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }

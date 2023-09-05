@@ -2,28 +2,26 @@
 
 namespace App\Jobs\Reports;
 
+use App\AffiliateRevenueTracker;
+use App\Helpers\Repositories\AffiliateReportCurl;
 use App\Jobs\Job;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
+use App\PageViewStatistics;
 use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use App\AffiliateRevenueTracker;
-use App\PageViewStatistics;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Log;
-use App\Helpers\Repositories\AffiliateReportCurl;
 
 class GenerateCakePageViewStatistics extends Job implements SelfHandling, ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
     public $dateFromStr;
+
     public $dateToStr;
 
     /**
      * Create a new job instance.
-     *
-     * @param $dateFromStr
-     * @param $dateToStr
      */
     public function __construct($dateFromStr, $dateToStr)
     {
@@ -33,15 +31,12 @@ class GenerateCakePageViewStatistics extends Job implements SelfHandling, Should
 
     /**
      * Execute the job.
-     *
-     * @param AffiliateReportCurl $affiliateReportCurl
      */
     public function handle(AffiliateReportCurl $affiliateReportCurl)
     {
         $revenueTrackers = AffiliateRevenueTracker::all();
 
-        foreach($revenueTrackers as $tracker)
-        {
+        foreach ($revenueTrackers as $tracker) {
             $cakeBaseClicksURL = config('constants.CAKE_CLICKS_REPORTS_API_V12');
 
             //inject the offer id
@@ -60,7 +55,7 @@ class GenerateCakePageViewStatistics extends Job implements SelfHandling, Should
             $pageViewStats = PageViewStatistics::firstOrNew([
                 'affiliate_id' => $tracker->affiliate_id,
                 'revenue_tracker_id' => $tracker->revenue_tracker_id,
-                'created_at' => $this->dateFromStr
+                'created_at' => $this->dateFromStr,
             ]);
 
             //reset all fields first
@@ -82,15 +77,12 @@ class GenerateCakePageViewStatistics extends Job implements SelfHandling, Should
             $pageViewStats->cpawall = 0;
             $pageViewStats->exitpage = 0;
 
-            if((!empty($clicks) && $clicks!='') && is_array($clicks))
-            {
-                foreach($clicks as $click)
-                {
+            if ((! empty($clicks) && $clicks != '') && is_array($clicks)) {
+                foreach ($clicks as $click) {
                     $subID = $click['value'][$prefix.'sub_id_1'];
                     //$totalClicks = $click['value'][$prefix.'total_clicks'];
 
-                    switch($subID)
-                    {
+                    switch ($subID) {
                         case 'LP':
                             $pageViewStats->lp = $pageViewStats->lp + 1;
                             break;
@@ -162,16 +154,12 @@ class GenerateCakePageViewStatistics extends Job implements SelfHandling, Should
                 }
             }
 
-            if($pageViewStats->lp == 0 && $pageViewStats->rp == 0 && $pageViewStats->mo1 == 0 && $pageViewStats->exitpage == 0)
-            {
+            if ($pageViewStats->lp == 0 && $pageViewStats->rp == 0 && $pageViewStats->mo1 == 0 && $pageViewStats->exitpage == 0) {
                 //delete if exist
-                if(isset($pageViewStats->id))
-                {
+                if (isset($pageViewStats->id)) {
                     $pageViewStats->delete();
                 }
-            }
-            else
-            {
+            } else {
                 //save the record
                 $pageViewStats->save();
             }
@@ -185,18 +173,17 @@ class GenerateCakePageViewStatistics extends Job implements SelfHandling, Should
         //send email to Burt to notify that Affiliate Report Queue was successfully finished
         Mail::send('emails.page_views_statistics',
             ['startDate' => $this->dateFromStr, 'endDate' => $this->dateToStr],
-            function ($m) use($emailNotificationRecipient){
-            $m->from('ariel@engageiq.com', 'Ariel Magbanua');
-            $m->to($emailNotificationRecipient, 'Marwil Burton')->subject('Page Views Statistics Job Queue Successfully Executed!');
-        });
+            function ($m) use ($emailNotificationRecipient) {
+                $m->from('ariel@engageiq.com', 'Ariel Magbanua');
+                $m->to($emailNotificationRecipient, 'Marwil Burton')->subject('Page Views Statistics Job Queue Successfully Executed!');
+            });
 
         Log::info('Page Views Statistics Job Queue Successfully Executed!');
     }
 
     public function touch()
     {
-        if (method_exists($this->job, 'getPheanstalk'))
-        {
+        if (method_exists($this->job, 'getPheanstalk')) {
             $this->job->getPheanstalk()->touch($this->job->getPheanstalkJob());
 
             Log::info('Current job timer refresh!');

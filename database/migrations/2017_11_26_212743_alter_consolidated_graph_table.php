@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AlterConsolidatedGraphTable extends Migration
 {
@@ -73,7 +73,7 @@ class AlterConsolidatedGraphTable extends Migration
                     'coreg_p2_revenue_vs_views',
                     'survey_takers_per_clicks',
                     'cpa_per_survey_takers',
-                    'mp_per_views'
+                    'mp_per_views',
                 ]
             );
         });

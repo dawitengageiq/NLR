@@ -3,13 +3,11 @@
 namespace App\Console\Commands;
 
 use App\Jobs\Reports\GenerateCreativeRevenueReport;
-use Illuminate\Console\Command;
+use Carbon\Carbon;
 // use App\Lead;
 // use App\CampaignView;
 // use App\CreativeReport;
-use Carbon\Carbon;
-use Log;
-use DB;
+use Illuminate\Console\Command;
 
 class GetCreativeRevenueReport extends Command
 {
@@ -25,7 +23,7 @@ class GetCreativeRevenueReport extends Command
      *
      * @var string
      */
-    protected $description = "this will generate creative revenue report summary for yesterday and delete previous week's campaign views if yesterday was the first day of the week." ;
+    protected $description = "this will generate creative revenue report summary for yesterday and delete previous week's campaign views if yesterday was the first day of the week.";
 
     /**
      * Create a new command instance.

@@ -1,29 +1,28 @@
 <?php
+
 namespace App\Http\Services\Campaigns\Repos;
 
-use ApiConfig as IframeConfig;
-
-use App\AffiliateWebsite;
 use App\WebsitesViewTrackerDuplicate;
 
 final class AffiliateWebsites
 {
     /**
      * Default variables
-     *
      */
     protected $affiliateWebsite;
+
     protected $isRegistered = false;
+
     protected $isDisabled = true;
+
     protected $emailIsUnique = true;
 
     protected $model;
 
     /**
      * Intantiate, dependency injection of model
-     *
      */
-    public function __construct (\Illuminate\Database\Eloquent\Model $model, \Illuminate\Database\Eloquent\Model $dupeModel)
+    public function __construct(\Illuminate\Database\Eloquent\Model $model, \Illuminate\Database\Eloquent\Model $dupeModel)
     {
         $this->model = $model;
         $this->dupeModel = $dupeModel;
@@ -32,27 +31,29 @@ final class AffiliateWebsites
     /**
      * Check if registered
      *
-     * @param integer $websiteID
-     * @param integer $affiliateID
-     * @param string $email
-     * @param integer $timeInterval
+     * @param  int  $websiteID
+     * @param  int  $affiliateID
+     * @param  string  $email
+     * @param  int  $timeInterval
      */
-    public function fetch ($websiteID, $affiliateID, $email, $timeInterval)
+    public function fetch($websiteID, $affiliateID, $email, $timeInterval)
     {
         $this->email = $email;
         $this->websiteID = $websiteID;
         $this->timeInterval = $timeInterval;
 
-        if($this->affiliateWebsite = $this->model->where([
-                'id' => $websiteID,
-                'affiliate_id' => $affiliateID
-            ])->first()
+        if ($this->affiliateWebsite = $this->model->where([
+            'id' => $websiteID,
+            'affiliate_id' => $affiliateID,
+        ])->first()
         ) {
             $this->isRegistered = true;
             $this->isDisabled = ($this->affiliateWebsite->status == 0) ? true : false;
 
-            if($this->email) $this->trackView();
-        };
+            if ($this->email) {
+                $this->trackView();
+            }
+        }
     }
 
     /**
@@ -60,7 +61,7 @@ final class AffiliateWebsites
      *
      * @return bolean
      */
-    public function isRegistered ()
+    public function isRegistered()
     {
         return $this->isRegistered;
     }
@@ -80,7 +81,7 @@ final class AffiliateWebsites
      *
      * @return bolean
      */
-    public function isEmailUnique ()
+    public function isEmailUnique()
     {
         return $this->emailIsUnique;
     }
@@ -88,14 +89,14 @@ final class AffiliateWebsites
     /**
      * Track user view
      *
-     * @param string $email
-     * @param integer $websiteID
+     * @param  string  $email
+     * @param  int  $websiteID
      */
     protected function trackView()
     {
         // Track view by email
         // If duplicate save in WebsitesViewTrackerDuplicate.
-        if(
+        if (
             $this->affiliateWebsite->view()->track(
                 $this->email,
                 $this->websiteID,

@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateFilterTypesTable extends Migration
 {
@@ -14,7 +14,7 @@ class CreateFilterTypesTable extends Migration
     {
         Schema::create('filter_types', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('type',12);
+            $table->string('type', 12);
             $table->text('name');
             $table->timestamps();
         });

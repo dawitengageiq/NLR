@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AddFtpColumnsInCampaignConfigTable extends Migration
 {
@@ -15,7 +15,7 @@ class AddFtpColumnsInCampaignConfigTable extends Migration
         Schema::table('campaign_configs', function (Blueprint $table) {
             $table->boolean('ftp_sent')->default(0);
             $table->boolean('ftp_protocol')->nullable();
-            $table->string('ftp_username',80)->nullable();
+            $table->string('ftp_username', 80)->nullable();
             $table->string('ftp_password', 150)->nullable();
         });
     }
@@ -28,7 +28,7 @@ class AddFtpColumnsInCampaignConfigTable extends Migration
     public function down()
     {
         Schema::table('campaign_configs', function (Blueprint $table) {
-            $table->dropColumn(['ftp_sent','ftp_protocol','ftp_username', 'ftp_password']);
+            $table->dropColumn(['ftp_sent', 'ftp_protocol', 'ftp_username', 'ftp_password']);
         });
     }
 }

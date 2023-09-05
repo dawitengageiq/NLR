@@ -2,23 +2,23 @@
 
 namespace App\Jobs\Reports;
 
+use App\Affiliate;
 use App\AffiliateRevenueTracker;
 use App\Campaign;
-use App\Affiliate;
-use App\CoregReport;
 use App\CampaignPayout;
+use App\CoregReport;
 use App\Jobs\Job;
 use App\Lead;
+use App\Setting;
 use Carbon\Carbon;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
+use DB;
 use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use DB;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Mail;
-use App\Setting;
 use Storage;
 
 class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
@@ -27,7 +27,6 @@ class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
 
     /**
      * Create a new job instance.
-     *
      */
     public function __construct()
     {
@@ -41,8 +40,7 @@ class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
      */
     public function handle()
     {
-        if($this->attempts() > 1)
-        {
+        if ($this->attempts() > 1) {
             return;
         }
 
@@ -53,33 +51,31 @@ class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
 
         //Get Recipients
         $report_recipients = [];
-        $setting = Setting::where('code','report_recipient')->first();
+        $setting = Setting::where('code', 'report_recipient')->first();
         $rep_emails = explode(';', $setting->description);
-        foreach($rep_emails as $re) {
+        foreach ($rep_emails as $re) {
             $re = trim($re);
-            if(filter_var($re, FILTER_VALIDATE_EMAIL)) {
+            if (filter_var($re, FILTER_VALIDATE_EMAIL)) {
                 $report_recipients[] = $re;
             }
         }
 
         //Get OLR Program ID => Campaign ID
-        $coregs = Campaign::whereIn('campaign_type',[1,2,3,7,8,9,10,11,12])->lists('id','olr_program_id')->toArray();
+        $coregs = Campaign::whereIn('campaign_type', [1, 2, 3, 7, 8, 9, 10, 11, 12])->lists('id', 'olr_program_id')->toArray();
         //Get Rev Tracker => Affiliate ID
-        $revAffiliates = AffiliateRevenueTracker::lists('affiliate_id','revenue_tracker_id')->toArray();
+        $revAffiliates = AffiliateRevenueTracker::lists('affiliate_id', 'revenue_tracker_id')->toArray();
 
         //Get Campaign default and affiliate-specific received and payout for OLR leads
         // $payouts = DB::select('SELECT campaigns.id, campaign_payouts.affiliate_id, campaigns.default_payout, campaigns.default_received,
         //     campaign_payouts.received, campaign_payouts.payout FROM campaign_payouts RIGHT JOIN campaigns ON campaign_payouts.campaign_id = campaigns.id');
-        $payouts = CampaignPayout::rightJoin('campaigns', 'campaign_payouts.campaign_id','=','campaigns.id')
+        $payouts = CampaignPayout::rightJoin('campaigns', 'campaign_payouts.campaign_id', '=', 'campaigns.id')
             ->select(DB::RAW('campaigns.id, campaign_payouts.affiliate_id, campaigns.default_payout, campaigns.default_received, campaign_payouts.received, campaign_payouts.payout'))->get();
 
         $lead_payouts = [];
 
         //Save them in a easy access array
-        foreach($payouts as $payout)
-        {
-            if(!isset($lead_payouts[$payout->id][null]))
-            {
+        foreach ($payouts as $payout) {
+            if (! isset($lead_payouts[$payout->id][null])) {
                 $lead_payouts[$payout->id][null]['payout'] = $payout->default_payout;
                 $lead_payouts[$payout->id][null]['received'] = $payout->default_received;
             }
@@ -95,24 +91,22 @@ class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
         $time1 = microtime(true);
 
         //ACTUAL QUERY
-        $nlr = Lead::where(DB::RAW('date(created_at)'),$date_yesterday)->select('id','campaign_id','affiliate_id','lead_status','received','payout')->get();
+        $nlr = Lead::where(DB::RAW('date(created_at)'), $date_yesterday)->select('id', 'campaign_id', 'affiliate_id', 'lead_status', 'received', 'payout')->get();
         //TESTING
         // $nlr = DB::connection('nlr')->select('SELECT id, campaign_id, affiliate_id, lead_status, received, payout FROM leads WHERE date(created_at) = "'.$date_yesterday.'"');
 
         $time2 = microtime(true);
         $runtime = $time2 - $time1;
         Log::info('Done retrieving from NLR');
-        Log::info('Runtime: '. $runtime);
+        Log::info('Runtime: '.$runtime);
 
-        foreach($nlr as $lead)
-        {
+        foreach ($nlr as $lead) {
 
             //Initialize Campaign and Affiliate/Rev Tracker
             $campaign_id = $lead->campaign_id;
             $affiliate_id = $lead->affiliate_id;
 
-            if(! isset($report['n'][$campaign_id][$lead->affiliate_id]))
-            {
+            if (! isset($report['n'][$campaign_id][$lead->affiliate_id])) {
                 //Initialize if Campaign & Affiliate not exists in report
                 // Log::info('NLR: '.$campaign_id.' - '.$lead->affiliate_id);
                 $report['n'][$campaign_id][$affiliate_id]['lr_total'] = 0;
@@ -143,28 +137,19 @@ class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
             }
 
             //NLR COUNTER
-            if($lead->lead_status == 1)
-            {
+            if ($lead->lead_status == 1) {
                 //Success
                 $report['n'][$campaign_id][$lead->affiliate_id]['lr_success'] += 1;
-            }
-            else if($lead->lead_status == 2)
-            {
+            } elseif ($lead->lead_status == 2) {
                 //Rejected
                 $report['n'][$campaign_id][$lead->affiliate_id]['lr_rejected'] += 1;
-            }
-            else if($lead->lead_status == 3 || $lead->lead_status == 4)
-            {
+            } elseif ($lead->lead_status == 3 || $lead->lead_status == 4) {
                 //Pending Or Queued
                 $report['n'][$campaign_id][$lead->affiliate_id]['lr_pending'] += 1;
-            }
-            else if($lead->lead_status == 5)
-            {
+            } elseif ($lead->lead_status == 5) {
                 //Cap Reached
                 $report['n'][$campaign_id][$lead->affiliate_id]['lr_cap'] += 1;
-            }
-            else
-            {
+            } else {
                 //Failed or TimeOut
                 $report['n'][$campaign_id][$lead->affiliate_id]['lr_failed'] += 1;
             }
@@ -311,17 +296,13 @@ class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
 
         //Log::info('LF Runtime: '.$runtime);
 
-        foreach($lf as $lead)
-        {
+        foreach ($lf as $lead) {
             //Initialize Campaign and Affiliate/Rev Tracker
             $campaign_not_exists_in_lr = false;
 
-            if(array_key_exists($lead->campaign_id,$coregs))
-            {
+            if (array_key_exists($lead->campaign_id, $coregs)) {
                 $campaign_id = $coregs[$lead->campaign_id];
-            }
-            else
-            {
+            } else {
                 //Log::info('{LF}Not Exists: '.$lead->campaign_id);
                 $campaign_id = $lead->campaign_id;
                 $campaign_not_exists_in_lr = true;
@@ -339,14 +320,13 @@ class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
             $affiliate_id = $lead->affiliate_id;
 
             //GET LEAD SOURCE
-            if($lead->source == 1)
+            if ($lead->source == 1) {
                 $source = 'n';
-            else
+            } else {
                 $source = 'o';
+            }
 
-
-            if(! isset($report[$source][$campaign_id][$affiliate_id]))
-            {
+            if (! isset($report[$source][$campaign_id][$affiliate_id])) {
                 //Initialize if Campaign & Affiliate not exists in report
                 //Log::info('LF: '.$campaign_id.' - '.$affiliate_id);
 
@@ -383,16 +363,11 @@ class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
             }
 
             //LF COUNTER
-            if($lead->status == 2 || $lead->status == 0)
-            {
+            if ($lead->status == 2 || $lead->status == 0) {
                 $report[$source][$campaign_id][$affiliate_id]['lf_admin_drop'] += 1;
-            }
-            else if($lead->status == 3)
-            {
+            } elseif ($lead->status == 3) {
                 $report[$source][$campaign_id][$affiliate_id]['lf_filter_drop'] += 1;
-            }
-            else if($lead->status == 4)
-            {
+            } elseif ($lead->status == 4) {
                 $report[$source][$campaign_id][$affiliate_id]['lf_nlr_drop'] += 1;
             }
 
@@ -400,17 +375,13 @@ class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
         }
 
         //Lead Filter Duplicates
-        foreach($lfd as $lead)
-        {
+        foreach ($lfd as $lead) {
             //Initialize Campaign and Affiliate/Rev Tracker
             $campaign_not_exists_in_lr = false;
 
-            if(array_key_exists($lead->campaign_id,$coregs))
-            {
+            if (array_key_exists($lead->campaign_id, $coregs)) {
                 $campaign_id = $coregs[$lead->campaign_id];
-            }
-            else
-            {
+            } else {
                 // Log::info('{LFD}Not Exists: '.$lead->campaign_id);
                 $campaign_id = $lead->campaign_id;
                 $campaign_not_exists_in_lr = true;
@@ -428,13 +399,13 @@ class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
             $affiliate_id = $lead->affiliate_id;
 
             //GET LEAD SOURCE
-            if($lead->source == 1)
+            if ($lead->source == 1) {
                 $source = 'n';
-            else
+            } else {
                 $source = 'o';
+            }
 
-            if(! isset($report[$source][$campaign_id][$affiliate_id]))
-            {
+            if (! isset($report[$source][$campaign_id][$affiliate_id])) {
                 //Initialize if Campaign & Affiliate not exists in report
                 // Log::info('LF: '.$campaign_id.' - '.$affiliate_id);
                 $report[$source][$campaign_id][$affiliate_id]['lr_total'] = 0;
@@ -474,8 +445,7 @@ class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
         Log::info('Computing...');
 
         //If there are campaigns with no payout
-        if(count($no_payouts) > 0)
-        {
+        if (count($no_payouts) > 0) {
             /*
             $the_campaigns = implode(',',$no_payouts);
 
@@ -499,8 +469,7 @@ class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
             // }
 
             //Assign the payouts to campaigns
-            foreach($campaign_affiliate_no_payouts as $no)
-            {
+            foreach ($campaign_affiliate_no_payouts as $no) {
                 $campaign = $no['c'];
                 $affiliate = $no['a'];
                 $payout = 0;
@@ -522,8 +491,7 @@ class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
                 $campaign_id = $campaign;
                 $affiliate_id = $affiliate;
 
-                if(! isset($report['o'][$campaign_id][$affiliate_id]))
-                {
+                if (! isset($report['o'][$campaign_id][$affiliate_id])) {
                     $report['o'][$campaign_id][$affiliate_id]['lr_total'] = 0;
                     $report['o'][$campaign_id][$affiliate_id]['lr_rejected'] = 0;
                     $report['o'][$campaign_id][$affiliate_id]['lr_failed'] = 0;
@@ -564,12 +532,9 @@ class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
 
         Log::info('Saving to Database...');
 
-        foreach($report as $sources)
-        {
-            foreach($sources as $campaign => $details)
-            {
-                foreach($details as $affiliate => $info)
-                {
+        foreach ($report as $sources) {
+            foreach ($sources as $campaign => $details) {
+                foreach ($details as $affiliate => $info) {
                     $affiliate_id = isset($revAffiliates[$affiliate]) ? $revAffiliates[$affiliate] : $affiliate;
                     $revenue_tracker_id = isset($revAffiliates[$affiliate]) ? $affiliate : null;
 
@@ -588,12 +553,9 @@ class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
                     $payout = isset($info['payout']) ? $info['payout'] : 0;
                     $received = isset($info['received']) ? $info['received'] : 0;
 
-                    if($info['lf_total'] == 0)
-                    {
+                    if ($info['lf_total'] == 0) {
                         $cost = $lr_total * $payout;
-                    }
-                    else
-                    {
+                    } else {
                         $cost = ($info['lf_total'] - $info['lf_filter_drop']) * $payout;
                         // $cost = ($info['lf_total'] - $info['lf_filter_drop'] - $info['lf_nlr_drop']) * $payout;
                     }
@@ -616,7 +578,7 @@ class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
                     $data->lf_filter_do = $info['lf_filter_drop'];
                     $data->lf_admin_do = $info['lf_admin_drop'];
                     $data->lf_nlr_do = $info['lf_nlr_drop'];
-                    $data->lr_total =  $lr_total;
+                    $data->lr_total = $lr_total;
                     $data->lr_rejected = $lr_rejected;
                     $data->lr_failed = $lr_failed;
                     $data->lr_pending = $info['lr_pending'];
@@ -639,54 +601,53 @@ class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
 
         $inputs['excel'] = 1;
         $inputs['lead_date'] = $date_yesterday;
-        $reports = CoregReport::getReport($inputs,null,null,'we_get','desc')
+        $reports = CoregReport::getReport($inputs, null, null, 'we_get', 'desc')
             ->selectRaw('coreg_reports.*, revenue - cost as we_get')
             ->get();
 
-        $affs = $reports->map(function($st) {
+        $affs = $reports->map(function ($st) {
             return $st->affiliate_id;
         });
         $affiliates = Affiliate::whereIn('id', $affs)->lists('company', 'id');
 
-        $cmps = $reports->map(function($st) {
+        $cmps = $reports->map(function ($st) {
             return $st->campaign_id;
         });
         $campaigns = Campaign::whereIn('id', $cmps)->lists('name', 'id');
 
-        if($reports)
-        {
+        if ($reports) {
             Log::info('Creating Excel');
             $date = Carbon::parse($date_yesterday)->format('m/d/Y');
             $title = 'CoregReport_'.Carbon::parse($date_yesterday)->toDateString();
 
-            if(Storage::disk('downloads')->has($title.'.xlsx')) Storage::disk('downloads')->delete($title.'.xlsx'); //delete existing file
+            if (Storage::disk('downloads')->has($title.'.xlsx')) {
+                Storage::disk('downloads')->delete($title.'.xlsx');
+            } //delete existing file
 
-            Excel::create($title, function($excel) use($title,$reports,$inputs,$date, $affiliates, $campaigns)
-            {
-                $excel->sheet(Carbon::parse($date)->toDateString(),function($sheet) use ($reports,$inputs,$date, $affiliates, $campaigns)
-                {
+            Excel::create($title, function ($excel) use ($reports, $date, $affiliates, $campaigns) {
+                $excel->sheet(Carbon::parse($date)->toDateString(), function ($sheet) use ($reports, $affiliates, $campaigns) {
 
                     $totalRows = count($reports) + 3;
                     //Set auto size for sheet
                     $sheet->setAutoSize(true);
 
-                    $sheet->setColumnFormat(array(
+                    $sheet->setColumnFormat([
                         'G' => '0.00',
                         'M' => '0.00',
-                        'N' => '0.00'
-                    ));
+                        'N' => '0.00',
+                    ]);
 
                     //TITLE ROW
-                    $sheet->appendRow(['Net Profit','','Lead Filter','','','','','Lead Reactor','','','','','','']);
+                    $sheet->appendRow(['Net Profit', '', 'Lead Filter', '', '', '', '', 'Lead Reactor', '', '', '', '', '', '']);
                     $sheet->mergeCells('A1:B1');
                     $sheet->mergeCells('C1:G1');
                     $sheet->mergeCells('H1:M1');
-                    $sheet->cells('A1:N1', function($cells) {
+                    $sheet->cells('A1:N1', function ($cells) {
                         // Set font
-                        $cells->setFont(array(
-                            'size'       => '13',
-                            'bold'       =>  true
-                        ));
+                        $cells->setFont([
+                            'size' => '13',
+                            'bold' => true,
+                        ]);
 
                         $cells->setAlignment('center');
                         $cells->setValignment('center');
@@ -707,20 +668,19 @@ class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
                         '',
                         '',
                         '',
-                        '' //We GET
+                        '', //We GET
                     ]);
 
                     $sheet->mergeCells('A2:B2');
                     $sheet->mergeCells('C2:G2');
                     $sheet->mergeCells('H2:M2');
 
-                    $sheet->cells('A2:N2', function($cells)
-                    {
+                    $sheet->cells('A2:N2', function ($cells) {
                         // Set font
-                        $cells->setFont(array(
-                            'size'       => '12',
-                            'bold'       =>  true
-                        ));
+                        $cells->setFont([
+                            'size' => '12',
+                            'bold' => true,
+                        ]);
 
                         $cells->setAlignment('center');
                         $cells->setValignment('center');
@@ -731,30 +691,30 @@ class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
                     // ]);
 
                     //HEADER ROW
-                    $headers = ['Rev Tracker', 'Campaign', 'Leads Received','Filter Drop Off', 'Admin Drop Off','NLR Drop Off','Cost','Leads Received','Rejected Drop Off', 'Failed Drop Off','Pending/Queued Drop Off','Cap Reached Drop Off', 'Revenue', 'We Get'];
+                    $headers = ['Rev Tracker', 'Campaign', 'Leads Received', 'Filter Drop Off', 'Admin Drop Off', 'NLR Drop Off', 'Cost', 'Leads Received', 'Rejected Drop Off', 'Failed Drop Off', 'Pending/Queued Drop Off', 'Cap Reached Drop Off', 'Revenue', 'We Get'];
                     //set up the title header row
                     $sheet->appendRow($headers);
                     //style the headers
-                    $sheet->cells('A3:N3', function($cells)
-                    {
+                    $sheet->cells('A3:N3', function ($cells) {
                         // Set font
-                        $cells->setFont(array(
-                            'size'       => '12',
-                            'bold'       =>  true
-                        ));
+                        $cells->setFont([
+                            'size' => '12',
+                            'bold' => true,
+                        ]);
 
                         $cells->setAlignment('center');
                         $cells->setValignment('center');
                     });
 
                     $row_num = 4; //first row num is 4
-                    foreach($reports as $report)
-                    {
+                    foreach ($reports as $report) {
                         $revCol = '';
-                        $campaign_name = isset($campaigns[$report->campaign_id]) ? $campaigns[$report->campaign_id].'('.$report->campaign_id.')': 'OLR Campaign ID: '. $report->campaign_id;
+                        $campaign_name = isset($campaigns[$report->campaign_id]) ? $campaigns[$report->campaign_id].'('.$report->campaign_id.')' : 'OLR Campaign ID: '.$report->campaign_id;
                         // if(($report->olr_only === 0 || $report->olr_only === 1) && $report->revenue_tracker_id === null) $revCol .= 'OLR: ';
                         $affiliate_name = $affiliates[$report->affiliate_id];
-                        if($report->revenue_tracker_id != '') $revCol .= $report->revenue_tracker_id.' ';
+                        if ($report->revenue_tracker_id != '') {
+                            $revCol .= $report->revenue_tracker_id.' ';
+                        }
                         $revCol .= '['.$affiliate_name.'('.$report->affiliate_id.')]';
 
                         $sheet->appendRow([
@@ -771,14 +731,19 @@ class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
                             $report->lr_pending,
                             $report->lr_cap,
                             $report->revenue,
-                            $report->we_get
+                            $report->we_get,
                         ]);
 
                         //Where Source: 1 = OLR; 2 = NLR; 3 = Mixed; 4 = LF
-                        if($report->source == 1) $row_color = '#dff0d8';
-                        else if($report->source == 2) $row_color = '#f2dede';
-                        else if($report->source == 4) $row_color = '#D9EDF7';
-                        else $row_color = '#fff';
+                        if ($report->source == 1) {
+                            $row_color = '#dff0d8';
+                        } elseif ($report->source == 2) {
+                            $row_color = '#f2dede';
+                        } elseif ($report->source == 4) {
+                            $row_color = '#D9EDF7';
+                        } else {
+                            $row_color = '#fff';
+                        }
                         // switch($report->source) {
                         //     case 1:
                         //         $row_color = '#dff0d8';
@@ -794,24 +759,26 @@ class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
                         //         $row_color = '#fff';
                         // }
 
-
                         // Set black background
-                        $sheet->row($row_num++, function($row) use($row_color){
+                        $sheet->row($row_num++, function ($row) use ($row_color) {
                             $row->setBackground($row_color);
                         });
 
-
                     }
                 });
-            })->store('xlsx',storage_path('downloads'));
-            
-            if(config('app.type') == 'reports') {
-                $contents = Storage::disk('downloads')->get($title.'.xlsx');
-                if(Storage::disk('main')->has($title.'.xlsx')) Storage::disk('main')->delete($title.'.xlsx'); //delete existing file
-                Storage::disk('main')->put($title.'.xlsx' , $contents); //Copy Report to Main Server
+            })->store('xlsx', storage_path('downloads'));
 
-                if(Storage::disk('main_slave')->has($title.'.xlsx')) Storage::disk('main_slave')->delete($title.'.xlsx'); //delete existing file
-                Storage::disk('main_slave')->put($title.'.xlsx' , $contents); //Copy Report to Main Server
+            if (config('app.type') == 'reports') {
+                $contents = Storage::disk('downloads')->get($title.'.xlsx');
+                if (Storage::disk('main')->has($title.'.xlsx')) {
+                    Storage::disk('main')->delete($title.'.xlsx');
+                } //delete existing file
+                Storage::disk('main')->put($title.'.xlsx', $contents); //Copy Report to Main Server
+
+                if (Storage::disk('main_slave')->has($title.'.xlsx')) {
+                    Storage::disk('main_slave')->delete($title.'.xlsx');
+                } //delete existing file
+                Storage::disk('main_slave')->put($title.'.xlsx', $contents); //Copy Report to Main Server
             }
 
             $file_path = storage_path('downloads').'/'.$title.'.xlsx';
@@ -823,15 +790,15 @@ class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
 
             $emailNotificationRecipient = env('REPORTS_EMAIL_NOTIFICATION_RECIPIENT', 'marwilburton@hotmail.com');
 
-            Mail::send('emails.coreg_report', ['url' => config('constants.APP_BASE_URL').'/admin/coregReports','date' => $date_yesterday],
+            Mail::send('emails.coreg_report', ['url' => config('constants.APP_BASE_URL').'/admin/coregReports', 'date' => $date_yesterday],
                 function ($message) use ($excelAttachment, $lr_build, $emailNotificationRecipient, $report_recipients) {
 
                     $message->from('admin@engageiq.com', 'Automated Report by '.$lr_build);
 
                     $message->to($emailNotificationRecipient, 'Marwil Burton');
 
-                    if(count($report_recipients) > 0) {
-                        foreach($report_recipients as $recipient) {
+                    if (count($report_recipients) > 0) {
+                        foreach ($report_recipients as $recipient) {
                             $message->to($recipient);
                         }
                     }
@@ -855,7 +822,6 @@ class GetCoregPerformanceReport extends Job implements SelfHandling, ShouldQueue
 
             Log::info('Email Sent!');
         }
-
 
         Log::info('FINISHED!');
     }

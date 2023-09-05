@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BugReport extends Model
 {
-
     use SoftDeletes;
 
     protected $connection;
@@ -29,7 +28,7 @@ class BugReport extends Model
         'reporter_email',
         'bug_summary',
         'bug_description',
-        'evidences'
+        'evidences',
     ];
 
     /**
@@ -39,10 +38,10 @@ class BugReport extends Model
      */
     protected $dates = ['deleted_at'];
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') != 'reports') {
+        if (config('app.type') != 'reports') {
             $this->connection = 'secondary';
         }
     }

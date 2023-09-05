@@ -12,8 +12,8 @@ class CampaignFilterSeeder extends Seeder
     public function run()
     {
         App\CampaignFilter::firstOrCreate([
-			'campaign_id'		=>	1,
-			'filter_type_id'	=>	1
-		]);
+            'campaign_id' => 1,
+            'filter_type_id' => 1,
+        ]);
     }
 }

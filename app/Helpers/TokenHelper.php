@@ -2,9 +2,9 @@
 
 namespace App\Helpers;
 
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Contracts\Encryption\DecryptException;
 use App\User;
+use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Support\Facades\Crypt;
 use Log;
 use Mockery\CountValidator\Exception;
 use PHPEncryptData\Simple;
@@ -12,6 +12,7 @@ use PHPEncryptData\Simple;
 class TokenHelper
 {
     protected $authorized = false;
+
     protected $validToken = false;
 
     public function __construct($token)
@@ -51,8 +52,7 @@ class TokenHelper
         }
         */
 
-        try
-        {
+        try {
             /*
             $decryptedData = Crypt::decrypt($token);
 
@@ -90,30 +90,23 @@ class TokenHelper
 
             $param = [
                 'email' => $data[0],
-                'id' => $data[1]
+                'id' => $data[1],
             ];
 
             $user = User::userByEmailAndID($param)->first();
 
-            if($user==null)
-            {
+            if ($user == null) {
                 $this->authorized = false;
-            }
-            else
-            {
+            } else {
                 $this->authorized = true;
             }
 
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             //invalid token
             Log::info($e->getCode());
             Log::info($e->getMessage());
             $this->validToken = false;
-        }
-        catch(\RuntimeException $e)
-        {
+        } catch (\RuntimeException $e) {
             Log::info($e->getCode());
             Log::info($e->getMessage());
             $this->validToken = false;
@@ -122,7 +115,7 @@ class TokenHelper
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isAuthorized()
     {
@@ -130,7 +123,7 @@ class TokenHelper
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isValidToken()
     {

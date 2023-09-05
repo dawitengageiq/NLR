@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AlterAffiliaterReportsRemoveForeignKeyConstraintAffiliateIdAndRevenueTrackerId extends Migration
 {
@@ -13,8 +13,8 @@ class AlterAffiliaterReportsRemoveForeignKeyConstraintAffiliateIdAndRevenueTrack
     public function up()
     {
         Schema::table('affiliate_reports', function (Blueprint $table) {
-            $table->dropForeign("affiliate_reports_affiliate_id_foreign");
-            $table->dropForeign("affiliate_reports_revenue_tracker_id_foreign");
+            $table->dropForeign('affiliate_reports_affiliate_id_foreign');
+            $table->dropForeign('affiliate_reports_revenue_tracker_id_foreign');
         });
     }
 

@@ -2,26 +2,27 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Job;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
+use App\LeadUser;
+use App\LeadUserRequest;
+use App\Setting;
+use Carbon\Carbon;
 use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Carbon\Carbon;
-use App\LeadUserRequest;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
-use App\LeadUser;
 use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Setting;
 use Log;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SendUserOneTrustEmailJob extends Job implements SelfHandling, ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
     protected $cc_emails = [];
+
     protected $reply_tos = [];
+
     protected $end_date;
 
     /**
@@ -32,10 +33,13 @@ class SendUserOneTrustEmailJob extends Job implements SelfHandling, ShouldQueue
     public function __construct()
     {
         $this->end_date = Carbon::now()->endOfDay();
-        $settings = Setting::whereIn('code', ['ccpaadminemail_recipient', 'optoutexternal_recipient','optoutemail_replyto'])->get();
-        foreach($settings as $setting) {
-            if($setting->code == 'ccpaadminemail_recipient') $this->cc_emails = explode(';', trim($setting->description));
-            else if($setting->code == 'optoutemail_replyto') $this->reply_tos = explode(';', trim($setting->description));
+        $settings = Setting::whereIn('code', ['ccpaadminemail_recipient', 'optoutexternal_recipient', 'optoutemail_replyto'])->get();
+        foreach ($settings as $setting) {
+            if ($setting->code == 'ccpaadminemail_recipient') {
+                $this->cc_emails = explode(';', trim($setting->description));
+            } elseif ($setting->code == 'optoutemail_replyto') {
+                $this->reply_tos = explode(';', trim($setting->description));
+            }
         }
     }
 
@@ -51,18 +55,19 @@ class SendUserOneTrustEmailJob extends Job implements SelfHandling, ShouldQueue
         $reply_tos = $this->reply_tos;
 
         Log::info('Get requests.');
-        $requests = LeadUserRequest::where('is_sent', 0)->where(function($q) {
+        $requests = LeadUserRequest::where('is_sent', 0)->where(function ($q) {
             $q->where('request_type', 'like', '%portability%')
                 ->orWhere('request_type', 'like', '%disclosure%');
         })->groupBy('email')->groupBy('request_type')->get();
 
-        if(count($requests) == 0) {
+        if (count($requests) == 0) {
             Log::info('No request found.');
+
             return;
         }
 
         $request_emails = [];
-        foreach($requests as $user) {
+        foreach ($requests as $user) {
             $request_emails[] = $user->email;
         }
 
@@ -70,35 +75,35 @@ class SendUserOneTrustEmailJob extends Job implements SelfHandling, ShouldQueue
         $lead_users = LeadUser::whereIn('email', $request_emails)->whereBetween('created_at', ['2018-01-01 00:00:00', $this->end_date])->get();
         Log::info('get lead user done');
         $survey_takers = [];
-        foreach($lead_users as $user) {
+        foreach ($lead_users as $user) {
             $survey_takers[$user->email] = $user;
         }
 
-        //Log::info($requests); 
+        //Log::info($requests);
         Log::info('Start sending...');
-        foreach($requests as $request) {
+        foreach ($requests as $request) {
             Log::info($request->id.' - '.$request->request_type.' - '.$request->email);
-            if(stripos($request->request_type, 'disclosure') !== false) {
+            if (stripos($request->request_type, 'disclosure') !== false) {
                 $subject = 'Epic Demand | Information Disclosure Request';
                 $blade = 'user_information_disclosure_request';
-            }else {
+            } else {
                 $subject = 'Epic Demand | Data Portability Request';
                 $blade = 'user_data_portability_request';
             }
 
-            try{
+            try {
                 $hasInfo = false;
                 $email = $request->email;
                 $leadUser = $request;
-                if(isset($survey_takers[$email])) {
+                if (isset($survey_takers[$email])) {
                     $hasInfo = true;
                     $leadUser = $survey_takers[$email];
                 }
 
-                $feedTitle = "user_data";
-                \Config::set('excel.csv.enclosure','');
-                Excel::create($feedTitle, function($excel) use ($leadUser, $hasInfo){
-                    $excel->sheet('data', function($sheet) use ($leadUser, $hasInfo){
+                $feedTitle = 'user_data';
+                \Config::set('excel.csv.enclosure', '');
+                Excel::create($feedTitle, function ($excel) use ($leadUser, $hasInfo) {
+                    $excel->sheet('data', function ($sheet) use ($leadUser, $hasInfo) {
                         //set up the title header row
                         $sheet->appendRow([
                             'First Name',
@@ -112,7 +117,7 @@ class SendUserOneTrustEmailJob extends Job implements SelfHandling, ShouldQueue
                             'Gender',
                             'Phone',
                             'IP Address',
-                            'Browser Info'
+                            'Browser Info',
                         ]);
                         $sheet->appendRow([
                             $leadUser->first_name,
@@ -134,39 +139,41 @@ class SendUserOneTrustEmailJob extends Job implements SelfHandling, ShouldQueue
 
                 Mail::send('emails.'.$blade,
                     ['request' => $request, 'user' => $user],
-                    function ($m) use($request, $cc_emails, $reply_tos, $file_path, $subject){
-                    $m->from('admin@engageiq.com', 'Epic Demand');
-                    if(count($cc_emails) > 0) {
-                        foreach($cc_emails as $cc) {
-                            if($cc != '') {
-                                $m->cc(trim($cc));
+                    function ($m) use ($request, $cc_emails, $reply_tos, $file_path, $subject) {
+                        $m->from('admin@engageiq.com', 'Epic Demand');
+                        if (count($cc_emails) > 0) {
+                            foreach ($cc_emails as $cc) {
+                                if ($cc != '') {
+                                    $m->cc(trim($cc));
+                                }
                             }
                         }
-                    }
 
-                    if(count($reply_tos) > 0) {
-                        foreach($reply_tos as $to) {
-                            if($to != '') {
-                                $m->replyTo(trim($to));
+                        if (count($reply_tos) > 0) {
+                            foreach ($reply_tos as $to) {
+                                if ($to != '') {
+                                    $m->replyTo(trim($to));
+                                }
                             }
                         }
-                    }
 
-                    $m->attach($file_path);
+                        $m->attach($file_path);
 
-                    $m->to(trim($request['email']))->subject('Epic Demand | '.$subject);
-                });
-                    
+                        $m->to(trim($request['email']))->subject('Epic Demand | '.$subject);
+                    });
+
                 $done[] = $request->id;
 
-                if($hasInfo) Storage::disk('downloads')->delete($feedTitle.'.csv');
-            }catch(Exception $e){
+                if ($hasInfo) {
+                    Storage::disk('downloads')->delete($feedTitle.'.csv');
+                }
+            } catch (Exception $e) {
                 $this->status = 0;
                 Log::info('Sending mail error');
                 Log::info($e);
-            }   
+            }
             sleep(15);
-        }   
+        }
 
         Log::info('Update requests');
         LeadUserRequest::whereIn('id', $done)->update(['is_removed' => 2, 'is_sent' => 1]);

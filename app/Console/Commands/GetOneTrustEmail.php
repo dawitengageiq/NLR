@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Jobs\GetOneTrustEmailJob;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class GetOneTrustEmail extends Command
 {
@@ -42,8 +42,7 @@ class GetOneTrustEmail extends Command
         $this->info('Getting One Trust Emails.....');
         $date = $this->option('date');
 
-        if(empty($date))
-        {
+        if (empty($date)) {
             $date = Carbon::now()->subDay(7)->toDateString();
         }
 

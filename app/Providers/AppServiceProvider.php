@@ -2,17 +2,13 @@
 
 namespace App\Providers;
 
-use App\Helpers\JSONParser;
-use Carbon\Carbon;
-use Queue;
-use Illuminate\Support\ServiceProvider;
-use Log;
-
 use App\Http\Services\Consolidated\Providers\Graph;
-
-use Storage;
+use Illuminate\Support\ServiceProvider;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Sftp\SftpAdapter;
+use Log;
+use Queue;
+use Storage;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,11 +22,9 @@ class AppServiceProvider extends ServiceProvider
         Queue::after(function ($connection, $job, $data) {
 
             //job was a success
-            if($connection=="beanstalkd")
-            {
+            if ($connection == 'beanstalkd') {
 
-                switch(get_class($job))
-                {
+                switch (get_class($job)) {
                     case 'AffiliateReportsV2':
                         Log::info('Job Successful!');
                         Log::info($connection);
@@ -81,7 +75,7 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register(\Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class);
             $this->app->register(\Barryvdh\Debugbar\ServiceProvider::class);
 
-            $loader =  \Illuminate\Foundation\AliasLoader::getInstance();
+            $loader = \Illuminate\Foundation\AliasLoader::getInstance();
             $loader->alias('Debugbar', \Barryvdh\Debugbar\Facade::class);
         }
 

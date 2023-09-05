@@ -2,12 +2,10 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use Log;
-use Carbon\Carbon;
 use App\WebsitesViewTracker;
 use App\WebsitesViewTrackerDuplicate;
-use DB;
+use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class CleanWebsiteViewTracker extends Command
 {
@@ -48,10 +46,9 @@ class CleanWebsiteViewTracker extends Command
         $date = $this->option('date');
 
         //NEW VERSION
-        if(empty($date))
-        {
+        if (empty($date)) {
             $date = Carbon::now()->subDay(7)->toDateString();
-        }else {
+        } else {
             $date = Carbon::parse($date)->toDateString();
         }
         $this->info('Removing data older than '.$date);

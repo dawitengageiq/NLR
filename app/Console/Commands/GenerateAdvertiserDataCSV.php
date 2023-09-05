@@ -46,23 +46,22 @@ class GenerateAdvertiserDataCSV extends Command
         $dateFrom = $this->option('from');
         $dateTo = $this->option('to');
 
-        if(empty($dateFrom) || empty($dateTo))
-        {
+        if (empty($dateFrom) || empty($dateTo)) {
             $dateFrom = Carbon::now()->subDay()->toDateString();
             $dateTo = Carbon::now()->toDateString();
         }
 
         $campaignID = $this->option('campaign_id');
-        if(empty($campaignID))
-        {
+        if (empty($campaignID)) {
             $this->info('Empty campaign id!');
+
             return;
         }
 
         $campaignName = $this->option('campaign_name');
-        if(empty($campaignName))
-        {
+        if (empty($campaignName)) {
             $this->info('Empty campaign name!');
+
             return;
         }
 

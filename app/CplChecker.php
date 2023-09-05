@@ -6,17 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class CplChecker extends Model
 {
-	protected $connection;
+    protected $connection;
+
     public $timestamps = false;
+
     protected $fillable = [
         'campaign_id',
-        'created_at'
+        'created_at',
     ];
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') == 'reports') {
+        if (config('app.type') == 'reports') {
             $this->connection = 'secondary';
         }
     }

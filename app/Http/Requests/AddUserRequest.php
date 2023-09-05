@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Http\Requests\Request;
-
 class AddUserRequest extends Request
 {
     /**
@@ -31,14 +29,14 @@ class AddUserRequest extends Request
             'role_id' => 'required',
             'mobile_number' => 'numeric',
             'phone_number' => 'numeric',
-            'password' => 'required|confirmed|min:5'
+            'password' => 'required|confirmed|min:5',
         ];
     }
 
     public function messages()
     {
         return [
-            'email.unique'     =>  'Email is already taken as a user or as a affiliate/advertiser contact.',
+            'email.unique' => 'Email is already taken as a user or as a affiliate/advertiser contact.',
         ];
     }
 }

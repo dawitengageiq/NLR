@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Database\Seeder;
-use App\LeadDataAdv;
 use App\Lead;
+use App\LeadDataAdv;
+use Illuminate\Database\Seeder;
 
 class LeadDataAdvSeeder extends Seeder
 {
@@ -18,10 +18,9 @@ class LeadDataAdvSeeder extends Seeder
 
         $leadIDs = Lead::lists('id')->toArray();
 
-        foreach($leadIDs as $leadID)
-        {
+        foreach ($leadIDs as $leadID) {
             $data = LeadDataAdv::firstOrCreate([
-                'id'	=>	$leadID,
+                'id' => $leadID,
             ]);
 
             $data->value = $faker->url;

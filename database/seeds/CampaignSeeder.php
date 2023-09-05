@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Seeder;
 use App\Campaign;
+use Illuminate\Database\Seeder;
 
 class CampaignSeeder extends Seeder
 {
@@ -12,6 +12,6 @@ class CampaignSeeder extends Seeder
      */
     public function run()
     {
-        factory(Campaign::class,50)->create();
+        factory(Campaign::class, 50)->create();
     }
 }

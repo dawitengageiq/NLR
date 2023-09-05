@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AlterCampaignViewReportsUpdateUnique extends Migration
 {
@@ -16,8 +16,8 @@ class AlterCampaignViewReportsUpdateUnique extends Migration
             $sm = Schema::getConnection()->getDoctrineSchemaManager();
             $indexesFound = $sm->listTableIndexes('campaign_view_reports');
 
-            if(array_key_exists("campaign_type_id_revenue_tracker_id_campaign_id_unique_key", $indexesFound)) {
-                $table->dropUnique("campaign_type_id_revenue_tracker_id_campaign_id_unique_key");
+            if (array_key_exists('campaign_type_id_revenue_tracker_id_campaign_id_unique_key', $indexesFound)) {
+                $table->dropUnique('campaign_type_id_revenue_tracker_id_campaign_id_unique_key');
             }
         });
     }

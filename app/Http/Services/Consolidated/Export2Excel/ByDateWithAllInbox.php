@@ -1,7 +1,6 @@
 <?php
-namespace App\Http\Services\Consolidated\Export2Excel;
 
-use Carbon\Carbon;
+namespace App\Http\Services\Consolidated\Export2Excel;
 
 use App\ConsolidatedGraph;
 
@@ -13,10 +12,10 @@ class ByDateWithAllInbox extends \App\Http\Services\Consolidated\GraphAllInbox i
 {
     /**
      * Get the consilidated data to be use in excel file.
-     * @model ConsolidatedGraph.
      *
+     * @model ConsolidatedGraph.
      */
-    public function getConsolidatedData ()
+    public function getConsolidatedData()
     {
         $this->records = $this->model
             ->select(

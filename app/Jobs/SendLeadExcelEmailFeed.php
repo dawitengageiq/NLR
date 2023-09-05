@@ -3,36 +3,32 @@
 namespace App\Jobs;
 
 use App\Campaign;
-use App\Jobs\Job;
 use App\Lead;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Mail;
-use Log;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Maatwebsite\Excel\Facades\Excel;
+use Mail;
 
 class SendLeadExcelEmailFeed extends Job implements SelfHandling, ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
     protected $campaignID;
+
     protected $fromDate;
+
     protected $toDate;
+
     protected $recipient;
+
     protected $recipientName;
 
     /**
      * Create a new job instance.
-     *
-     * @param $campaignID
-     * @param $fromDate
-     * @param $toDate
-     * @param $recipient
-     * @param $recipientName
      */
-    public function __construct($campaignID,$fromDate,$toDate,$recipient, $recipientName='')
+    public function __construct($campaignID, $fromDate, $toDate, $recipient, $recipientName = '')
     {
         $this->campaignID = $campaignID;
         $this->fromDate = $fromDate;
@@ -43,12 +39,10 @@ class SendLeadExcelEmailFeed extends Job implements SelfHandling, ShouldQueue
 
     /**
      * Execute the job.
-     *
      */
     public function handle()
     {
-        if($this->attempts() > 1)
-        {
+        if ($this->attempts() > 1) {
             return;
         }
 
@@ -56,47 +50,42 @@ class SendLeadExcelEmailFeed extends Job implements SelfHandling, ShouldQueue
         $params = [
             'campaign_id' => $this->campaignID,
             'lead_date_from' => $this->fromDate,
-            'lead_date_to' => $this->toDate
+            'lead_date_to' => $this->toDate,
         ];
 
         $leads = Lead::searchLeads($params)->with('leadDataCSV')->get();
 
         $rows = [];
 
-        foreach($leads as $lead)
-        {
+        foreach ($leads as $lead) {
             //parse the csv json string to array
-            $parsedCSV = json_decode($lead->leadDataCSV->value,true);
+            $parsedCSV = json_decode($lead->leadDataCSV->value, true);
 
             $row = [];
 
-            foreach($parsedCSV as $key => $value)
-            {
+            foreach ($parsedCSV as $key => $value) {
 
-                if( $key!='callback' &&
-                    $key!='eiq_campaign_id' &&
-                    $key!='eiq_affiliate_id' &&
-                    $key!='yesnoto' &&
-                    $key!='toluna-campaign' &&
-                    $key!='xxTrustedFormToken' &&
-                    $key!='xxTrustedFormCertUrl' &&
-                    $key!='_')
-                {
+                if ($key != 'callback' &&
+                    $key != 'eiq_campaign_id' &&
+                    $key != 'eiq_affiliate_id' &&
+                    $key != 'yesnoto' &&
+                    $key != 'toluna-campaign' &&
+                    $key != 'xxTrustedFormToken' &&
+                    $key != 'xxTrustedFormCertUrl' &&
+                    $key != '_') {
                     $row[$key] = $value;
                 }
             }
 
             //add the row
-            array_push($rows,$row);
+            array_push($rows, $row);
         }
 
         $title = 'leads_email_feed_'.$this->campaignID;
         $sheetTitle = $title;
 
-        Excel::create($title,function($excel) use($title,$sheetTitle,$rows)
-        {
-            $excel->sheet($sheetTitle,function($sheet) use($title,$rows)
-            {
+        Excel::create($title, function ($excel) use ($sheetTitle, $rows) {
+            $excel->sheet($sheetTitle, function ($sheet) use ($rows) {
                 $rowNumber = 1;
                 $firstDataRowNumber = 1;
 
@@ -104,12 +93,11 @@ class SendLeadExcelEmailFeed extends Job implements SelfHandling, ShouldQueue
                 $sheet->setAutoSize(true);
 
                 //style the headers
-                $sheet->cells("A$rowNumber:G$rowNumber", function($cells)
-                {
+                $sheet->cells("A$rowNumber:G$rowNumber", function ($cells) {
                     // Set font
                     $cells->setFont([
-                        'size'       => '12',
-                        'bold'       =>  true
+                        'size' => '12',
+                        'bold' => true,
                     ]);
 
                     $cells->setAlignment('center');
@@ -117,32 +105,29 @@ class SendLeadExcelEmailFeed extends Job implements SelfHandling, ShouldQueue
                     $cells->setBackground('#337ab7');
                 });
 
-                foreach($rows as $csvData)
-                {
+                foreach ($rows as $csvData) {
 
                     //set up the title header row
                     $headers = [];
                     $leadRow = [];
 
-                    foreach($csvData as $key => $value)
-                    {
-                        array_push($headers,$key);
-                        array_push($leadRow,$value);
+                    foreach ($csvData as $key => $value) {
+                        array_push($headers, $key);
+                        array_push($leadRow, $value);
                     }
 
                     //append the header only once
-                    if($rowNumber<=1)
-                    {
+                    if ($rowNumber <= 1) {
                         $sheet->appendRow($headers);
-                        ++$rowNumber;
-                        ++$firstDataRowNumber;
+                        $rowNumber++;
+                        $firstDataRowNumber++;
                     }
 
                     //append the lead data
                     $sheet->appendRow($leadRow);
 
-                    ++$rowNumber;
-                    ++$firstDataRowNumber;
+                    $rowNumber++;
+                    $firstDataRowNumber++;
                 }
 
             });
@@ -153,16 +138,16 @@ class SendLeadExcelEmailFeed extends Job implements SelfHandling, ShouldQueue
         $campaign = Campaign::find($this->campaignID);
         $mailAdditionalData = [
             'campaign' => $campaign->name,
-            'date_range' => " from $this->fromDate to $this->toDate "
+            'date_range' => " from $this->fromDate to $this->toDate ",
         ];
 
         $recipient = $this->recipient;
         $recipientName = $this->recipientName;
         $excelAttachment = $filePath;
 
-        Mail::send('emails.lead_csv_data_email', $mailAdditionalData, function ($message) use ($recipient,$recipientName,$excelAttachment,$campaign) {
+        Mail::send('emails.lead_csv_data_email', $mailAdditionalData, function ($message) use ($recipient, $recipientName, $excelAttachment, $campaign) {
             $message->from('burt@engageiq.com', 'Marwil Burton');
-            $message->to($recipient,$recipientName)->subject('Excel Lead Data CSV Feed for '.$campaign->name);
+            $message->to($recipient, $recipientName)->subject('Excel Lead Data CSV Feed for '.$campaign->name);
             $message->attach($excelAttachment);
         });
     }

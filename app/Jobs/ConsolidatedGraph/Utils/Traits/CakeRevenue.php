@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Jobs\ConsolidatedGraph\Utils\Traits;
 
 trait CakeRevenue
@@ -6,27 +7,32 @@ trait CakeRevenue
     /**
      * Get the last page revenue, use bench mark to determine the campaign id for last page campaign type
      *
-     * @param \App\CakeRevenue|Empty $cakeRevenue
+     * @param  \App\CakeRevenue|Empty  $cakeRevenue
      * @return void
      */
-    protected function processCakeRevenue($cakeRevenue, $revenueTrackerdID,  $exitPageID, $date)
+    protected function processCakeRevenue($cakeRevenue, $revenueTrackerdID, $exitPageID, $date)
     {
-        // Fetch last page revenue, we will not use the default last page offer id    
-        if($exitPageID) $cakeRevenue = $this->lastPageRevenue($revenueTrackerdID, $exitPageID, $date);
+        // Fetch last page revenue, we will not use the default last page offer id
+        if ($exitPageID) {
+            $cakeRevenue = $this->lastPageRevenue($revenueTrackerdID, $exitPageID, $date);
+        }
 
-        if(!$cakeRevenue instanceof \App\CakeRevenue) return;
+        if (! $cakeRevenue instanceof \App\CakeRevenue) {
+            return;
+        }
 
-        if($cakeRevenue->revenue) $this->setRevenue('lsp_revenue', $cakeRevenue->revenue, false);
+        if ($cakeRevenue->revenue) {
+            $this->setRevenue('lsp_revenue', $cakeRevenue->revenue, false);
+        }
 
-        return;
     }
 
     /**
      * Fetch last page revenue
      *
-     * @param  integer $revenueTrackerdID
-     * @param  integer $exitPageID
-     * @param  string $date
+     * @param  int  $revenueTrackerdID
+     * @param  int  $exitPageID
+     * @param  string  $date
      * @return App\CakeRevenue
      */
     public function lastPageRevenue($revenueTrackerdID, $exitPageID, $date)
@@ -39,7 +45,7 @@ trait CakeRevenue
                 'revenue_tracker_id',
                 'offer_id',
                 'revenue',
-                'created_at'
+                'created_at',
             ]);
     }
 }

@@ -2,16 +2,14 @@
 
 namespace App\Listeners;
 
-use App\Action;
 use App\Events\UserActionEvent;
 use App\UserActionLog;
 use Carbon\Carbon;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Log;
 
 class UserActionListener implements ShouldQueue
-// class UserActionListener
+    // class UserActionListener
 {
     protected $dateNow;
 
@@ -28,33 +26,24 @@ class UserActionListener implements ShouldQueue
     /**
      * Handle the event.
      *
-     * @param  UserActionEvent  $event
      * @return void
      */
     public function handle(UserActionEvent $event)
     {
         $logData = $event->logData;
 
-        if(count($logData) > 0)
-        {
+        if (count($logData) > 0) {
             // Check if the data is batched multiple logs
-            if(isset($logData[0]) && is_array($logData[0]))
-            {
-                foreach ($logData as $logDatum)
-                {
-                    if(is_array($logDatum))
-                    {
+            if (isset($logData[0]) && is_array($logData[0])) {
+                foreach ($logData as $logDatum) {
+                    if (is_array($logDatum)) {
                         $this->createUserActionLog($logDatum);
                     }
                 }
-            }
-            else if(is_array($logData))
-            {
+            } elseif (is_array($logData)) {
                 $this->createUserActionLog($logData);
             }
-        }
-        else
-        {
+        } else {
             Log::info('UserActionEvent is fired but no data at all.');
         }
 
@@ -72,7 +61,7 @@ class UserActionListener implements ShouldQueue
             'summary' => isset($logData['summary']) ? $logData['summary'] : null,
             'old_value' => isset($logData['old_value']) ? $logData['old_value'] : null,
             'new_value' => isset($logData['new_value']) ? $logData['new_value'] : null,
-            'created_at' => isset($logData['created_at']) ? $logData['created_at'] : $this->dateNow->toDateTimeString()
+            'created_at' => isset($logData['created_at']) ? $logData['created_at'] : $this->dateNow->toDateTimeString(),
         ]);
     }
 }

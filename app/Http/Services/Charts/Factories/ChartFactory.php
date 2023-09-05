@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Services\Charts\Factories;
 
 abstract class ChartFactory
@@ -11,85 +12,86 @@ abstract class ChartFactory
      * Save config for chart.
      * config\charts.php
      *
-     * @var Array $config
+     * @var array
      */
     protected $config;
 
     /**
-     *
-     * @var Array $data
-     * @var String $json
+     * @var array
+     * @var string
      */
-    protected $data, $json;
+    protected $data;
+
+    protected $json;
 
     /**
      * Default value for type of chart
      * Range: column, bar, etc....
      *
-     * @var String $type
+     * @var string
      */
     protected $type = 'column';
 
     /**
      * Default value for width of each column
      *
-     * @var Integer $point_width
+     * @var int
      */
     protected $point_width = 18;
 
     /**
      * Container for high and critical categories
      *
-     * @var Array $categories
+     * @var array
      */
     protected $categories = [
-            'high' => [],
-            'critical' => []
+        'high' => [],
+        'critical' => [],
     ];
 
     /**
      * Container for high and critical series
      *
-     * @var Array $categories
+     * @var array
      */
-    protected $series =  [
-            'high' => [],
-            'critical' => []
+    protected $series = [
+        'high' => [],
+        'critical' => [],
     ];
 
     /**
      * Default value for high and critical group padding
      *
-     * @var Array $group_padding
+     * @var array
      */
-    protected $group_padding =  [
-            'high' => 0.3,
-            'critical' => 0.3
+    protected $group_padding = [
+        'high' => 0.3,
+        'critical' => 0.3,
     ];
 
     /**
      * Container for high and critical actual rejection
      *
-     * @var Array $actual_rejection
+     * @var array
      */
     protected $actual_rejection = [
-            'high' => [],
-            'critical' => []
+        'high' => [],
+        'critical' => [],
     ];
 
     /**
      * Container for details of each column
      *
-     * @var Array $series_extra_details
+     * @var array
      */
     protected $column_extra_details = [];
 
     /**
      * Provide needed data for formating.
      *
-     * @var Array $data
+     * @var array
      */
-    public function setData (Array $data)
+    public function setData(array $data)
     {
         $this->data = $data;
     }
@@ -98,7 +100,7 @@ abstract class ChartFactory
      * Provide the chart type.
      * Range: column, bar, etc....
      *
-     * @var String $type
+     * @var string
      */
     public function setType($type)
     {
@@ -108,9 +110,9 @@ abstract class ChartFactory
     /**
      * Return the categories .
      *
-     * @return Array
+     * @return array
      */
-    public function getCategories ()
+    public function getCategories()
     {
         return $this->categories;
     }
@@ -118,7 +120,7 @@ abstract class ChartFactory
     /**
      * Return the categories .
      *
-     * @return Array
+     * @return array
      */
     public function getGroupPadding()
     {
@@ -128,9 +130,9 @@ abstract class ChartFactory
     /**
      * Return the actual rejection .
      *
-     * @return Array
+     * @return array
      */
-    public function getActualRejection ()
+    public function getActualRejection()
     {
         return $this->actual_rejection;
     }
@@ -138,9 +140,9 @@ abstract class ChartFactory
     /**
      * Return the column extra details .
      *
-     * @return Array
+     * @return array
      */
-    public function getColumnExtraDetails ()
+    public function getColumnExtraDetails()
     {
         return $this->column_extra_details;
     }
@@ -149,23 +151,24 @@ abstract class ChartFactory
      * Set the number of index where the data will include in new array.
      * this is only for development so not to populate huge data.
      *
-     * @var Integer $offsetKey
+     * @var int
      */
-    protected function offsetData ($offsetKey)
+    protected function offsetData($offsetKey)
     {
-         // Grab all the keys of your actual array and put in another array.
+        // Grab all the keys of your actual array and put in another array.
         $n = array_keys($this->data);
         // Returns the position of the offset from this array using search.
         $count = array_search($offsetKey, $n);
         // Slice it with the 0 index as start and position+1 as the length parameter.
-        $this->data = array_slice( $this->data ,0 , $count + 1, true);
+        $this->data = array_slice($this->data, 0, $count + 1, true);
     }
 
     /**
      * Parse the $var split to nice array for easy manipulation.
      *
-     * @var String $split
-     * @return Array
+     * @var string
+     *
+     * @return array
      */
     protected function parseSplitData($split)
     {
@@ -180,8 +183,8 @@ abstract class ChartFactory
      * Generate the category of each column.
      * Push to @var categories
      *
-     * @var String $reject_rate
-     * @var Array $datum
+     * @var string
+     * @var array
      */
     protected function generateCategories($reject_rate, $category)
     {
@@ -192,9 +195,9 @@ abstract class ChartFactory
      * Generate the series of each column.
      * Push to @var series
      *
-     * @var String $reject_rate
-     * @var String $split
-     * @var Array $datum
+     * @var string
+     * @var string
+     * @var array
      */
     protected function generateSeries($reject_rate, $split, $datum)
     {
@@ -212,15 +215,17 @@ abstract class ChartFactory
     /**
      * Calculate the real value of each column .
      *
-     * @var String $split_value
-     * @var Array $datum
-     * @return Integer
+     * @var string
+     * @var array
+     *
+     * @return int
      */
     protected function getRealValue($split_value, $datum)
     {
         $actual_value = $datum['lead_count'] * (floatval(strip_tags($datum['actual_rejection'])) / 100);
         $this->generateActualRejection((strip_tags($datum['actual_rejection'])), $actual_value);
         $this->columnExtraDetails($datum);
+
         return $actual_value * (floatval(strip_tags($split_value)) / 100);
     }
 
@@ -228,28 +233,35 @@ abstract class ChartFactory
      * Generate the actual rejection of each column each column.
      * Push to @var series
      *
-     * @var String $actual_rejection
-     * @var String $actual_value
+     * @var string
+     * @var string
      */
     protected function generateActualRejection($actual_rejection, $actual_value)
     {
         $this->actual_rejection[$this->index_4_actual_rejection] = [
-                'actual' => $actual_value,
-                'percent' => $actual_rejection
-            ];
+            'actual' => $actual_value,
+            'percent' => $actual_rejection,
+        ];
     }
+
     /**
      * Set th extra detail for each column in series.
      * Push to @var column_extra_details
      *
-     * @var Array $data
+     * @var array
      */
     protected function columnExtraDetails($data)
     {
         $array = [];
-        if(array_key_exists('affiliate_id', $data)) $array['affiliate_id'] = $data['affiliate_id'];
-        if(array_key_exists('campaign_id', $data)) $array['campaign_id'] = $data['campaign_id'];
-        if(array_key_exists('campaign', $data)) $array['campaign_name'] = $data['campaign'];
+        if (array_key_exists('affiliate_id', $data)) {
+            $array['affiliate_id'] = $data['affiliate_id'];
+        }
+        if (array_key_exists('campaign_id', $data)) {
+            $array['campaign_id'] = $data['campaign_id'];
+        }
+        if (array_key_exists('campaign', $data)) {
+            $array['campaign_name'] = $data['campaign'];
+        }
 
         $this->column_extra_details[$this->index_4_actual_rejection] = $array;
     }

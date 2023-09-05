@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AlterCampaignsTableAddPublisherPortalDetails extends Migration
 {
@@ -13,7 +13,7 @@ class AlterCampaignsTableAddPublisherPortalDetails extends Migration
     public function up()
     {
         Schema::table('campaigns', function (Blueprint $table) {
-            $table->string('publisher_name',100);
+            $table->string('publisher_name', 100);
             $table->boolean('is_external');
         });
     }
@@ -26,7 +26,7 @@ class AlterCampaignsTableAddPublisherPortalDetails extends Migration
     public function down()
     {
         Schema::table('campaigns', function (Blueprint $table) {
-            $table->dropColumn(['publisher_name','is_external']);
+            $table->dropColumn(['publisher_name', 'is_external']);
         });
     }
 }

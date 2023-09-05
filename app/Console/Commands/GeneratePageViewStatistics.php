@@ -24,7 +24,6 @@ class GeneratePageViewStatistics extends Command
 
     /**
      * Create a new command instance.
-     *
      */
     public function __construct()
     {
@@ -42,10 +41,9 @@ class GeneratePageViewStatistics extends Command
         $date = $this->option('date');
 
         //NEW VERSION
-        if(empty($date))
-        {
+        if (empty($date)) {
             $date = Carbon::now()->subDay()->toDateString();
-        }else {
+        } else {
             $date = Carbon::parse($date)->toDateString();
         }
 

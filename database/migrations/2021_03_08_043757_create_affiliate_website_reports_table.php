@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateAffiliateWebsiteReportsTable extends Migration
 {
@@ -15,7 +15,7 @@ class CreateAffiliateWebsiteReportsTable extends Migration
         Schema::create('affiliate_website_reports', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('website_id')->unsigned()->index();
-            $table->double('payout',15,8)->default(0.0);
+            $table->double('payout', 15, 8)->default(0.0);
             $table->integer('count')->default(0);
             $table->date('date')->nullable();
         });

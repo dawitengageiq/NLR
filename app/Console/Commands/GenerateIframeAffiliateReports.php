@@ -26,7 +26,6 @@ class GenerateIframeAffiliateReports extends Command
 
     /**
      * Create a new command instance.
-     *
      */
     public function __construct()
     {
@@ -45,8 +44,7 @@ class GenerateIframeAffiliateReports extends Command
         $dateYesterdayStr = $this->option('from');
         $dateNowStr = $this->option('to');
 
-        if(empty($dateYesterdayStr) || empty($dateNowStr))
-        {
+        if (empty($dateYesterdayStr) || empty($dateNowStr)) {
             $dateYesterdayStr = Carbon::now()->subDay()->toDateString();
             //$dateNowStr = Carbon::now()->toDateString();
             $dateNowStr = $dateYesterdayStr;

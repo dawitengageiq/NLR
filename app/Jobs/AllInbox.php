@@ -2,12 +2,11 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Job;
 use Curl\Curl;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Log;
 
@@ -19,7 +18,6 @@ class AllInbox extends Job implements SelfHandling, ShouldQueue
 
     /**
      * Create a new job instance.
-     *
      */
     public function __construct($status = 0)
     {
@@ -28,12 +26,10 @@ class AllInbox extends Job implements SelfHandling, ShouldQueue
 
     /**
      * Execute the job.
-     *
      */
     public function handle()
     {
-        if ($this->attempts() > 1)
-        {
+        if ($this->attempts() > 1) {
             return;
         }
 
@@ -47,7 +43,7 @@ class AllInbox extends Job implements SelfHandling, ShouldQueue
 
         $emailNotificationRecipient = env('REPORTS_EMAIL_NOTIFICATION_RECIPIENT', 'marwilburton@hotmail.com');
 
-        Mail::send('emails.all_inbox', [], function ($m) use ($emailNotificationRecipient){
+        Mail::send('emails.all_inbox', [], function ($m) use ($emailNotificationRecipient) {
             $m->from('ariel@engageiq.com', 'Ariel Magbanua');
             $m->to($emailNotificationRecipient, 'Marwil Burton');
             // $m->cc('ariel@engageiq.com', 'Ariel Magbanua');

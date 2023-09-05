@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateExternalPathAffiliateReportsTable extends Migration
 {
@@ -22,8 +22,8 @@ class CreateExternalPathAffiliateReportsTable extends Migration
             $table->string('s4')->nullable();
             $table->string('s5')->nullable();
             $table->integer('lead_count')->default(0);
-            $table->double('received',15,8)->default(0.0);
-            $table->double('payout',15,8)->default(0.0);
+            $table->double('received', 15, 8)->default(0.0);
+            $table->double('payout', 15, 8)->default(0.0);
             $table->date('created_at');
         });
     }

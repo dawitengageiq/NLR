@@ -2,9 +2,8 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-
 use App\Http\Services\Charts\Providers\Interfaces;
+use Illuminate\Support\ServiceProvider;
 
 class ChartServiceProvider extends ServiceProvider
 {

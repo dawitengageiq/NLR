@@ -1,7 +1,7 @@
     <?php
 
-use Illuminate\Database\Seeder;
 use App\Lead;
+use Illuminate\Database\Seeder;
 
 class LeadSeeder extends Seeder
 {
@@ -12,6 +12,6 @@ class LeadSeeder extends Seeder
      */
     public function run()
     {
-		factory(Lead::class, 10)->create();
+        factory(Lead::class, 10)->create();
     }
 }

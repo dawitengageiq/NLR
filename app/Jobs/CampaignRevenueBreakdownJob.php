@@ -2,16 +2,15 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Job;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Carbon\Carbon;
-use App\LeadUser;
 use App\AffiliateReport;
 use App\CampaignRevenueBreakdown;
+use App\LeadUser;
+use Carbon\Carbon;
 use DB;
+use Illuminate\Contracts\Bus\SelfHandling;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Log;
 
 class CampaignRevenueBreakdownJob extends Job implements SelfHandling, ShouldQueue
@@ -19,9 +18,13 @@ class CampaignRevenueBreakdownJob extends Job implements SelfHandling, ShouldQue
     use InteractsWithQueue, SerializesModels;
 
     protected $date;
+
     protected $date_from;
+
     protected $date_to;
+
     protected $campaign;
+
     protected $thirty_date;
 
     protected $all_inbox_id;
@@ -56,12 +59,12 @@ class CampaignRevenueBreakdownJob extends Job implements SelfHandling, ShouldQue
     public function handle()
     {
         //DB::enableQueryLog();
-        if($this->campaign == $this->all_inbox_id) {
+        if ($this->campaign == $this->all_inbox_id) {
             // Log::info('All Inbox');
             $records = LeadUser::whereBetween('created_at', [$this->date_from, $this->date_to])->where('status', 1)->where('response', 'like', '%<success><code>200</code><data>Data Accepted%')->count();
             $revenue = AffiliateReport::where('created_at', $this->date)->where('campaign_id', $this->campaign)
                 ->select(DB::RAW('SUM(revenue) as revenue'))->first()->revenue;
-        }else {
+        } else {
             $data = AffiliateReport::where('created_at', $this->date)->where('campaign_id', $this->campaign)
                 ->select(DB::RAW('SUM(revenue) as revenue, SUM(lead_count) as records'))->first();
             $revenue = $data->revenue;
@@ -75,7 +78,6 @@ class CampaignRevenueBreakdownJob extends Job implements SelfHandling, ShouldQue
         $data = DB::connection($connect)->select($qry);
         $average = $data[0]->revenue;
 
-
         $breakdown = CampaignRevenueBreakdown::firstOrNew([
             'created_at' => $this->date,
             'campaign_id' => $this->campaign,
@@ -85,6 +87,6 @@ class CampaignRevenueBreakdownJob extends Job implements SelfHandling, ShouldQue
         $breakdown->average_revenue = $average == null ? 0 : $average;
         $breakdown->save();
         // Log::info(DB::getQueryLog());
-        Log::info('Campaign Revenue Breakdown Campaign ID: '. $this->campaign.' on Date: '. $this->date);
+        Log::info('Campaign Revenue Breakdown Campaign ID: '.$this->campaign.' on Date: '.$this->date);
     }
 }

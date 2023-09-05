@@ -5,10 +5,10 @@ namespace App\Jobs\Jira;
 use App\Jobs\Job;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Log;
 
 class CreateJIRAIssueTicket extends Job implements SelfHandling, ShouldQueue
@@ -16,25 +16,23 @@ class CreateJIRAIssueTicket extends Job implements SelfHandling, ShouldQueue
     use InteractsWithQueue, SerializesModels;
 
     protected $projectKey;
+
     protected $summary;
+
     protected $description;
+
     protected $fileAttachments;
+
     protected $issueTypeName;
+
     protected $assigneeUsername;
+
     protected $jiraUserName;
+
     protected $jiraUserPassword;
 
     /**
      * Create the job instance
-     *
-     * @param $projectKey
-     * @param $summary
-     * @param $description
-     * @param $fileAttachments
-     * @param $issueTypeName
-     * @param $assigneeUsername
-     * @param $jiraUserName
-     * @param $jiraUserPassword
      */
     public function __construct($projectKey, $summary, $description, $fileAttachments, $issueTypeName, $assigneeUsername, $jiraUserName, $jiraUserPassword)
     {
@@ -55,8 +53,7 @@ class CreateJIRAIssueTicket extends Job implements SelfHandling, ShouldQueue
      */
     public function handle()
     {
-        if ($this->attempts() > 1)
-        {
+        if ($this->attempts() > 1) {
             return;
         }
 
@@ -80,7 +77,7 @@ class CreateJIRAIssueTicket extends Job implements SelfHandling, ShouldQueue
         $requestBody['fields']['assignee'] = ['name' => $this->assigneeUsername];
 
         //this will return the engageiq atlassian base url if it is not specified in env
-        $baseURI = env('JIRA_API_BASE_URL','https://engageiq.atlassian.net');
+        $baseURI = env('JIRA_API_BASE_URL', 'https://engageiq.atlassian.net');
 
         $reporterUsername = $this->jiraUserName;
         $reporterPassword = $this->jiraUserPassword;
@@ -94,13 +91,12 @@ class CreateJIRAIssueTicket extends Job implements SelfHandling, ShouldQueue
         $client = new Client([
             'base_uri' => $baseURI,
             'headers' => [
-                'Content-Type' => 'application/json'
+                'Content-Type' => 'application/json',
             ],
             'auth' => [$reporterUsername, $reporterPassword],
         ]);
 
-        try
-        {
+        try {
             $response = $client->request('POST', '/rest/api/2/issue/', [
                 'json' => $requestBody,
             ]);
@@ -118,7 +114,7 @@ class CreateJIRAIssueTicket extends Job implements SelfHandling, ShouldQueue
             $attachmentClient = new Client([
                 'base_uri' => $baseURI,
                 'headers' => [
-                    'X-Atlassian-Token' => 'no-check'
+                    'X-Atlassian-Token' => 'no-check',
                 ],
                 'auth' => [$reporterUsername, $reporterPassword],
             ]);
@@ -127,19 +123,18 @@ class CreateJIRAIssueTicket extends Job implements SelfHandling, ShouldQueue
             Log::info("attachment url: $url");
 
             $payload = [
-                'multipart' => []
+                'multipart' => [],
             ];
 
-            foreach($this->fileAttachments as $attachment)
-            {
+            foreach ($this->fileAttachments as $attachment) {
                 Log::info("attachment: $attachment");
 
                 $data = [
                     'name' => 'file',
-                    'contents' => fopen($attachment, 'r')
+                    'contents' => fopen($attachment, 'r'),
                 ];
 
-                array_push($payload['multipart'],$data);
+                array_push($payload['multipart'], $data);
                 /*
                 $attachmentResponse = $attachmentClient->request('POST',$url,[
                     'multipart' => [
@@ -158,23 +153,20 @@ class CreateJIRAIssueTicket extends Job implements SelfHandling, ShouldQueue
                 */
             }
 
-            $attachmentResponse = $attachmentClient->request('POST',$url,$payload);
+            $attachmentResponse = $attachmentClient->request('POST', $url, $payload);
 
             $statusCode = $attachmentResponse->getStatusCode();
             $attachmentResponseBody = $attachmentResponse->getBody();
 
             Log::info("JIRA Add Attachment Response Status Code: $statusCode");
             Log::info("JIRA Add Attachment Response: $attachmentResponseBody");
-        }
-        catch (RequestException $e)
-        {
+        } catch (RequestException $e) {
             $statusCode = $e->getCode();
             Log::info("HTTP status code: $statusCode");
 
             Log::info($e->getRequest());
 
-            if ($e->hasResponse())
-            {
+            if ($e->hasResponse()) {
                 Log::info($e->getResponse());
             }
         }

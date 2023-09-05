@@ -11,41 +11,39 @@ use App\Helpers\CPAWallAffluentSubAffiliateSummaryHelper;
 use App\Helpers\CPAWallEpollSurveysHelper;
 use App\Helpers\CPAWallJobToShopHelper;
 use App\Helpers\CPAWallSBGSubAffiliateSummaryHelper;
+use App\Helpers\CPAWallSurveySpotHelper;
 use App\Helpers\ExternalPathIfficientHelper;
 use App\Helpers\ExternalPathPermissionDataHelper;
 use App\Helpers\ExternalPathRexadsHelper;
 use App\Helpers\ExternalPathTiburonDataHelper;
-use App\Helpers\CPAWallSurveySpotHelper;
 use App\Helpers\JSONParser;
+use App\Helpers\Repositories\AffiliateReportCurl;
 use App\Jobs\Job;
 use App\Lead;
 use App\RevenueTrackerCakeStatistic;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Mail;
-use Log;
 use DB;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
+use ErrorException;
 use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use ErrorException;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Mail;
+use Log;
 use PDOException;
-use App\Helpers\Repositories\AffiliateReportCurl;
 
 class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
     protected $dateFromStr;
+
     protected $dateToStr;
 
     /**
      * Create a new job instance.
-     *
-     * @param $dateFromStr
-     * @param $dateToStr
      */
-    public function __construct($dateFromStr,$dateToStr)
+    public function __construct($dateFromStr, $dateToStr)
     {
         $this->dateFromStr = $dateFromStr;
         $this->dateToStr = $dateToStr;
@@ -54,13 +52,11 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
     /**
      * Execute the job.
      *
-     * @param AffiliateReportCurl $affiliateReportCurl
      * @throws \Sabre\Xml\LibXMLException
      */
     public function handle(AffiliateReportCurl $affiliateReportCurl)
     {
-        if ($this->attempts() > 1)
-        {
+        if ($this->attempts() > 1) {
             return;
         }
 
@@ -76,20 +72,20 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
 
         //for cake statistics
         $revTrackers = DB::table('affiliate_revenue_trackers')
-                            ->select(DB::raw("CONCAT(campaign_id,'-',affiliate_id) AS campaign_affiliate"),'affiliate_id','campaign_id','revenue_tracker_id', 'offer_id')
-                            ->join('affiliates','affiliate_revenue_trackers.affiliate_id','=','affiliates.id')
+            ->select(DB::raw("CONCAT(campaign_id,'-',affiliate_id) AS campaign_affiliate"), 'affiliate_id', 'campaign_id', 'revenue_tracker_id', 'offer_id')
+            ->join('affiliates', 'affiliate_revenue_trackers.affiliate_id', '=', 'affiliates.id')
                             //->where('affiliates.type','=',1)
-                            ->where('offer_id','!=',1)
-                            ->orWhere(function($subQuery){
-                                $subQuery->where('campaign_id','=',1);
-                                $subQuery->where('offer_id','=',1);
-                                $subQuery->where('revenue_tracker_id','=',1);
-                            })
-                            ->groupBy('affiliate_revenue_trackers.affiliate_id','affiliate_revenue_trackers.revenue_tracker_id');
-                            //->lists('revenue_tracker_id','campaign_affiliate');
+            ->where('offer_id', '!=', 1)
+            ->orWhere(function ($subQuery) {
+                $subQuery->where('campaign_id', '=', 1);
+                $subQuery->where('offer_id', '=', 1);
+                $subQuery->where('revenue_tracker_id', '=', 1);
+            })
+            ->groupBy('affiliate_revenue_trackers.affiliate_id', 'affiliate_revenue_trackers.revenue_tracker_id');
+        //->lists('revenue_tracker_id','campaign_affiliate');
 
         $revenueTrackers = $revTrackers;
-        $revenueTrackers = $revenueTrackers->lists('revenue_tracker_id','campaign_affiliate');
+        $revenueTrackers = $revenueTrackers->lists('revenue_tracker_id', 'campaign_affiliate');
         $fullDataRevenueTrackers = $revTrackers;
         $fullDataRevenueTrackers = $fullDataRevenueTrackers->get();
 
@@ -100,15 +96,13 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
         $prefix = config('constants.CAKE_SABRE_PREFIX_V5');
         $subPrefix = config('constants.CAKE_SABRE_SUB_PREFIX_V11');
 
-        try
-        {
+        try {
 
             //get the content of the campaign summary
             //$campaigns = $response['value'][$prefix.'campaigns'];
             $campaigns = $affiliateReportCurl->campaignSummary($campaignSummaryBaseURL, $prefix, $subPrefix, $this->dateFromStr, $this->dateToStr);
 
-            foreach($campaigns as $campaign)
-            {
+            foreach ($campaigns as $campaign) {
                 $value = $campaign['value'];
 
                 //extract the affiliate_id and campaign_id
@@ -116,11 +110,10 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
                 $affiliateID = $value[$prefix.'source_affiliate'][$subPrefix.'source_affiliate_id'];
 
                 //check if affiliate_id and campaign does exist in revenue trackers table
-                if(isset($revenueTrackers["$campaignID-$affiliateID"]))
-                {
+                if (isset($revenueTrackers["$campaignID-$affiliateID"])) {
                     Log::info("campaign_id: $campaignID");
                     Log::info("affiliate_id: $affiliateID");
-                    Log::info("revenue_tracker_id: ".$revenueTrackers["$campaignID-$affiliateID"]);
+                    Log::info('revenue_tracker_id: '.$revenueTrackers["$campaignID-$affiliateID"]);
 
                     //meaning it exist so insert the stats
                     $revenueTrackerCakeStat = RevenueTrackerCakeStatistic::firstOrNew([
@@ -128,11 +121,11 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
                         'revenue_tracker_id' => $revenueTrackers["$campaignID-$affiliateID"],
                         'cake_campaign_id' => $campaignID,
                         'type' => 1,
-                        'created_at' => $this->dateFromStr
+                        'created_at' => $this->dateFromStr,
                     ]);
 
                     $clicks = intval($value[$prefix.'clicks']);
-                    $payout = doubleval($value[$prefix.'cost']);
+                    $payout = floatval($value[$prefix.'cost']);
 
                     $revenueTrackerCakeStat->clicks = $clicks;
                     $revenueTrackerCakeStat->payout = $payout;
@@ -144,27 +137,25 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
                     Log::info('created_at: '.$this->dateFromStr);
 
                     //generate CPA WALL reports
-                    $this->cpaWallReports($affiliateID,$revenueTrackers["$campaignID-$affiliateID"],$affiliateReportCurl);
+                    $this->cpaWallReports($affiliateID, $revenueTrackers["$campaignID-$affiliateID"], $affiliateReportCurl);
 
                     //generate the leads reports
-                    $this->leadReports($affiliateID,$revenueTrackers["$campaignID-$affiliateID"]);
+                    $this->leadReports($affiliateID, $revenueTrackers["$campaignID-$affiliateID"]);
                 }
             }
 
             //create a RevenueTrackerCakeStatistic record for each revenue tracker with revenue_tracker_id = 1, offer_id = 1, campaign_id = 1
-            foreach($fullDataRevenueTrackers as $tracker)
-            {
-                if( $tracker->revenue_tracker_id == 1 &&
+            foreach ($fullDataRevenueTrackers as $tracker) {
+                if ($tracker->revenue_tracker_id == 1 &&
                     $tracker->campaign_id == 1 &&
-                    $tracker->offer_id == 1)
-                {
+                    $tracker->offer_id == 1) {
                     //meaning it exist so insert the stats
                     $revenueTrackerCakeStat = RevenueTrackerCakeStatistic::firstOrNew([
                         'affiliate_id' => $tracker->affiliate_id,
                         'revenue_tracker_id' => $tracker->revenue_tracker_id,
                         'cake_campaign_id' => $tracker->campaign_id,
                         'type' => 1,
-                        'created_at' => $this->dateFromStr
+                        'created_at' => $this->dateFromStr,
                     ]);
 
                     $revenueTrackerCakeStat->clicks = 0;
@@ -176,16 +167,13 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
                     $this->leadReports($tracker->affiliate_id, $tracker->revenue_tracker_id);
 
                     //this is a special case
-                    if($tracker->affiliate_id == 1 && $tracker->revenue_tracker_id == 1)
-                    {
+                    if ($tracker->affiliate_id == 1 && $tracker->revenue_tracker_id == 1) {
                         //generate CPA WALL reports
                         $this->cpaWallReports($tracker->affiliate_id, $tracker->revenue_tracker_id, $affiliateReportCurl);
                     }
                 }
             }
-        }
-        catch(PDOException $e)
-        {
+        } catch (PDOException $e) {
             Log::info($e->getMessage());
             Log::info($e->getCode());
         }
@@ -199,7 +187,7 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
 
         //get and generate the lead reports from OLR
         // $this->getOLRLeadsRevenue();
-        
+
         //generate the other API based revenues and external paths
         $this->others();
 
@@ -212,10 +200,10 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
         //send email to Burt to notify that Affiliate Report Queue was successfully finished
         Mail::send('emails.affiliate_report_execution_email',
             ['startDate' => $this->dateFromStr, 'endDate' => $this->dateToStr, 'executionDuration' => $diffInHours],
-            function ($m) use($emailNotificationRecipient){
-            $m->from('ariel@engageiq.com', 'Ariel Magbanua');
-            $m->to($emailNotificationRecipient, 'Marwil Burton')->subject('Affiliate Reports Job Queue Successfully Executed!');
-        });
+            function ($m) use ($emailNotificationRecipient) {
+                $m->from('ariel@engageiq.com', 'Ariel Magbanua');
+                $m->to($emailNotificationRecipient, 'Marwil Burton')->subject('Affiliate Reports Job Queue Successfully Executed!');
+            });
 
         Log::info('Internal Affiliate Reports generated!');
         Log::info('External Publisher End Time: '.$endLog->toDateTimeString());
@@ -230,41 +218,40 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
         // This is placed here and not on separated job queue since this one needed to be generated after the affiliate revenues
         Log::info('Generating Campaign Revenue and View stats | '.$this->dateFromStr);
 
-//        $campaigns = Campaign::select(
-//            'campaigns.id',
-//            DB::raw("(SELECT COUNT(campaign_views.id) FROM campaign_views WHERE campaign_views.campaign_id = campaigns.id AND DATE(campaign_views.created_at) = DATE('$this->dateFromStr')) AS views"),
-//            DB::raw("(SELECT SUM(affiliate_reports.revenue) FROM affiliate_reports WHERE affiliate_reports.campaign_id = campaigns.id AND DATE(affiliate_reports.created_at) = DATE('$this->dateFromStr')) AS revenue"))->get();
-//
-//        Log::info($campaigns);
-//
-//        foreach ($campaigns as $campaign) {
-//            Log::info($this->dateFromStr);
-//
-//            $stat = CampaignRevenueViewStatistic::firstOrNew([
-//                'campaign_id' => $campaign->id,
-//                'created_at' => $this->dateFromStr
-//            ]);
-//
-//            $stat->revenue = is_null($campaign->revenue) ? 0 : $campaign->revenue;
-//            $stat->views = is_null($campaign->views) ? 0 : $campaign->views;
-//            $stat->created_at = $this->dateFromStr;
-//
-//            Log::info($stat);
-//            $stat->save();
-//        }
+        //        $campaigns = Campaign::select(
+        //            'campaigns.id',
+        //            DB::raw("(SELECT COUNT(campaign_views.id) FROM campaign_views WHERE campaign_views.campaign_id = campaigns.id AND DATE(campaign_views.created_at) = DATE('$this->dateFromStr')) AS views"),
+        //            DB::raw("(SELECT SUM(affiliate_reports.revenue) FROM affiliate_reports WHERE affiliate_reports.campaign_id = campaigns.id AND DATE(affiliate_reports.created_at) = DATE('$this->dateFromStr')) AS revenue"))->get();
+        //
+        //        Log::info($campaigns);
+        //
+        //        foreach ($campaigns as $campaign) {
+        //            Log::info($this->dateFromStr);
+        //
+        //            $stat = CampaignRevenueViewStatistic::firstOrNew([
+        //                'campaign_id' => $campaign->id,
+        //                'created_at' => $this->dateFromStr
+        //            ]);
+        //
+        //            $stat->revenue = is_null($campaign->revenue) ? 0 : $campaign->revenue;
+        //            $stat->views = is_null($campaign->views) ? 0 : $campaign->views;
+        //            $stat->created_at = $this->dateFromStr;
+        //
+        //            Log::info($stat);
+        //            $stat->save();
+        //        }
 
         $campaignRevenueViews = AffiliateReport::select('affiliate_reports.revenue_tracker_id', 'affiliate_reports.campaign_id', DB::raw('SUM(affiliate_reports.revenue) AS revenue'), DB::raw("(SELECT COUNT(campaign_views.id) FROM campaign_views WHERE campaign_views.campaign_id = affiliate_reports.campaign_id AND campaign_views.affiliate_id = affiliate_reports.revenue_tracker_id AND DATE(campaign_views.created_at) = DATE('$this->dateFromStr')) AS campaign_views "))
-                                                ->whereRaw("DATE(affiliate_reports.created_at) = DATE('$this->dateFromStr')")
-                                                ->groupBy('affiliate_reports.revenue_tracker_id', 'affiliate_reports.campaign_id')->get();
+            ->whereRaw("DATE(affiliate_reports.created_at) = DATE('$this->dateFromStr')")
+            ->groupBy('affiliate_reports.revenue_tracker_id', 'affiliate_reports.campaign_id')->get();
 
-        foreach ($campaignRevenueViews as $campaignRevenueView)
-        {
+        foreach ($campaignRevenueViews as $campaignRevenueView) {
             Log::info($this->dateFromStr);
 
             $stat = CampaignRevenueViewStatistic::firstOrNew([
                 'revenue_tracker_id' => $campaignRevenueView->revenue_tracker_id,
                 'campaign_id' => $campaignRevenueView->campaign_id,
-                'created_at' => $this->dateFromStr
+                'created_at' => $this->dateFromStr,
             ]);
 
             $stat->revenue = is_null($campaignRevenueView->revenue) ? 0 : $campaignRevenueView->revenue;
@@ -357,55 +344,55 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
     {
         $parser = new JSONParser();
 
-        $cpaWALLAffluentCampaignID = env('CPA_WALL_AFFLUENT_CAMPAIGN_ID',0);
+        $cpaWALLAffluentCampaignID = env('CPA_WALL_AFFLUENT_CAMPAIGN_ID', 0);
         Log::info('---CPA WALL AFFLUENT---');
         Log::info('campaign_id: '.$cpaWALLAffluentCampaignID);
         $cpaWallAffluentSubAffiliateSummaryHelper = new CPAWallAffluentSubAffiliateSummaryHelper($cpaWALLAffluentCampaignID, Carbon::parse($this->dateFromStr), Carbon::parse($this->dateFromStr), $parser);
         $cpaWallAffluentSubAffiliateSummaryHelper->getStats();
 
-        $cpaWALLSBGCampaignID = env('CPA_WALL_SBG_CAMPAIGN_ID',0);
+        $cpaWALLSBGCampaignID = env('CPA_WALL_SBG_CAMPAIGN_ID', 0);
         Log::info('---CPA WALL SBG---');
         Log::info('campaign_id: '.$cpaWALLSBGCampaignID);
         $cpaWallSBGSubAffiliateSummaryHelper = new CPAWallSBGSubAffiliateSummaryHelper($cpaWALLSBGCampaignID, Carbon::parse($this->dateFromStr), Carbon::parse($this->dateFromStr), $parser);
         $cpaWallSBGSubAffiliateSummaryHelper->getStats();
 
-        $cpaWallSurveySpotCampaignID = env('CPA_WALL_SURVEY_SPOT_CAMPAIGN_ID',0);
+        $cpaWallSurveySpotCampaignID = env('CPA_WALL_SURVEY_SPOT_CAMPAIGN_ID', 0);
         Log::info('---CPA WALL SURVEY SPOT---');
         Log::info('campaign_id: '.$cpaWallSurveySpotCampaignID);
         $cpaWallSurveySpotHelper = new CPAWallSurveySpotHelper($cpaWallSurveySpotCampaignID, Carbon::parse($this->dateFromStr), Carbon::parse($this->dateToStr), $parser);
         $cpaWallSurveySpotHelper->processConversions();
 
-        $externalPathTiburonCampaignID = env('EXTERNAL_PATH_TIBURON_CAMPAIGN_ID',0);
+        $externalPathTiburonCampaignID = env('EXTERNAL_PATH_TIBURON_CAMPAIGN_ID', 0);
         Log::info('---EXTERNAL PATH TIBURON CAMPAIGN_ID---');
         Log::info('campaign_id: '.$externalPathTiburonCampaignID);
         $externalPathTiburonHelper = new ExternalPathTiburonDataHelper($externalPathTiburonCampaignID, $this->dateFromStr, $this->dateFromStr, $parser);
         $externalPathTiburonHelper->getReports();
 
-        $externalPathRexAdsCampaignID = env('EXTERNAL_PATH_REXADS_CAMPAIGN_ID',289);
+        $externalPathRexAdsCampaignID = env('EXTERNAL_PATH_REXADS_CAMPAIGN_ID', 289);
         Log::info('---EXTERNAL PATH REXADS CAMPAIGN_ID---');
         Log::info('campaign_id: '.$externalPathRexAdsCampaignID);
         $externalRexAdsHelper = new ExternalPathRexadsHelper($externalPathRexAdsCampaignID, Carbon::parse($this->dateFromStr), Carbon::parse($this->dateFromStr), $parser);
         $externalRexAdsHelper->getReports();
 
-        $cpaWallEpollSurveysCampaignID = env('CPA_WALL_EPOLL_CAMPAIGN_ID',285);
+        $cpaWallEpollSurveysCampaignID = env('CPA_WALL_EPOLL_CAMPAIGN_ID', 285);
         Log::info('---CPA WALL EPOLL CAMPAIGN_ID---');
         Log::info('campaign_id: '.$cpaWallEpollSurveysCampaignID);
-        $cpaWallEpollSurveysHelper = new CPAWallEpollSurveysHelper($cpaWallEpollSurveysCampaignID,Carbon::parse($this->dateFromStr), Carbon::parse($this->dateFromStr), $parser);
+        $cpaWallEpollSurveysHelper = new CPAWallEpollSurveysHelper($cpaWallEpollSurveysCampaignID, Carbon::parse($this->dateFromStr), Carbon::parse($this->dateFromStr), $parser);
         $cpaWallEpollSurveysHelper->getStats();
 
-        $cpaWallJobToShopCampaignID = env('CPA_WALL_JOB_TO_SHOP_CAMPAIGN_ID',297);
+        $cpaWallJobToShopCampaignID = env('CPA_WALL_JOB_TO_SHOP_CAMPAIGN_ID', 297);
         Log::info('---CPA WALL JOB TO SHOP CAMPAIGN_ID---');
         Log::info('campaign_id: '.$cpaWallJobToShopCampaignID);
-        $cpaWallJobToShopHelper = new CPAWallJobToShopHelper($cpaWallJobToShopCampaignID,Carbon::parse($this->dateFromStr), Carbon::parse($this->dateFromStr), $parser);
+        $cpaWallJobToShopHelper = new CPAWallJobToShopHelper($cpaWallJobToShopCampaignID, Carbon::parse($this->dateFromStr), Carbon::parse($this->dateFromStr), $parser);
         $cpaWallJobToShopHelper->getStats();
 
-        $ifficientCampaignID = env('EXTERNAL_PATH_IFFICIENT_CAMPAIGN_ID',287);
+        $ifficientCampaignID = env('EXTERNAL_PATH_IFFICIENT_CAMPAIGN_ID', 287);
         Log::info('---EXTERNAL PATH IFFICIENT CAMPAIGN_ID---');
         Log::info('campaign_id: '.$ifficientCampaignID);
-        $externalPathIfficientHelper = new ExternalPathIfficientHelper($ifficientCampaignID,Carbon::parse($this->dateFromStr), Carbon::parse($this->dateFromStr));
+        $externalPathIfficientHelper = new ExternalPathIfficientHelper($ifficientCampaignID, Carbon::parse($this->dateFromStr), Carbon::parse($this->dateFromStr));
         $externalPathIfficientHelper->getReports();
 
-        $externalPathPermissionDataCampaignID = env('EXTERNAL_PATH_PERMISSION_DATA_CAMPAIGN_ID',0);
+        $externalPathPermissionDataCampaignID = env('EXTERNAL_PATH_PERMISSION_DATA_CAMPAIGN_ID', 0);
         Log::info('---EXTERNAL PATH PERMISSION DATA---');
         Log::info('campaign_id: '.$externalPathPermissionDataCampaignID);
         $externalPathPermissionDataHelper = new ExternalPathPermissionDataHelper($externalPathPermissionDataCampaignID, $this->dateFromStr, $this->dateFromStr, 'EG3', 'XML');
@@ -413,7 +400,7 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
 
         //Push Crew Notifications
         $pushCrewAffiliateID = config('constants.PUSH_CREW_NOTIFICATIONS_CAKE_AFFILIATE_ID');
-        $pushCrewCampaignID = env('PUSH_CREW_NOTIFICATIONS_CAMPAIGN_ID',304);
+        $pushCrewCampaignID = env('PUSH_CREW_NOTIFICATIONS_CAMPAIGN_ID', 304);
         $prefix = config('constants.CAKE_SABRE_PREFIX_V1');
         Log::info('---PUSH CREW NOTIFICATIONS---');
         Log::info('campaign_id: '.$pushCrewCampaignID);
@@ -433,18 +420,16 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
         $cpaWALLCampaigns = env('CPA_WALL_CAMPAIGN_IDS');
         $cpaWALLCampaigns = \GuzzleHttp\json_decode($cpaWALLCampaigns);
 
-        $affiliateReports = AffiliateReport::getReportsByRevenueTrackerAndDate($affiliateID,$revenueTrackerID,$this->dateFromStr)
-                                            ->where(function($query) use ($cpaWALLCampaigns){
-                                                foreach($cpaWALLCampaigns as $campaignID)
-                                                {
-                                                    $query->where('campaign_id','!=',$campaignID);
-                                                }
-                                            })->get();
+        $affiliateReports = AffiliateReport::getReportsByRevenueTrackerAndDate($affiliateID, $revenueTrackerID, $this->dateFromStr)
+            ->where(function ($query) use ($cpaWALLCampaigns) {
+                foreach ($cpaWALLCampaigns as $campaignID) {
+                    $query->where('campaign_id', '!=', $campaignID);
+                }
+            })->get();
 
         //Log::info($affiliateReports);
 
-        foreach($affiliateReports as $report)
-        {
+        foreach ($affiliateReports as $report) {
             $report->lead_count = 0;
             $report->revenue = 0.0;
             $report->save();
@@ -475,27 +460,25 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
         $leadReports = Lead::revenueTrackerAffiliateReportWithStatuses([
             'revenue_tracker_id' => $revenueTrackerID,
             'created_at' => $this->dateFromStr,
-            'lead_statuses' => [0,1,2]
+            'lead_statuses' => [0, 1, 2],
         ])->get();
 
-        foreach($leadReports as $report)
-        {
+        foreach ($leadReports as $report) {
             $affiliateReport = AffiliateReport::firstOrNew([
                 'affiliate_id' => $affiliateID,
                 'revenue_tracker_id' => $report->affiliate_id,
                 'campaign_id' => $report->campaign_id,
-                'created_at' => $this->dateFromStr
+                'created_at' => $this->dateFromStr,
             ]);
 
             // Only update the lead count of status is success
-            if($report->lead_status == 1){
+            if ($report->lead_status == 1) {
                 $affiliateReport->lead_count = $report->lead_count;
                 $affiliateReport->revenue = $report->revenue;
-            }else if($report->lead_status == 2)
-            {
+            } elseif ($report->lead_status == 2) {
                 // This row is for reject status therefore update the reject count
                 $affiliateReport->reject_count = $report->lead_count;
-            }else {
+            } else {
                 // This row is for failed status therefore update the failed count
                 $affiliateReport->failed_count = $report->lead_count;
             }
@@ -506,15 +489,11 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
 
     /**
      * Function that will gather all CPA WALL reports
-     *
-     * @param $affiliateID
-     * @param $revenueTrackerID
-     * @param $affiliateReportCurl
      */
-    private function cpaWallReports($affiliateID,$revenueTrackerID,$affiliateReportCurl)
+    private function cpaWallReports($affiliateID, $revenueTrackerID, $affiliateReportCurl)
     {
         //get the EngageIQ CPA WALL from ENV file
-        $cpaWALLEngageIQCampaignID = env('CPA_WALL_ENGAGEIQ_CAMPAIGN_ID',0);
+        $cpaWALLEngageIQCampaignID = env('CPA_WALL_ENGAGEIQ_CAMPAIGN_ID', 0);
         $campaign = Campaign::find($cpaWALLEngageIQCampaignID);
         $engageiqSourceAffiliateSummaryCakeAPIBaseURL = config('constants.CAKE_API_SOURCE_AFFILIATE_SUMMARY_BASE_URL_V3');
 
@@ -523,9 +502,8 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
         Log::info('affiliate_id: '.$affiliateID);
         Log::info('revenue_tracker_id: '.$revenueTrackerID);
 
-        if($cpaWALLEngageIQCampaignID>0 && $campaign->exists())
-        {
-            $this->processEngageIQCPAWALL($engageiqSourceAffiliateSummaryCakeAPIBaseURL,$cpaWALLEngageIQCampaignID,$affiliateID,$revenueTrackerID,$affiliateReportCurl);
+        if ($cpaWALLEngageIQCampaignID > 0 && $campaign->exists()) {
+            $this->processEngageIQCPAWALL($engageiqSourceAffiliateSummaryCakeAPIBaseURL, $cpaWALLEngageIQCampaignID, $affiliateID, $revenueTrackerID, $affiliateReportCurl);
         }
 
         /*
@@ -561,7 +539,7 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
         */
     }
 
-    private function processEngageIQCPAWALL($baseURL,$campaignID,$affiliateID,$revenueTrackerID,$affiliateReportCurl)
+    private function processEngageIQCPAWALL($baseURL, $campaignID, $affiliateID, $revenueTrackerID, $affiliateReportCurl)
     {
         //get cake data
         $prefix = config('constants.CAKE_SABRE_PREFIX_V3');
@@ -570,23 +548,21 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
             'affiliate_id' => $affiliateID,
             'revenue_tracker_id' => $revenueTrackerID,
             'campaign_id' => $campaignID,
-            'created_at' => $this->dateFromStr
+            'created_at' => $this->dateFromStr,
         ]);
 
         $affiliateReport->lead_count = 0;
         $affiliateReport->revenue = 0;
         $revenue = 0.0;
 
-        try
-        {
+        try {
             //get the content of the campaign summary
             //$affiliateSummary = $response['value'][$prefix.'source_affiliates'][$prefix.'source_affiliate_summary'];
-            $affiliateSummary = $affiliateReportCurl->engageIQCPAWALLAffiliateSummary($baseURL,$prefix,$revenueTrackerID,$this->dateFromStr,$this->dateToStr);
+            $affiliateSummary = $affiliateReportCurl->engageIQCPAWALLAffiliateSummary($baseURL, $prefix, $revenueTrackerID, $this->dateFromStr, $this->dateToStr);
 
-            if($affiliateSummary!=null)
-            {
+            if ($affiliateSummary != null) {
                 //get the revenue
-                $revenue = empty($affiliateSummary[$prefix.'revenue']) || $affiliateSummary[$prefix.'revenue']==null ? 0.0 : $affiliateSummary[$prefix.'revenue'] ;
+                $revenue = empty($affiliateSummary[$prefix.'revenue']) || $affiliateSummary[$prefix.'revenue'] == null ? 0.0 : $affiliateSummary[$prefix.'revenue'];
             }
 
             //Log::info('engageiq_affiliate_id: '.$affiliateID);
@@ -595,9 +571,7 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
             //Log::info('lead_count: 0');
             //Log::info('revenue: '.$revenue);
             //Log::info('created_at: '.$this->dateFromStr);
-        }
-        catch(ErrorException $e)
-        {
+        } catch (ErrorException $e) {
             Log::info('Error ErrorException: '.$e->getMessage());
             Log::info('engageiq_affiliate_id: '.$affiliateID);
             Log::info('revenue_tracker_id: '.$revenueTrackerID);
@@ -613,8 +587,7 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
 
         $excludedRevenue = 0.0;
 
-        try
-        {
+        try {
             /*
             //$campaigns = $response['value'][$prefix.'campaigns'];
             $campaigns = $affiliateReportCurl->campaignSummaryForCPAWALLDeduction($campaignSummaryBaseURL,$prefix,$subPrefix,$revenueTrackerID,$this->dateFromStr,$this->dateToStr);
@@ -634,9 +607,7 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
                 }
             }
             */
-        }
-        catch(ErrorException $e)
-        {
+        } catch (ErrorException $e) {
             Log::info($e->getMessage());
             Log::info($e->getCode());
         }
@@ -647,7 +618,7 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
         $affiliateReport->save();
     }
 
-    private function processThirdPartyCPAWALLWithCD($baseURL,$campaignID,$affiliateID,$revenueTrackerID,$affiliateReportCurl)
+    private function processThirdPartyCPAWALLWithCD($baseURL, $campaignID, $affiliateID, $revenueTrackerID, $affiliateReportCurl)
     {
         //$url = $baseURL.'&start_date='.$this->dateFromStr.'&end_date='.$this->dateToStr.'&sub_affiliate='.$revenueTrackerID;
         //$urlCD = $baseURL.'&start_date='.$this->dateFromStr.'&end_date='.$this->dateToStr.'&sub_affiliate=CD'.$revenueTrackerID;
@@ -660,23 +631,21 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
             'affiliate_id' => $affiliateID,
             'revenue_tracker_id' => $revenueTrackerID,
             'campaign_id' => $campaignID,
-            'created_at' => $this->dateFromStr
+            'created_at' => $this->dateFromStr,
         ]);
 
         $revenue = 0.0;
         $revenueWithCD = 0.0;
 
-        try
-        {
-            $campaignSummaryRevenue = $affiliateReportCurl->thirdPartyCPAWALLCampaignSummaryWithCD($baseURL,$prefix,$revenueTrackerID,$this->dateFromStr,$this->dateToStr);
+        try {
+            $campaignSummaryRevenue = $affiliateReportCurl->thirdPartyCPAWALLCampaignSummaryWithCD($baseURL, $prefix, $revenueTrackerID, $this->dateFromStr, $this->dateToStr);
 
             //get the content of the campaign summary
-            if($campaignSummaryRevenue!=null)
-            {
+            if ($campaignSummaryRevenue != null) {
                 //$campaignSummaryRevenue = $response['value'][$prefix.'summary'];
 
                 //get the revenue for the without CD
-                $revenue = empty($campaignSummaryRevenue[$prefix.'revenue']) || $campaignSummaryRevenue[$prefix.'revenue']==null ? 0.0 : $campaignSummaryRevenue[$prefix.'revenue'];
+                $revenue = empty($campaignSummaryRevenue[$prefix.'revenue']) || $campaignSummaryRevenue[$prefix.'revenue'] == null ? 0.0 : $campaignSummaryRevenue[$prefix.'revenue'];
             }
 
             //Log::info('engageiq_affiliate_id: '.$affiliateID);
@@ -685,9 +654,7 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
             //Log::info('lead_count: 0');
             //Log::info('revenue(no CD): '.$revenue);
             //Log::info('created_at: '.$this->dateFromStr);
-        }
-        catch(ErrorException $e)
-        {
+        } catch (ErrorException $e) {
             Log::info('Error ErrorException: '.$e->getMessage());
             Log::info('engageiq_affiliate_id: '.$affiliateID);
             Log::info('revenue_tracker_id: '.$revenueTrackerID);
@@ -695,18 +662,16 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
             Log::info('created_at: '.$this->dateFromStr);
         }
 
-        try
-        {
+        try {
             //this call has CD
-            $campaignSummaryRevenue = $affiliateReportCurl->thirdPartyCPAWALLCampaignSummaryWithCD($baseURL,$prefix,'CD'.$revenueTrackerID,$this->dateFromStr,$this->dateToStr);
+            $campaignSummaryRevenue = $affiliateReportCurl->thirdPartyCPAWALLCampaignSummaryWithCD($baseURL, $prefix, 'CD'.$revenueTrackerID, $this->dateFromStr, $this->dateToStr);
 
             //get the content of the campaign summary
-            if($campaignSummaryRevenue!=null)
-            {
+            if ($campaignSummaryRevenue != null) {
                 //$campaignSummaryRevenue = $response['value'][$prefix.'summary'];
 
                 //get the revenue for the without CD
-                $revenueWithCD = empty($campaignSummaryRevenue[$prefix.'revenue']) || $campaignSummaryRevenue[$prefix.'revenue']==null ? 0.0 : $campaignSummaryRevenue[$prefix.'revenue'];
+                $revenueWithCD = empty($campaignSummaryRevenue[$prefix.'revenue']) || $campaignSummaryRevenue[$prefix.'revenue'] == null ? 0.0 : $campaignSummaryRevenue[$prefix.'revenue'];
             }
 
             //Log::info('engageiq_affiliate_id: '.$affiliateID);
@@ -715,9 +680,7 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
             //Log::info('lead_count: 0');
             //Log::info('revenue(with CD): '.$revenueWithCD);
             //Log::info('created_at: '.$this->dateFromStr);
-        }
-        catch(ErrorException $e)
-        {
+        } catch (ErrorException $e) {
             Log::info('Error ErrorException: '.$e->getMessage());
             Log::info('engageiq_affiliate_id: '.$affiliateID);
             Log::info('revenue_tracker_id: '.$revenueTrackerID);
@@ -727,11 +690,11 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
 
         //save the affiliate report revenue
         $affiliateReport->lead_count = 0;
-        $affiliateReport->revenue = $revenue+$revenueWithCD;
+        $affiliateReport->revenue = $revenue + $revenueWithCD;
         $affiliateReport->save();
     }
 
-    private function processThirdPartyCPAWALLCD($baseURL,$campaignID,$affiliateID,$revenueTrackerID,$affiliateReportCurl)
+    private function processThirdPartyCPAWALLCD($baseURL, $campaignID, $affiliateID, $revenueTrackerID, $affiliateReportCurl)
     {
         //$urlCD = $baseURL.'&start_date='.$this->dateFromStr.'&end_date='.$this->dateToStr.'&sub_affiliate=CD'.$revenueTrackerID;
         //Log::info($urlCD);
@@ -742,21 +705,19 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
             'affiliate_id' => $affiliateID,
             'revenue_tracker_id' => $revenueTrackerID,
             'campaign_id' => $campaignID,
-            'created_at' => $this->dateFromStr
+            'created_at' => $this->dateFromStr,
         ]);
 
         $revenueWithCD = 0.0;
 
-        try
-        {
-            $campaignSummaryRevenue = $affiliateReportCurl->thirdPartyCPAWALLCampaignSummaryWithCD($baseURL,$prefix,'CD'.$revenueTrackerID,$this->dateFromStr,$this->dateToStr);
+        try {
+            $campaignSummaryRevenue = $affiliateReportCurl->thirdPartyCPAWALLCampaignSummaryWithCD($baseURL, $prefix, 'CD'.$revenueTrackerID, $this->dateFromStr, $this->dateToStr);
 
             //get the content of the campaign summary
-            if($campaignSummaryRevenue!=null)
-            {
+            if ($campaignSummaryRevenue != null) {
                 //$campaignSummaryRevenue = $response['value'][$prefix.'summary'];
                 //get the revenue for the without CD
-                $revenueWithCD = empty($campaignSummaryRevenue[$prefix.'revenue']) || $campaignSummaryRevenue[$prefix.'revenue']==null ? 0.0 : $campaignSummaryRevenue[$prefix.'revenue'];
+                $revenueWithCD = empty($campaignSummaryRevenue[$prefix.'revenue']) || $campaignSummaryRevenue[$prefix.'revenue'] == null ? 0.0 : $campaignSummaryRevenue[$prefix.'revenue'];
             }
 
             $affiliateReport->lead_count = 0;
@@ -769,9 +730,7 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
             //Log::info('lead_count: 0');
             //Log::info('revenue(with CD): '.$revenueWithCD);
             //Log::info('created_at: '.$this->dateFromStr);
-        }
-        catch(ErrorException $e)
-        {
+        } catch (ErrorException $e) {
             $affiliateReport->lead_count = 0;
             $affiliateReport->revenue = 0;
             $affiliateReport->save();
@@ -786,8 +745,7 @@ class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
 
     public function touch()
     {
-        if (method_exists($this->job, 'getPheanstalk'))
-        {
+        if (method_exists($this->job, 'getPheanstalk')) {
             $this->job->getPheanstalk()->touch($this->job->getPheanstalkJob());
 
             Log::info('Current job timer refresh!');

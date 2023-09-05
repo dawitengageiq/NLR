@@ -1,19 +1,18 @@
 <?php
+
 namespace App\Http\Services\Campaigns\Repos;
 
 final class Settings
 {
     /**
      * Default variables
-     *
      */
     protected $settings;
 
     /**
      * Intantiate, dependency injection of model
-     *
      */
-    public function __construct (\App\Setting $model)
+    public function __construct(\App\Setting $model)
     {
         $this->model = $model;
     }
@@ -30,7 +29,10 @@ final class Settings
 
     public function hasSettings()
     {
-        if($this->settings) return true;
+        if ($this->settings) {
+            return true;
+        }
+
         return false;
     }
 
@@ -41,26 +43,26 @@ final class Settings
 
     /**
      * Retrieve all settings
-     *
      */
-    public function details ()
+    public function details()
     {
         return $this->settings;
     }
 
     /**
      * Retrieve path limit
-     *
      */
     public function hasPathTypeLimit()
     {
-        if(!$this->settings['campaign_type_path_limit']['description']) return false;
+        if (! $this->settings['campaign_type_path_limit']['description']) {
+            return false;
+        }
+
         return true;
     }
 
     /**
      * Retrieve path limit
-     *
      */
     public function pathTypeLimit()
     {
@@ -69,7 +71,6 @@ final class Settings
 
     /**
      * Retrieve campaign type ordering
-     *
      */
     public function campaignTypeOrder()
     {
@@ -78,7 +79,6 @@ final class Settings
 
     /**
      * Retrieve number of no limit
-     *
      */
     public function campaignNoLimit()
     {
@@ -87,7 +87,6 @@ final class Settings
 
     /**
      * Retrieve filter process ststus
-     *
      */
     public function filterProcessStatus()
     {

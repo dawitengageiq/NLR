@@ -2,12 +2,14 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\AffiliateRevenueTracker;
 use DB;
+use Illuminate\Console\Command;
+
 class UpdateRevenueTrackerReportSubIDBreakdownStatus extends Command
 {
     protected $logger;
+
     /**
      * The name and signature of the console command.
      *
@@ -40,8 +42,8 @@ class UpdateRevenueTrackerReportSubIDBreakdownStatus extends Command
     public function handle()
     {
         $rev_trackers = AffiliateRevenueTracker::where('subid_breakdown', '!=', DB::RAW('report_subid_breakdown_status'))->orWhere('rsib_s1', '!=', DB::RAW('sib_s1'))->orWhere('rsib_s2', '!=', DB::RAW('sib_s2'))
-        ->orWhere('rsib_s3', '!=', DB::RAW('sib_s3'))->orWhere('rsib_s4', '!=', DB::RAW('sib_s4'))->get();
-        foreach($rev_trackers as $rt) {
+            ->orWhere('rsib_s3', '!=', DB::RAW('sib_s3'))->orWhere('rsib_s4', '!=', DB::RAW('sib_s4'))->get();
+        foreach ($rev_trackers as $rt) {
             $rt->report_subid_breakdown_status = $rt->subid_breakdown;
             $rt->rsib_s1 = $rt->sib_s1;
             $rt->rsib_s2 = $rt->sib_s2;

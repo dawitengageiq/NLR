@@ -2,14 +2,13 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use Carbon\Carbon;
 use App\LeadUserRequest;
-use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\Mail;
-use Storage;
 use App\Setting;
+use Carbon\Carbon;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Mail;
 use Log;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SendOptOutReportNotJob extends Command
 {
@@ -31,11 +30,15 @@ class SendOptOutReportNotJob extends Command
     protected $description = 'send opt out report';
 
     protected $to;
+
     protected $from;
 
     protected $users;
+
     protected $emails;
+
     protected $ids;
+
     protected $recipients;
 
     /**
@@ -60,8 +63,7 @@ class SendOptOutReportNotJob extends Command
         $from = $this->option('from');
         $to = $this->option('to');
 
-        if(empty($date_from) || empty($to))
-        {
+        if (empty($date_from) || empty($to)) {
             $from = Carbon::now()->subDay(30)->toDateString();
             $to = Carbon::now()->toDateString();
         }
@@ -70,12 +72,12 @@ class SendOptOutReportNotJob extends Command
 
         $this->from = $from;
         $this->to = $to;
-        $this->emails= [];
-        $this->users = LeadUserRequest::whereBetween('created_at',[$this->from.' 00:00:00', $this->to.' 23:59:59'])->get()->toArray();
+        $this->emails = [];
+        $this->users = LeadUserRequest::whereBetween('created_at', [$this->from.' 00:00:00', $this->to.' 23:59:59'])->get()->toArray();
         // \Log::info($this->users);
-        foreach($this->users as $user) {
+        foreach ($this->users as $user) {
             $this->ids[] = $user['id'];
-            if(!in_array($user['email'], $this->emails)){
+            if (! in_array($user['email'], $this->emails)) {
                 $this->emails[] = $user['email'];
             }
         }
@@ -83,9 +85,10 @@ class SendOptOutReportNotJob extends Command
         $setting = Setting::where('code', 'optoutreport_recipient')->first();
         $this->recipients = explode(';', $setting->description);
 
-        if(count($this->users) == 0) {
+        if (count($this->users) == 0) {
             $this->info('No requests to report.');
             Log::info('No users to report');
+
             return;
         }
 
@@ -93,10 +96,8 @@ class SendOptOutReportNotJob extends Command
         $sheetTitle = $this->from.' - '.$this->to;
         $users = $this->users;
         $date = $this->from.' - '.$this->to;
-        Excel::create($reportTitle, function($excel) use($users, $date, $sheetTitle)
-        {
-            $excel->sheet($sheetTitle, function($sheet) use($users, $date)
-            {
+        Excel::create($reportTitle, function ($excel) use ($users, $date, $sheetTitle) {
+            $excel->sheet($sheetTitle, function ($sheet) use ($users, $date) {
                 $rowNumber = 1;
 
                 //Set auto size for sheet
@@ -104,27 +105,26 @@ class SendOptOutReportNotJob extends Command
 
                 //set up the title header row
                 $sheet->appendRow([
-                    'OPT OUT Report '.$date
+                    'OPT OUT Report '.$date,
                 ]);
                 //style the headers
-                $sheet->cells("A$rowNumber:C$rowNumber", function($cells)
-                {
+                $sheet->cells("A$rowNumber:C$rowNumber", function ($cells) {
                     // Set font
                     $cells->setFont([
-                        'size'       => '12',
-                        'bold'       =>  true
+                        'size' => '12',
+                        'bold' => true,
                     ]);
 
                     $cells->setAlignment('left');
                     $cells->setValignment('center');
                 });
                 $sheet->mergeCells("A$rowNumber:C$rowNumber");
-                ++$rowNumber;
+                $rowNumber++;
 
                 $sheet->appendRow([
-                    ''
+                    '',
                 ]);
-                ++$rowNumber;
+                $rowNumber++;
 
                 //set up the title header row
                 $sheet->appendRow([
@@ -142,16 +142,15 @@ class SendOptOutReportNotJob extends Command
                     'One Trust Double OptIN',
                     'Get Opt Out User Subscribed Campaigns',
                     'Send Publisher Opt Out Email',
-                    'Delete Opt Out User in NLR'
+                    'Delete Opt Out User in NLR',
                 ]);
 
                 //style the headers
-                $sheet->cells("A$rowNumber:O$rowNumber", function($cells)
-                {
+                $sheet->cells("A$rowNumber:O$rowNumber", function ($cells) {
                     // Set font
                     $cells->setFont([
-                        'size'       => '12',
-                        'bold'       =>  true
+                        'size' => '12',
+                        'bold' => true,
                     ]);
 
                     $cells->setAlignment('center');
@@ -162,35 +161,36 @@ class SendOptOutReportNotJob extends Command
 
                 $stat = true;
 
-                foreach($users as $user)
-                {
-                    ++$rowNumber;
+                foreach ($users as $user) {
+                    $rowNumber++;
 
-                    if($user['is_sent'] == 0 || $user['is_deleted'] == 0 || $user['subscribed_campaigns'] === null) $stat = false;
+                    if ($user['is_sent'] == 0 || $user['is_deleted'] == 0 || $user['subscribed_campaigns'] === null) {
+                        $stat = false;
+                    }
 
                     //set up the title header row
                     $sheet->appendRow([
-                       $user['id'],
-                       $user['request_type'],
-                       $user['email'],
-                       $user['first_name'],
-                       $user['last_name'],
-                       $user['state'],
-                       $user['city'],
-                       $user['zip'],
-                       $user['address'],
-                       $user['request_date'],
-                       $user['subscribed_campaigns'],
-                       1,
-                       $user['subscribed_campaigns'] === null ? 0 : 1,
-                       $user['is_sent'],
-                       $user['is_deleted']
+                        $user['id'],
+                        $user['request_type'],
+                        $user['email'],
+                        $user['first_name'],
+                        $user['last_name'],
+                        $user['state'],
+                        $user['city'],
+                        $user['zip'],
+                        $user['address'],
+                        $user['request_date'],
+                        $user['subscribed_campaigns'],
+                        1,
+                        $user['subscribed_campaigns'] === null ? 0 : 1,
+                        $user['is_sent'],
+                        $user['is_deleted'],
                     ]);
                 }
 
                 $lastRowNumber = $rowNumber;
 
-                ++$rowNumber;
+                $rowNumber++;
 
                 $sheet->appendRow([
                     '',
@@ -210,39 +210,39 @@ class SendOptOutReportNotJob extends Command
                     "=SUM(O3:O$lastRowNumber)",
                 ]);
 
-                $sheet->cells("K$rowNumber:O$rowNumber", function($cells)
-                {
+                $sheet->cells("K$rowNumber:O$rowNumber", function ($cells) {
                     // Set font
                     $cells->setFont([
-                        'size'       => '12',
-                        'bold'       =>  true
+                        'size' => '12',
+                        'bold' => true,
                     ]);
 
                     $cells->setAlignment('right');
                     $cells->setValignment('center');
                 });
 
-                $sheet->cells("A$rowNumber:O$rowNumber", function($cells) use($stat)
-                {
-                    if($stat) $color = '#FFFF00';
-                    else $color = '#FF0000';
+                $sheet->cells("A$rowNumber:O$rowNumber", function ($cells) use ($stat) {
+                    if ($stat) {
+                        $color = '#FFFF00';
+                    } else {
+                        $color = '#FF0000';
+                    }
                     $cells->setBackground($color);
                 });
 
-                $sheet->cells("K4:K$lastRowNumber", function($cells)
-                {
+                $sheet->cells("K4:K$lastRowNumber", function ($cells) {
                     $cells->setAlignment('right');
                     $cells->setValignment('center');
                 });
 
-                if(!$stat) {
-                    ++$rowNumber;
+                if (! $stat) {
+                    $rowNumber++;
 
                     $sheet->appendRow([
                         '',
                     ]);
 
-                    ++$rowNumber;
+                    $rowNumber++;
 
                     $sheet->appendRow([
                         '',
@@ -256,15 +256,14 @@ class SendOptOutReportNotJob extends Command
                         '',
                         '',
                         '',
-                        "DISCREPANCY DETECTED PLEASE CHECK ABOVE REPORT FOR DETAILS"
+                        'DISCREPANCY DETECTED PLEASE CHECK ABOVE REPORT FOR DETAILS',
                     ]);
                     $sheet->mergeCells("L$rowNumber:O$rowNumber");
-                    $sheet->cells("L$rowNumber:O$rowNumber", function($cells)
-                    {
+                    $sheet->cells("L$rowNumber:O$rowNumber", function ($cells) {
                         // Set font
                         $cells->setFont([
-                            'size'       => '12',
-                            'bold'       =>  true
+                            'size' => '12',
+                            'bold' => true,
                         ]);
 
                         $cells->setAlignment('center');
@@ -286,8 +285,8 @@ class SendOptOutReportNotJob extends Command
 
                 $message->from('admin@engageiq.com', 'Automated Report by '.$lr_build);
 
-                if(count($report_recipients) > 0) {
-                    foreach($report_recipients as $recipient) {
+                if (count($report_recipients) > 0) {
+                    foreach ($report_recipients as $recipient) {
                         $message->to($recipient);
                     }
                 }

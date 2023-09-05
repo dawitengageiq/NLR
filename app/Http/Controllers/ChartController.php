@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class ChartController extends Controller
 {
@@ -20,7 +17,7 @@ class ChartController extends Controller
      * Inject dependency - chart.
      *
      */
-    public function __construct(\App\Http\Services\Contracts\ChartContract  $charts)
+    public function __construct(\App\Http\Services\Contracts\ChartContract $charts)
     {
         $this->middleware('auth');
         $this->middleware('admin');
@@ -37,19 +34,19 @@ class ChartController extends Controller
      * @param String $version
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function view(Request $request, $version ='nlr')
+    public function view(Request $request, $version = 'nlr')
     {
-        $date = \Cache::has($version . '_rejection_report_date') ? \Cache::get($version . '_rejection_report_date') : Carbon::yesterday();
+        $date = \Cache::has($version.'_rejection_report_date') ? \Cache::get($version.'_rejection_report_date') : Carbon::yesterday();
         $date = Carbon::parse($date)->toFormattedDateString();
         // Flag for script process
-        $highcharts = [ 'has_data' => false, 'date' => $date ];
+        $highcharts = ['has_data' => false, 'date' => $date];
 
-        if (\Cache::has($version . '_rejection_report')) {
+        if (\Cache::has($version.'_rejection_report')) {
             $highcharts['has_data'] = true;
 
             // Data needed for chart,
             // The data was saved in cached done in app\console\commands\HighRejectionAlertReport
-            $this->chart->setData(\Cache::get($version . '_rejection_report'));
+            $this->chart->setData(\Cache::get($version.'_rejection_report'));
 
             // format data for highchart.
             $this->chart->formatData();
@@ -59,7 +56,7 @@ class ChartController extends Controller
             // For development, set $use_dummy_data to true to used the dummy data saved in config file.
             // Set $use_dummy_data to false for production
             $use_dummy_data = false;
-            if($request->dummy) {
+            if ($request->dummy) {
                 $use_dummy_data = true;
             }
 
@@ -71,7 +68,7 @@ class ChartController extends Controller
         return $highcharts = array_merge($highcharts, $this->chart->getData());
 
         // printR($highcharts);
-        
+
         return view('admin.chart', compact('highcharts'));
     }
 }

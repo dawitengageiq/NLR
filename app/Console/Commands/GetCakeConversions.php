@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
+use DB;
 use Illuminate\Console\Command;
 use Log;
-use DB;
 
 class GetCakeConversions extends Command
 {
@@ -24,7 +24,6 @@ class GetCakeConversions extends Command
 
     /**
      * Create a new command instance.
-     *
      */
     public function __construct()
     {
@@ -57,7 +56,7 @@ class GetCakeConversions extends Command
 
         $startDate = urlencode($startDate);
         $endDate = urlencode($endDate);
-        
+
         $templateURL = config('constants.CAKE_API_CONVERSION_URL');
 
         //for the start date
@@ -128,7 +127,7 @@ class GetCakeConversions extends Command
 
             $affiliates = DB::SELECT('SELECT campaign_id,affiliate_id, lead_cap_type, lead_cap_value FROM affiliate_campaign WHERE
             campaign_id IN (SELECT id FROM campaigns WHERE campaign_type = 5 AND linkout_offer_id IS NOT NULL AND linkout_offer_id != 0 )');
-            
+
             foreach($affiliates as $a) {
                 $linkout_offer_id = $campaignLinkId[$a->campaign_id];
                 if(!isset($linkOuts[$linkout_offer_id])) {
@@ -140,7 +139,7 @@ class GetCakeConversions extends Command
                 $linkOuts[$linkout_offer_id]['affiliates'][$a->affiliate_id]['value'] = $a->lead_cap_value;
             }
             $counter = [];
-            
+
             //RESET
             $now_date = Carbon::now();
             $reset_caps = LinkOutCount::where('expiration_date','<=',$now_date)->lists('id');
@@ -244,7 +243,7 @@ class GetCakeConversions extends Command
                                     }else {
                                         $counter[$offer_id][null] = 0;
                                     }
-                                    
+
                                     if(in_array($affiliate_id,array_keys($linkOuts[$offer_id]['affiliates']))) {
                                         $counter[$offer_id][$affiliate_id] = !isset($counter[$offer_id][$affiliate_id]) ? 1 : $counter[$offer_id][$affiliate_id] + 1;
                                     }
@@ -315,7 +314,7 @@ class GetCakeConversions extends Command
                         if($cap->exists) {
                             $cap->count += $new_count;
                         }else {
-                            $cap->count = $new_count;                        
+                            $cap->count = $new_count;
                         }
 
                         $cap->save();

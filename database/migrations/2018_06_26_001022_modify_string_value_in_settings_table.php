@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class ModifyStringValueInSettingsTable extends Migration
 {
@@ -14,7 +14,7 @@ class ModifyStringValueInSettingsTable extends Migration
     {
         Schema::table('settings', function (Blueprint $table) {
             $table->text('string_value')->change();
-            
+
         });
     }
 
@@ -26,7 +26,7 @@ class ModifyStringValueInSettingsTable extends Migration
     public function down()
     {
         Schema::table('settings', function (Blueprint $table) {
-            $table->string('string_value',100)->change();
+            $table->string('string_value', 100)->change();
         });
     }
 }

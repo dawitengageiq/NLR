@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Jobs\Reports\GetUniqueClicksReport;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class GenerateUniqueClicksReports extends Command
 {
@@ -44,10 +44,10 @@ class GenerateUniqueClicksReports extends Command
 
         $date = $this->option('date');
 
-        if(empty($date)) {
+        if (empty($date)) {
             $date = Carbon::now()->subDay()->toDateString();
             $date_to = Carbon::now()->toDateString();
-        }else {
+        } else {
             $date = Carbon::parse($date)->toDateString();
             $date_to = $date->addDay()->toDateString();
         }

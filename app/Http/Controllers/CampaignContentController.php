@@ -1,16 +1,14 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use ApiConfig;
-
-use App\Http\Requests;
 use Illuminate\Http\Request;
 
 class CampaignContentController extends Controller
 {
     /**
      * Injected class
-     *
      */
     protected $campaignStack;
 
@@ -19,39 +17,42 @@ class CampaignContentController extends Controller
     /**
      * Initialize
      *
-     * @var object $campaignStack
+     * @var object
      */
-    public function __construct (\App\Http\Services\Campaigns\Content $campaignStack)
+    public function __construct(\App\Http\Services\Campaigns\Content $campaignStack)
     {
         $this->campaignStack = $campaignStack;
     }
 
     /**
      * Get the content of campaign stack
-     *
      */
-    public function surveyStack (Request $request)
+    public function surveyStack(Request $request)
     {
         // Overwrite default if user details is available
-        if($request->has('user_details')) $this->setUserDetails($request->all());
+        if ($request->has('user_details')) {
+            $this->setUserDetails($request->all());
+        }
 
         // Set the initial variables needed
         $this->campaignStack->setInitialVariables($request);
 
         // Check if has campaigns and campaign type
-        if($this->campaignStack->hasCampaigns() && $this->campaignStack->hasCampaignType()) {
+        if ($this->campaignStack->hasCampaigns() && $this->campaignStack->hasCampaignType()) {
             // Get the stack content of each campaign
 
             // $this->campaignStack->process($this->userDetails, ApiConfig::displayLimit());
             $this->campaignStack->process($this->userDetails);
 
             // Return the html if no user details, requesting sites will process the replacing of content code
-            if(!$this->userDetails) return $this->campaignStack->getHtmlData();
+            if (! $this->userDetails) {
+                return $this->campaignStack->getHtmlData();
+            }
 
             // Evaluate php since the content code was replace by user details
-            list($gender, $one_letter_gender, $title, $age) = $this->varNeededB4Eval();
+            [$gender, $one_letter_gender, $title, $age] = $this->varNeededB4Eval();
 
-            eval('?>' . $this->campaignStack->getHtmlData());
+            eval('?>'.$this->campaignStack->getHtmlData());
 
             return;
         }
@@ -63,16 +64,16 @@ class CampaignContentController extends Controller
     /**
      * Set user details that are needed
      *
-     * @param array $userDetails
+     * @param  array  $userDetails
      */
-    protected function setUserDetails ($userDetails)
+    protected function setUserDetails($userDetails)
     {
         // birtdate
         $userDetails['dobyear'] = '';
         $userDetails['dobmonth'] = '';
         $userDetails['dobday'] = '';
-        if($userDetails['birthdate']) {
-            list($userDetails['dobyear'], $userDetails['dobmonth'], $userDetails['dobday']) = explode('-', $userDetails['birthdate']);
+        if ($userDetails['birthdate']) {
+            [$userDetails['dobyear'], $userDetails['dobmonth'], $userDetails['dobday']] = explode('-', $userDetails['birthdate']);
         }
         // Phone
         $userDetails['phone1'] = substr($userDetails['phone'], 0, 3);
@@ -87,13 +88,13 @@ class CampaignContentController extends Controller
      *
      * @return array
      */
-    protected function varNeededB4Eval ()
+    protected function varNeededB4Eval()
     {
         return [
             ($this->userDetails['gender'] == 'F') ? 'Female' : 'Male',                          // gender
             $this->userDetails['gender'],                                                       // one letter gender
             ($this->userDetails['gender'] == 'M') ? 'Mr.' : 'Ms.',                              // title
-            date_diff(date_create($this->userDetails['birthdate']), date_create('today'))->y    // age
+            date_diff(date_create($this->userDetails['birthdate']), date_create('today'))->y,    // age
         ];
     }
 }

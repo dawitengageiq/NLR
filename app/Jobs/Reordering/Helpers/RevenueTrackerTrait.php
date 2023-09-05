@@ -1,15 +1,16 @@
 <?php
+
 namespace App\Jobs\Reordering\Helpers;
 
-trait RevenueTrackerTrait {
-
+trait RevenueTrackerTrait
+{
     /**
      * Set individual revenue tracker
      * It will be use to get its own traits
      *
-     * @param  eloquentCollection $revenueTracker
+     * @param  eloquentCollection  $revenueTracker
      */
-    public function setTraitsOf ($revenueTracker)
+    public function setTraitsOf($revenueTracker)
     {
         $this->revenueTracker = $revenueTracker;
     }
@@ -19,7 +20,7 @@ trait RevenueTrackerTrait {
      *
      * @return array
      */
-    public function campaignOrder ()
+    public function campaignOrder()
     {
         return json_decode($this->revenueTracker->mixedCoregCampaignOrder->campaign_id_order);
     }
@@ -27,9 +28,9 @@ trait RevenueTrackerTrait {
     /**
      * Get revenue tracker id
      *
-     * @return integer
+     * @return int
      */
-    public function revenueTrackerID ()
+    public function revenueTrackerID()
     {
         return $this->revenueTracker->revenue_tracker_id;
     }
@@ -39,7 +40,7 @@ trait RevenueTrackerTrait {
      *
      * @return string|timestamp
      */
-    public function referenceDate ()
+    public function referenceDate()
     {
         return $this->revenueTracker->mixedCoregCampaignOrder->reorder_reference_date;
     }
@@ -47,9 +48,9 @@ trait RevenueTrackerTrait {
     /**
      * Get order by
      *
-     * @return integer
+     * @return int
      */
-    public function mixedCoregOrderBy ()
+    public function mixedCoregOrderBy()
     {
         return $this->revenueTracker->mixed_coreg_order_by;
     }
@@ -59,7 +60,7 @@ trait RevenueTrackerTrait {
      *
      * @return eloquentCollection
      */
-    public function mixedCoregCampaignOrder ()
+    public function mixedCoregCampaignOrder()
     {
         return $this->revenueTracker->mixedCoregCampaignOrder;
     }
@@ -69,7 +70,7 @@ trait RevenueTrackerTrait {
      *
      * @return eloquentCollection
      */
-    public function campaignViewReports ()
+    public function campaignViewReports()
     {
         return $this->revenueTracker->campaignViewReports;
     }
@@ -80,9 +81,12 @@ trait RevenueTrackerTrait {
      * @param  string  $recurrence
      * @return bool
      */
-    public function recurrenceIs ($recurrence)
+    public function recurrenceIs($recurrence)
     {
-        if($this->revenueTracker->mixed_coreg_recurrence == $recurrence) return true;
+        if ($this->revenueTracker->mixed_coreg_recurrence == $recurrence) {
+            return true;
+        }
+
         return false;
     }
 
@@ -92,9 +96,12 @@ trait RevenueTrackerTrait {
      * @param  string  $recurrence
      * @return bool
      */
-    public function recurrenceIsNot ($recurrence)
+    public function recurrenceIsNot($recurrence)
     {
-        if($this->revenueTracker->mixed_coreg_recurrence != $recurrence) return true;
+        if ($this->revenueTracker->mixed_coreg_recurrence != $recurrence) {
+            return true;
+        }
+
         return false;
     }
 }

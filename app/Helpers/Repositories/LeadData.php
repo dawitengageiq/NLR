@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Helpers\Repositories;
 
 use App\LeadCount;
@@ -6,32 +7,25 @@ use App\LeadDataAdv;
 use App\LeadDataCsv;
 use App\LeadMessage;
 use App\LeadSentResult;
-use PDOException;
 use Log;
+use PDOException;
 
-class LeadData implements LeadDataInterface{
-
+class LeadData implements LeadDataInterface
+{
     public function updateOrCreateLeadADV($lead, $advertiserURL)
     {
-        if(isset($lead->leadDataADV))
-        {
+        if (isset($lead->leadDataADV)) {
             $lead->leadDataADV->value = $advertiserURL;
             $lead->leadDataADV->push();
-        }
-        else
-        {
-            try
-            {
+        } else {
+            try {
 
                 $leadDataAdv = new LeadDataAdv();
                 $leadDataAdv->value = $advertiserURL;
                 $lead->leadDataADV()->save($leadDataAdv);
 
-            }
-            catch (PDOException $e)
-            {
-                if($e->getCode() == 1062)
-                {
+            } catch (PDOException $e) {
+                if ($e->getCode() == 1062) {
 
                     Log::info($e->getMessage());
 
@@ -48,25 +42,18 @@ class LeadData implements LeadDataInterface{
 
     public function updateOrCreateLeadMessage($lead, $leadMessage)
     {
-        if(isset($lead->leadMessage))
-        {
+        if (isset($lead->leadMessage)) {
             $lead->leadMessage->value = $leadMessage;
             $lead->leadMessage->push();
-        }
-        else
-        {
-            try
-            {
+        } else {
+            try {
 
                 $leadDataMessage = new LeadMessage();
                 $leadDataMessage->value = $leadMessage;
                 $lead->leadMessage()->save($leadDataMessage);
 
-            }
-            catch (PDOException $e)
-            {
-                if($e->getCode() == 1062)
-                {
+            } catch (PDOException $e) {
+                if ($e->getCode() == 1062) {
 
                     Log::info($e->getMessage());
 
@@ -83,25 +70,18 @@ class LeadData implements LeadDataInterface{
 
     public function updateOrCreateLeadSentResult($lead, $leadSentResult)
     {
-        if(isset($lead->leadSentResult))
-        {
+        if (isset($lead->leadSentResult)) {
             $lead->leadSentResult->value = $leadSentResult;
             $lead->leadSentResult->push();
-        }
-        else
-        {
-            try
-            {
+        } else {
+            try {
 
                 $leadDataSentResult = new LeadSentResult();
                 $leadDataSentResult->value = $leadSentResult;
                 $lead->leadSentResult()->save($leadDataSentResult);
 
-            }
-            catch (PDOException $e)
-            {
-                if($e->getCode() == 1062)
-                {
+            } catch (PDOException $e) {
+                if ($e->getCode() == 1062) {
 
                     Log::info($e->getMessage());
 
@@ -118,26 +98,19 @@ class LeadData implements LeadDataInterface{
 
     public function updateOrCreateLeadCSV($lead, $leadCsv)
     {
-        if(isset($lead->leadDataCSV))
-        {
+        if (isset($lead->leadDataCSV)) {
             $lead->leadDataCSV->value = $leadCsv;
             $lead->leadDataCSV->push();
-        }
-        else
-        {
-            try
-            {
+        } else {
+            try {
 
                 $leadCSVData = new LeadDataCsv();
                 $leadCSVData->value = $leadCsv;
                 $lead->leadDataCSV()->save($leadCSVData);
 
-            }
-            catch (PDOException $e)
-            {
+            } catch (PDOException $e) {
 
-                if($e->getCode() == 1062)
-                {
+                if ($e->getCode() == 1062) {
 
                     Log::info($e->getMessage());
 
@@ -164,5 +137,4 @@ class LeadData implements LeadDataInterface{
         $campaignCounts->save();
         $campaignAffiliateCounts->save();
     }
-
 }

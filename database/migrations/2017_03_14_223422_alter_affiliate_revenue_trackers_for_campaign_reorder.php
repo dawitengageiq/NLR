@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AlterAffiliateRevenueTrackersForCampaignReorder extends Migration
 {
@@ -28,7 +28,7 @@ class AlterAffiliateRevenueTrackersForCampaignReorder extends Migration
     public function down()
     {
         Schema::table('affiliate_revenue_trackers', function (Blueprint $table) {
-            $table->dropColumn(['order_by','order_status','views']);
+            $table->dropColumn(['order_by', 'order_status', 'views']);
         });
     }
 }

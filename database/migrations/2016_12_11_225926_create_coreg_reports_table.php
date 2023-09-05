@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateCoregReportsTable extends Migration
 {
@@ -18,8 +18,8 @@ class CreateCoregReportsTable extends Migration
             $table->integer('affiliate_id')->unsigned()->index();
             $table->integer('revenue_tracker_id')->unsigned()->index()->nullable();
             // $table->string('campaign_name',100);
-            $table->double('cost',15,8)->default(0.0);
-            $table->double('revenue',15,8)->default(0.0);
+            $table->double('cost', 15, 8)->default(0.0);
+            $table->double('revenue', 15, 8)->default(0.0);
             // $table->double('we_get',15,8)->default(0.0);
             $table->integer('lf_total')->nullable();
             $table->integer('lf_filter_do')->nullable();

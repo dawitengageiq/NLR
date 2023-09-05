@@ -3,15 +3,13 @@
 namespace App\Jobs\Reports;
 
 use App\Jobs\Job;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Facades\Mail;
-use Log;
-use App\PageViewStatistics;
 use App\PageView;
 use DB;
+use Illuminate\Contracts\Bus\SelfHandling;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Log;
 
 class GeneratePageViewStatistics extends Job implements SelfHandling, ShouldQueue
 {
@@ -41,18 +39,18 @@ class GeneratePageViewStatistics extends Job implements SelfHandling, ShouldQueu
         //Log::info($views);
 
         $statistics = [];
-        foreach($views as $v) {
+        foreach ($views as $v) {
             $statistics[$v->affiliate_id][$v->revenue_tracker_id][$v->s1][$v->s2][$v->s3][$v->s4][$v->s5][$v->type] = $v->total;
         }
-        
+
         $rows = [];
-        foreach($statistics as $affiliate_id => $statistic) {
-            foreach($statistic as $revenue_tracker_id => $statisti) {
-                foreach($statisti as $s1 => $statist) {
-                    foreach($statist as $s2 => $statis) {
-                        foreach($statis as $s3 => $stati) {
-                            foreach($stati as $s4 => $stat) {
-                                foreach($stat as $s5 => $s) {
+        foreach ($statistics as $affiliate_id => $statistic) {
+            foreach ($statistic as $revenue_tracker_id => $statisti) {
+                foreach ($statisti as $s1 => $statist) {
+                    foreach ($statist as $s2 => $statis) {
+                        foreach ($statis as $s3 => $stati) {
+                            foreach ($stati as $s4 => $stat) {
+                                foreach ($stat as $s5 => $s) {
                                     $row = [];
                                     $row['affiliate_id'] = $affiliate_id;
                                     $row['revenue_tracker_id'] = $revenue_tracker_id;
@@ -64,8 +62,8 @@ class GeneratePageViewStatistics extends Job implements SelfHandling, ShouldQueu
                                     $row['created_at'] = $this->date;
 
                                     $s = array_change_key_case($s);
-                                    foreach($list_types as $type) {
-                                        $row[$type] = isset($s[$type]) ? $s[$type] : 0; 
+                                    foreach ($list_types as $type) {
+                                        $row[$type] = isset($s[$type]) ? $s[$type] : 0;
                                     }
                                     $rows[] = $row;
                                 }
@@ -77,19 +75,18 @@ class GeneratePageViewStatistics extends Job implements SelfHandling, ShouldQueu
         }
 
         // Log::info($rows);
-        
-        if(count($rows) > 0) {
+
+        if (count($rows) > 0) {
             $conn = config('app.type') != 'reports' ? 'secondary' : 'mysql';
             $clean = DB::connection($conn)->table('page_view_statistics')->where('created_at', $this->date);
             $clean->delete();
 
             $chunks = array_chunk($rows, 1000);
-            foreach($chunks as $chunk) {
-                try{
+            foreach ($chunks as $chunk) {
+                try {
                     DB::connection($conn)->table('page_view_statistics')->insert($chunk);
-                }catch(QueryException $e)
-                {
-                    Log::info("Page View Stats Error");
+                } catch (QueryException $e) {
+                    Log::info('Page View Stats Error');
                     Log::info($e->getMessage());
                 }
             }
@@ -100,8 +97,7 @@ class GeneratePageViewStatistics extends Job implements SelfHandling, ShouldQueu
 
     public function touch()
     {
-        if (method_exists($this->job, 'getPheanstalk'))
-        {
+        if (method_exists($this->job, 'getPheanstalk')) {
             $this->job->getPheanstalk()->touch($this->job->getPheanstalkJob());
 
             Log::info('Current job timer refresh!');

@@ -1,9 +1,8 @@
 <?php
+
 namespace App\Http\Services\Consolidated\Utils;
 
 use App\Affiliate;
-
-use Illuminate\Database\Eloquent\Collection;
 
 class Affiliates
 {
@@ -17,16 +16,15 @@ class Affiliates
     /**
      * Has affiliates that were fetch.
      *
-     * @var boolean
+     * @var bool
      */
     protected $hasAffiliates = false;
 
     /**
      * Instantiate.
      * Provide/Inject the needed model.
-     *
      */
-    public function __construct (Affiliate $model)
+    public function __construct(Affiliate $model)
     {
         $this->model = $model;
     }
@@ -34,9 +32,9 @@ class Affiliates
     /**
      * Set the date, use in cron.
      *
-     * @param string $date
+     * @param  string  $date
      */
-    public function setDate ($date)
+    public function setDate($date)
     {
         $this->date = $date;
     }
@@ -44,17 +42,16 @@ class Affiliates
     /**
      * Fetch the affilate records from database.
      * Determine after if the records contain a lists.
-     *
      */
-    public function fetch ()
+    public function fetch()
     {
-        $affiliates = $this->model->select('id','company')
+        $affiliates = $this->model->select('id', 'company')
             ->where('status', 1)
             ->where('type', 1)
             ->orderBy('company')
             ->get();
 
-        if(!$affiliates->isEmpty()) {
+        if (! $affiliates->isEmpty()) {
             $this->hasAffiliates = true;
             $this->affiliates = $affiliates->toArray();
         }
@@ -62,9 +59,8 @@ class Affiliates
 
     /**
      * Check records has affilates/ not empty.
-     *
      */
-    public function hasRecord ()
+    public function hasRecord()
     {
         return $this->hasAffiliates;
     }
@@ -74,7 +70,7 @@ class Affiliates
      *
      * @return array
      */
-    public function get ()
+    public function get()
     {
         return $this->affiliates;
     }

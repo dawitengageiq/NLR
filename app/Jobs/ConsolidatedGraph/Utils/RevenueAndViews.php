@@ -1,15 +1,14 @@
 <?php
+
 namespace App\Jobs\ConsolidatedGraph\Utils;
 
-use Carbon\Carbon;
-
 use App\ConsolidatedGraph;
+use Carbon\Carbon;
 
 class RevenueAndViews
 {
     /**
      * Calculation traits.
-     *
      */
     use Traits\perViews,
         Traits\perClicks,
@@ -20,7 +19,6 @@ class RevenueAndViews
 
     /**
      * Data from eloquent traits.
-     *
      */
     use Traits\ClicksVsRegistrationStatistics,
         Traits\CakeRevenue,
@@ -28,7 +26,6 @@ class RevenueAndViews
         Traits\RevenueTrackerCakeStatistic,
         Traits\PageViewStatistics,
         Traits\Payout;
-
 
     /**
      * Current time container.
@@ -71,6 +68,7 @@ class RevenueAndViews
      * @var array
      */
     protected $mixCoreg1 = 1;
+
     protected $mixCoreg2 = 2;
 
     /**
@@ -91,7 +89,7 @@ class RevenueAndViews
         'coreg_p2_revenue' => 0,
         'coreg_p3_revenue' => 0,
         'coreg_p4_revenue' => 0,
-        'push_revenue' => 0
+        'push_revenue' => 0,
     ];
 
     /**
@@ -103,7 +101,7 @@ class RevenueAndViews
         'survey_takers' => 0,
         'all_clicks' => 0,
         'margin' => 0,
-        'payout' => 0
+        'payout' => 0,
     ];
 
     /**
@@ -122,7 +120,7 @@ class RevenueAndViews
         'coreg_p1_views' => 0,
         'coreg_p2_views' => 0,
         'coreg_p3_views' => 0,
-        'coreg_p4_views' => 0
+        'coreg_p4_views' => 0,
     ];
 
     /**
@@ -147,7 +145,7 @@ class RevenueAndViews
         'coreg_p3_revenue',
         'coreg_p4_revenue',
         'cost',
-        'push_revenue'
+        'push_revenue',
     ];
 
     /**
@@ -155,51 +153,51 @@ class RevenueAndViews
      * Provide needed model and Carbon::class.
      * the legends/column for graph was provided from config.
      *
-     * @param App\ConsolidatedGraph $model
-     * @param Carbon\Carbon $carbon
+     * @param  App\ConsolidatedGraph  $model
+     * @param  Carbon\Carbon  $carbon
      */
-     public function __construct (
-         ConsolidatedGraph $model,
-         Carbon $carbon
-         )
-     {
-         $this->model = $model;
+    public function __construct(
+        ConsolidatedGraph $model,
+        Carbon $carbon
+    ) {
+        $this->model = $model;
 
-         $this->carbon = $carbon;
+        $this->carbon = $carbon;
 
-         $this->legends = array_keys(config('consolidatedgraph.legends'));
+        $this->legends = array_keys(config('consolidatedgraph.legends'));
     }
 
     /**
      * Set benchmarks, benchmarks is an array of selected campaign ids for each campaign type
      * to be used for each campaign type to determine campaign type stats,
      * Like campaign type revenue, clicks, etc....
-     *
-     * @param array $benchmarks
      */
-    public function setBenchmarks (Array $benchmarks)
+    public function setBenchmarks(array $benchmarks)
     {
         $this->benchmarks = $benchmarks;
     }
 
     /**
      * Set the campaign types
-     * @param array $campaignTypes
+     *
+     * @param  array  $campaignTypes
      */
-    public function setCampaignTypes ($campaignTypes)
+    public function setCampaignTypes($campaignTypes)
     {
         // mix coreg campaig types
         $counter = 1;
         collect([
-                'Mixed Co-reg (1st Grp)',
-                'Mixed Co-reg (2st Grp)',
-                'Mixed Co-reg (3rd Grp))',
-                'Mixed Co-reg (4th Grp))'
-            ])
+            'Mixed Co-reg (1st Grp)',
+            'Mixed Co-reg (2st Grp)',
+            'Mixed Co-reg (3rd Grp))',
+            'Mixed Co-reg (4th Grp))',
+        ])
             ->map(function ($type) use ($campaignTypes, &$counter) {
-                $coreg = 'mixCoreg' . $counter;
-                if( $$coreg = array_search ($type, $campaignTypes)) $this->$coreg = $$coreg;
-                $counter ++;
+                $coreg = 'mixCoreg'.$counter;
+                if ($$coreg = array_search($type, $campaignTypes)) {
+                    $this->$coreg = $$coreg;
+                }
+                $counter++;
             });
     }
 
@@ -207,10 +205,9 @@ class RevenueAndViews
      * Extract the data from otherTables needed to generate records.
      * Generate the parametrs that will be use to generate records.
      *
-     * @param \App\AffiliateRevenueTracker $revenueTracker
      * @return array
      */
-    public function extractDataFromOtherTables (\App\AffiliateRevenueTracker $revenueTracker, $campaigns, $date)
+    public function extractDataFromOtherTables(\App\AffiliateRevenueTracker $revenueTracker, $campaigns, $date)
     {
         $this->processClicksRegStats($revenueTracker->clicksVsRegistrationStatistics);
         $this->processCakeRevenue($revenueTracker->cakeRevenue, $revenueTracker->revenue_tracker_id, $revenueTracker->exit_page_id, $date);
@@ -251,7 +248,7 @@ class RevenueAndViews
             'coreg_p4_revenue' => $this->revenues['coreg_p4_revenue'],
             'coreg_p4_views' => $this->pageViewStats['coreg_p4_views'],
             'cost' => $this->clicksRegStats['payout'],
-            'push_revenue' => $this->revenues['push_revenue']
+            'push_revenue' => $this->revenues['push_revenue'],
         ];
 
         return $inputs;
@@ -260,10 +257,8 @@ class RevenueAndViews
     /**
      * Set the parameters needed to generate records.
      * and Reset some records to default value.
-     *
-     * @param  array  $params
      */
-    public function setParams(Array $params)
+    public function setParams(array $params)
     {
         $this->params = $params;
 
@@ -283,14 +278,14 @@ class RevenueAndViews
             'coreg_p2_revenue' => 0,
             'coreg_p3_revenue' => 0,
             'coreg_p4_revenue' => 0,
-            'push_revenue' => 0
+            'push_revenue' => 0,
         ];
         // Reset
         $this->clicksRegStats = [
             'survey_takers' => 0,
             'all_clicks' => 0,
             'margin' => 0,
-            'payout' => 0
+            'payout' => 0,
         ];
         // Reset
         $this->pageViewStats = [
@@ -304,11 +299,11 @@ class RevenueAndViews
             'coreg_p1_views' => 0,
             'coreg_p2_views' => 0,
             'coreg_p3_views' => 0,
-            'coreg_p4_views' => 0
+            'coreg_p4_views' => 0,
         ];
     }
 
-    public function params ()
+    public function params()
     {
         return $this->params;
     }
@@ -321,17 +316,19 @@ class RevenueAndViews
      * Note: the param $data is empty in normal cron process but when an artisan call and date as arguments,
      * the if($date) function will be executed and no duplicate records occur.
      *
-     * @param string $date
-     *
+     * @param  string  $date
      */
     public function checkRevenueTrackerExist($date = '')
     {
-        if($date) {
+        if ($date) {
             $this->checkRevenueTrackerInReferenceInTodaysDateIfExists($this->carbon->parse($date));
 
-            if(!$this->revenueTrackerHasRecords()) $this->consolidatedData = clone $this->model;
+            if (! $this->revenueTrackerHasRecords()) {
+                $this->consolidatedData = clone $this->model;
+            }
 
             $this->consolidatedData->revenue_tracker_id = $this->params['revenue_tracker_id'];
+
             return;
         }
         $this->consolidatedData = clone $this->model;
@@ -342,16 +339,19 @@ class RevenueAndViews
 
     /**
      * Generate records, loop through legends and call methods by using string to camel case to call method.
-     *
      */
     public function generateRecords()
     {
         // go through all legends and call methods asscociated to legends.
-        foreach ($this->legends  as $legend ) {
+        foreach ($this->legends as $legend) {
             // If legend don't need calculation
-            if(in_array($legend, $this->indexsNoCalc)) $this->setLegendValue($legend);
+            if (in_array($legend, $this->indexsNoCalc)) {
+                $this->setLegendValue($legend);
+            }
             // Function for calculation.
-            else $this->{camelCase($legend)}($legend);
+            else {
+                $this->{camelCase($legend)}($legend);
+            }
         }
     }
 
@@ -368,12 +368,12 @@ class RevenueAndViews
     /**
      * SAve the records.
      *
-     * @param Carbon|string $date
+     * @param  Carbon|string  $date
      */
     public function save($date = '')
     {
         echo 'Saving ...<br />';
-        if($date) {
+        if ($date) {
             $this->consolidatedData->created_at = $date;
             $this->consolidatedData->updated_at = $date;
         }
@@ -388,10 +388,8 @@ class RevenueAndViews
      * Clone the model for it will be used in loop.
      * Check if the database have record of specific revenue id in reference to current date.
      * Query database with filtering the revenue tracker id and crated at.
-     *
-     * @param Carbon $date
      */
-    protected function checkRevenueTrackerInReferenceInTodaysDateIfExists (Carbon $date)
+    protected function checkRevenueTrackerInReferenceInTodaysDateIfExists(Carbon $date)
     {
         $clone = clone $this->model;
         $this->consolidatedData = $clone->where('revenue_tracker_id', $this->params['revenue_tracker_id'])
@@ -402,21 +400,24 @@ class RevenueAndViews
     /**
      *  Check if revenue tracker has a record on database.
      *
-     * @return boolean
+     * @return bool
      */
-    protected function revenueTrackerHasRecords ()
+    protected function revenueTrackerHasRecords()
     {
-        if($this->consolidatedData) return true;
+        if ($this->consolidatedData) {
+            return true;
+        }
+
         return false;
     }
 
     /**
      * Set revenue value of legend.
      *
-     * @param string $idx
+     * @param  string  $idx
      */
-    protected function setLegendValue ($idx)
+    protected function setLegendValue($idx)
     {
-        $this->consolidatedData->$idx =  $this->params[$idx];
+        $this->consolidatedData->$idx = $this->params[$idx];
     }
 }

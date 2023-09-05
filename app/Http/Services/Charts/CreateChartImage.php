@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Services\Charts;
 
 use Config;
@@ -11,7 +12,6 @@ final class CreateChartImage extends Factories\ChartFactory
 
     /**
      * Load the  needed configuration
-     *
      */
     public function __construct()
     {
@@ -20,12 +20,11 @@ final class CreateChartImage extends Factories\ChartFactory
     }
 
     /**
-    *
      * Provide needed data for formating.
      *
-     * @var Array $data
+     * @var array
      */
-    public function setData (Array $data)
+    public function setData(array $data)
     {
         //$this->data = $data;
         $this->data = $this->config['dummy_serialized_data'];
@@ -33,12 +32,11 @@ final class CreateChartImage extends Factories\ChartFactory
     }
 
     /**
-    *
      * Process on generating image.
      * This wass called in app\Console\Commands\GenerateCharts
      * Console command "php artisan chart:generate"
      *
-     * @var String $reject_rate
+     * @var string
      */
     public function generateImage($reject_rate = 'high')
     {
@@ -61,7 +59,7 @@ final class CreateChartImage extends Factories\ChartFactory
      * Process on formatting data.
      *
      *
-     * @var Bolean $view
+     * @var Bolean
      */
     public function formatData($view = true)
     {
@@ -70,10 +68,11 @@ final class CreateChartImage extends Factories\ChartFactory
         foreach ($this->data as $key => $datum) {
             $split = $this->parseSplitData($datum['split']);
 
-            if(array_key_exists('affiliate_id', $datum))
-                $this->index_4_actual_rejection = $category = $datum['affiliate_id'] . ' - ' . $datum['campaign_id'];
-            else
+            if (array_key_exists('affiliate_id', $datum)) {
+                $this->index_4_actual_rejection = $category = $datum['affiliate_id'].' - '.$datum['campaign_id'];
+            } else {
                 $this->index_4_actual_rejection = $category = $datum['campaign_id'];
+            }
 
             $this->generateCategories($datum['reject_rate'], $category);
             $this->generateSeries($datum['reject_rate'], $split, $datum);
@@ -85,9 +84,8 @@ final class CreateChartImage extends Factories\ChartFactory
 
     /**
      * Set the column width and group padding for the chart is expanding.
-     *
      */
-    protected function setChartAttributes ()
+    protected function setChartAttributes()
     {
         $column_attributes = $this->config['column_attributes'];
         $critical_count = count($this->categories['critical']);
@@ -98,15 +96,19 @@ final class CreateChartImage extends Factories\ChartFactory
             $this->series['high'][$i]['pointWidth'] = 4;
         }
 
-        if(array_key_exists($critical_count, $column_attributes)) $this->group_padding['critical'] = $column_attributes[$critical_count]['group_padding'];
+        if (array_key_exists($critical_count, $column_attributes)) {
+            $this->group_padding['critical'] = $column_attributes[$critical_count]['group_padding'];
+        }
 
-        if(array_key_exists($high_count, $column_attributes)) $this->group_padding['high'] = $column_attributes[$high_count]['group_padding'];
+        if (array_key_exists($high_count, $column_attributes)) {
+            $this->group_padding['high'] = $column_attributes[$high_count]['group_padding'];
+        }
     }
 
     /**
      * Delete the image of high and critical.
      *
-     * @var String $reject_rate
+     * @var string
      */
     protected function deleteImage($reject_rate)
     {
@@ -117,9 +119,8 @@ final class CreateChartImage extends Factories\ChartFactory
 
     /**
      * The initial data for series.
-     *
      */
-    protected function initialSeriesData ()
+    protected function initialSeriesData()
     {
         $series[0]['name'] = 'LEADS';
         $series[0]['stack'] = '1';
@@ -153,9 +154,10 @@ final class CreateChartImage extends Factories\ChartFactory
     /**
      * Calculate the real value of each column .
      *
-     * @var String $split_value
-     * @var Array $datum
-     * @return Integer
+     * @var string
+     * @var array
+     *
+     * @return int
      */
     protected function getRealValue($split_value, $datum)
     {
@@ -168,7 +170,7 @@ final class CreateChartImage extends Factories\ChartFactory
      * Process oncreating image.
      * Required to use phantom js
      *
-     * @var String $reject_rate
+     * @var string
      */
     protected function createImage($reject_rate)
     {

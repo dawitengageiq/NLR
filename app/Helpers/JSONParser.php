@@ -1,21 +1,26 @@
 <?php
+
 namespace App\Helpers;
 
 use Curl\Curl;
 use Log;
 
-class JSONParser {
-
+class JSONParser
+{
     protected $error;
-    protected $error_code=200;
+
+    protected $error_code = 200;
+
     protected $basicAuthUsername = null;
+
     protected $basicAuthPassword = null;
 
     /**
      * Create a new controller instance.
-     *
      */
-    public function __construct(){}
+    public function __construct()
+    {
+    }
 
     public function setBasicAuthenticationUsername($userName)
     {
@@ -30,8 +35,8 @@ class JSONParser {
     /**
      * Get the response from the server
      *
-     * @param $url
      * @return mixed
+     *
      * @throws \ErrorException
      */
     public function getResponse($url)
@@ -39,35 +44,32 @@ class JSONParser {
         $curl = new Curl();
         $callCounter = 0;
 
-        if($this->basicAuthUsername!=null && $this->basicAuthPassword!=null)
-        {
+        if ($this->basicAuthUsername != null && $this->basicAuthPassword != null) {
             $curl->setBasicAuthentication($this->basicAuthUsername, $this->basicAuthPassword);
         }
 
-        do{
+        do {
 
             $curl->get($url);
 
-            if ($curl->error)
-            {
+            if ($curl->error) {
                 $this->error = $curl->error;
                 $this->error_code = $curl->error_code;
 
-                Log::info("JSONParser getResponse Error!");
+                Log::info('JSONParser getResponse Error!');
                 Log::info($curl->error_message);
-                ++$callCounter;
+                $callCounter++;
             }
 
             //stop the process when budget breached
-            if($callCounter==10)
-            {
+            if ($callCounter == 10) {
                 Log::info('JSONParser getResponse call limit reached!');
                 break;
             }
 
             sleep(10);
 
-        } while($curl->error);
+        } while ($curl->error);
 
         return $curl->response;
     }
@@ -75,19 +77,17 @@ class JSONParser {
     /**
      * Get the response from the server and convert it to array.
      *
-     * @param $url
      * @return mixed|null
      */
     public function getDataArrayJSON($url)
     {
         $response = $this->getResponse($url);
 
-        if($this->error_code!=200)
-        {
+        if ($this->error_code != 200) {
             return null;
         }
 
-        $dataArray = json_decode($response,true);
+        $dataArray = json_decode($response, true);
 
         return $dataArray;
     }
@@ -95,7 +95,6 @@ class JSONParser {
     /**
      * Get the response from the server and convert the XML response to an object.
      *
-     * @param $url
      * @return null|\SimpleXMLElement
      */
     public function getXMLResponseObject($url)
@@ -103,8 +102,7 @@ class JSONParser {
         $dataArray = null;
         $curlResponse = $this->getResponse($url);
 
-        if($this->error_code!=200)
-        {
+        if ($this->error_code != 200) {
             return null;
         }
 
@@ -122,7 +120,6 @@ class JSONParser {
     /**
      * Get the response from the server and convert the XML response to an object.
      *
-     * @param $url
      * @return null|\SimpleXMLElement
      */
     public function getXMLResponseNoCDATA($url)
@@ -131,17 +128,13 @@ class JSONParser {
         $xml = null;
         $curlResponse = $this->getResponse($url);
 
-        if($this->error_code!=200)
-        {
+        if ($this->error_code != 200) {
             return null;
         }
 
-        try
-        {
+        try {
             $xml = simplexml_load_string($curlResponse, 'SimpleXMLElement', LIBXML_NOCDATA);
-        }
-        catch(\Exception $e)
-        {
+        } catch (\Exception $e) {
             Log::info($e->getMessage());
             Log::info('Response is null!');
         }

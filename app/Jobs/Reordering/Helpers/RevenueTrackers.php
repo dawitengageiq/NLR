@@ -1,30 +1,28 @@
 <?php
+
 namespace App\Jobs\Reordering\Helpers;
 
-use DB;
 use App\AffiliateRevenueTracker;
 
 class RevenueTrackers
 {
     /**
      * Indevidual revenue tracker traits
-     *
      */
     use RevenueTrackerTrait;
 
     /**
      * [protected description]
      *
-     * @var iIlluminate\Database\Eloquent\Builder $query
+     * @var iIlluminate\Database\Eloquent\Builder
      */
     protected $query;
 
     /**
      * Instantiate
      * Initial query
-     *
      */
-    public function __construct ()
+    public function __construct()
     {
         $this->query = AffiliateRevenueTracker::where('mixed_coreg_order_status', '!=', 0)
             ->where('mixed_coreg_recurrence', '=', 'daily');
@@ -34,9 +32,9 @@ class RevenueTrackers
      * Set revenue tracker id
      * It will be used to query specific revenue tracker.
      *
-     * @param integer $revenueTRrackerID
+     * @param  int  $revenueTRrackerID
      */
-    public function setRevenueTRrackerID ($revenueTRrackerID)
+    public function setRevenueTRrackerID($revenueTRrackerID)
     {
         $this->query->where('revenue_tracker_id', $revenueTRrackerID);
     }
@@ -45,20 +43,20 @@ class RevenueTrackers
      * Set the time
      * It will be used to query revenue tracker match on this time
      *
-     * @param  integer $hour
+     * @param  int  $hour
      */
-    public function setTime ($hour)
+    public function setTime($hour)
     {
-        $this->query->where('mixed_coreg_daily', '=', $hour . ':00:00');
+        $this->query->where('mixed_coreg_daily', '=', $hour.':00:00');
     }
 
     /**
      * Set mixe coreg Type ids
      * Use to query related campaign view reports with campaign type id is in $mixeCoregTypes
      *
-     * @param  array $mixeCoregTypes
+     * @param  array  $mixeCoregTypes
      */
-    public function setMixeCoregTypeIDs ($mixeCoregTypes)
+    public function setMixeCoregTypeIDs($mixeCoregTypes)
     {
         $this->mixeCoregTypes = $mixeCoregTypes;
 
@@ -71,7 +69,10 @@ class RevenueTrackers
      */
     public function notExists()
     {
-        if(count($this->revenueTrackers) <= 0) return true;
+        if (count($this->revenueTrackers) <= 0) {
+            return true;
+        }
+
         return false;
     }
 
@@ -80,7 +81,7 @@ class RevenueTrackers
      *
      * @return array
      */
-    public function get ()
+    public function get()
     {
         return $this->revenueTrackers;
     }
@@ -103,22 +104,22 @@ class RevenueTrackers
     /**
      * Query the revenue trackers
      *
-     * @var eloquentCollection $revenueTrackers
+     * @var eloquentCollection
      */
-    public function query ()
+    public function query()
     {
         $this->revenueTrackers = $this->query
             ->has('mixedCoregCampaignOrder')
             ->with('mixedCoregCampaignOrder')
-            ->with(['campaignViewReports' => function($query) {
-                return $query->where(function($query) {
-                    foreach($this->mixeCoregTypes as  $typeID) {
-                        $query->orWhere('campaign_type_id','=', $typeID);
+            ->with(['campaignViewReports' => function ($query) {
+                return $query->where(function ($query) {
+                    foreach ($this->mixeCoregTypes as $typeID) {
+                        $query->orWhere('campaign_type_id', '=', $typeID);
                     }
                 })
-                ->with(['campaignInfo' => function ($query) {
-                    return $query->select('id', 'status');
-                }]);
+                    ->with(['campaignInfo' => function ($query) {
+                        return $query->select('id', 'status');
+                    }]);
             }])
             ->get();
         // printR($this->revenueTrackers, true);

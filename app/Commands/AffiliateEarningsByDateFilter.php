@@ -2,32 +2,33 @@
 
 namespace App\Commands;
 
-use App\Lead;
-use App\HandPAffiliateReport;
-use App\ExternalPathAffiliateReport;
 use App\AffiliateWebsiteReport;
-use Carbon\Carbon;
-use App\Commands\Command;
-use Illuminate\Contracts\Bus\SelfHandling;
-use Log;
+use App\ExternalPathAffiliateReport;
+use App\HandPAffiliateReport;
+use App\Lead;
 use App\Setting;
+use Carbon\Carbon;
+use Illuminate\Contracts\Bus\SelfHandling;
 
 class AffiliateEarningsByDateFilter extends Command implements SelfHandling
 {
-    protected $affiliate_id, $date_filter_type, $from_date, $to_date;
+    protected $affiliate_id;
+
+    protected $date_filter_type;
+
+    protected $from_date;
+
+    protected $to_date;
 
     /**
      * Create a new command instance.
-     *
-     * @param $affiliate_id
-     * @param $date_filter_type
      */
     public function __construct($affiliate_id, $date_filter_type)
     {
-        $this->affiliate_id = $affiliate_id; 
+        $this->affiliate_id = $affiliate_id;
         $this->date_filter_type = $date_filter_type;
 
-        switch($this->date_filter_type) {
+        switch ($this->date_filter_type) {
             case 1: //TODAY
                 $from = Carbon::today()->toDateString();
                 $to = Carbon::today()->toDateString();
@@ -69,12 +70,12 @@ class AffiliateEarningsByDateFilter extends Command implements SelfHandling
         $share_perc = $share / 100;
 
         $getNew = false;
-        if(!session()->has('_affEDate-'.$this->date_filter_type)) {
+        if (! session()->has('_affEDate-'.$this->date_filter_type)) {
             $getNew = true;
-        }else {
+        } else {
             $checker = Carbon::now()->subMinutes(5);
             $date = Carbon::parse(session('_affEDate-'.$this->date_filter_type));
-            if($checker->greaterThan($date)) {
+            if ($checker->greaterThan($date)) {
                 $getNew = true;
             }
         }
@@ -85,15 +86,15 @@ class AffiliateEarningsByDateFilter extends Command implements SelfHandling
         //     ->whereBetween('updated_at',[$this->from_date,$this->to_date])
         //     ->sum('payout');
 
-        if($getNew) {
+        if ($getNew) {
             // \DB::connection('secondary')->enableQueryLog();
-            $hp = HandPAffiliateReport::where('affiliate_id',$this->affiliate_id)->whereBetween('created_at', [$this->from_date,$this->to_date])
+            $hp = HandPAffiliateReport::where('affiliate_id', $this->affiliate_id)->whereBetween('created_at', [$this->from_date, $this->to_date])
                 ->sum('payout');
 
-            $ep = ExternalPathAffiliateReport::where('affiliate_id',$this->affiliate_id)->whereBetween('created_at', [$this->from_date,$this->to_date])
+            $ep = ExternalPathAffiliateReport::where('affiliate_id', $this->affiliate_id)->whereBetween('created_at', [$this->from_date, $this->to_date])
                 ->sum('received');
 
-            $wr = AffiliateWebsiteReport::where('affiliate_id',$this->affiliate_id)->whereBetween('date', [$this->from_date,$this->to_date])
+            $wr = AffiliateWebsiteReport::where('affiliate_id', $this->affiliate_id)->whereBetween('date', [$this->from_date, $this->to_date])
                 ->sum('payout');
 
             // \Log::info(\DB::connection('secondary')->getQueryLog());
@@ -103,22 +104,24 @@ class AffiliateEarningsByDateFilter extends Command implements SelfHandling
             // \Log::info($wr);
             $earnings = ($ep * $share_perc) + $hp + $wr;
             // \Log::info($earnings);
-            $earnings = sprintf("%.2f",$earnings);
+            $earnings = sprintf('%.2f', $earnings);
             // $earnings = $this->toFixed($earnings, 2);
             // \Log::info('_affEarnings-'.$this->date_filter_type.' = '.$ep.' : '.$earnings);
-            session(['_affEDate-'.$this->date_filter_type => Carbon::now(), '_affEarnings-'.$this->date_filter_type => $earnings ]);
+            session(['_affEDate-'.$this->date_filter_type => Carbon::now(), '_affEarnings-'.$this->date_filter_type => $earnings]);
         }
 
         return session('_affEarnings-'.$this->date_filter_type);
     }
 
-    protected function toFixed($number, $precision, $separator = '.'){
+    protected function toFixed($number, $precision, $separator = '.')
+    {
         $numberParts = explode($separator, $number);
         $response = $numberParts[0];
-        if (count($numberParts)>1 && $precision > 0) {
+        if (count($numberParts) > 1 && $precision > 0) {
             $response .= $separator;
             $response .= substr($numberParts[1], 0, $precision);
         }
+
         return $response;
     }
 }

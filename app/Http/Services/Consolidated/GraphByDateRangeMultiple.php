@@ -1,8 +1,9 @@
 <?php
+
 namespace App\Http\Services\Consolidated;
 
-use Carbon\Carbon;
 use App\ConsolidatedGraph;
+use Carbon\Carbon;
 use DB;
 
 /**
@@ -78,14 +79,14 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
         's1' => true,
         's2' => true,
         's3' => true,
-        's4' => true
+        's4' => true,
     ];
 
     /**
      * Instantiate.
      * Provide the eloquent model.
      */
-    public function __construct (ConsolidatedGraph $model, Carbon $carbon)
+    public function __construct(ConsolidatedGraph $model, Carbon $carbon)
     {
         $this->model = $model;
         $this->carbon = $carbon;
@@ -94,12 +95,16 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
     /**
      * Set the revenue tracker, provided by Controller.
      *
-     * @param integer $revenueTrackerIDs
+     * @param  int  $revenueTrackerIDs
      */
-    public function setRevenueTrackerID ($revenueTrackerIDs)
+    public function setRevenueTrackerID($revenueTrackerIDs)
     {
-        if(is_array($revenueTrackerIDs)) $revenueTrackerIDs = array_filter($revenueTrackerIDs);
-        if(!$revenueTrackerIDs) return;
+        if (is_array($revenueTrackerIDs)) {
+            $revenueTrackerIDs = array_filter($revenueTrackerIDs);
+        }
+        if (! $revenueTrackerIDs) {
+            return;
+        }
 
         $this->revenueTrackerIDs = $revenueTrackerIDs;
     }
@@ -108,9 +113,9 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
      * Set legends, provided by controller from config.consolidatedgraph.legends.
      * We have to set immediatly the counters for generating chart series.
      *
-     * @param array $legends
+     * @param  array  $legends
      */
-    public function setLegends ($legends)
+    public function setLegends($legends)
     {
         $this->legends = $legends;
 
@@ -120,19 +125,19 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
     /**
      * Pre define dates, range: Yesterday, Week to date, Month to date, All of last Month
      *
-     * @param string $predefineDates
+     * @param  string  $predefineDates
      */
-    public function setPredefineDates ($predefineDates)
+    public function setPredefineDates($predefineDates)
     {
         $this->predefineDates = $predefineDates;
     }
 
     /**
      * Get the consilidated data to be use in chart.
-     * @model ConsolidatedGraph.
      *
+     * @model ConsolidatedGraph.
      */
-    public function getConsolidatedData ()
+    public function getConsolidatedData()
     {
         // \Log::info('Multi');
         // $selectQry = 'consolidated_graph.*';
@@ -161,24 +166,34 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
 
         // $query = $this->model->select(DB::raw('DATE_FORMAT(created_at, "%Y-%m-%d") as date'), ...$select);
         // Selected revenue trackers; else all
-        if(count($this->revenueTrackerIDs)) {
+        if (count($this->revenueTrackerIDs)) {
             $query->whereIn('revenue_tracker_id', $this->revenueTrackerIDs);
         }
         // Date range by date picker
-        if(!$this->predefineDates) {
+        if (! $this->predefineDates) {
             $this->dateFrom = Carbon::parse($this->dateFrom)->startOfDay();
             $this->dateTo = Carbon::parse($this->dateTo)->endOfDay();
             $query->whereBetween('created_at', [$this->dateFrom, $this->dateTo]);
         }
         // Date range by pre define dates
-        else $query = $this->{'query' . ucwords(camelCase($this->predefineDates))}($query);
+        else {
+            $query = $this->{'query'.ucwords(camelCase($this->predefineDates))}($query);
+        }
 
         $query->groupBy('date');
         $query->groupBy('revenue_tracker_id');
-        if($this->subid_includes['s1']) $query->groupBy('s1');
-        if($this->subid_includes['s2']) $query->groupBy('s2');
-        if($this->subid_includes['s3']) $query->groupBy('s3');
-        if($this->subid_includes['s4']) $query->groupBy('s4');
+        if ($this->subid_includes['s1']) {
+            $query->groupBy('s1');
+        }
+        if ($this->subid_includes['s2']) {
+            $query->groupBy('s2');
+        }
+        if ($this->subid_includes['s3']) {
+            $query->groupBy('s3');
+        }
+        if ($this->subid_includes['s4']) {
+            $query->groupBy('s4');
+        }
 
         $records = [];
         $this->records = $query
@@ -196,7 +211,7 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
         // foreach($graphs as $graph) {
         //     $data = $graph;
 
-        //     //get Survey Takers / Clicks    
+        //     //get Survey Takers / Clicks
         //     $graph['survey_takers_per_clicks'] = number_format($graph['all_clicks'] != 0 && $graph['survey_takers'] != 0 ? ($graph['survey_takers'] / $graph['all_clicks']) : 0.00, 2);
 
         //     //get Cost / All Clicks
@@ -204,7 +219,7 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
 
         //     //get Margin
         //     $graph['margin'] = number_format($graph['source_revenue'] != 0 && $graph['cost'] != 0 ? (($graph['source_revenue'] - $graph['cost']) / $graph['source_revenue']) : 0.00, 2);
-            
+
         //     //get Revenue / All Clicks
         //     $graph['source_revenue_per_all_clicks'] = number_format($graph['source_revenue'] != 0 && $graph['all_clicks'] != 0 ? $graph['source_revenue'] / $graph['all_clicks']  : 0.00 , 2);
 
@@ -260,7 +275,7 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
     /**
      * Predefine dates Query for yesterday
      *
-     * @param  Illuminate\Database\Eloquent\Builder $query
+     * @param  Illuminate\Database\Eloquent\Builder  $query
      * @return Illuminate\Database\Eloquent\Builder
      */
     protected function queryYesterday($query)
@@ -271,7 +286,7 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
     /**
      * Predefine dates Query for week to date
      *
-     * @param  Illuminate\Database\Eloquent\Builder $query
+     * @param  Illuminate\Database\Eloquent\Builder  $query
      * @return Illuminate\Database\Eloquent\Builder
      */
     protected function queryWeekToDate($query)
@@ -283,7 +298,7 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
     /**
      * Predefine dates Query for month to date
      *
-     * @param  Illuminate\Database\Eloquent\Builder $query
+     * @param  Illuminate\Database\Eloquent\Builder  $query
      * @return Illuminate\Database\Eloquent\Builder
      */
     protected function queryMonthToDate($query)
@@ -295,7 +310,7 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
     /**
      * Predefine dates Query for all last month
      *
-     * @param  Illuminate\Database\Eloquent\Builder $query
+     * @param  Illuminate\Database\Eloquent\Builder  $query
      * @return Illuminate\Database\Eloquent\Builder
      */
     protected function queryLastMonth($query)
@@ -312,59 +327,84 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
      *  2. loop through legends for the legends were the column of chart.
      *  3. Fetch colors for colmn.
      *  4. Group the date/categories per slide.
-     *
      */
     public function setSeriesThenCategories()
     {
-        return;
+
     }
 
-    public function setSubIDsInclude($inputs) {
+    public function setSubIDsInclude($inputs)
+    {
         $this->subid_includes = [
             's1' => $inputs['s1'],
             's2' => $inputs['s2'],
             's3' => $inputs['s3'],
-            's4' => $inputs['s4']
+            's4' => $inputs['s4'],
         ];
     }
 
-    public function getColumns() {
+    public function getColumns()
+    {
         return $this->columns;
     }
 
-    public function getColumnSumQry(){
+    public function getColumnSumQry()
+    {
         $selectQry = 'consolidated_graph.*';
-        if(count($this->columns)) {
+        if (count($this->columns)) {
             // $additional = ['coreg_p1_revenue', 'coreg_p1_views','coreg_p2_revenue', 'coreg_p2_views','coreg_p3_revenue', 'coreg_p3_views','coreg_p4_revenue', 'coreg_p4_views', 'all_coreg_views', 'all_mp_views', 'pd_views', 'tb_views', 'iff_views', 'rexadz_views', 'cpa_views', 'lsp_views'];
             // $columns = array_merge($this->columns, $additional);
             $s = [];
-            foreach($this->columns as $c) {
+            foreach ($this->columns as $c) {
                 // if(in_array($c,['coreg_p1_revenue_vs_views', 'coreg_p2_revenue_vs_views', 'coreg_p3_revenue_vs_views', 'coreg_p4_revenue_vs_views', 'all_coreg_revenue_per_all_coreg_views', 'mp_per_views', 'pd_revenue_vs_views', 'tb_revenue_vs_views', 'iff_revenue_vs_views', 'rexadz_revenue_vs_views', 'cpa_revenue_per_views', 'lsp_revenue_vs_views'])) $pro = 'AVG';
                 // else $pro = 'SUM';
                 // $s[] = "$pro($c) as $c";
-                if($c == 'cost_per_all_clicks') $qry = '(SUM(cost) / SUM(all_clicks))';
-                else if($c == 'survey_takers_per_clicks') $qry = '(SUM(survey_takers) / SUM(all_clicks))';
-                else if($c == 'margin') $qry = '((SUM(source_revenue) - SUM(cost)) / SUM(source_revenue))';
-                else if($c == 'source_revenue_per_all_clicks') $qry = '(SUM(source_revenue) / SUM(all_clicks))';
-                else if($c == 'source_revenue_per_survey_takers') $qry = '(SUM(source_revenue) / SUM(survey_takers))';
-                else if($c == 'all_coreg_revenue_per_all_coreg_views') $qry = '(SUM(all_coreg_revenue) / SUM(all_coreg_views))';
-                else if($c == 'coreg_p1_revenue_vs_views') $qry = '(SUM(coreg_p1_revenue) / SUM(coreg_p1_views))';
-                else if($c == 'coreg_p2_revenue_vs_views') $qry = '(SUM(coreg_p2_revenue) / SUM(coreg_p2_views))';
-                else if($c == 'coreg_p3_revenue_vs_views') $qry = '(SUM(coreg_p3_revenue) / SUM(coreg_p3_views))';
-                else if($c == 'coreg_p4_revenue_vs_views') $qry = '(SUM(coreg_p4_revenue) / SUM(coreg_p4_views))';
-                else if($c == 'mp_per_views') $qry = '(SUM(all_mp_revenue) / SUM(all_mp_views))';
-                else if($c == 'pd_revenue_vs_views') $qry = '(SUM(pd_revenue) / SUM(pd_views))';
-                else if($c == 'tb_revenue_vs_views') $qry = '(SUM(tb_revenue) / SUM(tb_views))';
-                else if($c == 'iff_revenue_vs_views') $qry = '(SUM(iff_revenue) / SUM(iff_views))';
-                else if($c == 'rexadz_revenue_vs_views') $qry = '(SUM(rexadz_revenue) / SUM(rexadz_views))';
-                else if($c == 'adsmith_revenue_vs_views') $qry = '(SUM(adsmith_revenue) / SUM(adsmith_views))';
-                else if($c == 'cpa_revenue_per_views') $qry = '(SUM(cpa_revenue) / SUM(cpa_views))';
-                else if($c == 'lsp_revenue_vs_views') $qry = '(SUM(lsp_revenue) / SUM(lsp_views))';
-                else if($c == 'cpa_per_survey_takers') $qry = '(SUM(cpa_revenue) / SUM(survey_takers))';
-                else if($c == 'all_inbox_per_survey_takers') $qry = '(SUM(all_inbox_revenue) / SUM(survey_takers))';
-                else if($c == 'push_cpa_revenue_per_survey_takers') $qry = '(SUM(push_revenue) / SUM(survey_takers))';
-                else $qry = "SUM($c)";
-                $s[] = $qry . " as $c";
+                if ($c == 'cost_per_all_clicks') {
+                    $qry = '(SUM(cost) / SUM(all_clicks))';
+                } elseif ($c == 'survey_takers_per_clicks') {
+                    $qry = '(SUM(survey_takers) / SUM(all_clicks))';
+                } elseif ($c == 'margin') {
+                    $qry = '((SUM(source_revenue) - SUM(cost)) / SUM(source_revenue))';
+                } elseif ($c == 'source_revenue_per_all_clicks') {
+                    $qry = '(SUM(source_revenue) / SUM(all_clicks))';
+                } elseif ($c == 'source_revenue_per_survey_takers') {
+                    $qry = '(SUM(source_revenue) / SUM(survey_takers))';
+                } elseif ($c == 'all_coreg_revenue_per_all_coreg_views') {
+                    $qry = '(SUM(all_coreg_revenue) / SUM(all_coreg_views))';
+                } elseif ($c == 'coreg_p1_revenue_vs_views') {
+                    $qry = '(SUM(coreg_p1_revenue) / SUM(coreg_p1_views))';
+                } elseif ($c == 'coreg_p2_revenue_vs_views') {
+                    $qry = '(SUM(coreg_p2_revenue) / SUM(coreg_p2_views))';
+                } elseif ($c == 'coreg_p3_revenue_vs_views') {
+                    $qry = '(SUM(coreg_p3_revenue) / SUM(coreg_p3_views))';
+                } elseif ($c == 'coreg_p4_revenue_vs_views') {
+                    $qry = '(SUM(coreg_p4_revenue) / SUM(coreg_p4_views))';
+                } elseif ($c == 'mp_per_views') {
+                    $qry = '(SUM(all_mp_revenue) / SUM(all_mp_views))';
+                } elseif ($c == 'pd_revenue_vs_views') {
+                    $qry = '(SUM(pd_revenue) / SUM(pd_views))';
+                } elseif ($c == 'tb_revenue_vs_views') {
+                    $qry = '(SUM(tb_revenue) / SUM(tb_views))';
+                } elseif ($c == 'iff_revenue_vs_views') {
+                    $qry = '(SUM(iff_revenue) / SUM(iff_views))';
+                } elseif ($c == 'rexadz_revenue_vs_views') {
+                    $qry = '(SUM(rexadz_revenue) / SUM(rexadz_views))';
+                } elseif ($c == 'adsmith_revenue_vs_views') {
+                    $qry = '(SUM(adsmith_revenue) / SUM(adsmith_views))';
+                } elseif ($c == 'cpa_revenue_per_views') {
+                    $qry = '(SUM(cpa_revenue) / SUM(cpa_views))';
+                } elseif ($c == 'lsp_revenue_vs_views') {
+                    $qry = '(SUM(lsp_revenue) / SUM(lsp_views))';
+                } elseif ($c == 'cpa_per_survey_takers') {
+                    $qry = '(SUM(cpa_revenue) / SUM(survey_takers))';
+                } elseif ($c == 'all_inbox_per_survey_takers') {
+                    $qry = '(SUM(all_inbox_revenue) / SUM(survey_takers))';
+                } elseif ($c == 'push_cpa_revenue_per_survey_takers') {
+                    $qry = '(SUM(push_revenue) / SUM(survey_takers))';
+                } else {
+                    $qry = "SUM($c)";
+                }
+                $s[] = $qry." as $c";
             }
 
             $s[] = 'DATE_FORMAT(created_at, "%Y-%m-%d") as date';
@@ -376,7 +416,7 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
             $s[] = 's4';
             $s[] = 's5';
 
-            $selectQry = implode(', ' , $s);
+            $selectQry = implode(', ', $s);
         }
         // \Log::info($selectQry);
         return $selectQry;

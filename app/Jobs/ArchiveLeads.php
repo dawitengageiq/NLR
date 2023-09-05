@@ -2,6 +2,8 @@
 
 namespace App\Jobs;
 
+use App\CampaignNoTracker;
+use App\CampaignNoTrackerArchive;
 use App\Helpers\Repositories\Settings;
 use App\Lead;
 use App\LeadArchive;
@@ -9,14 +11,12 @@ use App\LeadDataAdvArchive;
 use App\LeadDataCsvArchive;
 use App\LeadMessageArchive;
 use App\LeadSentResultArchive;
-use App\CampaignNoTracker;
-use App\CampaignNoTrackerArchive;
-use Illuminate\Database\QueryException;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
+use ErrorException;
 use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use ErrorException;
+use Illuminate\Database\QueryException;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Log;
 
@@ -26,7 +26,6 @@ class ArchiveLeads extends Job implements SelfHandling, ShouldQueue
 
     /**
      * Create a new job instance.
-     *
      */
     public function __construct()
     {
@@ -35,19 +34,16 @@ class ArchiveLeads extends Job implements SelfHandling, ShouldQueue
 
     /**
      * Execute the job.
-     *
-     * @param Settings $settings
      */
     public function handle(Settings $settings)
     {
-        if ($this->attempts() > 1)
-        {
+        if ($this->attempts() > 1) {
             return;
         }
 
         //get the settings
         $days = $settings->getValue('leads_archiving_age_in_days');
-        $counter=0;
+        $counter = 0;
 
         /*
         if($setting!=null)
@@ -65,19 +61,16 @@ class ArchiveLeads extends Job implements SelfHandling, ShouldQueue
         //first lead id
         $firstLead = Lead::withDaysOld($days)->first();
 
-        if(isset($firstLead))
-        {
+        if (isset($firstLead)) {
             $firstLeadID = $firstLead->id;
         }
 
         $leadsToArchive = count($leads);
 
-        foreach($leads as $lead)
-        {
+        foreach ($leads as $lead) {
             $leadArchive = new LeadArchive;
 
-            try
-            {
+            try {
                 $leadArchive->id = $lead->id;
                 $leadArchive->campaign_id = $lead->campaign_id;
                 $leadArchive->affiliate_id = $lead->affiliate_id;
@@ -98,8 +91,7 @@ class ArchiveLeads extends Job implements SelfHandling, ShouldQueue
                 $leadArchive->updated_at = $lead->updated_at;
                 $leadArchive->save();
 
-                if($lead->leadDataADV!=null)
-                {
+                if ($lead->leadDataADV != null) {
                     $leadDataAdvArchive = new LeadDataAdvArchive;
                     $leadDataAdvArchive->id = $lead->id;
                     $leadDataAdvArchive->value = $lead->leadDataADV->value;
@@ -108,8 +100,7 @@ class ArchiveLeads extends Job implements SelfHandling, ShouldQueue
                     $leadArchive->leadDataADV()->save($leadDataAdvArchive);
                 }
 
-                if($lead->leadDataCSV!=null)
-                {
+                if ($lead->leadDataCSV != null) {
                     $leadDataCsvArchive = new LeadDataCsvArchive;
                     $leadDataCsvArchive->id = $lead->id;
                     $leadDataCsvArchive->value = $lead->leadDataCSV->value;
@@ -118,8 +109,7 @@ class ArchiveLeads extends Job implements SelfHandling, ShouldQueue
                     $leadArchive->leadDataCSV()->save($leadDataCsvArchive);
                 }
 
-                if($lead->leadMessage!=null)
-                {
+                if ($lead->leadMessage != null) {
                     $leadMessageArchive = new LeadMessageArchive;
                     $leadMessageArchive->id = $lead->id;
                     $leadMessageArchive->value = $lead->leadMessage->value;
@@ -128,8 +118,7 @@ class ArchiveLeads extends Job implements SelfHandling, ShouldQueue
                     $leadArchive->leadMessage()->save($leadMessageArchive);
                 }
 
-                if($lead->leadSentResult!=null)
-                {
+                if ($lead->leadSentResult != null) {
                     $leadSentResultArchive = new LeadSentResultArchive;
                     $leadSentResultArchive->id = $lead->id;
                     $leadSentResultArchive->value = $lead->leadSentResult->value;
@@ -140,26 +129,21 @@ class ArchiveLeads extends Job implements SelfHandling, ShouldQueue
 
                 //remove the lead
                 $lead->delete();
-            }
-            catch(ErrorException $e)
-            {
+            } catch (ErrorException $e) {
                 Log::info($e->getMessage());
                 Log::info($e->getCode());
-            }
-            catch(QueryException $e)
-            {
+            } catch (QueryException $e) {
                 Log::info($e->getMessage());
                 Log::info($e->getCode());
 
-                if($e->getCode()==23000)
-                {
+                if ($e->getCode() == 23000) {
                     //remove the lead
                     $lead->delete();
                 }
             }
 
             $lastLeadID = $lead->id;
-            ++$counter;
+            $counter++;
         }
 
         $emailNotificationRecipient = env('REPORTS_EMAIL_NOTIFICATION_RECIPIENT', 'marwilburton@hotmail.com');
@@ -167,26 +151,25 @@ class ArchiveLeads extends Job implements SelfHandling, ShouldQueue
         //send email to Burt to notify that Atchive Leads Queue was successfully finished
         Mail::send('emails.archive_leads',
             ['days' => $days, 'leadsToArchive' => $leadsToArchive, 'firstLeadID' => $firstLeadID, 'lastLeadID' => $lastLeadID],
-            function ($m) use ($emailNotificationRecipient){
-            $m->from('ariel@engageiq.com', 'Ariel Magbanua');
-            $m->to($emailNotificationRecipient, 'Marwil Burton');
-            // $m->cc('ariel@engageiq.com', 'Ariel Magbanua');
-            $m->subject('Archive Leads Job Queue Successfully Executed!');
-        });
+            function ($m) use ($emailNotificationRecipient) {
+                $m->from('ariel@engageiq.com', 'Ariel Magbanua');
+                $m->to($emailNotificationRecipient, 'Marwil Burton');
+                // $m->cc('ariel@engageiq.com', 'Ariel Magbanua');
+                $m->subject('Archive Leads Job Queue Successfully Executed!');
+            });
 
         Log::info("There are $counter leads are archived!");
 
         /* Campaign No Tracking */
         $trackers = CampaignNoTracker::withDaysOld($days)->get();
-        foreach($trackers as $tracker)
-        {
+        foreach ($trackers as $tracker) {
             $trackArchive = CampaignNoTrackerArchive::firstOrNew([
-                        'campaign_id'   => $tracker->campaign_id,
-                        'email'         => $tracker->email
-                    ]);
-            if($trackArchive->exists) {
+                'campaign_id' => $tracker->campaign_id,
+                'email' => $tracker->email,
+            ]);
+            if ($trackArchive->exists) {
                 $trackArchive->count += $tracker->count;
-            }else {
+            } else {
                 $trackArchive->created_at = $tracker->created_at;
                 $trackArchive->count = $tracker->count;
             }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App;
 
 use Carbon\Carbon;
@@ -7,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class WebsitesViewTracker extends Model
 {
     protected $connection;
+
     /**
      * Table
-     *
      */
     protected $table = 'websites_view_tracker';
 
@@ -39,31 +40,28 @@ class WebsitesViewTracker extends Model
      */
     protected $dates = [
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') != 'reports') {
+        if (config('app.type') != 'reports') {
             $this->connection = 'secondary';
         }
     }
 
     /**
      * Reltionship
-     *
      */
-    public function website(){
-		return $this->Belongsto(AffiliateWebsite::class);
-	}
+    public function website()
+    {
+        return $this->Belongsto(AffiliateWebsite::class);
+    }
 
     /**
      * Track user views by email within 24 hours.
      *
-     * @param $query
-     * @param $email
-     * @param $websiteID
      * @return bool
      */
     public function scopeTrack($query, $email, $websiteID, $payout, $timeInterval)
@@ -83,6 +81,7 @@ class WebsitesViewTracker extends Model
         $this->email = $email;
         $this->payout = $payout;
         $this->save();
+
         return true;
-	}
+    }
 }

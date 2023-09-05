@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Jobs\Reports\GenerateClicksVsRegistrationStatsV2;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class GenerateClicksRegistrationStatisticsVer2 extends Command
 {
@@ -42,8 +42,7 @@ class GenerateClicksRegistrationStatisticsVer2 extends Command
         $this->info('Initiating generating of clicks vs registration stats...');
         $date = $this->option('date');
 
-        if(empty($date))
-        {
+        if (empty($date)) {
             $date = Carbon::now()->subDay()->toDateString();
         }
 

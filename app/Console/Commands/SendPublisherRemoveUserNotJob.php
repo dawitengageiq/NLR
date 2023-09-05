@@ -2,20 +2,18 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use Carbon\Carbon;
+use App\Campaign;
 use App\LeadUserRequest;
 use App\Setting;
-use App\Campaign;
-use Storage;
-use PharData;
-use Phar;
-use SSH;
+use Carbon\Carbon;
 use Curl\Curl;
-use Log;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Database\QueryException;
-use GuzzleHttp\Exception\ConnectException;
+use Log;
+use Phar;
+use PharData;
+use SSH;
+use Storage;
 
 class SendPublisherRemoveUserNotJob extends Command
 {
@@ -34,14 +32,23 @@ class SendPublisherRemoveUserNotJob extends Command
     protected $description = 'Send publisher to remove user';
 
     protected $campaigns;
+
     protected $users;
+
     protected $emails;
+
     protected $ids;
+
     protected $status;
+
     protected $states = [];
+
     protected $cc_emails = [];
+
     protected $unique = [];
+
     protected $external_emails = [];
+
     protected $reply_tos = [];
 
     /**
@@ -66,33 +73,33 @@ class SendPublisherRemoveUserNotJob extends Command
 
         $state = $this->option('state');
 
-        if($state != '') {
+        if ($state != '') {
             $this->states = explode(',', $state);
         }
 
         $this->status = 1;
         $campaigns = Campaign::whereNotNull('advertiser_email')
-            ->where('advertiser_email','!=','')
+            ->where('advertiser_email', '!=', '')
             ->with(['advertiser' => function ($q) {
-                $q->select(['id','company']);
+                $q->select(['id', 'company']);
 
             }])
-            ->select(['id','advertiser_email','name', 'advertiser_id'])->get()->toArray();
-        foreach($campaigns as $c) {
+            ->select(['id', 'advertiser_email', 'name', 'advertiser_id'])->get()->toArray();
+        foreach ($campaigns as $c) {
             $this->campaigns[$c['id']] = $c;
         }
         // \Log::info($this->campaigns);
         // \DB::connection('secondary')->enableQueryLog();
-        $this->emails= [];
+        $this->emails = [];
         $reqQry = LeadUserRequest::where('is_sent', 0)->whereNotNull('subscribed_campaigns')->where('request_type', 'like', '%Delet%');
-        if(count($this->states) > 0) {
+        if (count($this->states) > 0) {
             $reqQry = $reqQry->whereIn('state', $this->states);
         }
         $this->users = $reqQry->get()->toArray();
         // \Log::info(\DB::connection('secondary')->getQueryLog());
-        foreach($this->users as $user) {
+        foreach ($this->users as $user) {
             $this->ids[] = $user['id'];
-            if(!in_array($user['email'], $this->emails)){
+            if (! in_array($user['email'], $this->emails)) {
                 $this->emails[] = $user['email'];
                 $this->unique[] = $user;
             }
@@ -102,16 +109,21 @@ class SendPublisherRemoveUserNotJob extends Command
         // \Log::info(count($this->users));
         // \Log::info(count($this->unique));
 
-        $settings = Setting::whereIn('code', ['ccpaadminemail_recipient', 'optoutexternal_recipient','optoutemail_replyto'])->get();
-        foreach($settings as $setting) {
-            if($setting->code == 'ccpaadminemail_recipient') $this->cc_emails = explode(';', trim($setting->description));
-            else if($setting->code == 'optoutexternal_recipient') $this->external_emails = explode(';', trim($setting->description));
-            else if($setting->code == 'optoutemail_replyto') $this->reply_tos = explode(';', trim($setting->description));
+        $settings = Setting::whereIn('code', ['ccpaadminemail_recipient', 'optoutexternal_recipient', 'optoutemail_replyto'])->get();
+        foreach ($settings as $setting) {
+            if ($setting->code == 'ccpaadminemail_recipient') {
+                $this->cc_emails = explode(';', trim($setting->description));
+            } elseif ($setting->code == 'optoutexternal_recipient') {
+                $this->external_emails = explode(';', trim($setting->description));
+            } elseif ($setting->code == 'optoutemail_replyto') {
+                $this->reply_tos = explode(';', trim($setting->description));
+            }
         }
 
-        if(count($this->users) == 0) {
+        if (count($this->users) == 0) {
             $this->info('No users for opt out found.');
             Log::info('No users for opt out found.');
+
             return;
         }
 
@@ -119,119 +131,116 @@ class SendPublisherRemoveUserNotJob extends Command
         $this->info('Sending Opt Out Emails.');
 
         $list = [];
-        foreach($this->unique as $u) {
+        foreach ($this->unique as $u) {
             $subscribed = $u['subscribed_campaigns'] == 0 ? [] : explode(',', $u['subscribed_campaigns']);
-            foreach($subscribed as $s) {
-                if(array_key_exists($s, $this->campaigns)) {
+            foreach ($subscribed as $s) {
+                if (array_key_exists($s, $this->campaigns)) {
                     $list[$s][] = $u;
                 }
             }
         }
 
         // \Log::info($list);
-        //Send Camapaign Advertiser 
+        //Send Camapaign Advertiser
         $cc_emails = $this->cc_emails;
         $reply_tos = $this->reply_tos;
 
         $this->info('For Campaigns');
-        foreach($list as $campaign_id => $users) {
-            if(count($users) > 0) {
+        foreach ($list as $campaign_id => $users) {
+            if (count($users) > 0) {
                 $campaign = $this->campaigns[$campaign_id];
-                $this->info('Campaign: '. $campaign['name']);
-                Log::info('Campaign: '. $campaign['name']);
-                try{
+                $this->info('Campaign: '.$campaign['name']);
+                Log::info('Campaign: '.$campaign['name']);
+                try {
                     Mail::send('emails.send_publisher_remove_user',
                         ['campaign' => $campaign, 'users' => $users],
-                        function ($m) use($campaign, $cc_emails, $reply_tos){
-                        Log::info($campaign['advertiser_email']);
-                        $m->from('admin@engageiq.com', 'CCPA Request');
-                        if(count($cc_emails) > 0) {
-                            foreach($cc_emails as $cc) {
-                                if($cc != '') {
-                                    $m->cc(trim($cc));
+                        function ($m) use ($campaign, $cc_emails, $reply_tos) {
+                            Log::info($campaign['advertiser_email']);
+                            $m->from('admin@engageiq.com', 'CCPA Request');
+                            if (count($cc_emails) > 0) {
+                                foreach ($cc_emails as $cc) {
+                                    if ($cc != '') {
+                                        $m->cc(trim($cc));
+                                    }
                                 }
                             }
-                        }
 
-                        if(count($reply_tos) > 0) {
-                            foreach($reply_tos as $to) {
-                                if($to != '') {
-                                    $m->replyTo(trim($to));
+                            if (count($reply_tos) > 0) {
+                                foreach ($reply_tos as $to) {
+                                    if ($to != '') {
+                                        $m->replyTo(trim($to));
+                                    }
                                 }
                             }
-                        }
 
-                        $m->to(trim($campaign['advertiser_email']))->subject('EngageIQ Removal of Users CCPA');
-                    });
-                }
-                catch(Exception $e){
+                            $m->to(trim($campaign['advertiser_email']))->subject('EngageIQ Removal of Users CCPA');
+                        });
+                } catch (Exception $e) {
                     $this->status = 0;
                     $this->info('Sending mail error');
                     Log::info('Sending mail error');
                     Log::info($e);
 
-                }   
+                }
                 sleep(15);
             }
         }
 
         //External Paths Email
-        if(count($this->external_emails) > 0) {
+        if (count($this->external_emails) > 0) {
             $this->info('For Externals');
-            foreach($this->external_emails as $external_email) {
+            foreach ($this->external_emails as $external_email) {
                 $email = trim($external_email);
                 $campaign = false;
                 $users = $this->unique;
-                try{
+                try {
                     Mail::send('emails.send_publisher_remove_user',
                         ['campaign' => $campaign, 'users' => $users],
-                        function ($m) use($campaign, $cc_emails, $email, $reply_tos){
-                        $m->from('admin@engageiq.com', 'CCPA Request');
-                        if(count($cc_emails) > 0) {
-                            foreach($cc_emails as $cc) {
-                                if($cc != '') {
-                                    $m->cc(trim($cc));
+                        function ($m) use ($cc_emails, $email, $reply_tos) {
+                            $m->from('admin@engageiq.com', 'CCPA Request');
+                            if (count($cc_emails) > 0) {
+                                foreach ($cc_emails as $cc) {
+                                    if ($cc != '') {
+                                        $m->cc(trim($cc));
+                                    }
                                 }
                             }
-                        }
 
-                        if(count($reply_tos) > 0) {
-                            foreach($reply_tos as $to) {
-                                if($to != '') {
-                                    $m->replyTo(trim($to));
+                            if (count($reply_tos) > 0) {
+                                foreach ($reply_tos as $to) {
+                                    if ($to != '') {
+                                        $m->replyTo(trim($to));
+                                    }
                                 }
                             }
-                        }
 
-                        $m->to($email)->subject('EngageIQ Removal of Users CCPA');
-                    });
-                }
-                catch(Exception $e){
+                            $m->to($email)->subject('EngageIQ Removal of Users CCPA');
+                        });
+                } catch (Exception $e) {
                     $this->status = 0;
                     Log::info('Sending mail error');
                     Log::info($e);
-                }   
+                }
                 sleep(15);
             }
         }
-        
+
         //ALL Inbox
         Log::info('All Inbox');
         $this->info('For All Inbox');
-        foreach($this->emails as $email) {
-            Log::info('Email: '. $email);
+        foreach ($this->emails as $email) {
+            Log::info('Email: '.$email);
             $curl = new Curl();
-            $curl->post('https://ao7ulnwxj5.execute-api.us-east-1.amazonaws.com/prod/ccpa?request=datadeletion', array(
+            $curl->post('https://ao7ulnwxj5.execute-api.us-east-1.amazonaws.com/prod/ccpa?request=datadeletion', [
                 'email' => $email,
                 'source_id' => '620',
-                'api_key' => 'd41fe959_8cfb_48de_98db_e86bb601820e'
-            ));
+                'api_key' => 'd41fe959_8cfb_48de_98db_e86bb601820e',
+            ]);
 
             if ($curl->error) {
                 $this->status = 0;
                 Log::info($curl->error_code);
-            }
-            else {
+            } else {
                 Log::info('All Inbox Error');
                 Log::info($curl->response);
             }
@@ -240,20 +249,20 @@ class SendPublisherRemoveUserNotJob extends Command
         //Live Ramp
         Log::info('Live Ramp');
         $this->info('For Live Ramp');
-        $lr = "";
+        $lr = '';
         $date = Carbon::now()->toDateString();
         $time = Carbon::now()->format('h:m:s');
         // $time = Carbon::now()->format('hms'); //Local Testing
         $lr_name = 'web_match_'.$date.'T'.$time.'.psv';
         Log::info('File Name: '.$lr_name);
-        foreach($this->emails as $email) {
+        foreach ($this->emails as $email) {
             $email = trim(strtolower($email));
             $lr .= md5($email).'|'.sha1($email).'|'.hash('sha256', $email).'|1'."\n";
         }
         Storage::disk('downloads')->put($lr_name, $lr);
         Log::info('.psv created');
 
-        try{
+        try {
             // $a = new PharData(storage_path('downloads/'.$lr_name.'.tar'), Phar::CURRENT_AS_FILEINFO | Phar::KEY_AS_FILENAME);
             // $a->addFile(storage_path('downloads/'.$lr_name), $lr_name);
             // $a->compress(Phar::GZ);
@@ -267,13 +276,14 @@ class SendPublisherRemoveUserNotJob extends Command
 
             $filePath = storage_path('downloads/'.$lr_name);
 
-            $dest = $filePath . '.gz'; 
-            $error = false; 
-            if ($fp_out = gzopen($dest, 'wb9')) { 
-                if ($fp_in = fopen($filePath,'rb')) { 
-                    while (!feof($fp_in)) 
-                        gzwrite($fp_out, fread($fp_in, 1024 * 512)); 
-                    fclose($fp_in); 
+            $dest = $filePath.'.gz';
+            $error = false;
+            if ($fp_out = gzopen($dest, 'wb9')) {
+                if ($fp_in = fopen($filePath, 'rb')) {
+                    while (! feof($fp_in)) {
+                        gzwrite($fp_out, fread($fp_in, 1024 * 512));
+                    }
+                    fclose($fp_in);
                 } else {
                     $this->status = 0;
                 }
@@ -292,7 +302,7 @@ class SendPublisherRemoveUserNotJob extends Command
                 'key' => '',
                 'keytext' => '',
                 'keyphrase' => '',
-                'agent' => ''
+                'agent' => '',
             ];
 
             config(['remote.connections.production' => $sftpConnectionConfig]);
@@ -302,20 +312,19 @@ class SendPublisherRemoveUserNotJob extends Command
 
             // Switch back to the default
             $sftpConnectionConfig = [
-                'host'      => '',
-                'username'  => '',
-                'password'  => '',
-                'key'       => '',
-                'keytext'   => '',
+                'host' => '',
+                'username' => '',
+                'password' => '',
+                'key' => '',
+                'keytext' => '',
                 'keyphrase' => '',
-                'agent'     => '',
-                'timeout'   => 10,
+                'agent' => '',
+                'timeout' => 10,
             ];
             config(['remote.connections.production' => $sftpConnectionConfig]);
 
             Log::info('Sent.');
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             Log::info('Live Ramp Error Encountered');
             Log::info($e);
             $this->status = 0;

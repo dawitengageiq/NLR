@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Database\Seeder;
-use App\Role;
 use App\Action;
+use App\Role;
 use App\User;
+use Illuminate\Database\Seeder;
 
 class RoleSeeder extends Seeder
 {
@@ -25,24 +25,22 @@ class RoleSeeder extends Seeder
 
         //enable all permissions for the super user
         $actions = Action::all();
-        foreach($actions as $action)
-        {
-            $superUser->actions()->attach($action->id,['permitted' => true]);
+        foreach ($actions as $action) {
+            $superUser->actions()->attach($action->id, ['permitted' => true]);
         }
 
         $superUser->save();
 
         //apply this user to all admin accounts
-        $admins = User::where('account_type','=',2)->get();
+        $admins = User::where('account_type', '=', 2)->get();
 
-        foreach($admins as $admin)
-        {
+        foreach ($admins as $admin) {
             $admin->role_id = $superUser->id;
             $admin->save();
         }
 
         $campaignEditor = Role::firstOrNew([
-            'name' => 'Campaign Editor'
+            'name' => 'Campaign Editor',
         ]);
 
         $campaignEditor->description = 'Can only edit campaigns';

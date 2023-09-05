@@ -2,15 +2,14 @@
 
 namespace App\Console\Commands;
 
-use App\Commands\RandomProbability;
 use App\CampaignCreative;
+use App\Commands\RandomProbability;
 use App\Helpers\Repositories\LeadData;
+use App\Jobs\TestJob;
 use App\Lead;
-use Carbon\Carbon;
+use Bus;
 use Illuminate\Console\Command;
 use Log;
-use App\Jobs\TestJob;
-use Bus;
 
 class TestCommand extends Command
 {
@@ -32,7 +31,6 @@ class TestCommand extends Command
 
     /**
      * Create a new command instance.
-     *
      */
     public function __construct(LeadData $leadData)
     {

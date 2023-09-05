@@ -7,15 +7,15 @@ use App\Campaign;
 use App\LinkOutCount;
 use Carbon\Carbon;
 use Curl\Curl;
-use Illuminate\Database\QueryException;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
+use DB;
 use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\QueryException;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
-use Sabre\Xml\Reader;
-use DB;
 use Log;
+use Sabre\Xml\Reader;
 
 class GetCakeConversions extends Job implements SelfHandling, ShouldQueue
 {
@@ -23,7 +23,6 @@ class GetCakeConversions extends Job implements SelfHandling, ShouldQueue
 
     /**
      * Create a new job instance.
-     *
      */
     public function __construct()
     {
@@ -37,8 +36,7 @@ class GetCakeConversions extends Job implements SelfHandling, ShouldQueue
      */
     public function handle()
     {
-        if($this->attempts() > 1)
-        {
+        if ($this->attempts() > 1) {
             return;
         }
 
@@ -59,13 +57,13 @@ class GetCakeConversions extends Job implements SelfHandling, ShouldQueue
         $templateURL = config('constants.CAKE_API_CONVERSION_URL');
 
         //for the start date
-        $templateURL = str_replace('CAKE_START_DATE',$startDate,$templateURL);
+        $templateURL = str_replace('CAKE_START_DATE', $startDate, $templateURL);
         //for the end date
-        $conversionURL = str_replace('CAKE_END_DATE',$endDate,$templateURL);
+        $conversionURL = str_replace('CAKE_END_DATE', $endDate, $templateURL);
 
         //set initial start  row and row limit
-        $conversionURL = str_replace('START_ROW',0,$conversionURL);
-        $conversionURL = str_replace('ROW_LIMIT',1,$conversionURL);
+        $conversionURL = str_replace('START_ROW', 0, $conversionURL);
+        $conversionURL = str_replace('ROW_LIMIT', 1, $conversionURL);
 
         $prefix = config('constants.CAKE_SABRE_PREFIX_V11');
         $subPrefix = config('constants.CAKE_SABRE_SUB_PREFIX_V11');
@@ -82,7 +80,7 @@ class GetCakeConversions extends Job implements SelfHandling, ShouldQueue
             $prefix.'offer' => 'Sabre\Xml\Element\KeyValue',
             $prefix.'campaign' => 'Sabre\Xml\Element\KeyValue',
             $prefix.'creative' => 'Sabre\Xml\Element\KeyValue',
-            $prefix.'received' => 'Sabre\Xml\Element\KeyValue'
+            $prefix.'received' => 'Sabre\Xml\Element\KeyValue',
 
         ];
 
@@ -92,12 +90,9 @@ class GetCakeConversions extends Job implements SelfHandling, ShouldQueue
         $reader->xml($curl->response);
         $parsedResponse = $reader->parse();
 
-        if ($curl->error)
-        {
+        if ($curl->error) {
             Log::info($curl->error_code);
-        }
-        else
-        {
+        } else {
 
             $rowCount = intval($parsedResponse['value'][$prefix.'row_count']);
             $rows = $rowCount;
@@ -107,21 +102,19 @@ class GetCakeConversions extends Job implements SelfHandling, ShouldQueue
             $count = 0;
 
             //FOR CPAWALL CAP
-            $campaigns = Campaign::where('campaign_type',5) //->where('lead_cap_type','!=',0)
-            ->whereNotNull('linkout_offer_id')
-                ->where('linkout_offer_id','!=',0)
-                ->select('id','linkout_offer_id','lead_cap_type','lead_cap_value')->get();
+            $campaigns = Campaign::where('campaign_type', 5) //->where('lead_cap_type','!=',0)
+                ->whereNotNull('linkout_offer_id')
+                ->where('linkout_offer_id', '!=', 0)
+                ->select('id', 'linkout_offer_id', 'lead_cap_type', 'lead_cap_value')->get();
 
             $campaignLinkId = [];
             $linkCampaignId = [];
             $linkOuts = [];
 
-            foreach($campaigns as $c)
-            {
+            foreach ($campaigns as $c) {
                 $campaignLinkId[$c->id] = $c->linkout_offer_id;
 
-                if($c->lead_cap_type != 0)
-                {
+                if ($c->lead_cap_type != 0) {
 
                     $linkCampaignId[$c->linkout_offer_id] = $c->id;
                     $linkOuts[$c->linkout_offer_id]['type'] = $c->lead_cap_type;
@@ -134,12 +127,10 @@ class GetCakeConversions extends Job implements SelfHandling, ShouldQueue
             $affiliates = DB::SELECT('SELECT campaign_id,affiliate_id, lead_cap_type, lead_cap_value FROM affiliate_campaign WHERE
                     campaign_id IN (SELECT id FROM campaigns WHERE campaign_type = 5 AND (linkout_offer_id IS NOT NULL AND linkout_offer_id != 0) )');
 
-            foreach($affiliates as $a)
-            {
+            foreach ($affiliates as $a) {
                 $linkout_offer_id = $campaignLinkId[$a->campaign_id];
 
-                if(!isset($linkOuts[$linkout_offer_id]))
-                {
+                if (! isset($linkOuts[$linkout_offer_id])) {
                     $linkOuts[$linkout_offer_id]['type'] = 0;
                     $linkOuts[$linkout_offer_id]['value'] = 0;
                     $linkOuts[$linkout_offer_id]['affiliates'] = [];
@@ -153,11 +144,10 @@ class GetCakeConversions extends Job implements SelfHandling, ShouldQueue
 
             //RESET
             $now_date = Carbon::now();
-            $reset_caps = LinkOutCount::where('expiration_date','<=',$now_date)->lists('id');
+            $reset_caps = LinkOutCount::where('expiration_date', '<=', $now_date)->lists('id');
             $not_included = [];
 
-            foreach($reset_caps as $rc)
-            {
+            foreach ($reset_caps as $rc) {
 
                 $cap = LinkOutCount::find($rc);
                 $campaign = $cap->campaign_id;
@@ -165,17 +155,13 @@ class GetCakeConversions extends Job implements SelfHandling, ShouldQueue
                 $offer = $campaignLinkId[$campaign];
                 $not_included[] = $offer;
 
-                if($affiliate == '')
-                {
+                if ($affiliate == '') {
                     $cap_type = $linkOuts[$offer]['type'];
-                }
-                else
-                {
+                } else {
                     $cap_type = $linkOuts[$offer]['affiliates'][$affiliate]['type'];
                 }
 
-                switch($cap_type)
-                {
+                switch ($cap_type) {
                     case 1 : //daily
                         $exp_date = Carbon::now()->endOfDay();
                         break;
@@ -199,14 +185,13 @@ class GetCakeConversions extends Job implements SelfHandling, ShouldQueue
             }
 
             //CPAWALL CAP END
-            do
-            {
+            do {
                 //set initial start  row and row limit
                 $templateURL = config('constants.CAKE_API_CONVERSION_URL');
-                $templateURL = str_replace('CAKE_START_DATE',$startDate,$templateURL);
-                $conversionURL = str_replace('CAKE_END_DATE',$endDate,$templateURL);
-                $conversionURL = str_replace('START_ROW',$startRow,$conversionURL);
-                $conversionURL = str_replace('ROW_LIMIT',$rowLimit,$conversionURL);
+                $templateURL = str_replace('CAKE_START_DATE', $startDate, $templateURL);
+                $conversionURL = str_replace('CAKE_END_DATE', $endDate, $templateURL);
+                $conversionURL = str_replace('START_ROW', $startRow, $conversionURL);
+                $conversionURL = str_replace('ROW_LIMIT', $rowLimit, $conversionURL);
 
                 Log::info('Fetching conversions using the following URL: ');
                 Log::info($conversionURL);
@@ -214,12 +199,9 @@ class GetCakeConversions extends Job implements SelfHandling, ShouldQueue
                 $curl = new Curl();
                 $curl->get($conversionURL);
 
-                if ($curl->error)
-                {
+                if ($curl->error) {
                     Log::info($curl->error_code);
-                }
-                else
-                {
+                } else {
                     $reader = new Reader();
 
                     $reader->elementMap = [
@@ -232,7 +214,7 @@ class GetCakeConversions extends Job implements SelfHandling, ShouldQueue
                         $prefix.'offer' => 'Sabre\Xml\Element\KeyValue',
                         $prefix.'campaign' => 'Sabre\Xml\Element\KeyValue',
                         $prefix.'creative' => 'Sabre\Xml\Element\KeyValue',
-                        $prefix.'received' => 'Sabre\Xml\Element\KeyValue'
+                        $prefix.'received' => 'Sabre\Xml\Element\KeyValue',
                     ];
 
                     $reader->xml($curl->response);
@@ -241,43 +223,35 @@ class GetCakeConversions extends Job implements SelfHandling, ShouldQueue
                     //get the row count
                     $conversions = $response['value'][$prefix.'conversions'];
 
-                    foreach($conversions as $cnv)
-                    {
-                        ++$count;
+                    foreach ($conversions as $cnv) {
+                        $count++;
 
                         $conversionData = $cnv['value'];
 
-                        try{
+                        try {
 
                             $conversion = CakeConversion::firstOrNew(['id' => $conversionData[$prefix.'conversion_id']]);
 
                             //CPAWALL CAP START
-                            if(! $conversion->exists && !in_array($conversionData[$prefix.'offer'][$subPrefix.'offer_id'],$not_included))
-                            {
+                            if (! $conversion->exists && ! in_array($conversionData[$prefix.'offer'][$subPrefix.'offer_id'], $not_included)) {
                                 $offer_id = $conversionData[$prefix.'offer'][$subPrefix.'offer_id'];
                                 $affiliate_id = $conversionData[$prefix.'affiliate'][$subPrefix.'affiliate_id'];
                                 // Log::info($conversionData[$prefix.'offer'][$subPrefix.'offer_id'].' - '.$conversionData[$prefix.'affiliate'][$subPrefix.'affiliate_id']);
 
-                                if(in_array($offer_id,array_keys($linkOuts)))
-                                {
-                                    if($linkOuts[$offer_id]['type'] != 0)
-                                    {
-                                        $counter[$offer_id][null] = !isset($counter[$offer_id][null]) ? 1 : $counter[$offer_id][null] + 1;
-                                    }
-                                    else
-                                    {
+                                if (in_array($offer_id, array_keys($linkOuts))) {
+                                    if ($linkOuts[$offer_id]['type'] != 0) {
+                                        $counter[$offer_id][null] = ! isset($counter[$offer_id][null]) ? 1 : $counter[$offer_id][null] + 1;
+                                    } else {
                                         $counter[$offer_id][null] = 0;
                                     }
 
-                                    if(in_array($affiliate_id,array_keys($linkOuts[$offer_id]['affiliates'])))
-                                    {
-                                        $counter[$offer_id][$affiliate_id] = !isset($counter[$offer_id][$affiliate_id]) ? 1 : $counter[$offer_id][$affiliate_id] + 1;
+                                    if (in_array($affiliate_id, array_keys($linkOuts[$offer_id]['affiliates']))) {
+                                        $counter[$offer_id][$affiliate_id] = ! isset($counter[$offer_id][$affiliate_id]) ? 1 : $counter[$offer_id][$affiliate_id] + 1;
                                     }
                                 }
                             }
 
-                            if($firstConversionID == 0)
-                            {
+                            if ($firstConversionID == 0) {
                                 $firstConversionID = $conversionData[$prefix.'conversion_id'];
                             }
 
@@ -311,16 +285,13 @@ class GetCakeConversions extends Job implements SelfHandling, ShouldQueue
 
                             $lastConversionID = $conversionData[$prefix.'conversion_id'];
 
-                            ++$conversionCount;
-                        }
-                        catch(QueryException $exception)
-                        {
+                            $conversionCount++;
+                        } catch (QueryException $exception) {
                             //do nothing
                         }
                     }
 
-                    if($rows<500)
-                    {
+                    if ($rows < 500) {
                         $rowLimit = $rows;
                         $rows = 0;
                     }
@@ -329,35 +300,26 @@ class GetCakeConversions extends Job implements SelfHandling, ShouldQueue
                     $startRow += 500;
                 }
 
-            }while($rows>=0);
+            } while ($rows >= 0);
 
-            foreach($counter as $offer_id => $c)
-            {
-                foreach($c as $affiliate => $new_count)
-                {
+            foreach ($counter as $offer_id => $c) {
+                foreach ($c as $affiliate => $new_count) {
                     $campaign_id = array_search($offer_id, $campaignLinkId); //$linkCampaignId[$offer_id];
                     $affiliate_id = $affiliate == '' ? null : $affiliate;
                     //1 -> Daily; 2 -> Weekly; 3 -> Monthly; 4 -> Yearly
 
-                    if($affiliate_id == '' || $affiliate_id == null)
-                    {
+                    if ($affiliate_id == '' || $affiliate_id == null) {
                         $type = $linkOuts[$offer_id]['type'];
-                    }
-                    else
-                    {
+                    } else {
                         $type = $linkOuts[$offer_id]['affiliates'][$affiliate_id]['type'];
                     }
 
-                    if($type != 0)
-                    {
+                    if ($type != 0) {
                         $cap = LinkOutCount::firstOrNew(['campaign_id' => $campaign_id, 'affiliate_id' => $affiliate_id]);
 
-                        if($cap->exists)
-                        {
+                        if ($cap->exists) {
                             $cap->count += $new_count;
-                        }
-                        else
-                        {
+                        } else {
                             $cap->count = $new_count;
                         }
 
@@ -372,11 +334,11 @@ class GetCakeConversions extends Job implements SelfHandling, ShouldQueue
         //send email to Burt to notify that Atchive Leads Queue was successfully finished
         Mail::send('emails.get_cake_conversions',
             ['startDateParam' => $startDateParam, 'endDateParam' => $endDateParam, 'firstConversionID' => $firstConversionID, 'lastConversionID' => $lastConversionID, 'conversionCount' => $conversionCount],
-            function ($m) use($emailNotificationRecipient){
-            $m->from('ariel@engageiq.com', 'Ariel Magbanua');
-            $m->to($emailNotificationRecipient, 'Marwil Burton');
-            // $m->cc('ariel@engageiq.com', 'Ariel Magbanua');
-            $m->subject('Get Cake Conversions Job Queue Successfully Executed!');
-        });
+            function ($m) use ($emailNotificationRecipient) {
+                $m->from('ariel@engageiq.com', 'Ariel Magbanua');
+                $m->to($emailNotificationRecipient, 'Marwil Burton');
+                // $m->cc('ariel@engageiq.com', 'Ariel Magbanua');
+                $m->subject('Get Cake Conversions Job Queue Successfully Executed!');
+            });
     }
 }

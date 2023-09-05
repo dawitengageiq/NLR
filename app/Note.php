@@ -11,13 +11,13 @@ class Note extends Model
     protected $fillable = [
         'category_id',
         'subject',
-        'content'
+        'content',
     ];
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') == 'reports') {
+        if (config('app.type') == 'reports') {
             $this->connection = 'secondary';
         }
     }

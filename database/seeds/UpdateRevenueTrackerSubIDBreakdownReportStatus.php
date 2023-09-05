@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Seeder;
 use App\AffiliateRevenueTracker;
+use Illuminate\Database\Seeder;
 
 class UpdateRevenueTrackerSubIDBreakdownReportStatus extends Seeder
 {
@@ -12,7 +12,7 @@ class UpdateRevenueTrackerSubIDBreakdownReportStatus extends Seeder
      */
     public function run()
     {
-        $rev_trackers = AffiliateRevenueTracker::where('subid_breakdown','=', 1)
-        	->update(['report_subid_breakdown_status' => 1]);
+        $rev_trackers = AffiliateRevenueTracker::where('subid_breakdown', '=', 1)
+            ->update(['report_subid_breakdown_status' => 1]);
     }
 }

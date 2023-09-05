@@ -30,5 +30,5 @@ class SendLeadsServiceProvider extends ServiceProvider
         $this->app->bind(
             'App\Http\Services\Contracts\LeadCSVDataInterface',
             'App\Http\Services\Repositories\LeadCSVDataRepository');
-        }
+    }
 }

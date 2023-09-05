@@ -82,7 +82,7 @@ return [
     |
     */
 
-    'username' => env('MAIL_USERNAME',''),
+    'username' => env('MAIL_USERNAME', ''),
     //'username' => '',
 
     /*
@@ -95,7 +95,7 @@ return [
     | connection so that the application will be able to send messages.
     |
     */
-    'password' => env('MAIL_PASSWORD',''),
+    'password' => env('MAIL_PASSWORD', ''),
 
     /*
     |--------------------------------------------------------------------------

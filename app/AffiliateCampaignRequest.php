@@ -14,11 +14,13 @@ class AffiliateCampaignRequest extends Model
         'status',
     ];
 
-    public function campaign(){
-		return $this->belongsTo('App\Campaign');
-	}
+    public function campaign()
+    {
+        return $this->belongsTo('App\Campaign');
+    }
 
-	public function affiliate(){
-		return $this->belongsTo('App\Affiliate');
-	}
+    public function affiliate()
+    {
+        return $this->belongsTo('App\Affiliate');
+    }
 }

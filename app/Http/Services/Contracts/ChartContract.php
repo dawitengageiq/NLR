@@ -2,43 +2,42 @@
 
 namespace App\Http\Services\Contracts;
 
-
-Interface ChartContract
+interface ChartContract
 {
     /**
      * Provide needed data for formating.
      *
-     * @var Array $data
+     * @var array $data
      */
-    public function setData (Array $data);
+    public function setData(array $data);
 
     /**
      * Return the series data in group that will be use in views .
      *
-     * @return Array
+     * @return array
      */
-    public function getGroupSeries ();
+    public function getGroupSeries();
 
     /**
      * Return the series data in group of categories that will be use in views .
      *
-     * @return Array
+     * @return array
      */
-    public function getGroupCategories ();
+    public function getGroupCategories();
 
     /**
      * Return the series data in group of categories that will be use in views .
      *
-     * @return Array
+     * @return array
      */
-    public function getActualRejection ();
+    public function getActualRejection();
 
     /**
      * Return the data that will be use in views .
      *
-     * @return Array
+     * @return array
      */
-    public function getData ();
+    public function getData();
 
     /**
      * This is for development when cachesd is empty.
@@ -46,7 +45,7 @@ Interface ChartContract
      *
      * @var Bolean $process
      */
-    public function dummyData ($process = false);
+    public function dummyData($process = false);
 
     /**
      * Process on formatting data.

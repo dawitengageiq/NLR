@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateClickLogTraceInfosTable extends Migration
 {
@@ -15,11 +15,11 @@ class CreateClickLogTraceInfosTable extends Migration
         Schema::create('click_log_trace_infos', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamp('click_date')->index();
-            $table->string('click_id',30);
-            $table->string('email',50)->index();
+            $table->string('click_id', 30);
+            $table->string('email', 50)->index();
             $table->integer('affiliate_id')->unsigned()->index();
             $table->integer('revenue_tracker_id')->unsigned()->index();
-            $table->string('ip',15);
+            $table->string('ip', 15);
             $table->tinyInteger('is_dbprepoped')->unsigned();
             $table->integer('reg_count')->unsigned();
             $table->integer('first_entry_rev_id')->unsigned();

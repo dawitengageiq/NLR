@@ -2,16 +2,15 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Job;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Campaign;
 use App\Setting;
 use Carbon\Carbon;
-use Log;
 use Curl\Curl;
+use Illuminate\Contracts\Bus\SelfHandling;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Log;
 use Mail;
 
 class UpdateCpawallStatusJob extends Job implements SelfHandling, ShouldQueue
@@ -35,11 +34,11 @@ class UpdateCpawallStatusJob extends Job implements SelfHandling, ShouldQueue
      */
     public function handle()
     {
-        Log::info('Updating CPAWALL Status ...');    
+        Log::info('Updating CPAWALL Status ...');
         $dateYesterday = Carbon::yesterday()->format('m/d/Y');
-        Log::info('Date: '. $dateYesterday);
-        $dateToStr = urlencode($dateYesterday .' 00:00:00');
-        $dateFromStr = urlencode($dateYesterday .' 23:59:59');
+        Log::info('Date: '.$dateYesterday);
+        $dateToStr = urlencode($dateYesterday.' 00:00:00');
+        $dateFromStr = urlencode($dateYesterday.' 23:59:59');
         $cakeBaseClicksURL = "http://engageiq.performance-stats.com/api/4/reports.asmx/Caps?api_key=zDv2V1bMTwk3my5bUAV3vkue1BJRTQ&advertiser_id=0&offer_id=0&affiliate_id=0&advertiser_tag_id=0&offer_tag_id=0&affiliate_tag_id=0&advertiser_manager_id=0&affiliate_manager_id=0&advertiser_billing_cycle_id=0&affiliate_billing_cycle_id=0&cap_type_id=0&cap_entity=all_entity_types&cap_interval_id=0&traffic_only=FALSE&start_at_row=0&row_limit=0&sort_field=percent_reached&sort_descending=FALSE&search=&start_date=$dateToStr&end_date=$dateFromStr";
 
         $cDetails = Campaign::where('campaign_type', 5)->where('linkout_offer_id', '!=', 0)->where('linkout_cake_status', 1)->select(['id', 'status', 'linkout_offer_id', 'status_dupe', 'name'])->get();
@@ -48,15 +47,17 @@ class UpdateCpawallStatusJob extends Job implements SelfHandling, ShouldQueue
         $offer_ids = [];
         $campaigns = [];
         $statuses = [];
-        foreach($cDetails as $c) {
-            if(!in_array($c->linkout_offer_id, $offer_ids)) $offer_ids[] = $c->linkout_offer_id;
+        foreach ($cDetails as $c) {
+            if (! in_array($c->linkout_offer_id, $offer_ids)) {
+                $offer_ids[] = $c->linkout_offer_id;
+            }
             $campaigns[$c->id] = $c->linkout_offer_id;
             $statuses[$c->id] = [
                 'id' => $c->id,
                 'offer' => $c->linkout_offer_id,
                 'name' => $c->name,
                 'status' => $c->status,
-                'status_dupe' => $c->status_dupe
+                'status_dupe' => $c->status_dupe,
             ];
         }
 
@@ -66,10 +67,9 @@ class UpdateCpawallStatusJob extends Job implements SelfHandling, ShouldQueue
         $rowLimit = 2500;
         $totalRows = 0;
 
-        while(true)
-        {
+        while (true) {
             $cakeurl = $cakeBaseClicksURL;
-            $cakeurl = str_replace('start_at_row=0', "start_at_row=". $rowStart, $cakeurl);
+            $cakeurl = str_replace('start_at_row=0', 'start_at_row='.$rowStart, $cakeurl);
             $cakeurl = str_replace('row_limit=0', "row_limit=$rowLimit", $cakeurl);
 
             $response = $this->getCurlResponse($cakeurl);
@@ -77,45 +77,46 @@ class UpdateCpawallStatusJob extends Job implements SelfHandling, ShouldQueue
 
             $totalRows = $response['row_count'];
 
-            if($totalRows == 0)
-            {
+            if ($totalRows == 0) {
                 break;
-            }
-            else
-            {
+            } else {
                 $x = $rowStart - 1;
                 $currentRows = $totalRows - $x;
-                if($currentRows <= 1) {
+                if ($currentRows <= 1) {
                     $caps[] = $response['caps']['cap'];
-                }else {
+                } else {
                     $caps = $response['caps']['cap'];
                 }
 
                 // Log::info($caps);
 
-                foreach ($caps as $cap)
-                {
+                foreach ($caps as $cap) {
                     $offer_id = $cap['offer']['offer_id'];
-                    if(in_array($offer_id, $offer_ids)) {
+                    if (in_array($offer_id, $offer_ids)) {
                         $campaign_id = array_search($offer_id, $campaigns);
                         $data[$campaign_id] = $statuses[$campaign_id];
-                        $data[$campaign_id]['r'] = !is_array($cap['percent_reached']) ? 1 : 0;
+                        $data[$campaign_id]['r'] = ! is_array($cap['percent_reached']) ? 1 : 0;
                     }
                 }
             }
 
             $rowStart += $rowLimit;
 
-            if($rowStart > $totalRows) break;
-        } 
-        
+            if ($rowStart > $totalRows) {
+                break;
+            }
+        }
+
         // Log::info($data);
 
         $changed = [];
-        foreach($data as $cid => $d) {
-            if(($d['r'] == 1 && $d['status'] != 0) || ($d['r'] == 0 && $d['status'] == 0)) {
-                if($d['r'] == 1 && $d['status'] != 0) $new_status = 0;
-                else if($d['r'] == 0 && $d['status'] == 0) $new_status = $d['status_dupe'];
+        foreach ($data as $cid => $d) {
+            if (($d['r'] == 1 && $d['status'] != 0) || ($d['r'] == 0 && $d['status'] == 0)) {
+                if ($d['r'] == 1 && $d['status'] != 0) {
+                    $new_status = 0;
+                } elseif ($d['r'] == 0 && $d['status'] == 0) {
+                    $new_status = $d['status_dupe'];
+                }
                 $d['new_status'] = $new_status;
                 $changed[] = $d;
 
@@ -126,25 +127,25 @@ class UpdateCpawallStatusJob extends Job implements SelfHandling, ShouldQueue
         }
         Log::info($changed);
 
-        if(count($changed) > 0) {
+        if (count($changed) > 0) {
             $settings = Setting::where('code', 'report_recipient')->first();
             $emails = explode(';', str_replace(' ', '', $settings->description));
             $date = Carbon::now()->toDateString();
             $statuses = config('constants.CAMPAIGN_STATUS');
             Mail::send('emails.cpawall_update_status_report',
                 ['items' => $changed, 'date' => $date, 'statuses' => $statuses],
-                function ($m) use($date, $emails){
-                
-                foreach($emails as $cc) {
-                    $m->to($cc);
-                }
+                function ($m) use ($date, $emails) {
 
-                $title = 'Link out campaings status update - '.$date;
+                    foreach ($emails as $cc) {
+                        $m->to($cc);
+                    }
 
-                $m->subject($title);
-            });
+                    $title = 'Link out campaings status update - '.$date;
+
+                    $m->subject($title);
+                });
         }
-        Log::info('Updating CPAWALL Done.');    
+        Log::info('Updating CPAWALL Done.');
     }
 
     public function getCurlResponse($url, $response_type = 'xml')
@@ -154,46 +155,39 @@ class UpdateCpawallStatusJob extends Job implements SelfHandling, ShouldQueue
         $callCounter = 0;
         $response = null;
 
-        do
-        {
+        do {
             $curl = new Curl();
             $curl->get($url);
 
-            if($curl->error)
-            {
-                Log::info("getCakeClicks API Error!");
+            if ($curl->error) {
+                Log::info('getCakeClicks API Error!');
                 Log::info($curl->error_message);
-                ++$callCounter;
-            }
-            else
-            {
-                try{
+                $callCounter++;
+            } else {
+                try {
 
-                    if($response_type == 'json') {
+                    if ($response_type == 'json') {
                         $json = $curl->response;
-                    }else if($response_type == 'LIBXML_NOWARNING'){
-                        $xml = simplexml_load_string($curl->response,'SimpleXMLElement', LIBXML_NOWARNING);
+                    } elseif ($response_type == 'LIBXML_NOWARNING') {
+                        $xml = simplexml_load_string($curl->response, 'SimpleXMLElement', LIBXML_NOWARNING);
                         $json = json_encode($xml);
-                    }else{
+                    } else {
                         $xml = simplexml_load_string($curl->response);
                         $json = json_encode($xml);
                     }
-                    $response = json_decode($json,TRUE);
-                }
-                catch(Exception $e)
-                {
+                    $response = json_decode($json, true);
+                } catch (Exception $e) {
                     Log::info($e->getCode());
                     Log::info($e->getMessage());
-                    ++$callCounter;
+                    $callCounter++;
 
                     //stop the process when budget breached
-                    if($callCounter==10)
-                    {
+                    if ($callCounter == 10) {
                         Log::info('getCakeClicks API call limit reached!');
                         $this->errors[] = [
                             'Area' => 'CURL API call limit reached!',
                             'Info' => $url,
-                            'MSG' => $e->getMessage()
+                            'MSG' => $e->getMessage(),
                         ];
                         $curl->close();
                         break;
@@ -204,21 +198,21 @@ class UpdateCpawallStatusJob extends Job implements SelfHandling, ShouldQueue
             }
 
             //stop the process when budget breached
-            if($callCounter==10)
-            {
+            if ($callCounter == 10) {
                 Log::info('getCakeClicks API call limit reached!');
                 $this->errors[] = [
                     'Area' => 'CURL API call limit reached!',
                     'Info' => $url,
-                    'MSG' => ''
+                    'MSG' => '',
                 ];
                 $curl->close();
                 break;
             }
 
-        } while($curl->error);
+        } while ($curl->error);
 
         $curl->close();
+
         return $response;
     }
 }

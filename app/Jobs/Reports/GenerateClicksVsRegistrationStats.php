@@ -7,10 +7,10 @@ use App\ClicksVsRegistrationStatistics;
 use App\Helpers\Repositories\AffiliateReportCurl;
 use App\Jobs\Job;
 use App\LeadUser;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Log;
 
@@ -19,13 +19,11 @@ class GenerateClicksVsRegistrationStats extends Job implements SelfHandling, Sho
     use InteractsWithQueue, SerializesModels;
 
     public $dateFromStr;
+
     public $dateToStr;
 
     /**
      * Create a new job instance.
-     *
-     * @param $dateFromStr
-     * @param $dateToStr
      */
     public function __construct($dateFromStr, $dateToStr)
     {
@@ -36,7 +34,6 @@ class GenerateClicksVsRegistrationStats extends Job implements SelfHandling, Sho
     /**
      * Execute the job.
      *
-     * @param AffiliateReportCurl $affiliateReportCurl
      * @return void
      */
     public function handle(AffiliateReportCurl $affiliateReportCurl)
@@ -45,60 +42,50 @@ class GenerateClicksVsRegistrationStats extends Job implements SelfHandling, Sho
         $prefix = config('constants.CAKE_SABRE_PREFIX_V12');
         $cakeBaseClicksURL = config('constants.CAKE_CLICKS_REPORTS_API_V12');
 
-        foreach($revenueTrackers as $tracker)
-        {
+        foreach ($revenueTrackers as $tracker) {
             $affiliateID = $tracker->affiliate_id;
             $campaignID = $tracker->campaign_id;
             $rowStart = 0;
 
-            while(true)
-            {
+            while (true) {
                 $cakeBaseClicksURL = str_replace('offer_id=0', "offer_id=$tracker->offer_id", $cakeBaseClicksURL);
                 $cakeBaseClicksURL = str_replace('start_at_row=0', "start_at_row=$rowStart", $cakeBaseClicksURL);
-                $cakeBaseClicksURL = str_replace('row_limit=0', "row_limit=1000", $cakeBaseClicksURL);
+                $cakeBaseClicksURL = str_replace('row_limit=0', 'row_limit=1000', $cakeBaseClicksURL);
 
                 $response = $affiliateReportCurl->clicksReport($cakeBaseClicksURL, $prefix, $affiliateID, $campaignID, $this->dateFromStr, $this->dateToStr);
                 // $rowCount = intval($response['value'][$prefix.'row_count']);
 
                 $clicks = $response['value'][$prefix.'clicks'];
 
-                if(count($clicks) <= 0)
-                {
+                if (count($clicks) <= 0) {
                     break;
-                }
-                else
-                {
+                } else {
                     $dateFromStr = $this->dateFromStr;
                     //$dateToStr = $this->dateToStr;
 
                     $clickCountCollection = collect([]);
 
-                    foreach ($clicks as $click)
-                    {
+                    foreach ($clicks as $click) {
                         $s1 = $click['value'][$prefix.'sub_id_1'];
                         $s2 = $click['value'][$prefix.'sub_id_2'];
                         $s3 = $click['value'][$prefix.'sub_id_3'];
                         $s4 = $click['value'][$prefix.'sub_id_4'];
                         $s5 = $click['value'][$prefix.'sub_id_5'];
 
-                        if($clickCountCollection->has("$s1 $s2 $s3 $s4 $s5"))
-                        {
+                        if ($clickCountCollection->has("$s1 $s2 $s3 $s4 $s5")) {
                             $val = $clickCountCollection->get("$s1 $s2 $s3 $s4 $s5") + 1;
                             $clickCountCollection->put("$s1 $s2 $s3 $s4 $s5", $val);
-                        }
-                        else
-                        {
+                        } else {
                             $clickCountCollection->put("$s1 $s2 $s3 $s4 $s5", 1);
                         }
                     }
 
                     // get each registration per subid set
-                    $registrationsCollection = $clickCountCollection->map(function ($item, $key) use ($dateFromStr, $tracker)
-                    {
+                    $registrationsCollection = $clickCountCollection->map(function ($item, $key) use ($dateFromStr, $tracker) {
                         // Log::info("$key => $item");
 
                         // get all subids
-                        $subIDPieces = explode(" ", $key);
+                        $subIDPieces = explode(' ', $key);
                         $s1 = isset($subIDPieces[0]) ? $subIDPieces[0] : '';
                         $s2 = isset($subIDPieces[1]) ? $subIDPieces[1] : '';
                         $s3 = isset($subIDPieces[2]) ? $subIDPieces[2] : '';
@@ -111,7 +98,7 @@ class GenerateClicksVsRegistrationStats extends Job implements SelfHandling, Sho
                         //get the registered users. Use the same date since this assumes we are generating for a particular date.
                         $registeredUsers = LeadUser::where('revenue_tracker_id', '=', $tracker->revenue_tracker_id)
                             ->where('affiliate_id', '=', $tracker->affiliate_id)
-                            ->where(function ($query) use($s1, $s2, $s3, $s4, $s5){
+                            ->where(function ($query) use ($s1, $s2, $s3, $s4, $s5) {
                                 $query->where('s1', '=', $s1);
                                 $query->where('s2', '=', $s2);
                                 $query->where('s3', '=', $s3);
@@ -125,7 +112,7 @@ class GenerateClicksVsRegistrationStats extends Job implements SelfHandling, Sho
                         return $registeredUsers;
                     });
 
-                    $registrationsCollection->map(function ($item, $key) use ($clickCountCollection, $dateFromStr, $tracker){
+                    $registrationsCollection->map(function ($item, $key) use ($clickCountCollection, $dateFromStr, $tracker) {
                         $clicks = $clickCountCollection->get($key);
                         $registrations = $item;
 
@@ -136,7 +123,7 @@ class GenerateClicksVsRegistrationStats extends Job implements SelfHandling, Sho
                         // Log::info($key);
                         // Log::info($item);
 
-                        $subIDPieces = explode(" ", $key);
+                        $subIDPieces = explode(' ', $key);
                         $s1 = isset($subIDPieces[0]) ? $subIDPieces[0] : '';
                         $s2 = isset($subIDPieces[1]) ? $subIDPieces[1] : '';
                         $s3 = isset($subIDPieces[2]) ? $subIDPieces[2] : '';
@@ -151,7 +138,7 @@ class GenerateClicksVsRegistrationStats extends Job implements SelfHandling, Sho
                             's2' => $s2,
                             's3' => $s3,
                             's4' => $s4,
-                            's5' => $s5
+                            's5' => $s5,
                         ]);
 
                         $clicksRegistrationStats->registration_count = $registrations;
@@ -159,23 +146,18 @@ class GenerateClicksVsRegistrationStats extends Job implements SelfHandling, Sho
 
                         $percentage = 0.00;
 
-                        if($registrations > 0 && $clicks > 0)
-                        {
-                            $percentage = doubleval($registrations / $clicks);
+                        if ($registrations > 0 && $clicks > 0) {
+                            $percentage = floatval($registrations / $clicks);
                         }
 
                         $clicksRegistrationStats->percentage = $percentage;
 
-                        if($clicksRegistrationStats->registration_count == 0 && $clicksRegistrationStats->clicks == 0)
-                        {
+                        if ($clicksRegistrationStats->registration_count == 0 && $clicksRegistrationStats->clicks == 0) {
                             //delete if exist
-                            if(isset($clicksRegistrationStats->id))
-                            {
+                            if (isset($clicksRegistrationStats->id)) {
                                 $clicksRegistrationStats->delete();
                             }
-                        }
-                        else
-                        {
+                        } else {
                             //save or update the record
                             $clicksRegistrationStats->save();
                         }
@@ -189,7 +171,7 @@ class GenerateClicksVsRegistrationStats extends Job implements SelfHandling, Sho
         //send email to Burt to notify that Affiliate Report Queue was successfully finished
         Mail::send('emails.clicks_vs_registrations',
             ['startDate' => $this->dateFromStr, 'endDate' => $this->dateToStr],
-            function ($m) use ($emailNotificationRecipient){
+            function ($m) use ($emailNotificationRecipient) {
                 $m->from('ariel@engageiq.com', 'Ariel Magbanua');
                 $m->to($emailNotificationRecipient, 'Marwil Burton')->subject('Clicks Vs Registrations Job Queue Successfully Executed!');
             });

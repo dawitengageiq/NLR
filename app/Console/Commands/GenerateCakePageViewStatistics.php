@@ -43,8 +43,7 @@ class GenerateCakePageViewStatistics extends Command
         $dateYesterdayStr = $this->option('from');
         $dateNowStr = $this->option('to');
 
-        if(empty($dateYesterdayStr) || empty($dateNowStr))
-        {
+        if (empty($dateYesterdayStr) || empty($dateNowStr)) {
             $dateYesterdayStr = Carbon::now()->subDay()->toDateString();
             $dateNowStr = Carbon::now()->toDateString();
         }

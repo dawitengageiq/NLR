@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateHandpAffiliateReportsTable extends Migration
 {
@@ -16,10 +16,10 @@ class CreateHandpAffiliateReportsTable extends Migration
             $table->increments('id');
             $table->integer('affiliate_id')->unsigned()->index();
             $table->integer('campaign_id')->unsigned()->index();
-            $table->string('s1',100)->nullable();
+            $table->string('s1', 100)->nullable();
             $table->integer('lead_count')->default(0);
-            $table->double('received',15,8)->default(0.0);
-            $table->double('payout',15,8)->default(0.0);
+            $table->double('received', 15, 8)->default(0.0);
+            $table->double('payout', 15, 8)->default(0.0);
             $table->date('created_at');
 
             $table->foreign('affiliate_id')->references('id')->on('affiliates')->onDelete('cascade');

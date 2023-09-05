@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use Carbon\Carbon;
 use App\Jobs\CampaignRevenueBreakdownJob;
+use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class GenerateCampaignRevenueBreakdown extends Command
 {
@@ -45,20 +45,19 @@ class GenerateCampaignRevenueBreakdown extends Command
         $date = $this->option('date');
         $campaign = $this->option('campaign');
 
-        if(empty($campaign)) {
+        if (empty($campaign)) {
             return $this->info('Please input a campaign id.');
         }
 
-        if(empty($date))
-        {
+        if (empty($date)) {
             $the_date = Carbon::yesterday()->toDateString();
-        }else {
+        } else {
             $the_date = Carbon::parse($date)->toDateString();
         }
 
-        $this->info('Generating Campaign Revenue Breakdown for Campaign ID: '. $campaign.' Date: '.$the_date);
+        $this->info('Generating Campaign Revenue Breakdown for Campaign ID: '.$campaign.' Date: '.$the_date);
 
-        $job = (new CampaignRevenueBreakdownJob($the_date,$campaign))->delay(5);
+        $job = (new CampaignRevenueBreakdownJob($the_date, $campaign))->delay(5);
         dispatch($job);
 
         $this->info('Campaign Revenue Breakdown is being processed, results will be available soon!');

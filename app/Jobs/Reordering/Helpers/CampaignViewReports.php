@@ -1,16 +1,13 @@
 <?php
-namespace App\Jobs\Reordering\Helpers;
 
-use DB;
-use App\AffiliateRevenueTracker;
+namespace App\Jobs\Reordering\Helpers;
 
 class CampaignViewReports
 {
     /**
      * Initialization
-     *
      */
-    public function __construct ()
+    public function __construct()
     {
     }
 
@@ -18,21 +15,21 @@ class CampaignViewReports
      * Set the campaign view reports Model
      * The model was already fetch in revenuTrackers::query
      *
-     * @param  eloquentCollection $campaignViewReports
-     * @var  coleection $campaignViewReports
+     * @param  eloquentCollection  $campaignViewReports
+     *
+     * @var  coleection
      */
-    public function set ($campaignViewReports)
+    public function set($campaignViewReports)
     {
         $this->campaignViewReports = $campaignViewReports;
     }
 
     /**
      * Go through all campaign views and reset.
-     *
      */
-    public function reset ()
+    public function reset()
     {
-        foreach($this->getCampaignViewReport() as $campaignViewReport) {
+        foreach ($this->getCampaignViewReport() as $campaignViewReport) {
             $this->saveReset($campaignViewReport);
         }
     }
@@ -42,7 +39,7 @@ class CampaignViewReports
      *
      * @return yield
      */
-    protected function getCampaignViewReport ()
+    protected function getCampaignViewReport()
     {
         for ($i = 0; $i < count($this->campaignViewReports); $i++) {
             yield $this->campaignViewReports[$i];
@@ -57,17 +54,20 @@ class CampaignViewReports
      * @param  eloquentCollection  $campaignViewReport
      * @return void
      */
-    protected function saveReset ($campaignViewReport)
+    protected function saveReset($campaignViewReport)
     {
         //exempt all inactive and hidden campaigns
-        if($campaignViewReport->campaignInfo->status != 1 && $campaignViewReport->campaignInfo->status != 2) return;
+        if ($campaignViewReport->campaignInfo->status != 1 && $campaignViewReport->campaignInfo->status != 2) {
+            return;
+        }
 
         //ignore if campaign is private and if revenue tracker does not belong to this campaign
-        if($campaignViewReport->campaignInfo->status == 1 && $campaignViewReport->affiliate_campaign_record->count == 0) return;
+        if ($campaignViewReport->campaignInfo->status == 1 && $campaignViewReport->affiliate_campaign_record->count == 0) {
+            return;
+        }
 
         $campaignViewReport->current_view_count = 0;
         $campaignViewReport->save();
 
-        return;
     }
 }

@@ -1,19 +1,17 @@
 <?php
-namespace App\Http\Services;
 
-use Config;
-use File;
-use Excel;
-use Carbon\Carbon;
+namespace App\Http\Services;
 
 use App\Lead;
 use App\LeadArchive;
+use Carbon\Carbon;
+use Excel;
+use File;
 
 class Creative
 {
     /**
      * Load the  needed configuration
-     *
      */
     public function __construct()
     {
@@ -43,31 +41,30 @@ class Creative
         // Pre Variables
         $leadData = [];
         $totalLeadCount = $totalCost = $totalRevenue = $totalProfit = 0;
-        foreach($leads as $lead)
-        {
+        foreach ($leads as $lead) {
             //data for datatable
             array_push($leadData, $this->setData($lead, $this->groupByColumnCaseData($lead, $request->input('group_by_column'))));
 
             $totalLeadCount += $lead->lead_count;
-            $totalCost += $lead->lead_status==1 ? $lead->cost : 0;
-            $totalRevenue += $lead->lead_status==1 ? $lead->revenue : 0;
-            $totalProfit += $lead->lead_status==1 ? $lead->revenue - $lead->cost : 0;
+            $totalCost += $lead->lead_status == 1 ? $lead->cost : 0;
+            $totalRevenue += $lead->lead_status == 1 ? $lead->revenue : 0;
+            $totalProfit += $lead->lead_status == 1 ? $lead->revenue - $lead->cost : 0;
 
         }
 
-        return response()->json(array(
-                "draw"            => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
-                "recordsTotal"    => $leadsCount,  // total number of records
-                "recordsFiltered" => $leadsCount, // total number of records after searching, if there is no searching then totalFiltered = totalData
-                "data"            => $leadData,   // total data array
-                'totalLeadCount'  => $totalLeadCount,
-                'totalCost'       => $totalCost,
-                'totalRevenue'    => $totalRevenue,
-                'totalProfit'     => $totalProfit
-            ), 200);
+        return response()->json([
+            'draw' => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
+            'recordsTotal' => $leadsCount,  // total number of records
+            'recordsFiltered' => $leadsCount, // total number of records after searching, if there is no searching then totalFiltered = totalData
+            'data' => $leadData,   // total data array
+            'totalLeadCount' => $totalLeadCount,
+            'totalCost' => $totalCost,
+            'totalRevenue' => $totalRevenue,
+            'totalProfit' => $totalProfit,
+        ], 200);
     }
 
-    public function getReport ($request)
+    public function getReport($request)
     {
         // Request parameters
         $inputs = session()->get('revenue_leads_input');
@@ -79,23 +76,23 @@ class Creative
         $title = 'RevenueLeads_'.Carbon::now()->toDateString();
 
         // Create
-        Excel::create($title, function($excel) use($title, $leads) {
+        Excel::create($title, function ($excel) use ($title, $leads) {
 
-            $excel->sheet($title, function($sheet) use ($title, $leads) {
+            $excel->sheet($title, function ($sheet) use ($leads) {
 
                 // Set auto size for sheet
                 $sheet->setAutoSize(true);
 
                 //set up the title header row
-                $sheet->appendRow(['Lead ID','Campaign','Affiliate','Lead Email', 'Received','Payout','Lead Date','Lead Updated','Time Interval','Status']);
+                $sheet->appendRow(['Lead ID', 'Campaign', 'Affiliate', 'Lead Email', 'Received', 'Payout', 'Lead Date', 'Lead Updated', 'Time Interval', 'Status']);
 
                 //style the headers
-                $sheet->cells('A1:O1', function($cells) {
+                $sheet->cells('A1:O1', function ($cells) {
                     // Set font
-                    $cells->setFont(array(
-                        'size'       => '12',
-                        'bold'       =>  true
-                    ));
+                    $cells->setFont([
+                        'size' => '12',
+                        'bold' => true,
+                    ]);
 
                     $cells->setAlignment('center');
                     $cells->setValignment('center');
@@ -105,24 +102,24 @@ class Creative
                     $sheet->appendRow($this->appendOnSheetRow($lead));
                 }
             });
-        })->store('xls',storage_path('downloads'));
+        })->store('xls', storage_path('downloads'));
 
         $filepath = storage_path('downloads').'/'.$title.'.xls';
 
         if (file_exists($filepath)) {
-            return response()->download($filepath, $title.'.xls',['Content-Length: '.filesize($filepath)]);
+            return response()->download($filepath, $title.'.xls', ['Content-Length: '.filesize($filepath)]);
         }
 
         exit('Requested file does not exist on our server!');
     }
 
-    private function appendOnSheetRow ($lead)
+    private function appendOnSheetRow($lead)
     {
 
         $campaign = $lead->campaign;
 
-        $date1= new \DateTime($lead->created_at);
-        $date2= new \DateTime($lead->updated_at);
+        $date1 = new \DateTime($lead->created_at);
+        $date2 = new \DateTime($lead->updated_at);
         $interval = $date1->diff($date2);
 
         return [
@@ -134,20 +131,21 @@ class Creative
             $lead->payout,
             $lead->created_at,
             $lead->updated_at,
-            $interval->format('%H:%I:%S')
+            $interval->format('%H:%I:%S'),
         ];
     }
-
 
     /*
      * Fetch all leads
      *
      * @return Object $allLeads
      */
-    private function allLeads ($inputs)
+    private function allLeads($inputs)
     {
         if (isset($inputs['table'])) {
-            if ($inputs['table']=='leads') return Lead::getRevenueStats($inputs);
+            if ($inputs['table'] == 'leads') {
+                return Lead::getRevenueStats($inputs);
+            }
 
             return LeadArchive::getRevenueStats($inputs);
         }
@@ -160,15 +158,15 @@ class Creative
      *
      * @return Array $return
      */
-    function groupByColumnCaseData ($lead, $case)
+    public function groupByColumnCaseData($lead, $case)
     {
-        $return = array(
-            'campaign_id' =>'',
+        $return = [
+            'campaign_id' => '',
             'creative_id' => '',
             'affiliate_id' => '',
-        );
+        ];
 
-        switch($case) {
+        switch ($case) {
             case 'campaign':
                 $return['campaign_id'] = $lead->campaign_name;
                 break;
@@ -189,6 +187,7 @@ class Creative
                 $return['s5'] = $lead->s5;
                 break;
         }
+
         return $return;
     }
 
@@ -197,7 +196,7 @@ class Creative
      *
      * @return Array $data
      */
-    private function setData ($lead, $groupByColumnData)
+    private function setData($lead, $groupByColumnData)
     {
         $data = [
             $lead->lead_date,
@@ -205,10 +204,11 @@ class Creative
             $groupByColumnData['creative_id'],
             $groupByColumnData['affiliate_id'],
             $lead->lead_count,
-            $lead->lead_status==1 ? $lead->cost : 0,
-            $lead->lead_status==1 ? $lead->revenue : 0,
-            $lead->lead_status==1 ? $lead->revenue - $lead->cost : 0
+            $lead->lead_status == 1 ? $lead->cost : 0,
+            $lead->lead_status == 1 ? $lead->revenue : 0,
+            $lead->lead_status == 1 ? $lead->revenue - $lead->cost : 0,
         ];
+
         return $data;
     }
 }

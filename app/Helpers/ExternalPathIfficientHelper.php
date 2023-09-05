@@ -12,22 +12,22 @@ use GuzzleHttp\TransferStats;
 use Illuminate\Database\QueryException;
 use Log;
 
-class ExternalPathIfficientHelper {
-
+class ExternalPathIfficientHelper
+{
     private $baseURL = 'https://api.ifficient.com/inquiry/pubrevenue';
 
     private $startDate;
+
     private $endDate;
+
     private $externalPathIfficientCampaignID;
+
     private $userName = 'engageiq';
+
     private $password = 'engage26#2';
 
     /**
      * Constructor
-     *
-     * @param $externalPathIfficientCampaignID
-     * @param Carbon $dateFrom
-     * @param Carbon $dateTo
      */
     public function __construct($externalPathIfficientCampaignID, Carbon $dateFrom, Carbon $dateTo)
     {
@@ -43,11 +43,9 @@ class ExternalPathIfficientHelper {
     {
         $campaign = Campaign::find($this->externalPathIfficientCampaignID);
 
-        if($this->externalPathIfficientCampaignID>0 && $campaign->exists())
-        {
+        if ($this->externalPathIfficientCampaignID > 0 && $campaign->exists()) {
             //get the report on each day within the date range
-            while ($this->startDate->diffInDays($this->endDate,false)>=0)
-            {
+            while ($this->startDate->diffInDays($this->endDate, false) >= 0) {
                 $dateStr = $this->startDate->month.'/'.$this->startDate->day.'/'.$this->startDate->year;
                 $callCounter = 0;
                 $statusCode = -1;
@@ -55,10 +53,9 @@ class ExternalPathIfficientHelper {
                 $client = new Client();
                 $response = null;
 
-                do{
+                do {
 
-                    try
-                    {
+                    try {
                         $response = $client->request('GET', $this->baseURL, [
                             'http_errors' => false,
                             'auth' => [$this->userName, $this->password],
@@ -66,100 +63,85 @@ class ExternalPathIfficientHelper {
                                 'sourceids' => 'all',
                                 'subids' => 'all',
                                 'startdate' => $dateStr,
-                                'enddate' => $dateStr
+                                'enddate' => $dateStr,
                             ],
                             'on_stats' => function (TransferStats $stats) {
                                 Log::info('Ifficient URL: '.$stats->getEffectiveUri());
-                            }
+                            },
                         ]);
 
                         //get the status code
                         $statusCode = $response->getStatusCode();
-                    }
-                    catch(ConnectException $e)
-                    {
-                        Log::info("Ifficient API Error!");
+                    } catch (ConnectException $e) {
+                        Log::info('Ifficient API Error!');
                         Log::info($e->getMessage());
 
                         //this means the URL is clearly wrong cut the loop here immediately
                         break;
                     }
 
-                    if($statusCode!=200)
-                    {
-                        ++$callCounter;
+                    if ($statusCode != 200) {
+                        $callCounter++;
 
                         //a bit of delay since server just responded an error
                         sleep(10);
                     }
 
                     //stop the process when budget breached
-                    if($callCounter==10)
-                    {
+                    if ($callCounter == 10) {
                         Log::info('Ifficient API call limit reached!');
                         break;
                     }
 
-                } while($statusCode!=200);
+                } while ($statusCode != 200);
 
                 Log::info("Create Ticket HTTP status code: $statusCode");
 
-                if($statusCode==200 && $response!=null)
-                {
+                if ($statusCode == 200 && $response != null) {
                     $responseBody = $response->getBody()->getContents();
                     $responseBodyArray = \GuzzleHttp\json_decode($responseBody);
 
                     //extract the response content
                     $trackerRevenueArray = [];
 
-                    foreach($responseBodyArray->Sources as $source)
-                    {
+                    foreach ($responseBodyArray->Sources as $source) {
                         $subIDs = $source->Subids;
 
-                        foreach($subIDs as $subID)
-                        {
+                        foreach ($subIDs as $subID) {
                             //remove the CD
-                            $revenueTrackerID = str_replace('CD','', $subID->Sub);
+                            $revenueTrackerID = str_replace('CD', '', $subID->Sub);
                             //remove the dollar sign
                             $revenue = ltrim($subID->Revenue, '$');
 
                             Log::info("revenue_tracker_id: $revenueTrackerID");
                             Log::info("revenue: $revenue");
 
-                            if(!isset($trackerRevenueArray[$revenueTrackerID]))
-                            {
-                                $trackerRevenueArray[$revenueTrackerID] = doubleval($revenue);
-                            }
-                            else
-                            {
-                                $trackerRevenueArray[$revenueTrackerID] = doubleval($trackerRevenueArray[$revenueTrackerID]) + doubleval($revenue);
+                            if (! isset($trackerRevenueArray[$revenueTrackerID])) {
+                                $trackerRevenueArray[$revenueTrackerID] = floatval($revenue);
+                            } else {
+                                $trackerRevenueArray[$revenueTrackerID] = floatval($trackerRevenueArray[$revenueTrackerID]) + floatval($revenue);
                             }
                         }
                     }
 
-                    foreach($trackerRevenueArray as $revenueTrackerID => $revenue)
-                    {
-                        $tracker = AffiliateRevenueTracker::where('revenue_tracker_id','=',$revenueTrackerID)->first();
+                    foreach ($trackerRevenueArray as $revenueTrackerID => $revenue) {
+                        $tracker = AffiliateRevenueTracker::where('revenue_tracker_id', '=', $revenueTrackerID)->first();
 
-                        if($tracker!=null)
-                        {
+                        if ($tracker != null) {
                             $affiliateReport = AffiliateReport::firstOrNew([
                                 'affiliate_id' => $tracker->affiliate_id,
                                 'revenue_tracker_id' => $revenueTrackerID,
                                 'campaign_id' => $campaign->id,
-                                'created_at' => $this->startDate->toDateString()
+                                'created_at' => $this->startDate->toDateString(),
                             ]);
 
                             $affiliateReport->lead_count = 0;
                             $affiliateReport->revenue = $revenue;
 
-                            try
-                            {
+                            try {
                                 $affiliateReport->save();
                                 Log::info("$affiliateReport->revenue_tracker_id success!");
-                            }
-                            catch(QueryException $e)
-                            {
+                            } catch (QueryException $e) {
                                 Log::info($e->getMessage());
                                 Log::info('affiliate_id: '.$affiliateReport->affiliate_id);
                                 Log::info('revenue_tracker_id: '.$affiliateReport->revenue_tracker_id);

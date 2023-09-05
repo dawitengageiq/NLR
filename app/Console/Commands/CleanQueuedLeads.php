@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Lead;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class CleanQueuedLeads extends Command
 {
@@ -44,11 +44,10 @@ class CleanQueuedLeads extends Command
         $date = $this->option('date');
 
         //NEW VERSION
-        if(empty($date))
-        {
+        if (empty($date)) {
             $from = Carbon::yesterday()->startOfDay();
             $to = Carbon::yesterday()->endOfDay();
-        }else {
+        } else {
             $from = Carbon::parse($date)->startOfDay();
             $to = Carbon::parse($date)->endOfDay();
         }
@@ -58,8 +57,8 @@ class CleanQueuedLeads extends Command
         $from = Carbon::yesterday()->startOfDay();
         $to = Carbon::yesterday()->endOfDay();
         $total = Lead::where('lead_status', 4)->whereBetween('created_at', [$from, $to])->update(['lead_status' => 3]);
-        $this->info('Total leads returned to pending: '. $total);
-        \Log::info('Total leads returned to pending: '. $total);
+        $this->info('Total leads returned to pending: '.$total);
+        \Log::info('Total leads returned to pending: '.$total);
 
         $this->info('Queued Leads Cleanup Done!');
         \Log::info('Queued Leads Cleanup Done!');

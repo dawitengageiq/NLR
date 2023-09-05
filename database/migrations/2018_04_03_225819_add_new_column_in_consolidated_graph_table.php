@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AddNewColumnInConsolidatedGraphTable extends Migration
 {
@@ -45,7 +45,7 @@ class AddNewColumnInConsolidatedGraphTable extends Migration
                     'coreg_p4_revenue_vs_views',
                     'all_mp_revenue',
                     'push_revenue',
-                    'push_cpa_revenue_per_survey_takers'
+                    'push_cpa_revenue_per_survey_takers',
                 ]
             );
         });

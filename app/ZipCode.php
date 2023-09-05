@@ -11,7 +11,7 @@ class ZipCode extends Model
     protected $fillable = [
         'zip',
         'city',
-        'state'
+        'state',
     ];
 
     public $timestamps = false;

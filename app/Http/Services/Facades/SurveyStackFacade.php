@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Services\Facades;
 
 use Illuminate\Support\Facades\Facade;
@@ -15,4 +16,3 @@ class SurveyStackFacade extends Facade
         return 'survey_stack';
     }
 }
-?>

@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AddFieldsNeededForMixedCoregReorderingInRevenueTrackersTable extends Migration
 {
@@ -28,7 +28,7 @@ class AddFieldsNeededForMixedCoregReorderingInRevenueTrackersTable extends Migra
     public function down()
     {
         Schema::table('affiliate_revenue_trackers', function (Blueprint $table) {
-            $table->dropColumn(['mixed_coreg_order_by','mixed_coreg_order_status','mixed_coreg_campaign_views','mixed_coreg_default_order']);
+            $table->dropColumn(['mixed_coreg_order_by', 'mixed_coreg_order_status', 'mixed_coreg_campaign_views', 'mixed_coreg_default_order']);
         });
     }
 }

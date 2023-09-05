@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateSettingsTable extends Migration
 {
@@ -14,10 +14,10 @@ class CreateSettingsTable extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('code',100);
-            $table->string('name',100);
+            $table->string('code', 100);
+            $table->string('name', 100);
             $table->text('description');
-            $table->string('string_value',100)->nullable();
+            $table->string('string_value', 100)->nullable();
             $table->smallInteger('integer_value')->nullable();
             $table->double('double_value', 4, 3)->nullable();
             $table->date('date_value')->nullable();

@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Seeder;
 use App\CampaignViewReport;
+use Illuminate\Database\Seeder;
 
 class CampaignViewReportsCleaner extends Seeder
 {
@@ -43,11 +43,11 @@ class CampaignViewReportsCleaner extends Seeder
 
         DB::table('campaign_view_reports')->truncate();
 
-        foreach($creativeReport as $report) {
+        foreach ($creativeReport as $report) {
             // Log::info($report->revenue_tracker_id.' - '.$report->campaign_id.' - '.$report->campaign_type_id);
             $campaign_report = CampaignViewReport::firstOrNew([
-                'campaign_id'           => $report->campaign_id,
-                'revenue_tracker_id'    => $report->revenue_tracker_id
+                'campaign_id' => $report->campaign_id,
+                'revenue_tracker_id' => $report->revenue_tracker_id,
             ]);
 
             $campaign_report->campaign_type_id = $report->campaign_type_id;

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Middleware;
+
 use App\Helpers\TokenHelper;
 use Closure;
 
@@ -10,7 +11,6 @@ class ReturnErrorIfAPIError
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
      * @return mixed
      */
     public function handle($request, Closure $next)
@@ -21,19 +21,16 @@ class ReturnErrorIfAPIError
 
         $response = [];
 
-        if(!$tokenHelper->isValidToken())
-        {
+        if (! $tokenHelper->isValidToken()) {
             $response['message'] = 'invalid token';
 
             //invalid token
-            return response()->json($response,200);
-        }
-        else if(!$tokenHelper->isAuthorized())
-        {
+            return response()->json($response, 200);
+        } elseif (! $tokenHelper->isAuthorized()) {
             $response['message'] = 'not authorized';
 
             //not authorized
-            return response()->json($response,200);
+            return response()->json($response, 200);
         }
 
         return $next($request);

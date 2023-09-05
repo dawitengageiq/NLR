@@ -2,25 +2,29 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Job;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
+use App\Helpers\AffiliateReportExcelGeneratorHelper;
+use Carbon\Carbon;
 use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use App\Helpers\AffiliateReportExcelGeneratorHelper;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Log;
-use Carbon\Carbon;
 
 class GenerateAffiliateExcelReport extends Job implements SelfHandling, ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
     protected $date_from;
+
     protected $date_to;
+
     protected $type;
+
     protected $startLog;
+
     protected $endLog;
+
     protected $excel;
 
     /**
@@ -35,6 +39,7 @@ class GenerateAffiliateExcelReport extends Job implements SelfHandling, ShouldQu
         $this->date_to = $dateTo;
         $this->type = $type;
     }
+
     /**
      * Execute the job.
      *
@@ -50,7 +55,8 @@ class GenerateAffiliateExcelReport extends Job implements SelfHandling, ShouldQu
         $this->mail();
     }
 
-    public function mail() {
+    public function mail()
+    {
 
         $emailNotificationRecipient = env('REPORTS_EMAIL_NOTIFICATION_RECIPIENT', 'marwilburton@hotmail.com');
 
@@ -60,14 +66,14 @@ class GenerateAffiliateExcelReport extends Job implements SelfHandling, ShouldQu
         Log::info($path);
         //send email to Burt to notify that Affiliate Report Queue was successfully finished
         Mail::send('emails.affiliate_report_excel', ['startDate' => $this->date_from, 'endDate' => $this->date_to, 'executionDuration' => $diffInHours, 'status' => $status],
-            function ($m) use($emailNotificationRecipient, $path, $status){
-            if($status) {
-                $m->attach($path);
-            }
-            $m->from('ariel@engageiq.com', 'Ariel Magbanua');
-            $m->to($emailNotificationRecipient, 'Marwil Burton')
-            ->to('admin@engageiq.com', 'EngageIQ Admin')
-                ->subject('Affiliate Reports Generate Excel Successfully Executed!');
-        });
+            function ($m) use ($emailNotificationRecipient, $path, $status) {
+                if ($status) {
+                    $m->attach($path);
+                }
+                $m->from('ariel@engageiq.com', 'Ariel Magbanua');
+                $m->to($emailNotificationRecipient, 'Marwil Burton')
+                    ->to('admin@engageiq.com', 'EngageIQ Admin')
+                    ->subject('Affiliate Reports Generate Excel Successfully Executed!');
+            });
     }
 }

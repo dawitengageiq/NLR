@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class LeadUserUniqueInfo extends Model
 {
-    protected $connection; 
+    protected $connection;
+
     protected $table = 'lead_users_uniqueinfo';
 
     protected $fillable = [
@@ -14,7 +15,7 @@ class LeadUserUniqueInfo extends Model
         'last_name',
         'email',
         'email_category',
-        'birthdate', 
+        'birthdate',
         'gender',
         'zip',
         'city',
@@ -37,10 +38,10 @@ class LeadUserUniqueInfo extends Model
         'response',
     ];
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') != 'reports') {
+        if (config('app.type') != 'reports') {
             $this->connection = 'secondary';
         }
     }

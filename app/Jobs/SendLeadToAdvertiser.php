@@ -4,18 +4,17 @@ namespace App\Jobs;
 
 use App\AffiliateCampaign;
 use App\Campaign;
+use App\CampaignConfig;
 use App\Helpers\Repositories\LeadData;
-use App\Jobs\Job;
 use App\Lead;
+use App\LeadCount;
 use Carbon\Carbon;
 use Curl\Curl;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Log;
-use App\CampaignConfig;
-use App\LeadCount;
 
 class SendLeadToAdvertiser extends Job implements SelfHandling, ShouldQueue
 {
@@ -25,8 +24,6 @@ class SendLeadToAdvertiser extends Job implements SelfHandling, ShouldQueue
 
     /**
      * Create a new job instance.
-     *
-     * @param $lead
      */
     public function __construct($lead)
     {
@@ -35,18 +32,15 @@ class SendLeadToAdvertiser extends Job implements SelfHandling, ShouldQueue
 
     /**
      * Execute the job.
-     *
-     * @param LeadData $leadData
      */
     public function handle(LeadData $leadData)
     {
-        if($this->attempts() > 1)
-        {
+        if ($this->attempts() > 1) {
             return;
         }
 
-        Log::info("Send Lead Queue");
-        Log::info("lead id: ".$this->lead->id);
+        Log::info('Send Lead Queue');
+        Log::info('lead id: '.$this->lead->id);
 
         $campaignConfig = CampaignConfig::find($this->lead->campaign_id);
 
@@ -80,100 +74,85 @@ class SendLeadToAdvertiser extends Job implements SelfHandling, ShouldQueue
             $campaignAffiliateCounts->save();
         }
         */
-        $capReached =  $this->checkCap($this->lead,$campaignCounts,$campaignAffiliateCounts);
+        $capReached = $this->checkCap($this->lead, $campaignCounts, $campaignAffiliateCounts);
 
-        if($capReached)
-        {
+        if ($capReached) {
             $this->lead->lead_status = 5;
             $this->lead->save();
+
             return;
         }
 
-        if($campaignConfig==null)
-        {
+        if ($campaignConfig == null) {
             $this->lead->lead_status = 2;
             $this->lead->save();
-            Log::info("Campaign Config null");
+            Log::info('Campaign Config null');
 
             return;
         }
 
         $leadCSV = $this->lead->leadDataCSV;
 
-        if($leadCSV==null)
-        {
+        if ($leadCSV == null) {
             $this->lead->lead_status = 2;
             $this->lead->save();
-            Log::info("Lead CSV null");
+            Log::info('Lead CSV null');
 
             return;
-        }
-        else if($leadCSV->value==null)
-        {
+        } elseif ($leadCSV->value == null) {
             $this->lead->lead_status = 2;
             $this->lead->save();
-            Log::info("Lead CSV value null");
+            Log::info('Lead CSV value null');
 
             return;
         }
 
-        $leadDataCSV = json_decode($leadCSV->value,true);
+        $leadDataCSV = json_decode($leadCSV->value, true);
 
         //get all the data
         $postURL = $campaignConfig->post_url;
-        $postHeader = json_decode($campaignConfig->post_header,true);
-        $postData = json_decode($campaignConfig->post_data,true);
-        $postDataMap = json_decode($campaignConfig->post_data_map,true);
-        $postDataFix = json_decode($campaignConfig->post_data_fixed_value,true);
+        $postHeader = json_decode($campaignConfig->post_header, true);
+        $postData = json_decode($campaignConfig->post_data, true);
+        $postDataMap = json_decode($campaignConfig->post_data_map, true);
+        $postDataFix = json_decode($campaignConfig->post_data_fixed_value, true);
         $postMethod = $campaignConfig->post_method;
 
         //advertiser server response
         $postSuccess = $campaignConfig->post_success;
 
-        if(($postURL==null || $postURL=='') ||
-            ($postData==null || $postData=='') ||
-            ($postMethod==null || $postMethod=='') ||
-            ($postSuccess==null || $postSuccess=='')
-        )
-        {
+        if (($postURL == null || $postURL == '') ||
+            ($postData == null || $postData == '') ||
+            ($postMethod == null || $postMethod == '') ||
+            ($postSuccess == null || $postSuccess == '')
+        ) {
             $this->lead->lead_status = 2;
             $this->lead->save();
+
             return;
         }
 
-        $params = "?";
-        foreach($leadDataCSV as $key => $csvData)
-        {
+        $params = '?';
+        foreach ($leadDataCSV as $key => $csvData) {
             $parameter = null;
 
             //get the parameter
-            if(isset($postData[$key]))
-            {
+            if (isset($postData[$key])) {
                 $parameter = $postData[$key];
             }
 
-            if($parameter!=null)
-            {
-                if(isset($postDataMap[$key]))
-                {
+            if ($parameter != null) {
+                if (isset($postDataMap[$key])) {
                     //check if there's mapped value for the parameter
                     $dataMap = $postDataMap[$key];
 
-                    if(is_array($dataMap))
-                    {
-                        if(count($dataMap)>0)
-                        {
-                            if(isset($dataMap[$csvData]))
-                            {
+                    if (is_array($dataMap)) {
+                        if (count($dataMap) > 0) {
+                            if (isset($dataMap[$csvData])) {
                                 $csvData = $dataMap[$csvData];
-                            }
-                            else
-                            {
+                            } else {
                                 $csvData = $dataMap['default'];
                             }
-                        }
-                        else
-                        {
+                        } else {
                             $csvData = $dataMap;
                         }
                     }
@@ -184,30 +163,25 @@ class SendLeadToAdvertiser extends Job implements SelfHandling, ShouldQueue
         }
 
         //append the post data fix values
-        if($postDataFix!=null || $postDataFix!='')
-        {
-            foreach($postDataFix as $key => $value)
-            {
-                if($value!=null || $value!='')
-                {
+        if ($postDataFix != null || $postDataFix != '') {
+            foreach ($postDataFix as $key => $value) {
+                if ($value != null || $value != '') {
                     $params = $params.$key.'='.urlencode($value).'&';
                 }
             }
         }
 
         //get the last character in url parameter
-        $params = rtrim($params,'&');
+        $params = rtrim($params, '&');
 
         //construct a CURL object to execute
         $advertiserURL = $postURL.$params;
 
-        if(!isset($this->lead->retry_count))
-        {
+        if (! isset($this->lead->retry_count)) {
             //this is the first time
-            $isLeadSuccessful = $this->sendLead($postHeader,$postMethod,$advertiserURL,$postSuccess,$leadData,0);
+            $isLeadSuccessful = $this->sendLead($postHeader, $postMethod, $advertiserURL, $postSuccess, $leadData, 0);
 
-            if(!$isLeadSuccessful)
-            {
+            if (! $isLeadSuccessful) {
                 //this means it failed now change the status of this lead back to pending
                 $this->lead->lead_status = 3;
                 $this->lead->save();
@@ -229,25 +203,19 @@ class SendLeadToAdvertiser extends Job implements SelfHandling, ShouldQueue
                 }
                 */
             }
-        }
-        else
-        {
-            if($this->lead->retry_count < 3)
-            {
+        } else {
+            if ($this->lead->retry_count < 3) {
                 //this means is being retried to send.
-                $isLeadSuccessful = $this->sendLead($postHeader,$postMethod,$advertiserURL,$postSuccess,$leadData,1);
+                $isLeadSuccessful = $this->sendLead($postHeader, $postMethod, $advertiserURL, $postSuccess, $leadData, 1);
 
                 //only allow it 3 times
-                if(!$isLeadSuccessful && $this->lead->retry_count<3)
-                {
+                if (! $isLeadSuccessful && $this->lead->retry_count < 3) {
                     $this->lead->lead_status = 3;
                     $this->lead->save();
                 }
-            }
-            else
-            {
+            } else {
                 //this means is being retried to send.
-                $isLeadSuccessful = $this->sendLead($postHeader,$postMethod,$advertiserURL,$postSuccess,$leadData,1);
+                $isLeadSuccessful = $this->sendLead($postHeader, $postMethod, $advertiserURL, $postSuccess, $leadData, 1);
             }
         }
     }
@@ -255,15 +223,10 @@ class SendLeadToAdvertiser extends Job implements SelfHandling, ShouldQueue
     /**
      * Sending of lead
      *
-     * @param $postHeader
-     * @param $postMethod
-     * @param $advertiserURL
-     * @param $postSuccess
-     * @param $leadData
-     * @param int $retry
+     * @param  int  $retry
      * @return bool
      */
-    protected function sendLead($postHeader,$postMethod,$advertiserURL,$postSuccess,$leadData,$retry=0)
+    protected function sendLead($postHeader, $postMethod, $advertiserURL, $postSuccess, $leadData, $retry = 0)
     {
         $isLeadSuccess = false;
 
@@ -272,31 +235,24 @@ class SendLeadToAdvertiser extends Job implements SelfHandling, ShouldQueue
 
         $curl = new Curl();
 
-        if($postHeader!=null)
-        {
+        if ($postHeader != null) {
             //set the header
-            foreach($postHeader as $key => $header)
-            {
-                $curl->setHeader($key,$header);
+            foreach ($postHeader as $key => $header) {
+                $curl->setHeader($key, $header);
             }
         }
 
         //set the method
-        if($postMethod=='get' || $postMethod=='GET')
-        {
+        if ($postMethod == 'get' || $postMethod == 'GET') {
             $curl->get($advertiserURL);
-        }
-        else if($postMethod=='post' || $postMethod=='POST')
-        {
+        } elseif ($postMethod == 'post' || $postMethod == 'POST') {
             $curl->post($advertiserURL);
         }
 
-        if($curl->error)
-        {
+        if ($curl->error) {
             Log::info("Error: $curl->error_code");
 
-            switch($curl->error_code)
-            {
+            switch ($curl->error_code) {
                 case 403:
                 case 405:
                 case 410:
@@ -310,7 +266,7 @@ class SendLeadToAdvertiser extends Job implements SelfHandling, ShouldQueue
                     $this->lead->lead_status = 0;
                     break;
 
-                //connection timeout or could not connect for curl then mark the lead with timeout status
+                    //connection timeout or could not connect for curl then mark the lead with timeout status
                 case CURLE_COULDNT_CONNECT:
                 case CURLE_OPERATION_TIMEOUTED:
                 case 28:
@@ -328,50 +284,40 @@ class SendLeadToAdvertiser extends Job implements SelfHandling, ShouldQueue
 
             //$this->lead->lead_status = 0;
             $isLeadSuccess = false;
-        }
-        else
-        {
-            if(strpos($curl->response,$postSuccess)!==false)
-            {
+        } else {
+            if (strpos($curl->response, $postSuccess) !== false) {
                 $this->lead->lead_status = 1;
-                Log::info("Success!");
+                Log::info('Success!');
 
                 //increment the counter here
-                $leadData->incrementLeadCount($this->lead->campaign_id,$this->lead->affiliate_id);
+                $leadData->incrementLeadCount($this->lead->campaign_id, $this->lead->affiliate_id);
                 $isLeadSuccess = true;
-            }
-            else
-            {
+            } else {
                 $this->lead->lead_status = 2;
-                Log::info("Rejected!");
+                Log::info('Rejected!');
 
                 //considered success since advertiser server shows no error and this was deliberately rejected by the advertiser
                 $isLeadSuccess = true;
             }
         }
 
-        $leadData->updateOrCreateLeadADV($this->lead,$advertiserURL);
+        $leadData->updateOrCreateLeadADV($this->lead, $advertiserURL);
 
         //save the message/response headers
         $responseHeaders = '';
-        if(is_array($curl->response_headers))
-        {
-            foreach($curl->response_headers as $header)
-            {
+        if (is_array($curl->response_headers)) {
+            foreach ($curl->response_headers as $header) {
                 $responseHeaders = $responseHeaders.$header.' ';
             }
-        }
-        else
-        {
+        } else {
             $responseHeaders = $curl->response_headers;
         }
 
-        $leadData->updateOrCreateLeadMessage($this->lead,$responseHeaders);
+        $leadData->updateOrCreateLeadMessage($this->lead, $responseHeaders);
 
-        $leadData->updateOrCreateLeadSentResult($this->lead,trim($curl->response));
+        $leadData->updateOrCreateLeadSentResult($this->lead, trim($curl->response));
 
-        if(isset($this->lead->retry_count))
-        {
+        if (isset($this->lead->retry_count)) {
             //set the last retry date
             $this->lead->last_retry_date = Carbon::now()->toDateString();
         }
@@ -380,7 +326,6 @@ class SendLeadToAdvertiser extends Job implements SelfHandling, ShouldQueue
         $this->lead->retry_count = intval($this->lead->retry_count) + $retry;
 
         $this->lead->save();
-
 
         //Log::info($isLeadSuccess ? 'true' : 'false');
         //Log::info("last_retry_count: ".$this->lead->retry_count);
@@ -392,27 +337,21 @@ class SendLeadToAdvertiser extends Job implements SelfHandling, ShouldQueue
     /**
      * Cap checker
      *
-     * @param $lead
-     * @param $campaignCounts
-     * @param $campaignAffiliateCounts
      * @return bool
      */
-    protected function checkCap($lead,$campaignCounts,$campaignAffiliateCounts)
+    protected function checkCap($lead, $campaignCounts, $campaignAffiliateCounts)
     {
         //get the cap limit for campaign and affiliate campaign
         $campaignCapDetails = Campaign::getCapDetails($lead->campaign_id)->first();
-        $affiliateCampaignCapDetails = AffiliateCampaign::getCapDetails(['campaign_id'=>$lead->campaign_id,'affiliate_id'=>$lead->affiliate_id])->first();
+        $affiliateCampaignCapDetails = AffiliateCampaign::getCapDetails(['campaign_id' => $lead->campaign_id, 'affiliate_id' => $lead->affiliate_id])->first();
 
         $leadCapTypes = config('constants.LEAD_CAP_TYPES');
         $campaignCapType = $leadCapTypes[$campaignCapDetails->lead_cap_type];
 
         //get the cap type for affiliate campaign
-        if(count($affiliateCampaignCapDetails)>0)
-        {
+        if (count($affiliateCampaignCapDetails) > 0) {
             $affiliateCampaignCapType = $leadCapTypes[$affiliateCampaignCapDetails->lead_cap_type];
-        }
-        else
-        {
+        } else {
             //no existing affiliate campaign record therefore it is considered
             $affiliateCampaignCapType = $leadCapTypes[0];
         }
@@ -424,14 +363,13 @@ class SendLeadToAdvertiser extends Job implements SelfHandling, ShouldQueue
             $campaignCapType //cap type
         );
 
-        $campaignAffiliateCounts = $this->executeReset($campaignAffiliateCounts,$lead->campaign_id,$lead->affiliate_id,$affiliateCampaignCapType);
+        $campaignAffiliateCounts = $this->executeReset($campaignAffiliateCounts, $lead->campaign_id, $lead->affiliate_id, $affiliateCampaignCapType);
 
         $isCampaignCapReached = false;
         $isAffiliateCampaignCapReached = false;
 
         //check campaign cap
-        switch($campaignCapType)
-        {
+        switch ($campaignCapType) {
             case 'Daily':
                 $isCampaignCapReached = $campaignCounts->count >= $campaignCapDetails->lead_cap_value;
                 break;
@@ -454,15 +392,11 @@ class SendLeadToAdvertiser extends Job implements SelfHandling, ShouldQueue
         }
 
         //do not check if cap type is unlimited
-        if($affiliateCampaignCapType == $leadCapTypes[0])
-        {
+        if ($affiliateCampaignCapType == $leadCapTypes[0]) {
             $isAffiliateCampaignCapReached = false;
-        }
-        else
-        {
+        } else {
             //check campaign cap
-            switch($affiliateCampaignCapType)
-            {
+            switch ($affiliateCampaignCapType) {
                 case 'Daily':
                     $isAffiliateCampaignCapReached = $campaignAffiliateCounts->count >= $affiliateCampaignCapDetails->lead_cap_value;
                     break;
@@ -485,15 +419,13 @@ class SendLeadToAdvertiser extends Job implements SelfHandling, ShouldQueue
             }
         }
 
-        if($isCampaignCapReached)
-        {
+        if ($isCampaignCapReached) {
             //Log::info('cap reached!');
             //this means cap already reached set the lead to cap reached
             return true;
         }
 
-        if($isAffiliateCampaignCapReached)
-        {
+        if ($isAffiliateCampaignCapReached) {
             //Log::info('cap reached!');
             //this means cap already reached set the lead to cap reached
             return true;
@@ -505,18 +437,15 @@ class SendLeadToAdvertiser extends Job implements SelfHandling, ShouldQueue
     /**
      * This function resets the lead counter
      *
-     * @param $campaignCounts
-     * @param $campaignID
-     * @param null $affiliateID
-     * @param string $capType
+     * @param  null  $affiliateID
+     * @param  string  $capType
      * @return LeadCount
      */
-    protected function executeReset($campaignCounts, $campaignID, $affiliateID=null,$capType='Unlimited')
+    protected function executeReset($campaignCounts, $campaignID, $affiliateID = null, $capType = 'Unlimited')
     {
         //reset the counter if it's time to reset already
-        if($campaignCounts==null)
-        {
-            $dateNowStr =  Carbon::now()->toDateTimeString();
+        if ($campaignCounts == null) {
+            $dateNowStr = Carbon::now()->toDateTimeString();
 
             //this mean no record of it then create it
             $campaignCounts = new LeadCount;
@@ -525,18 +454,14 @@ class SendLeadToAdvertiser extends Job implements SelfHandling, ShouldQueue
             $campaignCounts->reference_date = $dateNowStr;
 
             $campaignCounts->save();
-        }
-        else
-        {
+        } else {
             //check campaign cap
-            switch($capType)
-            {
+            switch ($capType) {
                 case 'Daily':
 
                     //daily campaign count reset
                     $dailyReferenceDate = Carbon::parse($campaignCounts->reference_date);
-                    if($dailyReferenceDate->startOfDay()->diffInDays(Carbon::now()->startOfDay())>0)
-                    {
+                    if ($dailyReferenceDate->startOfDay()->diffInDays(Carbon::now()->startOfDay()) > 0) {
                         //this means already past one day and count needs to reset
                         $campaignCounts->count = 0;
                         //change the reference date as well
@@ -551,8 +476,7 @@ class SendLeadToAdvertiser extends Job implements SelfHandling, ShouldQueue
                     $refWeekOfMonth = Carbon::parse($campaignCounts->reference_date)->weekOfMonth;
                     $currentWeekOfMonth = Carbon::now()->weekOfMonth;
 
-                    if($currentWeekOfMonth!=$refWeekOfMonth)
-                    {
+                    if ($currentWeekOfMonth != $refWeekOfMonth) {
                         //this means already shifted to different week
                         $campaignCounts->count = 0;
                         //set the new reference date for the current week
@@ -567,8 +491,7 @@ class SendLeadToAdvertiser extends Job implements SelfHandling, ShouldQueue
                     $refMonth = Carbon::parse($campaignCounts->reference_date)->month;
                     $currentMonth = Carbon::now()->month;
 
-                    if($currentMonth!=$refMonth)
-                    {
+                    if ($currentMonth != $refMonth) {
                         //this means already shifted to different month
                         $campaignCounts->count = 0;
                         //set the new reference date for the current month
@@ -583,8 +506,7 @@ class SendLeadToAdvertiser extends Job implements SelfHandling, ShouldQueue
                     $refYear = Carbon::parse($campaignCounts->reference_date)->year;
                     $currentYear = Carbon::now()->year;
 
-                    if($currentYear!=$refYear)
-                    {
+                    if ($currentYear != $refYear) {
                         //this means already shifted to different year
                         $campaignCounts->count = 0;
                         //set the new reference date for the current year

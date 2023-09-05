@@ -1,9 +1,9 @@
 <?php
+
 namespace App\Http\Services\Consolidated\Export2Excel;
 
-use Carbon\Carbon;
-
 use App\ConsolidatedGraph;
+use Carbon\Carbon;
 
 /**
  * Consolidate graph class.
@@ -13,81 +13,114 @@ class ByDateRangeMultiple extends \App\Http\Services\Consolidated\GraphByDateRan
 {
     /**
      * Get the consilidated data to be use in excel file.
-     * @model ConsolidatedGraph.
      *
+     * @model ConsolidatedGraph.
      */
-    public function getConsolidatedData ()
+    public function getConsolidatedData()
     {
         // \Log::info($this->columns);
         // \DB::enableQueryLog();
         // \DB::connection('secondary')->enableQueryLog();
         $selectQry = '*';
-        if(count($this->columns)) {
+        if (count($this->columns)) {
             $select = $this->columns;
             $selectQry = '';
             $s = [];
-            foreach($this->columns as $c) {
-                if($c == 'cost_per_all_clicks') $qry = '(SUM(cost) / SUM(all_clicks))';
-                else if($c == 'survey_takers_per_clicks') $qry = '(SUM(survey_takers) / SUM(all_clicks))';
-                else if($c == 'margin') $qry = '((SUM(source_revenue) - SUM(cost)) / SUM(source_revenue))';
-                else if($c == 'source_revenue_per_all_clicks') $qry = '(SUM(source_revenue) / SUM(all_clicks))';
-                else if($c == 'source_revenue_per_survey_takers') $qry = '(SUM(source_revenue) / SUM(survey_takers))';
-                else if($c == 'all_coreg_revenue_per_all_coreg_views') $qry = '(SUM(all_coreg_revenue) / SUM(all_coreg_views))';
-                else if($c == 'coreg_p1_revenue_vs_views') $qry = '(SUM(coreg_p1_revenue) / SUM(coreg_p1_views))';
-                else if($c == 'coreg_p2_revenue_vs_views') $qry = '(SUM(coreg_p2_revenue) / SUM(coreg_p2_views))';
-                else if($c == 'coreg_p3_revenue_vs_views') $qry = '(SUM(coreg_p3_revenue) / SUM(coreg_p3_views))';
-                else if($c == 'coreg_p4_revenue_vs_views') $qry = '(SUM(coreg_p4_revenue) / SUM(coreg_p4_views))';
-                else if($c == 'mp_per_views') $qry = '(SUM(all_mp_revenue) / SUM(all_mp_views))';
-                else if($c == 'pd_revenue_vs_views') $qry = '(SUM(pd_revenue) / SUM(pd_views))';
-                else if($c == 'tb_revenue_vs_views') $qry = '(SUM(tb_revenue) / SUM(tb_views))';
-                else if($c == 'iff_revenue_vs_views') $qry = '(SUM(iff_revenue) / SUM(iff_views))';
-                else if($c == 'rexadz_revenue_vs_views') $qry = '(SUM(rexadz_revenue) / SUM(rexadz_views))';
-                else if($c == 'adsmith_revenue_vs_views') $qry = '(SUM(adsmith_revenue) / SUM(adsmith_views))';
-                else if($c == 'cpa_revenue_per_views') $qry = '(SUM(cpa_revenue) / SUM(cpa_views))';
-                else if($c == 'lsp_revenue_vs_views') $qry = '(SUM(lsp_revenue) / SUM(lsp_views))';
-                else if($c == 'cpa_per_survey_takers') $qry = '(SUM(cpa_revenue) / SUM(survey_takers))';
-                else if($c == 'all_inbox_per_survey_takers') $qry = '(SUM(all_inbox_revenue) / SUM(survey_takers))';
-                else if($c == 'push_cpa_revenue_per_survey_takers') $qry = '(SUM(push_revenue) / SUM(survey_takers))';
-                else $qry = "SUM($c)";
-                $s[] = $qry . " as $c";
+            foreach ($this->columns as $c) {
+                if ($c == 'cost_per_all_clicks') {
+                    $qry = '(SUM(cost) / SUM(all_clicks))';
+                } elseif ($c == 'survey_takers_per_clicks') {
+                    $qry = '(SUM(survey_takers) / SUM(all_clicks))';
+                } elseif ($c == 'margin') {
+                    $qry = '((SUM(source_revenue) - SUM(cost)) / SUM(source_revenue))';
+                } elseif ($c == 'source_revenue_per_all_clicks') {
+                    $qry = '(SUM(source_revenue) / SUM(all_clicks))';
+                } elseif ($c == 'source_revenue_per_survey_takers') {
+                    $qry = '(SUM(source_revenue) / SUM(survey_takers))';
+                } elseif ($c == 'all_coreg_revenue_per_all_coreg_views') {
+                    $qry = '(SUM(all_coreg_revenue) / SUM(all_coreg_views))';
+                } elseif ($c == 'coreg_p1_revenue_vs_views') {
+                    $qry = '(SUM(coreg_p1_revenue) / SUM(coreg_p1_views))';
+                } elseif ($c == 'coreg_p2_revenue_vs_views') {
+                    $qry = '(SUM(coreg_p2_revenue) / SUM(coreg_p2_views))';
+                } elseif ($c == 'coreg_p3_revenue_vs_views') {
+                    $qry = '(SUM(coreg_p3_revenue) / SUM(coreg_p3_views))';
+                } elseif ($c == 'coreg_p4_revenue_vs_views') {
+                    $qry = '(SUM(coreg_p4_revenue) / SUM(coreg_p4_views))';
+                } elseif ($c == 'mp_per_views') {
+                    $qry = '(SUM(all_mp_revenue) / SUM(all_mp_views))';
+                } elseif ($c == 'pd_revenue_vs_views') {
+                    $qry = '(SUM(pd_revenue) / SUM(pd_views))';
+                } elseif ($c == 'tb_revenue_vs_views') {
+                    $qry = '(SUM(tb_revenue) / SUM(tb_views))';
+                } elseif ($c == 'iff_revenue_vs_views') {
+                    $qry = '(SUM(iff_revenue) / SUM(iff_views))';
+                } elseif ($c == 'rexadz_revenue_vs_views') {
+                    $qry = '(SUM(rexadz_revenue) / SUM(rexadz_views))';
+                } elseif ($c == 'adsmith_revenue_vs_views') {
+                    $qry = '(SUM(adsmith_revenue) / SUM(adsmith_views))';
+                } elseif ($c == 'cpa_revenue_per_views') {
+                    $qry = '(SUM(cpa_revenue) / SUM(cpa_views))';
+                } elseif ($c == 'lsp_revenue_vs_views') {
+                    $qry = '(SUM(lsp_revenue) / SUM(lsp_views))';
+                } elseif ($c == 'cpa_per_survey_takers') {
+                    $qry = '(SUM(cpa_revenue) / SUM(survey_takers))';
+                } elseif ($c == 'all_inbox_per_survey_takers') {
+                    $qry = '(SUM(all_inbox_revenue) / SUM(survey_takers))';
+                } elseif ($c == 'push_cpa_revenue_per_survey_takers') {
+                    $qry = '(SUM(push_revenue) / SUM(survey_takers))';
+                } else {
+                    $qry = "SUM($c)";
+                }
+                $s[] = $qry." as $c";
             }
 
-            $selectQry = implode(', ' , $s);
+            $selectQry = implode(', ', $s);
         }
-        
+
         $query = $this->model
             ->select(
-            \DB::raw('DATE_FORMAT(created_at, "%Y-%m-%d") as date'),
-            'revenue_tracker_id',
-            $this->subid_includes['s1'] ? 's1' : \DB::RAW('"" as s1'),
-            $this->subid_includes['s2'] ? 's2' : \DB::RAW('"" as s2'),
-            $this->subid_includes['s3'] ? 's3' : \DB::RAW('"" as s3'),
-            $this->subid_includes['s4'] ? 's4' : \DB::RAW('"" as s4'),
-            's5',
-            \DB::raw($selectQry)
-        );
+                \DB::raw('DATE_FORMAT(created_at, "%Y-%m-%d") as date'),
+                'revenue_tracker_id',
+                $this->subid_includes['s1'] ? 's1' : \DB::RAW('"" as s1'),
+                $this->subid_includes['s2'] ? 's2' : \DB::RAW('"" as s2'),
+                $this->subid_includes['s3'] ? 's3' : \DB::RAW('"" as s3'),
+                $this->subid_includes['s4'] ? 's4' : \DB::RAW('"" as s4'),
+                's5',
+                \DB::raw($selectQry)
+            );
 
-        if(count($this->revenueTrackerIDs)) {
+        if (count($this->revenueTrackerIDs)) {
             $query->whereIn('revenue_tracker_id', $this->revenueTrackerIDs);
         }
 
         // Date range by date picker
-        if(!$this->predefineDates) {
+        if (! $this->predefineDates) {
             $this->dateFrom = Carbon::parse($this->dateFrom)->startOfDay();
             $this->dateTo = Carbon::parse($this->dateTo)->endOfDay();
             $query->whereBetween('created_at', [$this->dateFrom, $this->dateTo]);
         }
         // Date range by pre define dates
-        else $query = $this->{'query' . ucwords(camelCase($this->predefineDates))}($query);
+        else {
+            $query = $this->{'query'.ucwords(camelCase($this->predefineDates))}($query);
+        }
 
         $sumQuery = clone $query;
 
         $query->groupBy('date');
         $query->groupBy('revenue_tracker_id');
-        if($this->subid_includes['s1']) $query->groupBy('s1');
-        if($this->subid_includes['s2']) $query->groupBy('s2');
-        if($this->subid_includes['s3']) $query->groupBy('s3');
-        if($this->subid_includes['s4']) $query->groupBy('s4');
+        if ($this->subid_includes['s1']) {
+            $query->groupBy('s1');
+        }
+        if ($this->subid_includes['s2']) {
+            $query->groupBy('s2');
+        }
+        if ($this->subid_includes['s3']) {
+            $query->groupBy('s3');
+        }
+        if ($this->subid_includes['s4']) {
+            $query->groupBy('s4');
+        }
 
         //RECORDS
         $records = $query
@@ -97,22 +130,30 @@ class ByDateRangeMultiple extends \App\Http\Services\Consolidated\GraphByDateRan
             ->orderBy('s2', 'ASC')
             ->orderBy('s3', 'ASC')
             ->orderBy('s4', 'ASC')
-        ->get();
+            ->get();
         $this->records = $records;
 
         //TOTAL PER SUBID SUMMARY
         $sumQuery->groupBy('revenue_tracker_id');
-        if($this->subid_includes['s1']) $sumQuery->groupBy('s1');
-        if($this->subid_includes['s2']) $sumQuery->groupBy('s2');
-        if($this->subid_includes['s3']) $sumQuery->groupBy('s3');
-        if($this->subid_includes['s4']) $sumQuery->groupBy('s4');
-        
+        if ($this->subid_includes['s1']) {
+            $sumQuery->groupBy('s1');
+        }
+        if ($this->subid_includes['s2']) {
+            $sumQuery->groupBy('s2');
+        }
+        if ($this->subid_includes['s3']) {
+            $sumQuery->groupBy('s3');
+        }
+        if ($this->subid_includes['s4']) {
+            $sumQuery->groupBy('s4');
+        }
+
         $this->subIDSummaryRecords = $sumQuery->orderBy('revenue_tracker_id', 'ASC')
             ->orderBy('s1', 'ASC')
             ->orderBy('s2', 'ASC')
             ->orderBy('s3', 'ASC')
             ->orderBy('s4', 'ASC')
-        ->get();
+            ->get();
         // \Log::info($this->subIDSummaryRecords);
 
         //TOTALS PER SUBID
@@ -150,39 +191,49 @@ class ByDateRangeMultiple extends \App\Http\Services\Consolidated\GraphByDateRan
             // 'SUM(all_inbox_revenue) as all_inbox_revenue',
             // 'SUM(push_revenue) as push_revenue'
         ];
-        
+
         $perQuery = $this->model
             ->select(
-            \DB::raw('DATE_FORMAT(created_at, "%Y-%m-%d") as date'),
-            'revenue_tracker_id',
-            $this->subid_includes['s1'] ? 's1' : \DB::RAW('"" as s1'),
-            $this->subid_includes['s2'] ? 's2' : \DB::RAW('"" as s2'),
-            $this->subid_includes['s3'] ? 's3' : \DB::RAW('"" as s3'),
-            $this->subid_includes['s4'] ? 's4' : \DB::RAW('"" as s4'),
-            's5',
-            \DB::raw($selectQry),
-            \DB::raw(implode(', ' , $addQuery))
-        );
+                \DB::raw('DATE_FORMAT(created_at, "%Y-%m-%d") as date'),
+                'revenue_tracker_id',
+                $this->subid_includes['s1'] ? 's1' : \DB::RAW('"" as s1'),
+                $this->subid_includes['s2'] ? 's2' : \DB::RAW('"" as s2'),
+                $this->subid_includes['s3'] ? 's3' : \DB::RAW('"" as s3'),
+                $this->subid_includes['s4'] ? 's4' : \DB::RAW('"" as s4'),
+                's5',
+                \DB::raw($selectQry),
+                \DB::raw(implode(', ', $addQuery))
+            );
 
-        if(count($this->revenueTrackerIDs)) {
+        if (count($this->revenueTrackerIDs)) {
             $perQuery->whereIn('revenue_tracker_id', $this->revenueTrackerIDs);
         }
 
         // Date range by date picker
-        if(!$this->predefineDates) {
+        if (! $this->predefineDates) {
             $this->dateFrom = Carbon::parse($this->dateFrom)->startOfDay();
             $this->dateTo = Carbon::parse($this->dateTo)->endOfDay();
             $perQuery->whereBetween('created_at', [$this->dateFrom, $this->dateTo]);
         }
         // Date range by pre define dates
-        else $perQuery = $this->{'query' . ucwords(camelCase($this->predefineDates))}($perQuery);
+        else {
+            $perQuery = $this->{'query'.ucwords(camelCase($this->predefineDates))}($perQuery);
+        }
 
         $perQuery->groupBy('date');
         $perQuery->groupBy('revenue_tracker_id');
-        if($this->subid_includes['s1']) $perQuery->groupBy('s1');
-        if($this->subid_includes['s2']) $perQuery->groupBy('s2');
-        if($this->subid_includes['s3']) $perQuery->groupBy('s3');
-        if($this->subid_includes['s4']) $perQuery->groupBy('s4');
+        if ($this->subid_includes['s1']) {
+            $perQuery->groupBy('s1');
+        }
+        if ($this->subid_includes['s2']) {
+            $perQuery->groupBy('s2');
+        }
+        if ($this->subid_includes['s3']) {
+            $perQuery->groupBy('s3');
+        }
+        if ($this->subid_includes['s4']) {
+            $perQuery->groupBy('s4');
+        }
 
         $this->perSubIDRecords = $perQuery
             ->orderBy('revenue_tracker_id', 'ASC')
@@ -191,19 +242,20 @@ class ByDateRangeMultiple extends \App\Http\Services\Consolidated\GraphByDateRan
             ->orderBy('s3', 'ASC')
             ->orderBy('s4', 'ASC')
             ->orderBy('date', 'ASC')
-        ->get();
+            ->get();
         $this->perSubIDRecords;
 
         // \Log::info(\DB::getQueryLog());
         // \Log::info(\DB::connection('secondary')->getQueryLog());
     }
 
-    public static function stringifyZero(&$item, $key) {
+    public static function stringifyZero(&$item, $key)
+    {
         $keys = ['revenue_tracker_id', 's1', 's2', 's3', 's4', 's5'];
-        if(!in_array($key, $keys) && (trim($item) == '' || $item == null)) {
+        if (! in_array($key, $keys) && (trim($item) == '' || $item == null)) {
             $item = 0;
         }
-        $item = is_numeric($item) && !in_array($key, $keys) ? (float) sprintf('%0.2f', $item) : (string) $item;
+        $item = is_numeric($item) && ! in_array($key, $keys) ? (float) sprintf('%0.2f', $item) : (string) $item;
 
         // \Log::info($key.' - '. $item);
     }

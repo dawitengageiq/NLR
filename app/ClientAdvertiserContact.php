@@ -10,14 +10,16 @@ class ClientAdvertiserContact extends Model
 
     protected $fillable = [
         'user_id',
-        'advertiser_id'
+        'advertiser_id',
     ];
 
-    public function user(){
-		return $this->belongsTo('App\User');
-	}
+    public function user()
+    {
+        return $this->belongsTo('App\User');
+    }
 
-	public function advertiser(){
-		return $this->belongsTo('App\Advertiser');
-	}
+    public function advertiser()
+    {
+        return $this->belongsTo('App\Advertiser');
+    }
 }

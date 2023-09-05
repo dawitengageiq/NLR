@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateLeadCountsTable extends Migration
 {
@@ -33,7 +33,7 @@ class CreateLeadCountsTable extends Migration
             $table->timestamp('yearly_reference_date')->nullable()->default(null);
             */
 
-            $table->index(['affiliate_id','campaign_id'],'leads_affiliate_id_campaign_id_index');
+            $table->index(['affiliate_id', 'campaign_id'], 'leads_affiliate_id_campaign_id_index');
 
             $table->foreign('campaign_id')->references('id')->on('campaigns')->onDelete('cascade');
             $table->foreign('affiliate_id')->references('id')->on('affiliates')->onDelete('cascade');

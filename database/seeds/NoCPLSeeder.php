@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Seeder;
 use App\NoteCategory;
+use Illuminate\Database\Seeder;
 
 class NoCPLSeeder extends Seeder
 {
@@ -13,7 +13,7 @@ class NoCPLSeeder extends Seeder
     public function run()
     {
         NoteCategory::firstOrCreate([
-        	'name' => 'CPL'
+            'name' => 'CPL',
         ]);
     }
 }

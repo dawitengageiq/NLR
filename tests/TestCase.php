@@ -1,5 +1,5 @@
 <?php
-use Illuminate\Contracts\Debug\ExceptionHandler;
+
 class TestCase extends Illuminate\Foundation\Testing\TestCase
 {
     //use DatabaseSetup;

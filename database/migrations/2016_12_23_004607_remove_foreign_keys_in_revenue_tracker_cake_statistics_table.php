@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class RemoveForeignKeysInRevenueTrackerCakeStatisticsTable extends Migration
 {
@@ -13,9 +13,9 @@ class RemoveForeignKeysInRevenueTrackerCakeStatisticsTable extends Migration
     public function up()
     {
         Schema::table('revenue_tracker_cake_statistics', function (Blueprint $table) {
-           $table->dropForeign('revenue_tracker_cake_statistics_affiliate_id_foreign');
-           $table->dropForeign('revenue_tracker_cake_statistics_cake_campaign_id_foreign');
-           $table->dropForeign('revenue_tracker_cake_statistics_revenue_tracker_id_foreign');
+            $table->dropForeign('revenue_tracker_cake_statistics_affiliate_id_foreign');
+            $table->dropForeign('revenue_tracker_cake_statistics_cake_campaign_id_foreign');
+            $table->dropForeign('revenue_tracker_cake_statistics_revenue_tracker_id_foreign');
         });
     }
 

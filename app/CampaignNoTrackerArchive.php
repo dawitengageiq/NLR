@@ -14,9 +14,9 @@ class CampaignNoTrackerArchive extends Model
         'count',
         'last_session',
         'created_up',
-        'updated_at'
+        'updated_at',
     ];
-    
+
     public function campaign()
     {
         return $this->belongsTo(Campaign::class);

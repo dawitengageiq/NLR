@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Advertiser extends Model
 {
     protected $connection;
+
     protected $table = 'advertisers';
 
     protected $fillable = [
@@ -19,57 +20,50 @@ class Advertiser extends Model
         'state',
         'zip',
         'description',
-        'status'
+        'status',
     ];
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') == 'reports') {
+        if (config('app.type') == 'reports') {
             $this->connection = 'secondary';
         }
     }
-    
-    public function user(){
-        return $this->hasOne('App\User', 'advertiser_id','id');
+
+    public function user()
+    {
+        return $this->hasOne('App\User', 'advertiser_id', 'id');
     }
 
-    public function scopeSearchAdvertisers($query,$search,$start,$length)
+    public function scopeSearchAdvertisers($query, $search, $start, $length)
     {
         $status = -1;
         //determine the status param
-        if(strcasecmp($search,'active')==0)
-        {
-            $status=1;
-        }
-        else if(strcasecmp($search,'inactive'))
-        {
-            $status=0;
-        }
-        
-        if(!empty($search) || $search!='')
-        {
-            $query->where('id','=',$search)
-                ->orWhere('company','like','%'.$search.'%')
-                ->orWhere('website_url','like','%'.$search.'%')
-                ->orWhere('phone','=',$search)
-                ->orWhere('address','like','%'.$search.'%')
-                ->orWhere('city','like','%'.$search.'%')
-                ->orWhere('state','like','%'.$search.'%')
-                ->orWhere('zip','=',$search);
+        if (strcasecmp($search, 'active') == 0) {
+            $status = 1;
+        } elseif (strcasecmp($search, 'inactive')) {
+            $status = 0;
         }
 
-        if($status>0)
-        {
-            $query->orWhere('status','=',$status);
+        if (! empty($search) || $search != '') {
+            $query->where('id', '=', $search)
+                ->orWhere('company', 'like', '%'.$search.'%')
+                ->orWhere('website_url', 'like', '%'.$search.'%')
+                ->orWhere('phone', '=', $search)
+                ->orWhere('address', 'like', '%'.$search.'%')
+                ->orWhere('city', 'like', '%'.$search.'%')
+                ->orWhere('state', 'like', '%'.$search.'%')
+                ->orWhere('zip', '=', $search);
         }
 
-        if($start<=0)
-        {
+        if ($status > 0) {
+            $query->orWhere('status', '=', $status);
+        }
+
+        if ($start <= 0) {
             $query->take($length);
-        }
-        else
-        {
+        } else {
             $query->take($start)->skip($length);
         }
 

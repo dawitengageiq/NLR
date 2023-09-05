@@ -3,15 +3,11 @@
 namespace App\Jobs;
 
 use App\BugReport;
-use App\Jobs\Job;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
 use Log;
@@ -21,11 +17,11 @@ class SendBugReports extends Job implements SelfHandling, ShouldQueue
     use InteractsWithQueue, SerializesModels;
 
     protected $bugReports;
+
     protected $latesReport;
 
     /**
      * Create a new job instance.
-     *
      */
     public function __construct()
     {
@@ -39,22 +35,20 @@ class SendBugReports extends Job implements SelfHandling, ShouldQueue
      */
     public function handle()
     {
-        if ($this->attempts() > 1)
-        {
+        if ($this->attempts() > 1) {
             return;
         }
 
-        $projectKey = env('JIRA_PROJECT_KEY','NLR');
+        $projectKey = env('JIRA_PROJECT_KEY', 'NLR');
         $issueTypeName = 'Bug';
-        $assigneeUsername = env('JIRA_ISSUE_ASSIGNEE_USERNAME','Ariel'); //default is Ariel
-        $jiraUserName = env('JIRA_USERNAME','monty');
-        $jiraUserPassword = env('JIRA_USER_PASSWORD','magbanua2016');
+        $assigneeUsername = env('JIRA_ISSUE_ASSIGNEE_USERNAME', 'Ariel'); //default is Ariel
+        $jiraUserName = env('JIRA_USERNAME', 'monty');
+        $jiraUserPassword = env('JIRA_USER_PASSWORD', 'magbanua2016');
 
         //this will return the engageiq atlassian base url if it is not specified in env
-        $baseURI = env('JIRA_API_BASE_URL','https://engageiq.atlassian.net');
+        $baseURI = env('JIRA_API_BASE_URL', 'https://engageiq.atlassian.net');
 
-        foreach($this->bugReports as $report)
-        {
+        foreach ($this->bugReports as $report) {
             //create JIRA ticket via API
             Log::info('JIRA Create Issue API: ');
 
@@ -86,13 +80,12 @@ class SendBugReports extends Job implements SelfHandling, ShouldQueue
             $client = new Client([
                 'base_uri' => $baseURI,
                 'headers' => [
-                    'Content-Type' => 'application/json'
+                    'Content-Type' => 'application/json',
                 ],
                 'auth' => [$jiraUserName, $jiraUserPassword],
             ]);
 
-            try
-            {
+            try {
                 $response = $client->request('POST', '/rest/api/2/issue/', [
                     'json' => $requestBody,
                 ]);
@@ -108,12 +101,12 @@ class SendBugReports extends Job implements SelfHandling, ShouldQueue
                 Log::info("JIRA ticket created! - $responseBodyArray->key");
 
                 //attach all attachments
-                $attachments = explode(',',$report->evidences);
+                $attachments = explode(',', $report->evidences);
 
                 $attachmentClient = new Client([
                     'base_uri' => $baseURI,
                     'headers' => [
-                        'X-Atlassian-Token' => 'no-check'
+                        'X-Atlassian-Token' => 'no-check',
                     ],
                     'auth' => [$jiraUserName, $jiraUserPassword],
                 ]);
@@ -122,37 +115,33 @@ class SendBugReports extends Job implements SelfHandling, ShouldQueue
                 Log::info("attachment url: $url");
 
                 $payload = [
-                    'multipart' => []
+                    'multipart' => [],
                 ];
 
                 $attachmentsAllComplete = true;
 
                 //send them one by one
-                foreach($attachments as $attachment)
-                {
+                foreach ($attachments as $attachment) {
                     $attachmentPath = storage_path('app').'/uploads/bugs/'.$attachment;
 
                     Log::info("attachment path: $attachmentPath");
 
-                    try
-                    {
+                    try {
                         //$contents = File::get($attachmentPath);
 
                         $data = [
                             'name' => 'file',
-                            'contents' => fopen($attachmentPath,'r')
+                            'contents' => fopen($attachmentPath, 'r'),
                         ];
 
-                        array_push($payload['multipart'],$data);
-                    }
-                    catch (\ErrorException $exception)
-                    {
+                        array_push($payload['multipart'], $data);
+                    } catch (\ErrorException $exception) {
                         Log::info("$attachment does not exist!");
                         $attachmentsAllComplete = false;
                     }
                 }
 
-                $attachmentResponse = $attachmentClient->request('POST',$url,$payload);
+                $attachmentResponse = $attachmentClient->request('POST', $url, $payload);
 
                 $statusCode = $attachmentResponse->getStatusCode();
                 $attachmentResponseBody = $attachmentResponse->getBody()->getContents();
@@ -160,20 +149,16 @@ class SendBugReports extends Job implements SelfHandling, ShouldQueue
                 Log::info("JIRA Add Attachment Response Status Code: $statusCode");
                 Log::info("JIRA Add Attachment Response: $attachmentResponseBody");
 
-                $isEverythingOK = ($statusCode==200 || $statusCode==201) ? true : false;
+                $isEverythingOK = ($statusCode == 200 || $statusCode == 201) ? true : false;
                 $jiraDescriptionTicket = '';
 
-                if($attachmentsAllComplete && $isEverythingOK)
-                {
+                if ($attachmentsAllComplete && $isEverythingOK) {
                     $jiraDescriptionTicket = "JIRA ticket ($responseBodyArray->key) was successfully created and all bug attachments are attached.";
 
-                    if(count($attachments)==0)
-                    {
+                    if (count($attachments) == 0) {
                         $jiraDescriptionTicket = "JIRA ticket ($responseBodyArray->key) was successfully created and there are no bug attachments.";
                     }
-                }
-                else
-                {
+                } else {
                     $jiraDescriptionTicket = "JIRA ticket ($responseBodyArray->key) was successfully created but there is problem attaching some bug attachments kindly manually attach the files to JIRA.";
                 }
 
@@ -185,17 +170,17 @@ class SendBugReports extends Job implements SelfHandling, ShouldQueue
                 $senderEmail = $report->reporter_email;
 
                 Mail::send('emails.bug_report',
-                    ['inputs' => $inputs,'sender' => $report->reporter_name],
-                    function ($mail) use ($inputs,$senderEmail,$senderNameWithEmail,$attachments) {
+                    ['inputs' => $inputs, 'sender' => $report->reporter_name],
+                    function ($mail) use ($senderEmail, $senderNameWithEmail, $attachments) {
 
                         $mail->from($senderEmail, $senderNameWithEmail);
 
                         $mail->to('karla@engageiq.com', 'Karla Librero')
-                             ->to('ariel@engageiq.com', 'Ariel Magbanua')
-                             ->to('burt@engageiq.com', 'Marwil Burton')
-                             ->to('rohit@engageiq.com', 'Rohit Gambhir')
-                             ->to('monty@engageiq.com', 'Monty Magbanua')
-                             ->subject('Engage IQ: Admin Bug Report ');
+                            ->to('ariel@engageiq.com', 'Ariel Magbanua')
+                            ->to('burt@engageiq.com', 'Marwil Burton')
+                            ->to('rohit@engageiq.com', 'Rohit Gambhir')
+                            ->to('monty@engageiq.com', 'Monty Magbanua')
+                            ->subject('Engage IQ: Admin Bug Report ');
                         /*
                         $list_of_files = json_decode($inputs['list_of_files']);
 
@@ -207,8 +192,7 @@ class SendBugReports extends Job implements SelfHandling, ShouldQueue
                         }
                         */
 
-                        foreach($attachments as $attachment)
-                        {
+                        foreach ($attachments as $attachment) {
                             $attachmentPath = storage_path('app').'/uploads/bugs/'.$attachment;
                             $mail->attach($attachmentPath);
                         }
@@ -217,16 +201,13 @@ class SendBugReports extends Job implements SelfHandling, ShouldQueue
 
                 //soft delete the report
                 $report->delete();
-            }
-            catch (\ErrorException $e)
-            {
+            } catch (\ErrorException $e) {
                 $statusCode = $e->getCode();
                 Log::info("HTTP status code: $statusCode");
 
                 Log::info($e->getRequest());
 
-                if ($e->hasResponse())
-                {
+                if ($e->hasResponse()) {
                     Log::info($e->getResponse());
                 }
 

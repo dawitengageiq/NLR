@@ -7,19 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 class LeadCount extends Model
 {
     protected $connection;
+
     protected $fillable = [
         'campaign_id',
         'affiliate_id',
         'count',
-        'reference_date'
+        'reference_date',
     ];
 
     public $timestamps = false;
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') == 'reports') {
+        if (config('app.type') == 'reports') {
             $this->connection = 'secondary';
         }
     }
@@ -48,15 +49,12 @@ class LeadCount extends Model
         }
         */
 
-        if(isset($params['campaign_id']) && isset($params['affiliate_id']))
-        {
-            $query->where('campaign_id','=',$params['campaign_id'])
-                  ->where('affiliate_id','=',$params['affiliate_id']);
-        }
-        else if(isset($params['campaign_id']) && !isset($params['affiliate_id']))
-        {
-            $query->where('campaign_id','=',$params['campaign_id'])
-                  ->whereRaw('affiliate_id IS NULL');
+        if (isset($params['campaign_id']) && isset($params['affiliate_id'])) {
+            $query->where('campaign_id', '=', $params['campaign_id'])
+                ->where('affiliate_id', '=', $params['affiliate_id']);
+        } elseif (isset($params['campaign_id']) && ! isset($params['affiliate_id'])) {
+            $query->where('campaign_id', '=', $params['campaign_id'])
+                ->whereRaw('affiliate_id IS NULL');
         }
 
         return $query;

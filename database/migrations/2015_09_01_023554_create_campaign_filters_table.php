@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateCampaignFiltersTable extends Migration
 {
@@ -16,7 +16,7 @@ class CreateCampaignFiltersTable extends Migration
             $table->increments('id');
             $table->integer('campaign_id')->unsigned()->index();
             $table->integer('filter_type_id')->unsigned()->index();
-            $table->string('value_text',30)->nullable();
+            $table->string('value_text', 30)->nullable();
             $table->tinyInteger('value_min_integer')->nullable();
             $table->bigInteger('value_max_integer')->nullable();
             $table->date('value_min_date')->nullable();

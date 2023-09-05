@@ -1,19 +1,12 @@
 <?php
+
 namespace App\Http\Services\Campaigns;
 
-use DB;
-use Config;
-use CampaignList;
-use RevenueTracker;
-use CampaignSettings;
-
-use App\Lead;
-use App\FilterType;
-use App\CakeConversion;
-use App\CampaignNoTracker;
-use App\CampaignTypeOrder;
-
 use App\Campaign;
+use App\FilterType;
+use App\Lead;
+use CampaignSettings;
+use DB;
 
 class ListsWithJson
 {
@@ -22,29 +15,34 @@ class ListsWithJson
      *
      */
     protected $uniCap;
+
     protected $affCap;
+
     protected $limit;
+
     protected $filter;
+
     protected $campaignTypeOrder;
 
     protected $campaigns = [];
+
     protected $userDetails = [];
+
     protected $typeOrdering = [];
+
     protected $passedCampaigns = [];
 
     public $stacking;
 
     /**
      * Initialize
-     *
      */
     public function __construct(
-            Utils\Lists\CustomFilter $filter,
-            Utils\Lists\Caping\Campaign $uniCap,
-            Utils\Lists\Caping\Affilate $affCap,
-            Utils\Lists\Stacking\ByPriorityWithJson $stack
-        )
-    {
+        Utils\Lists\CustomFilter $filter,
+        Utils\Lists\Caping\Campaign $uniCap,
+        Utils\Lists\Caping\Affilate $affCap,
+        Utils\Lists\Stacking\ByPriorityWithJson $stack
+    ) {
         $this->filter = $filter;
         $this->uniCap = $uniCap;
         $this->affCap = $affCap;
@@ -54,42 +52,42 @@ class ListsWithJson
     /**
      * Set the campaign type order, will be used in campaign query
      *
-     * @param array $typeOrdering
-     * @var array $typeOrdering
+     * @param  array  $typeOrdering
+     *
+     * @var array
      */
-
-    public function setTypeOrder($typeOrdering) {
+    public function setTypeOrder($typeOrdering)
+    {
         $this->typeOrdering = $typeOrdering;
     }
 
     /**
      * Query campaigns with relationship
      *
-     * @param integer $revenueTrackerID;
+     * @param  int  $revenueTrackerID;
      */
-    public function queryCampaigns ($revenueTrackerID)
+    public function queryCampaigns($revenueTrackerID)
     {
         $campaigns = Campaign::select(
-                'id','name', 'advertiser_id', 'status', 'lead_cap_type', 'lead_cap_value', 'default_received', 'default_payout', 'priority', 'campaign_type', 'linkout_offer_id'
-                ,
-                //Get lead counts when campaign type is 5
-                DB::raw('(CASE WHEN campaign_type = 5 THEN (SELECT count FROM link_out_counts WHERE campaign_id = campaigns.id AND affiliate_id IS NULL LIMIT 1) ELSE (SELECT count FROM lead_counts WHERE campaign_id = campaigns.id AND affiliate_id IS NULL LIMIT 1) END ) AS
+            'id', 'name', 'advertiser_id', 'status', 'lead_cap_type', 'lead_cap_value', 'default_received', 'default_payout', 'priority', 'campaign_type', 'linkout_offer_id',
+            //Get lead counts when campaign type is 5
+            DB::raw('(CASE WHEN campaign_type = 5 THEN (SELECT count FROM link_out_counts WHERE campaign_id = campaigns.id AND affiliate_id IS NULL LIMIT 1) ELSE (SELECT count FROM lead_counts WHERE campaign_id = campaigns.id AND affiliate_id IS NULL LIMIT 1) END ) AS
                 lead_count')
-            )
+        )
             ->where('status', '!=', 0)
             ->where('status', '!=', 3)
             ->whereIn('campaign_type', $this->typeOrdering)
-            ->with(['firstAffiliateCampaign' => function ($q) use($revenueTrackerID) {
-                $q->select('campaign_id', 'lead_cap_type','lead_cap_value')
-                  ->where('affiliate_id', $revenueTrackerID)
-                  ->with(['linkOutCount' => function($q) use($revenueTrackerID) {
-                      $q->select('campaign_id', 'count')
-                        ->where('affiliate_id', $revenueTrackerID);
-                  }])
-                  ->with(['leadCount' => function($q) use($revenueTrackerID) {
-                      $q->select('campaign_id', 'count')
-                        ->where('affiliate_id', $revenueTrackerID);
-                  }]);
+            ->with(['firstAffiliateCampaign' => function ($q) use ($revenueTrackerID) {
+                $q->select('campaign_id', 'lead_cap_type', 'lead_cap_value')
+                    ->where('affiliate_id', $revenueTrackerID)
+                    ->with(['linkOutCount' => function ($q) use ($revenueTrackerID) {
+                        $q->select('campaign_id', 'count')
+                            ->where('affiliate_id', $revenueTrackerID);
+                    }])
+                    ->with(['leadCount' => function ($q) use ($revenueTrackerID) {
+                        $q->select('campaign_id', 'count')
+                            ->where('affiliate_id', $revenueTrackerID);
+                    }]);
             }])
             ->with(['filter_groups' => function ($q) {
                 $q->select('id', 'campaign_id', 'status')
@@ -98,10 +96,10 @@ class ListsWithJson
                     // Retrieve filters if filter group status is active
                     ->with('filters');
             }])
-            ->with(['config' => function($q){
+            ->with(['config' => function ($q) {
                 $q->select('id', 'ping_url', 'ping_success');
             }])
-            ->orderBy('priority','ASC')
+            ->orderBy('priority', 'ASC')
             ->get();
 
         $this->campaigns = ($campaigns) ? $campaigns : [];
@@ -110,25 +108,28 @@ class ListsWithJson
     /**
      * Get the  Qualified Campaigns
      *
-     * @param bolean $filter
-     * @param integer $pathType
-     * @param integer $revenueTrackerID
-     * @var array $stacking
-     * @var array $creatives
+     * @param  bolean  $filter
+     * @param  int  $pathType
+     * @param  int  $revenueTrackerID
+     *
+     * @var array
+     * @var array
      */
-    public function filterEachCampaign ($toFilter, $revenueTrackerID)
+    public function filterEachCampaign($toFilter, $revenueTrackerID)
     {
         /* GO THROUGH EACH CAMPAIGN TO CHECK IF THEY QUALIFY */
-        foreach($this->campaigns as $campaign) {
+        foreach ($this->campaigns as $campaign) {
             // Filter if true.
             // // skip if false.
-            if(($toFilter && $toFilter != 'false') || $toFilter == 'true') {
+            if (($toFilter && $toFilter != 'false') || $toFilter == 'true') {
                 // If didnt pass the filtering then skip.
-                if($this->filterPassed($campaign, $revenueTrackerID) == false) continue;
+                if ($this->filterPassed($campaign, $revenueTrackerID) == false) {
+                    continue;
+                }
             }
 
             /* STACK CAMPAIGN AND CREATIVES AND ORDER BY CAMPAIGN TYPE ORDERING */
-            $this->stacking->insertIntoStack( $campaign );
+            $this->stacking->insertIntoStack($campaign);
         }
 
         return $this->stacking->lists;
@@ -138,17 +139,21 @@ class ListsWithJson
      * Check campaign passed the filtering
      *
      * @param eloquent collection $campaign
-     * @return boolean
+     * @return bool
      */
-    protected function filterPassed ($campaign, $revenueTrackerID)
+    protected function filterPassed($campaign, $revenueTrackerID)
     {
         /* CHECK EACH CAMPAIGN CAP IF REACHED */
-         //If default campaign cap failed, skip campaign
-        if($this->uniCap->passed($campaign) == false)  return false;
+        //If default campaign cap failed, skip campaign
+        if ($this->uniCap->passed($campaign) == false) {
+            return false;
+        }
 
         /* CHECK AFFILIATE CAMPAIGN CAP */
         //If affiliate campaign cap failed, skip campaign
-        if($this->affCap->passed($campaign, $revenueTrackerID) == false)  return false;
+        if ($this->affCap->passed($campaign, $revenueTrackerID) == false) {
+            return false;
+        }
 
         /* PROCESS CAMPAIGN FILTER */
         // This filter if have user details

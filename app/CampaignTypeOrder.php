@@ -24,11 +24,11 @@ class CampaignTypeOrder extends Model
         'revenue_tracker_id',
         'campaign_type_id',
         'campaign_id_order',
-        'reorder_reference_date'
+        'reorder_reference_date',
     ];
 
     public function affiliateRevenueTracker()
     {
-        return $this->hasOne(AffiliateRevenueTracker::class,'revenue_tracker_id','revenue_tracker_id');
+        return $this->hasOne(AffiliateRevenueTracker::class, 'revenue_tracker_id', 'revenue_tracker_id');
     }
 }

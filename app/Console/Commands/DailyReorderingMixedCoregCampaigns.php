@@ -40,10 +40,10 @@ class DailyReorderingMixedCoregCampaigns extends Command
     public function handle()
     {
         // if($revenueTRrackerID = $this->argument('revenueTRrackerID')) {
-            $this->info('Executing daily campaign reordering.');
+        $this->info('Executing daily campaign reordering.');
         //
         //     $this->dailyOrdering->setRevenueTRrackerID($revenueTRrackerID);
-            $this->dailyOrdering->execute();
+        $this->dailyOrdering->execute();
         // }
     }
 }

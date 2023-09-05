@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Seeder;
 use App\Affiliate;
+use Illuminate\Database\Seeder;
 
 class AffiliateSeeder extends Seeder
 {
@@ -12,6 +12,6 @@ class AffiliateSeeder extends Seeder
      */
     public function run()
     {
-        factory(Affiliate::class,10000)->create();
+        factory(Affiliate::class, 10000)->create();
     }
 }

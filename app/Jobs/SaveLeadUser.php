@@ -2,13 +2,12 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Job;
 use App\LeadUser;
 use Carbon\Carbon;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class SaveLeadUser extends Job implements SelfHandling, ShouldQueue
 {
@@ -18,8 +17,6 @@ class SaveLeadUser extends Job implements SelfHandling, ShouldQueue
 
     /**
      * Create a new job instance.
-     *
-     * @param $user
      */
     public function __construct($user)
     {
@@ -33,8 +30,7 @@ class SaveLeadUser extends Job implements SelfHandling, ShouldQueue
      */
     public function handle()
     {
-        if($this->attempts() > 1)
-        {
+        if ($this->attempts() > 1) {
             return;
         }
 
@@ -42,8 +38,8 @@ class SaveLeadUser extends Job implements SelfHandling, ShouldQueue
 
         $isBot = false;
 
-        if(isset($user['email2'])) {
-            if($user['email2'] != '') {
+        if (isset($user['email2'])) {
+            if ($user['email2'] != '') {
                 $isBot = true;
             }
         }

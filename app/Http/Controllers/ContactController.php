@@ -2,21 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Requests;
+use App\Commands\GetUserActionPermission;
 use App\Http\Requests\AddContactRequest;
 use App\Http\Requests\UpdateContactRequest;
-use App\Http\Controllers\Controller;
 use App\User;
-use DB;
 use Bus;
-use App\Commands\GetUserActionPermission;
+use DB;
+use Illuminate\Http\Request;
 use Log;
 
 class ContactController extends Controller
 {
-
     protected $canEdit = false;
+
     protected $canDelete = false;
 
     public function __construct()
@@ -26,14 +24,13 @@ class ContactController extends Controller
         //get the user
         $user = auth()->user();
 
-        $this->canEdit = Bus::dispatch(new GetUserActionPermission($user,'use_edit_contact'));
-        $this->canDelete = Bus::dispatch(new GetUserActionPermission($user,'use_delete_contact'));
+        $this->canEdit = Bus::dispatch(new GetUserActionPermission($user, 'use_edit_contact'));
+        $this->canDelete = Bus::dispatch(new GetUserActionPermission($user, 'use_delete_contact'));
     }
 
     /**
      * Server side processing for contacts data table
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
@@ -68,17 +65,14 @@ class ContactController extends Controller
             FROM users
             LEFT JOIN affiliates aff ON affiliate_id = aff.id
             LEFT JOIN advertisers adv ON advertiser_id = adv.id ";
-        $whereSQL = "WHERE account_type=1 ADVERTISER_AFFILIATE_CRITERIA SEARCH_CRITERIA";
+        $whereSQL = 'WHERE account_type=1 ADVERTISER_AFFILIATE_CRITERIA SEARCH_CRITERIA';
 
         $advertiserAffiliateCriteria = '';
         //determine if user is advertiser or affiliate and get the id from the request
-        if(isset($inputs['awesome_advertiser_id']))
-        {
-            $advertiserAffiliateCriteria = "AND advertiser_id=".$inputs['awesome_advertiser_id'];
-        }
-        else if(isset($inputs['awesome_affiliate_id']))
-        {
-            $advertiserAffiliateCriteria = "AND affiliate_id=".$inputs['awesome_affiliate_id'];
+        if (isset($inputs['awesome_advertiser_id'])) {
+            $advertiserAffiliateCriteria = 'AND advertiser_id='.$inputs['awesome_advertiser_id'];
+        } elseif (isset($inputs['awesome_affiliate_id'])) {
+            $advertiserAffiliateCriteria = 'AND affiliate_id='.$inputs['awesome_affiliate_id'];
         }
 
         //apply the ADVERTISER_AFFILIATE_CRITERIA
@@ -87,8 +81,7 @@ class ContactController extends Controller
         $searchCriteria = '';
 
         //where
-        if(!empty($param) || $param!='')
-        {
+        if (! empty($param) || $param != '') {
 
             $searchCriteria = $searchCriteria."AND (title LIKE '%".$param."%'";
 
@@ -106,12 +99,11 @@ class ContactController extends Controller
         $whereSQL = str_replace('SEARCH_CRITERIA', $searchCriteria, $whereSQL);
 
         //$orderSQL = " ORDER BY affiliates.id ASC";
-        $orderSQL = " ORDER BY ".$columns[$inputs['order'][0]['column']]." ".$inputs['order'][0]['dir'];
+        $orderSQL = ' ORDER BY '.$columns[$inputs['order'][0]['column']].' '.$inputs['order'][0]['dir'];
 
         $limitSQL = '';
-        if($length>1)
-        {
-            $limitSQL = " LIMIT ".$start.",".$length;
+        if ($length > 1) {
+            $limitSQL = ' LIMIT '.$start.','.$length;
         }
 
         $sqlWithLimit = $selectSQL.$whereSQL.$orderSQL.$limitSQL;
@@ -121,33 +113,32 @@ class ContactController extends Controller
 
         $contacts = DB::select($sqlWithLimit);
 
-        foreach($contacts as $contact)
-        {
+        foreach ($contacts as $contact) {
             $data = [];
 
             //create full name html
             $fullNameHTML = '<span id="contact-'.$contact->id.'-full_name"">'.$contact->name.'</span>';
-            array_push($data,$fullNameHTML);
+            array_push($data, $fullNameHTML);
 
             //create position html
             $positionHTML = '<span id="contact-'.$contact->id.'-position">'.$contact->position.'</span>';
-            array_push($data,$positionHTML);
+            array_push($data, $positionHTML);
 
             //create position html
             $companyHTML = '<span id="contact-'.$contact->id.'-company">'.$contact->company.'</span>';
-            array_push($data,$companyHTML);
+            array_push($data, $companyHTML);
 
             //create email html
             $emailHTML = '<span id="contact-'.$contact->id.'-email">'.$contact->email.'</span>';
-            array_push($data,$emailHTML);
+            array_push($data, $emailHTML);
 
             //create mobile html
             $mobileHTML = '<span id="contact-'.$contact->id.'-mobile_number">'.$contact->mobile_number.'</span>';
-            array_push($data,$mobileHTML);
+            array_push($data, $mobileHTML);
 
             //create phone html
             $phoneHTML = '<span id="contact-'.$contact->id.'-phone_number">'.$contact->phone_number.'</span>';
-            array_push($data,$phoneHTML);
+            array_push($data, $phoneHTML);
 
             //construct the action buttons
             $hiddenAffiliateID = '<input type="hidden" id="contact-'.$contact->id.'-affiliate_id" value="'.$contact->affiliate_id.'"/>';
@@ -157,37 +148,34 @@ class ContactController extends Controller
             $instantMessaging = '<input type="hidden" id="contact-'.$contact->id.'-instant_messaging" value="'.$contact->instant_messaging.'"/>';
 
             //determine if current user do have edit and delete permissions for contacts
-            $editButton='';
+            $editButton = '';
             $deleteButton = '';
 
-            if($this->canEdit)
-            {
+            if ($this->canEdit) {
                 $editButton = '<button class="edit-contact btn-actions btn btn-primary" title="Edit" data-id="'.$contact->id.'"><span class="glyphicon glyphicon-pencil"></span></button>';
             }
 
-            if($this->canDelete)
-            {
+            if ($this->canDelete) {
                 $deleteButton = '<button class="delete-contact btn-actions btn btn-danger" data-id="'.$contact->id.'"><span class="glyphicon glyphicon-trash"></span></button>';
             }
 
-            array_push($data,$hiddenAffiliateID.$hiddenAdvertiserID.$gender.$address.$instantMessaging.$editButton.$deleteButton);
+            array_push($data, $hiddenAffiliateID.$hiddenAdvertiserID.$gender.$address.$instantMessaging.$editButton.$deleteButton);
 
-            array_push($contactsData,$data);
+            array_push($contactsData, $data);
         }
 
-        if(!empty($param) || $param!='')
-        {
+        if (! empty($param) || $param != '') {
             $totalFiltered = count(DB::select($sqlWithoutLimit));
         }
 
-        $responseData = array(
-            "draw"            => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
-            "recordsTotal"    => $allNonAdminCount,  // total number of records
-            "recordsFiltered" => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
-            "data"            => $contactsData   // total data array
-        );
+        $responseData = [
+            'draw' => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
+            'recordsTotal' => $allNonAdminCount,  // total number of records
+            'recordsFiltered' => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
+            'data' => $contactsData,   // total data array
+        ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
     /**
@@ -203,29 +191,25 @@ class ContactController extends Controller
     /**
      * Store a newly created contact in storage. This is for user type only and not admin
      *
-     * @param AddContactRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(
         AddContactRequest $request,
         \App\Http\Services\UserActionLogger $userAction
-    )
-    {
+    ) {
         $inputs = $request->all();
         //encrypt password
         $inputs['password'] = bcrypt($inputs['password']);
         $inputs['account_type'] = 1; // 1 value indicates that the user is not a engageiq admin user
 
         //remove affiliate_id if it is 0
-        if(isset($inputs['affiliate_id']) && $inputs['affiliate_id']==0)
-        {
+        if (isset($inputs['affiliate_id']) && $inputs['affiliate_id'] == 0) {
             // Log::info('affiliate_id: '.$inputs['affiliate_id']);
             unset($inputs['affiliate_id']);
         }
 
         //remove advertiser_id if it is 0
-        if(isset($inputs['advertiser_id']) && $inputs['advertiser_id']==0)
-        {
+        if (isset($inputs['advertiser_id']) && $inputs['advertiser_id'] == 0) {
             // Log::info('advertiser_id: '.$inputs['advertiser_id']);
             unset($inputs['advertiser_id']);
         }
@@ -236,12 +220,12 @@ class ContactController extends Controller
         $userAction->logger(1, null, $user->id, null, $user->toArray(), 'Add contact: '.$user->email);
 
         $responseData = [
-            'id'=>$user->id,
+            'id' => $user->id,
             'canEdit' => $this->canEdit,
-            'canDelete' => $this->canDelete
+            'canDelete' => $this->canDelete,
         ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
     /**
@@ -269,16 +253,13 @@ class ContactController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param UpdateContactRequest $request
-     * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(
         UpdateContactRequest $request,
         \App\Http\Services\UserActionLogger $userAction,
         $id
-        )
-    {
+    ) {
         $inputs = $request->all();
 
         $title = $inputs['title'];
@@ -286,13 +267,11 @@ class ContactController extends Controller
         $affiliate_id = null;
         $advertiser_id = null;
 
-        if(isset($inputs['affiliate_id']) && $inputs['affiliate_id']!=0)
-        {
+        if (isset($inputs['affiliate_id']) && $inputs['affiliate_id'] != 0) {
             $affiliate_id = $inputs['affiliate_id'];
         }
 
-        if(isset($inputs['advertiser_id']) && $inputs['advertiser_id']!=0)
-        {
+        if (isset($inputs['advertiser_id']) && $inputs['advertiser_id'] != 0) {
             $advertiser_id = $inputs['advertiser_id'];
         }
 
@@ -332,44 +311,37 @@ class ContactController extends Controller
         //Action Logger
         $userAction->logger(1, null, $user->id, $current_state, $user->toArray(), 'Update contact: '.$user->email);
 
-        return response()->json(['id'=>$user->id],200);
+        return response()->json(['id' => $user->id], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(
         \App\Http\Services\UserActionLogger $userAction,
         $id
-    )
-    {
+    ) {
         $responseMessage = [
             'status' => 200,
             'delete_status' => true,
-            'message'=> 'user successfully deleted!'
+            'message' => 'user successfully deleted!',
         ];
 
         $user = User::find($id);
 
-        if(!$user->exists())
-        {
+        if (! $user->exists()) {
             $responseMessage['delete_status'] = false;
             $responseMessage['message'] = 'User not found!';
-        }
-        else if(!$user->delete())
-        {
+        } elseif (! $user->delete()) {
             $responseMessage['delete_status'] = false;
             $responseMessage['message'] = 'User not found!';
-        }
-        else
-        {
+        } else {
             //Action Logger
             $userAction->logger(1, null, $id, $user->toArray(), null, 'Delete contact: '.$user->email);
         }
 
-        return response()->json($responseMessage,200);
+        return response()->json($responseMessage, 200);
     }
 }

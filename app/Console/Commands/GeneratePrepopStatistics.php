@@ -1,11 +1,10 @@
 <?php
 
 namespace App\Console\Commands;
-use Carbon\Carbon;
-use Illuminate\Console\Command;
-use Log;
 
 use App\Jobs\Reports\GeneratePrepopStatisticsV2;
+use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class GeneratePrepopStatistics extends Command
 {
@@ -45,8 +44,7 @@ class GeneratePrepopStatistics extends Command
         $dateYesterdayStr = $this->option('from');
         $dateNowStr = $this->option('to');
 
-        if(empty($dateYesterdayStr) || empty($dateNowStr))
-        {
+        if (empty($dateYesterdayStr) || empty($dateNowStr)) {
             $dateYesterdayStr = Carbon::now()->subDay()->toDateString();
             $dateNowStr = Carbon::now()->toDateString();
 

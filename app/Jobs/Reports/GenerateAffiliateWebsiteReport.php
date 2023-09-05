@@ -2,20 +2,16 @@
 
 namespace App\Jobs\Reports;
 
+use App\AffiliateWebsite;
 use App\Jobs\Job;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
+use App\LeadUser;
+use App\WebsitesViewTracker;
+use DB;
 use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Log;
-use App\AffiliateWebsiteReport;
-use App\WebsitesViewTracker;
-use App\UserMeta;
-use DB;
-use Carbon\Carbon;
-use App\AffiliateWebsite;
-use Illuminate\Support\Facades\Mail;
-use App\LeadUser;
 
 class GenerateAffiliateWebsiteReport extends Job implements SelfHandling, ShouldQueue
 {
@@ -41,7 +37,7 @@ class GenerateAffiliateWebsiteReport extends Job implements SelfHandling, Should
     public function handle()
     {
         Log::info('Affiliate Website Report Job Queue Start:');
-        Log::info('Date: '. $this->date);
+        Log::info('Date: '.$this->date);
         // DB::enableQueryLog();
         // DB::connection('secondary')->enableQueryLog();
 
@@ -50,13 +46,13 @@ class GenerateAffiliateWebsiteReport extends Job implements SelfHandling, Should
         $affiliate_websites = AffiliateWebsite::where('revenue_tracker_id', '!=', '')->whereNotNull('revenue_tracker_id')->get();
         // Log::info($affiliate_websites);
 
-        $revenue_tracker_ids = $affiliate_websites->map(function($st) {
+        $revenue_tracker_ids = $affiliate_websites->map(function ($st) {
             return $st->revenue_tracker_id;
         });
         // Log::info($revenue_tracker_ids);
 
         $aws = [];
-        foreach($affiliate_websites as $aw) {
+        foreach ($affiliate_websites as $aw) {
             $aws[$aw->revenue_tracker_id] = $aw;
         }
 
@@ -71,14 +67,16 @@ class GenerateAffiliateWebsiteReport extends Job implements SelfHandling, Should
 
         $lead_users = [];
         $email_checker = [];
-        foreach($data as $d) {
-            if(!isset($email_checker[$d->revenue_tracker_id])) $email_checker[$d->revenue_tracker_id] = [];
-            
-            if(!in_array($d->email, $email_checker[$d->revenue_tracker_id])) {
+        foreach ($data as $d) {
+            if (! isset($email_checker[$d->revenue_tracker_id])) {
+                $email_checker[$d->revenue_tracker_id] = [];
+            }
+
+            if (! in_array($d->email, $email_checker[$d->revenue_tracker_id])) {
                 $email_checker[$d->revenue_tracker_id][] = $d->email;
-                if(!isset($lead_users[$d->affiliate_id][$d->revenue_tracker_id][$d->s1][$d->s2][$d->s3][$d->s4][$d->s5])) {
+                if (! isset($lead_users[$d->affiliate_id][$d->revenue_tracker_id][$d->s1][$d->s2][$d->s3][$d->s4][$d->s5])) {
                     $lead_users[$d->affiliate_id][$d->revenue_tracker_id][$d->s1][$d->s2][$d->s3][$d->s4][$d->s5] = 0;
-                } 
+                }
 
                 $lead_users[$d->affiliate_id][$d->revenue_tracker_id][$d->s1][$d->s2][$d->s3][$d->s4][$d->s5] += 1;
             }
@@ -86,13 +84,13 @@ class GenerateAffiliateWebsiteReport extends Job implements SelfHandling, Should
         // Log::info($lead_users);
 
         $rows = [];
-        foreach($lead_users as $affiliate_id => $afd) {
-            foreach($afd as $revenue_tracker_id => $rvd) {
-                foreach($rvd as $s1 => $s1d) {
-                    foreach($s1d as $s2 => $s2d) {
-                        foreach($s2d as $s3 => $s3d) {
-                            foreach($s3d as $s4 => $s4d) {
-                                foreach($s4d as $s5 => $count) {
+        foreach ($lead_users as $affiliate_id => $afd) {
+            foreach ($afd as $revenue_tracker_id => $rvd) {
+                foreach ($rvd as $s1 => $s1d) {
+                    foreach ($s1d as $s2 => $s2d) {
+                        foreach ($s2d as $s3 => $s3d) {
+                            foreach ($s3d as $s4 => $s4d) {
+                                foreach ($s4d as $s5 => $count) {
                                     $website_id = $aws[$revenue_tracker_id]->id;
 
                                     $payout = $aws[$revenue_tracker_id]->payout;
@@ -109,7 +107,7 @@ class GenerateAffiliateWebsiteReport extends Job implements SelfHandling, Should
                                         's5' => $s5,
                                         'date' => $this->date,
                                         'count' => $count,
-                                        'payout' => $totalPayout
+                                        'payout' => $totalPayout,
                                     ];
                                 }
                             }
@@ -121,7 +119,6 @@ class GenerateAffiliateWebsiteReport extends Job implements SelfHandling, Should
 
         // Log::info(DB::getQueryLog());
         // Log::info(DB::connection('secondary')->getQueryLog());
-
 
         // $rows = [];
         // foreach($data as $row) {
@@ -147,22 +144,21 @@ class GenerateAffiliateWebsiteReport extends Job implements SelfHandling, Should
 
         // Log::info($rows);
 
-        if(count($rows) > 0) {
+        if (count($rows) > 0) {
             $conn = config('app.type') != 'reports' ? 'secondary' : 'mysql';
             $clean = DB::connection($conn)->table('affiliate_website_reports')->where('date', $this->date);
             $clean->delete();
 
             $chunks = array_chunk($rows, 1000);
-            foreach($chunks as $chunk) {
-                try{
+            foreach ($chunks as $chunk) {
+                try {
                     DB::connection($conn)->table('affiliate_website_reports')->insert($chunk);
-                }catch(QueryException $e)
-                {
-                    Log::info("db table stats error");
+                } catch (QueryException $e) {
+                    Log::info('db table stats error');
                     Log::info($e->getMessage());
                 }
             }
-        }else {
+        } else {
             Log::info('No views found.');
         }
 

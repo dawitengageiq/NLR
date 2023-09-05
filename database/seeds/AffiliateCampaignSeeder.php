@@ -12,10 +12,10 @@ class AffiliateCampaignSeeder extends Seeder
     public function run()
     {
         App\AffiliateCampaign::firstOrCreate([
-			'campaign_id'    =>	1,
-			'affiliate_id'   =>	1,
-			'lead_cap_type'  =>	1,
-			'lead_cap_value' =>	1,
-		]);
+            'campaign_id' => 1,
+            'affiliate_id' => 1,
+            'lead_cap_type' => 1,
+            'lead_cap_value' => 1,
+        ]);
     }
 }

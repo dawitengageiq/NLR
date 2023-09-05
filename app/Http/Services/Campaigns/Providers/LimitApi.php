@@ -1,21 +1,19 @@
 <?php
-namespace App\Http\Services\Campaigns\Providers;
 
-use Config;
+namespace App\Http\Services\Campaigns\Providers;
 
 class LimitApi extends Limit
 {
     /**
      * Instantiate.
      *
-     * @param Illuminate\Foundation\Application $app
-     * @param array                             $limit
+     * @param  Illuminate\Foundation\Application  $app
+     * @param  array  $limit
      */
     public function __construct(
         \Illuminate\Foundation\Application $app,
         $limit
-        )
-    {
+    ) {
         $this->app = $app;
         $this->limit = $limit;
         $this->stackType = $app->request->get('stack_type');
@@ -26,18 +24,17 @@ class LimitApi extends Limit
     /**
      * Static function.
      *
-     * @param array $args
+     * @param  array  $args
      */
-    public static function bind (...$args)
+    public static function bind(...$args)
     {
-        new Static($args[0], $args[1]);
+        new static($args[0], $args[1]);
     }
 
     /**
      * Bind the class to use.
-     *
      */
-    protected function execute ()
+    protected function execute()
     {
         // binding limit class
         $this->app->bind($this->contract, $this->limitType[$this->stackType]);
@@ -47,9 +44,8 @@ class LimitApi extends Limit
 
     /**
      * Add some data to request
-     *
      */
-    protected function addDAta2Request ()
+    protected function addDAta2Request()
     {
         $this->app->request->request->add(
             [
@@ -58,7 +54,7 @@ class LimitApi extends Limit
                         array_keys(config('constants.MIXED_COREG_TYPE_FOR_ORDERING')),
                         $this->limit
                     )
-                )
+                ),
             ]
         );
     }

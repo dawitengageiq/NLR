@@ -8,35 +8,39 @@
 
 namespace App\Helpers;
 
-use App\Campaign;
 use App\AffiliateReport;
 use App\AffiliateRevenueTracker;
+use App\Campaign;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Log;
-use phpDocumentor\Reflection\Types\Mixed;
 
-class ExternalPathTiburonDataHelper {
-
+class ExternalPathTiburonDataHelper
+{
     /*
-	http://reports.tmginteractive.com/NS/TMG_ReportAPI.asmx/GetReport?username=EngageIq&password=EngageIq@45&start_date_time=2015-07-24%2000:00:00&end_date_time=2015-07-24%2023:00:00
-	*/
+    http://reports.tmginteractive.com/NS/TMG_ReportAPI.asmx/GetReport?username=EngageIq&password=EngageIq@45&start_date_time=2015-07-24%2000:00:00&end_date_time=2015-07-24%2023:00:00
+    */
 
     private $dateFrom = '';
+
     private $dateTo = '';
+
     private $dateOnlyFrom = '';
+
     private $dateOnlyTo = '';
+
     private $externalPathTiburonCampaignID;
+
     private $parser;
+
     private $requestURL = 'http://reports.tmginteractive.com/NS/TMG_ReportAPI.asmx/GetReport?username=EngageIq&password=EngageIq@45&start_date_time=date_time_start&end_date_time=date_time_end';
 
     /**
      * ExternalPathTiburonDataHelper constructor
      *
-     * @param int $externalPathTiburonCampaignID
-     * @param string $dateFrom
-     * @param string $dateTo
-     * @param JSONParser $parser
+     * @param  int  $externalPathTiburonCampaignID
+     * @param  string  $dateFrom
+     * @param  string  $dateTo
      */
     public function __construct($externalPathTiburonCampaignID, $dateFrom, $dateTo, JSONParser $parser)
     {
@@ -48,8 +52,8 @@ class ExternalPathTiburonDataHelper {
         $this->dateTo = urlencode($dateTo.' 23:59:59');
 
         //build the request url
-        $this->requestURL = str_replace('date_time_start',$this->dateFrom,$this->requestURL);
-        $this->requestURL = str_replace('date_time_end',$this->dateTo,$this->requestURL);
+        $this->requestURL = str_replace('date_time_start', $this->dateFrom, $this->requestURL);
+        $this->requestURL = str_replace('date_time_end', $this->dateTo, $this->requestURL);
 
         $this->parser = $parser;
 
@@ -67,40 +71,32 @@ class ExternalPathTiburonDataHelper {
         //get the session
         $responseObject = $this->parser->getXMLResponseObject($this->requestURL);
 
-        if($this->parser->getErrorCode()!=200)
-        {
+        if ($this->parser->getErrorCode() != 200) {
             Log::info('no response or server error!');
         }
 
-        if(isset($responseObject) && $responseObject!==null || $responseObject)
-        {
+        if (isset($responseObject) && $responseObject !== null || $responseObject) {
             $placementData = $this->xmlToArray($responseObject->placements);
 
-            if($placementData!==null || $placementData)
-            {
+            if ($placementData !== null || $placementData) {
 
-                foreach ($placementData as $placements)
-                {
+                foreach ($placementData as $placements) {
 
                     $placements = $this->xmlToArray($placements);
 
-                    foreach ($placements as $placement)
-                    {
+                    foreach ($placements as $placement) {
 
-                        foreach ($placement['transactions'] as $transactionData)
-                        {
+                        foreach ($placement['transactions'] as $transactionData) {
 
-                            foreach ($transactionData as $transaction)
-                            {
+                            foreach ($transactionData as $transaction) {
 
-                                if(!isset($transaction->affId))
-                                {
+                                if (! isset($transaction->affId)) {
                                     continue;
                                 }
 
-                                $publisherID = (string)$transaction->affId;
+                                $publisherID = (string) $transaction->affId;
                                 //$revenueTrackerID = str_replace('CD','', $publisherID);
-                                $revenue = doubleval($transaction->revenue);
+                                $revenue = floatval($transaction->revenue);
                                 $date = Carbon::parse($transaction->transaction_date)->toDateString();
 
                                 /*
@@ -112,25 +108,21 @@ class ExternalPathTiburonDataHelper {
                                 $revenueTrackerRevenue[$revenueTrackerID][$date] = $revenueTrackerRevenue[$revenueTrackerID][$date] + $revenue;
                                 */
 
-                                if(isset($reports[$publisherID.' '.$date]))
-                                {
+                                if (isset($reports[$publisherID.' '.$date])) {
                                     $rev = $reports[$publisherID.' '.$date]->revenue;
                                     $reports[$publisherID.' '.$date]->revenue = $rev + $revenue;
-                                }
-                                else
-                                {
+                                } else {
                                     //get the revenue tracker and removed the CD prefix
-                                    $revenueTrackerID = str_replace('CD','', $publisherID);
+                                    $revenueTrackerID = str_replace('CD', '', $publisherID);
                                     //get the affiliate for the particular revenue tracker
-                                    $tracker = AffiliateRevenueTracker::where('revenue_tracker_id','=',$revenueTrackerID)->first();
+                                    $tracker = AffiliateRevenueTracker::where('revenue_tracker_id', '=', $revenueTrackerID)->first();
 
-                                    if($tracker!=null)
-                                    {
+                                    if ($tracker != null) {
                                         $reports[$publisherID.' '.$date] = AffiliateReport::firstOrNew([
                                             'affiliate_id' => $tracker->affiliate_id,
                                             'revenue_tracker_id' => $revenueTrackerID,
                                             'campaign_id' => $campaign->id,
-                                            'created_at' => $date
+                                            'created_at' => $date,
                                         ]);
 
                                         $reports[$publisherID.' '.$date]->lead_count = 0;
@@ -175,19 +167,13 @@ class ExternalPathTiburonDataHelper {
         }
         */
 
-        if(count($reports)>0)
-        {
-            foreach ($reports as $report)
-            {
-                if($report->revenue_tracker_id > 0)
-                {
-                    try
-                    {
+        if (count($reports) > 0) {
+            foreach ($reports as $report) {
+                if ($report->revenue_tracker_id > 0) {
+                    try {
                         $report->save();
                         Log::info("Tiburon: $report->revenue_tracker_id - $report->revenue - $report->created_at");
-                    }
-                    catch(QueryException $e)
-                    {
+                    } catch (QueryException $e) {
                         Log::info($e->getMessage());
                         Log::info('affiliate_id: '.$report->affiliate_id);
                         Log::info('revenue_tracker_id: '.$report->revenue_tracker_id);
@@ -206,20 +192,23 @@ class ExternalPathTiburonDataHelper {
      * Attribution 3.0 License, copyright (c) the PHP Documentation Group
      *
      * @author  k dot antczak at livedata dot pl
+     *
      * @date    2011-04-22 06:08 UTC
+     *
      * @link    http://www.php.net/manual/en/ref.simplexml.php#103617
+     *
      * @license http://www.php.net/license/index.php#doc-lic
      * @license http://creativecommons.org/licenses/by/3.0/
      * @license CC-BY-3.0 <http://spdx.org/licenses/CC-BY-3.0>
      *
-     * @param $xmlObject
-     * @param array $out
+     * @param  array  $out
      * @return array
      */
-    public function xmlToArray($xmlObject,$out = array())
+    public function xmlToArray($xmlObject, $out = [])
     {
-        foreach ( (array) $xmlObject as $index => $node )
-            $out[$index] = ( is_object ( $node ) ) ? $this->xmlToArray ( $node ) : $node;
+        foreach ((array) $xmlObject as $index => $node) {
+            $out[$index] = (is_object($node)) ? $this->xmlToArray($node) : $node;
+        }
 
         return $out;
     }

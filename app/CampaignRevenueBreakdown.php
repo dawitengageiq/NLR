@@ -6,20 +6,22 @@ use Illuminate\Database\Eloquent\Model;
 
 class CampaignRevenueBreakdown extends Model
 {
-	protected $connection;
+    protected $connection;
+
     public $timestamps = false;
+
     protected $fillable = [
         'campaign_id',
         'records',
         'revenue',
         'created_at',
-        'average_revenue'
+        'average_revenue',
     ];
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') != 'reports') {
+        if (config('app.type') != 'reports') {
             $this->connection = 'secondary';
         }
     }

@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AlterNameSizeInActionsTable extends Migration
 {
@@ -13,7 +13,7 @@ class AlterNameSizeInActionsTable extends Migration
     public function up()
     {
         Schema::table('actions', function (Blueprint $table) {
-            $table->string('name',150)->change();
+            $table->string('name', 150)->change();
         });
     }
 

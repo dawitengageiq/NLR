@@ -21,6 +21,6 @@ class CampaignTypeReport extends Model
 
     public function revenueTracker()
     {
-        return $this->belongsTo(AffiliateRevenueTracker::class,'revenue_tracker_id','revenue_tracker_id');
+        return $this->belongsTo(AffiliateRevenueTracker::class, 'revenue_tracker_id', 'revenue_tracker_id');
     }
 }

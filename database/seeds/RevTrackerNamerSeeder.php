@@ -23,7 +23,7 @@ class RevTrackerNamerSeeder extends Seeder
         // }
 
         $rev_trackers = \App\AffiliateRevenueTracker::lists('id');
-        foreach($rev_trackers as $id) {
+        foreach ($rev_trackers as $id) {
             $tracker = \App\AffiliateRevenueTracker::find($id);
             $tracker->website = 'Rev Tracker: '.$tracker->revenue_tracker_id;
             $tracker->save();

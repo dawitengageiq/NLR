@@ -2,13 +2,8 @@
 
 namespace App\Resources;
 
-use \Illuminate\Http\Request;
-
-use App\Http\Services\Helpers\Reflection;
-
 class UserActionLogDetailsDatatable extends Resource
 {
-
     /**
      * Transform the resource into an array.
      *
@@ -17,7 +12,7 @@ class UserActionLogDetailsDatatable extends Resource
      */
     public function toArray($request)
     {
-		$sections = config('constants.USER_ACTION_SECTION_TYPE');
+        $sections = config('constants.USER_ACTION_SECTION_TYPE');
 
         return [
             $this->getValue('sub_section_id'),
@@ -25,7 +20,7 @@ class UserActionLogDetailsDatatable extends Resource
             $this->sanitizefieldName($this->getValue('summary'), $this->getValue('action'), $sections[$this->getValue('section_id')]),
             $this->getValue('old_value'),
             $this->getValue('new_value'),
-            (is_object($this->getValue('created_at'))) ? $this->getValue('created_at')->toDateTimeString(): $this->getValue('created_at')
+            (is_object($this->getValue('created_at'))) ? $this->getValue('created_at')->toDateTimeString() : $this->getValue('created_at'),
         ];
 
     }
@@ -35,20 +30,22 @@ class UserActionLogDetailsDatatable extends Resource
         return [
             'draw' => 1,
             'recordsTotal' => count($this->resource),
-            'recordsFiltered' => count($this->resource)
+            'recordsFiltered' => count($this->resource),
         ];
     }
 
     /**
      * [sanitizefieldName description]
+     *
      * @param  [type] $fieldName [description]
      * @param  [type] $event     [description]
      * @param  [type] $section   [description]
      * @return [type]            [description]
      */
-	protected function sanitizefieldName($fieldName, $event, $section)
-	{
-		$fieldName = str_replace($event . ' ' . $section . '. Column:', '', $fieldName);
-		return str_replace('.', '', $fieldName);
-	}
+    protected function sanitizefieldName($fieldName, $event, $section)
+    {
+        $fieldName = str_replace($event.' '.$section.'. Column:', '', $fieldName);
+
+        return str_replace('.', '', $fieldName);
+    }
 }

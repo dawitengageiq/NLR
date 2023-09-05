@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Database\Seeder;
 use App\Lead;
 use App\LeadMessage;
+use Illuminate\Database\Seeder;
 
 class LeadMessageSeeder extends Seeder
 {
@@ -18,10 +18,9 @@ class LeadMessageSeeder extends Seeder
 
         $leadIDs = Lead::lists('id')->toArray();
 
-        foreach($leadIDs as $leadID)
-        {
+        foreach ($leadIDs as $leadID) {
             $data = LeadMessage::firstOrCreate([
-                'id'	=>	$leadID,
+                'id' => $leadID,
                 //'value'		=>	$faker->sentence
             ]);
 

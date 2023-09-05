@@ -2,10 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Jobs\Reports\ExternalPathAffiliateReportJob;
 use Carbon\Carbon;
-use Log;
+use Illuminate\Console\Command;
 
 class GenerateExternalPathAffiliateReports extends Command
 {
@@ -43,7 +42,6 @@ class GenerateExternalPathAffiliateReports extends Command
     {
         $this->info('Initiating generating of External Path reports...');
 
-        
         // $dateYesterdayStr = $this->option('from');
         // $dateNowStr = $this->option('to');
         // if(empty($dateYesterdayStr) || empty($dateNowStr))
@@ -55,8 +53,7 @@ class GenerateExternalPathAffiliateReports extends Command
         // $this->info("$dateYesterdayStr - $dateNowStr");
 
         $date = $this->option('date');
-        if(empty($date))
-        {
+        if (empty($date)) {
             $date = Carbon::now()->subDay()->toDateString();
         }
 

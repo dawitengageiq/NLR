@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Console\Commands;
 
 use App\Http\Services\Charts\CreateChartImage;
@@ -21,16 +22,16 @@ class GenerateCharts extends Command
      */
     protected $description = 'Generation of leads chart. This is called within High Rejection Alert Report artisan command.';
 
-	protected $charts ;
+    protected $charts;
 
     /**
      * Create a new command instance.
      *
-     * @param Charts $charts
+     * @param  Charts  $charts
      */
     public function __construct(CreateChartImage $charts)
     {
-		$this->charts = $charts;
+        $this->charts = $charts;
         parent::__construct();
     }
 
@@ -41,10 +42,10 @@ class GenerateCharts extends Command
      */
     public function handle()
     {
-        if (Cache::has($this->argument('version') . '_rejection_report')) {
+        if (Cache::has($this->argument('version').'_rejection_report')) {
             // set the data
             //$this->charts->dummyData(true);
-            $this->charts->setData(Cache::get($this->argument('version') .'_rejection_report'));
+            $this->charts->setData(Cache::get($this->argument('version').'_rejection_report'));
 
             // Note: need call generateImage twice for the code is set to create only one chart,
             // modify this if theres a process to generate multiple chart in one image.

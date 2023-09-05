@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Jobs\GetLeadUserSubscribedCampaignsJob;
+use Illuminate\Console\Command;
 
 class GetLeadUserSubscribedCampaigns extends Command
 {

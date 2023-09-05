@@ -4,20 +4,16 @@ namespace App\Helpers\Repositories;
 
 use Curl\Curl;
 use Exception;
-use Sabre\Xml\Reader;
 use Log;
+use Sabre\Xml\Reader;
 
 class AffiliateReportCurl implements AffiliateReportCurlInterface
 {
     /**
      * Campaign Summary API function that will return campaigns data from cake.
      *
-     * @param $campaignSummaryBaseURL
-     * @param $prefix
-     * @param $subPrefix
-     * @param $dateFromStr
-     * @param $dateToStr
      * @return null
+     *
      * @throws \Sabre\Xml\LibXMLException
      */
     public function campaignSummary($campaignSummaryBaseURL, $prefix, $subPrefix, $dateFromStr, $dateToStr)
@@ -34,7 +30,7 @@ class AffiliateReportCurl implements AffiliateReportCurlInterface
             $prefix.'source_affiliate_id' => 'Sabre\Xml\Element\KeyValue',
             $prefix.'source_affiliate_name' => 'Sabre\Xml\Element\KeyValue',
             $prefix.'site_offer' => 'Sabre\Xml\Element\KeyValue',
-            $prefix.'site_offer_id' => 'Sabre\Xml\Element\KeyValue'
+            $prefix.'site_offer_id' => 'Sabre\Xml\Element\KeyValue',
         ];
 
         Log::info($campaignSummaryURL);
@@ -42,37 +38,32 @@ class AffiliateReportCurl implements AffiliateReportCurlInterface
         $campaigns = [];
         $callCounter = 0;
 
-        do{
+        do {
 
             $curl = new Curl();
             $curl->get($campaignSummaryURL);
 
-            if($curl->error)
-            {
-                Log::info("campaignSummary API Error!");
+            if ($curl->error) {
+                Log::info('campaignSummary API Error!');
                 Log::info($curl->error_message);
-                ++$callCounter;
-            }
-            else
-            {
+                $callCounter++;
+            } else {
                 $reader->xml($curl->response);
                 $response = $reader->parse();
 
                 //get the content of the campaign summary
-                if(isset($response['value'][$prefix.'campaigns']))
-                {
+                if (isset($response['value'][$prefix.'campaigns'])) {
                     $campaigns = $response['value'][$prefix.'campaigns'];
                 }
             }
 
             //stop the process when budget breached
-            if($callCounter==10)
-            {
+            if ($callCounter == 10) {
                 Log::info('campaignSummary API call limit reached!');
                 break;
             }
 
-        } while($curl->error);
+        } while ($curl->error);
 
         return $campaigns;
     }
@@ -80,12 +71,8 @@ class AffiliateReportCurl implements AffiliateReportCurlInterface
     /**
      * Affiliate Summary API function for EngageIQ CPA WALL.
      *
-     * @param $affiliateSummaryBaseURL
-     * @param $prefix
-     * @param $revenueTrackerID
-     * @param $dateFromStr
-     * @param $dateToStr
      * @return null
+     *
      * @throws \Sabre\Xml\LibXMLException
      */
     public function engageIQCPAWALLAffiliateSummary($affiliateSummaryBaseURL, $prefix, $revenueTrackerID, $dateFromStr, $dateToStr)
@@ -96,7 +83,7 @@ class AffiliateReportCurl implements AffiliateReportCurlInterface
         $reader->elementMap = [
             $prefix.'source_affiliate_summary_response' => 'Sabre\Xml\Element\KeyValue',
             $prefix.'source_affiliate_summary' => 'Sabre\Xml\Element\KeyValue',
-            $prefix.'source_affiliates' => 'Sabre\Xml\Element\KeyValue'
+            $prefix.'source_affiliates' => 'Sabre\Xml\Element\KeyValue',
         ];
 
         Log::info($url);
@@ -104,37 +91,32 @@ class AffiliateReportCurl implements AffiliateReportCurlInterface
         $affiliateSummary = null;
         $callCounter = 0;
 
-        do{
+        do {
 
             $curl = new Curl();
             $curl->get($url);
 
-            if($curl->error)
-            {
-                Log::info("engageIQCPAWALLAffiliateSummary API Error!");
+            if ($curl->error) {
+                Log::info('engageIQCPAWALLAffiliateSummary API Error!');
                 Log::info($curl->error_message);
-                ++$callCounter;
-            }
-            else
-            {
+                $callCounter++;
+            } else {
                 $reader->xml($curl->response);
                 $response = $reader->parse();
 
                 //get the content of the campaign summary
-                if(isset($response['value'][$prefix.'source_affiliates'][$prefix.'source_affiliate_summary']))
-                {
+                if (isset($response['value'][$prefix.'source_affiliates'][$prefix.'source_affiliate_summary'])) {
                     $affiliateSummary = $response['value'][$prefix.'source_affiliates'][$prefix.'source_affiliate_summary'];
                 }
             }
 
             //stop the process when budget breached
-            if($callCounter==10)
-            {
+            if ($callCounter == 10) {
                 Log::info('engageIQCPAWALLAffiliateSummary API call limit reached!');
                 break;
             }
 
-        } while($curl->error);
+        } while ($curl->error);
 
         return $affiliateSummary;
     }
@@ -142,13 +124,8 @@ class AffiliateReportCurl implements AffiliateReportCurlInterface
     /**
      * Campaign Summary API function that will return campaigns data from cake. This is for CPA Wall deductions
      *
-     * @param $campaignSummaryBaseURL
-     * @param $prefix
-     * @param $subPrefix
-     * @param $revenueTrackerID
-     * @param $dateFromStr
-     * @param $dateToStr
      * @return array
+     *
      * @throws \Sabre\Xml\LibXMLException
      */
     public function campaignSummaryForCPAWALLDeduction($campaignSummaryBaseURL, $prefix, $subPrefix, $revenueTrackerID, $dateFromStr, $dateToStr)
@@ -172,37 +149,32 @@ class AffiliateReportCurl implements AffiliateReportCurlInterface
         $campaigns = [];
         $callCounter = 0;
 
-        do{
+        do {
 
             $curl = new Curl();
             $curl->get($campaignSummaryURL);
 
-            if($curl->error)
-            {
-                Log::info("campaignSummaryForCPAWALLDeduction API Error!");
+            if ($curl->error) {
+                Log::info('campaignSummaryForCPAWALLDeduction API Error!');
                 Log::info($curl->error_message);
-                ++$callCounter;
-            }
-            else
-            {
+                $callCounter++;
+            } else {
                 $reader->xml($curl->response);
                 $response = $reader->parse();
 
                 //get the content of the campaign summary
-                if(isset($response['value'][$prefix.'campaigns']))
-                {
+                if (isset($response['value'][$prefix.'campaigns'])) {
                     $campaigns = $response['value'][$prefix.'campaigns'];
                 }
             }
 
             //stop the process when budget breached
-            if($callCounter==10)
-            {
+            if ($callCounter == 10) {
                 Log::info('campaignSummaryForCPAWALLDeduction API call limit reached!');
                 break;
             }
 
-        } while($curl->error);
+        } while ($curl->error);
 
         return $campaigns;
     }
@@ -210,12 +182,8 @@ class AffiliateReportCurl implements AffiliateReportCurlInterface
     /**
      * Campaign Summary API function that will return campaigns data from cake advertiser servers.
      *
-     * @param $campaignSummaryBaseURL
-     * @param $prefix
-     * @param $revenueTrackerID
-     * @param $dateFromStr
-     * @param $dateToStr
      * @return null
+     *
      * @throws \Sabre\Xml\LibXMLException
      */
     public function thirdPartyCPAWALLCampaignSummaryWithCD($campaignSummaryBaseURL, $prefix, $revenueTrackerID, $dateFromStr, $dateToStr)
@@ -233,38 +201,33 @@ class AffiliateReportCurl implements AffiliateReportCurlInterface
         $campaignSummaryRevenue = null;
         $callCounter = 0;
 
-        do{
+        do {
 
             $curl = new Curl();
             $curl->get($url);
 
-            if($curl->error)
-            {
-                Log::info("thirdPartyCPAWALLCampaignSummaryWithCD API Error!");
+            if ($curl->error) {
+                Log::info('thirdPartyCPAWALLCampaignSummaryWithCD API Error!');
                 Log::info($curl->error_message);
-                ++$callCounter;
-            }
-            else
-            {
+                $callCounter++;
+            } else {
                 $reader->xml($curl->response);
                 $response = $reader->parse();
 
                 //get the content of the campaign summary
                 //$campaignSummaryRevenue = $response['value'][$prefix.'campaigns'];
-                if(isset($response['value'][$prefix.'summary']))
-                {
+                if (isset($response['value'][$prefix.'summary'])) {
                     $campaignSummaryRevenue = $response['value'][$prefix.'summary'];
                 }
             }
 
             //stop the process when budget breached
-            if($callCounter==10)
-            {
+            if ($callCounter == 10) {
                 Log::info('thirdPartyCPAWALLCampaignSummaryWithCD API call limit reached!');
                 break;
             }
 
-        } while($curl->error);
+        } while ($curl->error);
 
         return $campaignSummaryRevenue;
     }
@@ -272,12 +235,6 @@ class AffiliateReportCurl implements AffiliateReportCurlInterface
     /**
      * Click reports from Cake
      *
-     * @param $clicksReportBaseURL
-     * @param $prefix
-     * @param $affiliateID
-     * @param $campaignID
-     * @param $dateFromStr
-     * @param $dateToStr
      * @return array|null
      */
     public function clicksReport($clicksReportBaseURL, $prefix, $affiliateID, $campaignID, $dateFromStr, $dateToStr)
@@ -290,41 +247,34 @@ class AffiliateReportCurl implements AffiliateReportCurlInterface
 
         $reader->elementMap = [
             $prefix.'click_report_response' => 'Sabre\Xml\Element\KeyValue',
-            $prefix.'click' => 'Sabre\Xml\Element\KeyValue'
+            $prefix.'click' => 'Sabre\Xml\Element\KeyValue',
         ];
 
         $callCounter = 0;
         $response = null;
 
-        do
-        {
+        do {
             $curl = new Curl();
             $curl->get($cakeClickURL);
 
-            if($curl->error)
-            {
-                Log::info("getCakeClicks API Error!");
+            if ($curl->error) {
+                Log::info('getCakeClicks API Error!');
                 Log::info($curl->error_message);
-                ++$callCounter;
-            }
-            else
-            {
-                try{
+                $callCounter++;
+            } else {
+                try {
 
                     $reader->xml($curl->response);
                     $response = $reader->parse();
 
                     //$clicksCount = $response['value'][$prefix.'row_count'];
-                }
-                catch(Exception $e)
-                {
+                } catch (Exception $e) {
                     Log::info($e->getCode());
                     Log::info($e->getMessage());
-                    ++$callCounter;
+                    $callCounter++;
 
                     //stop the process when budget breached
-                    if($callCounter==10)
-                    {
+                    if ($callCounter == 10) {
                         Log::info('getCakeClicks API call limit reached!');
                         break;
                     }
@@ -334,13 +284,12 @@ class AffiliateReportCurl implements AffiliateReportCurlInterface
             }
 
             //stop the process when budget breached
-            if($callCounter==10)
-            {
+            if ($callCounter == 10) {
                 Log::info('getCakeClicks API call limit reached!');
                 break;
             }
 
-        } while($curl->error);
+        } while ($curl->error);
 
         return $response;
     }

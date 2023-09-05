@@ -1,13 +1,13 @@
 <?php
 
 namespace App\Console\Commands;
+
 use App\Helpers\Repositories\Settings;
 use App\Jobs\SendLeadToAdvertiser;
 use App\Lead;
 use App\LeadCount;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Curl\Curl;
 use Log;
 
 class SendPendingLeadsWithJobQueue extends Command
@@ -30,8 +30,6 @@ class SendPendingLeadsWithJobQueue extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @param Settings $settings
      */
     public function __construct(Settings $settings)
     {
@@ -50,14 +48,14 @@ class SendPendingLeadsWithJobQueue extends Command
         $this->info('Executing send pending leads...');
 
         //this is to prevent slave to execute at the same time as master server
-        if(env('APP_SERVER','master')=='slave'){
+        if (env('APP_SERVER', 'master') == 'slave') {
             sleep(5);
         }
 
         //get the number of leads to process at a time from settings
         $numberOfLeads = $this->settings->getValue('num_leads_to_process_for_send_pending_leads');
 
-        $pendingLeads = Lead::where('lead_status','=',3)->with('leadMessage','leadDataADV','leadDataCSV','leadSentResult')->take($numberOfLeads);
+        $pendingLeads = Lead::where('lead_status', '=', 3)->with('leadMessage', 'leadDataADV', 'leadDataCSV', 'leadSentResult')->take($numberOfLeads);
         $queuedLeads = $pendingLeads->get();
 
         //update these leads to QUEUED
@@ -65,8 +63,7 @@ class SendPendingLeadsWithJobQueue extends Command
 
         $leadCount = count($queuedLeads);
 
-        foreach($queuedLeads as $lead)
-        {
+        foreach ($queuedLeads as $lead) {
             $lead->lead_status = 4;
 
             Log::info("lead id: $lead->id");
@@ -75,11 +72,10 @@ class SendPendingLeadsWithJobQueue extends Command
             $campaignCounts = LeadCount::getCount(['campaign_id' => $lead->campaign_id])->first();
             $campaignAffiliateCounts = LeadCount::getCount(['campaign_id' => $lead->campaign_id, 'affiliate_id' => $lead->affiliate_id])->first();
 
-            $dateNowStr =  Carbon::now()->toDateTimeString();
+            $dateNowStr = Carbon::now()->toDateTimeString();
 
             //meaning no record of it yet so initialize
-            if(!isset($campaignCounts))
-            {
+            if (! isset($campaignCounts)) {
                 //this mean no record of it then create it
                 $campaignCounts = new LeadCount;
                 $campaignCounts->campaign_id = $lead->campaign_id;
@@ -90,8 +86,7 @@ class SendPendingLeadsWithJobQueue extends Command
             }
 
             //meaning no record of it yet so initialize
-            if(!isset($campaignAffiliateCounts))
-            {
+            if (! isset($campaignAffiliateCounts)) {
                 //this mean no record of it then create it
                 $campaignAffiliateCounts = new LeadCount;
                 $campaignAffiliateCounts->campaign_id = $lead->campaign_id;
@@ -103,7 +98,7 @@ class SendPendingLeadsWithJobQueue extends Command
 
             //$this->info("$lead->id $lead->lead_status");
             //dispatch or push the lead for processing to queue.
-            $job = (new SendLeadToAdvertiser($lead))->delay(rand(0,10));
+            $job = (new SendLeadToAdvertiser($lead))->delay(rand(0, 10));
             dispatch($job);
         }
 

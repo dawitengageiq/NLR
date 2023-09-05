@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AlterLeadUserRequestAddPhoneNumber extends Migration
 {
@@ -13,7 +13,7 @@ class AlterLeadUserRequestAddPhoneNumber extends Migration
     public function up()
     {
         Schema::table('lead_user_request', function (Blueprint $table) {
-            $table->string('phone_number',75)->nullable();
+            $table->string('phone_number', 75)->nullable();
         });
     }
 

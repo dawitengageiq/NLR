@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AlterAffiliateReportsAddS1ToS5 extends Migration
 {
@@ -33,4 +33,3 @@ class AlterAffiliateReportsAddS1ToS5 extends Migration
         });
     }
 }
-

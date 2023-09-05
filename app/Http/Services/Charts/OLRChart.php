@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Services\Charts;
 
 use Config;
@@ -11,43 +12,42 @@ final class OLRChart extends Factories\ChartFactory implements \App\Http\Service
      * Version of lead Reactor
      * Range: olr and nlr
      *
-     * @var String $version
+     * @var string
      */
     protected $version = 'olr';
 
     /**
      * Group of series
      *
-     * @var Array $group
+     * @var array
      */
     protected $group_series = [];
 
     /**
      * Group of categories
      *
-     * @var Array $group_categories
+     * @var array
      */
-    protected $group_categories =  [];
+    protected $group_categories = [];
 
     /**
      * Group of actual rejection
      *
-     * @var Array $group_actual_rejection
+     * @var array
      */
-    protected $group_actual_rejection =  [];
+    protected $group_actual_rejection = [];
 
     /**
      * Default value for high and critical group padding
      *
-     * @var Array $group_padding
+     * @var array
      */
-    protected $group_padding =  [
-            'default' => 0.3
+    protected $group_padding = [
+        'default' => 0.3,
     ];
 
     /**
      * Load the  needed configuration
-     *
      */
     public function __construct()
     {
@@ -58,9 +58,9 @@ final class OLRChart extends Factories\ChartFactory implements \App\Http\Service
     /**
      * Provide needed data for formating.
      *
-     * @var Array $data
+     * @var array
      */
-    public function setData (Array $data)
+    public function setData(array $data)
     {
         $this->data = $data;
     }
@@ -68,29 +68,29 @@ final class OLRChart extends Factories\ChartFactory implements \App\Http\Service
     /**
      * Return the series data in group that will be use in views .
      *
-     * @return Array
+     * @return array
      */
-    public function getGroupSeries ()
+    public function getGroupSeries()
     {
-        return  $this->group_series;
+        return $this->group_series;
     }
 
     /**
      * Return the series data in group of categories that will be use in views .
      *
-     * @return Array
+     * @return array
      */
-    public function getGroupCategories ()
+    public function getGroupCategories()
     {
-        return  $this->group_categories;
+        return $this->group_categories;
     }
 
     /**
      * Return the data that will be use in views .
      *
-     * @return Array
+     * @return array
      */
-    public function getData ()
+    public function getData()
     {
         $data['version'] = $this->version;
         $data['group_series'] = $this->getGroupSeries();
@@ -98,16 +98,18 @@ final class OLRChart extends Factories\ChartFactory implements \App\Http\Service
         $data['group_categories'] = $this->getGroupCategories();
         $data['actual_rejection'] = $this->getActualRejection();
         $data['column_extra_details'] = $this->getColumnExtraDetails();
-        if(count($data['group_series']) == 0) $data['has_data'] = false;
+        if (count($data['group_series']) == 0) {
+            $data['has_data'] = false;
+        }
 
-        return  $data;
+        return $data;
     }
 
     /**
      * Process on formatting data.
      *
      *
-     * @var Bolean $view
+     * @var Bolean
      */
     public function formatData($view = true)
     {
@@ -122,22 +124,22 @@ final class OLRChart extends Factories\ChartFactory implements \App\Http\Service
         foreach ($this->data as $key => $datum) {
             $split = $this->parseSplitData($datum['split']);
 
-            $this->index_4_actual_rejection = $category =  $datum['revenue_tracker_column'] . ' - ' . $datum['campaign_id'];
+            $this->index_4_actual_rejection = $category = $datum['revenue_tracker_column'].' - '.$datum['campaign_id'];
 
             $this->generateCategories($datum['reject_rate'], $category);
             $this->generateSeries($datum['reject_rate'], $split, $datum);
 
-            if(count($this->series['critical'][0]['data']) == $number_of_column_per_chart) {
-                $this->pushSeries2Group ($group_critical, 'critical');
+            if (count($this->series['critical'][0]['data']) == $number_of_column_per_chart) {
+                $this->pushSeries2Group($group_critical, 'critical');
                 $group_critical++;
             }
 
-            if(count($this->series['high'][0]['data']) == $number_of_column_per_chart) {
-                $this->pushSeries2Group ($group_high, 'high');
+            if (count($this->series['high'][0]['data']) == $number_of_column_per_chart) {
+                $this->pushSeries2Group($group_high, 'high');
                 $group_high++;
             }
 
-            if($lead_count == (count($this->data) - 1)){
+            if ($lead_count == (count($this->data) - 1)) {
 
                 $this->push2GroupWhenLoopsEnd($group_critical, $group_high);
             }
@@ -149,57 +151,55 @@ final class OLRChart extends Factories\ChartFactory implements \App\Http\Service
     /**
      * Push the series to group when @var $number_of_column_per_chart is reach.
      *
-     * @var String $group_error_type
-     * @var String $error_type
+     * @var string
+     * @var string
      */
-
-    protected function pushSeries2Group ($group_error_type, $error_type)
+    protected function pushSeries2Group($group_error_type, $error_type)
     {
         $this->setChartAttributes(count($this->categories[$error_type]), $group_error_type, $error_type);
 
-        $this->group_categories[$error_type]['chart_' . $group_error_type][] = $this->categories[$error_type];
+        $this->group_categories[$error_type]['chart_'.$group_error_type][] = $this->categories[$error_type];
         $this->categories[$error_type] = [];
 
-        $this->group_series[$error_type]['chart_' . $group_error_type] = $this->series[$error_type];
+        $this->group_series[$error_type]['chart_'.$group_error_type] = $this->series[$error_type];
         $this->initialSeriesData($error_type);
     }
 
     /**
      * Push the series to group even the count is not reach the @var $number_of_column_per_chart.
      *
-     * @var String $group_critical
-     * @var String $group_high
+     * @var string
+     * @var string
      */
-    protected function push2GroupWhenLoopsEnd ($group_critical, $group_high)
+    protected function push2GroupWhenLoopsEnd($group_critical, $group_high)
     {
 
         $this->setChartAttributes(count($this->categories['critical']), $group_critical, 'critical');
         $this->setChartAttributes(count($this->categories['high']), $group_high, 'high');
 
-        if(count($this->categories['critical']) > 0) {
-            $this->group_categories['critical']['chart_' . $group_critical][] = $this->categories['critical'];
+        if (count($this->categories['critical']) > 0) {
+            $this->group_categories['critical']['chart_'.$group_critical][] = $this->categories['critical'];
             $this->categories['critical'] = [];
         }
 
-        if(count($this->categories['high']) > 0) {
-            $this->group_categories['high']['chart_' . $group_high][] = $this->categories['high'];
+        if (count($this->categories['high']) > 0) {
+            $this->group_categories['high']['chart_'.$group_high][] = $this->categories['high'];
             $this->categories['high'] = [];
         }
 
-        if(count($this->series['critical'][0]['data']) > 0) {
-            $this->group_series['critical']['chart_' . $group_critical] = $this->series['critical'];
+        if (count($this->series['critical'][0]['data']) > 0) {
+            $this->group_series['critical']['chart_'.$group_critical] = $this->series['critical'];
         }
 
-        if(count($this->series['high'][0]['data']) > 0) {
-            $this->group_series['high']['chart_' . $group_high] = $this->series['high'];
+        if (count($this->series['high'][0]['data']) > 0) {
+            $this->group_series['high']['chart_'.$group_high] = $this->series['high'];
         }
     }
 
     /**
      * The initial data for series.
-     *
      */
-    protected function initialSeriesData ($type = 'all')
+    protected function initialSeriesData($type = 'all')
     {
         $series[0]['name'] = 'LEADS';
         $series[0]['stack'] = '1';
@@ -221,17 +221,22 @@ final class OLRChart extends Factories\ChartFactory implements \App\Http\Service
         $series[4]['stack'] = '2';
         $series[4]['data'] = [];
 
-        if($type == 'critical' || $type == 'all' ) $this->series['critical'] = $series;
-        if($type == 'high' || $type == 'all' ) $this->series['high'] = $series;
+        if ($type == 'critical' || $type == 'all') {
+            $this->series['critical'] = $series;
+        }
+        if ($type == 'high' || $type == 'all') {
+            $this->series['high'] = $series;
+        }
     }
 
     /**
      * Set the column width and group padding for the chart is expanding.
-     *
      */
-    protected function setChartAttributes ($count = 0, $chart_num = 0, $type = '')
+    protected function setChartAttributes($count = 0, $chart_num = 0, $type = '')
     {
-        if($count == 0) return;
+        if ($count == 0) {
+            return;
+        }
 
         $column_attributes = $this->config['column_attributes'];
 

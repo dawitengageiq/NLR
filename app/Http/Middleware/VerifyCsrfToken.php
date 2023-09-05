@@ -15,6 +15,6 @@ class VerifyCsrfToken extends BaseVerifier
         'getMyToken',
         'api/getMyToken',
         'test',
-        'reports/*'
+        'reports/*',
     ];
 }

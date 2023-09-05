@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Setting extends Model
 {
     protected $connection;
+
     /**
      * The database table used by the model.
      *
@@ -25,13 +26,13 @@ class Setting extends Model
         'description',
         'string_value',
         'integer_value',
-        'double_value'
+        'double_value',
     ];
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') == 'reports') {
+        if (config('app.type') == 'reports') {
             $this->connection = 'secondary';
         }
     }

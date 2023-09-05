@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 class AddImageInFilterTypes extends Migration
@@ -13,7 +12,7 @@ class AddImageInFilterTypes extends Migration
     public function up()
     {
         Schema::table('filter_types', function ($table) {
-            $table->string('image',255)->nullable();
+            $table->string('image', 255)->nullable();
         });
     }
 

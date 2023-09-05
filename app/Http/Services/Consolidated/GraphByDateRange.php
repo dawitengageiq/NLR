@@ -1,9 +1,9 @@
 <?php
+
 namespace App\Http\Services\Consolidated;
 
-use Carbon\Carbon;
-
 use App\ConsolidatedGraph;
+use Carbon\Carbon;
 
 /**
  * Consolidate graph class.
@@ -23,7 +23,9 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
      *
      * @var string
      */
-    protected $dateFrom, $dateTo;
+    protected $dateFrom;
+
+    protected $dateTo;
 
     /**
      * Chart series container, we are using highcharts here.
@@ -31,6 +33,7 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
      * @var array
      */
     protected $series = [];
+
     /**
      * Date range container, use to goup series by category.
      *
@@ -60,13 +63,15 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
      * @var array
      */
     protected $records = [];
+
     protected $perSubIDRecords = [];
+
     protected $subIDSummaryRecords = [];
 
     /**
      * Series per slide container, how many date/x-axis in one slide. We are using bootstrap carousel here.
      *
-     * @var integer
+     * @var int
      */
     protected $seriesPerSlide = 4;
 
@@ -138,9 +143,8 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
     /**
      * Instantiate.
      * Provide the eloquent model.
-     *
      */
-    public function __construct (ConsolidatedGraph $model, Carbon $carbon)
+    public function __construct(ConsolidatedGraph $model, Carbon $carbon)
     {
         $this->model = $model;
         $this->carbon = $carbon;
@@ -149,9 +153,9 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
     /**
      * Set the revenue tracker, provided by Controller.
      *
-     * @param integer $revenueTrackerID
+     * @param  int  $revenueTrackerID
      */
-    public function setRevenueTrackerID ($revenueTrackerID)
+    public function setRevenueTrackerID($revenueTrackerID)
     {
         $this->revenueTrackerID = $revenueTrackerID;
     }
@@ -160,9 +164,9 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
      * Set legends, provided by controller from config.consolidatedgraph.legends.
      * We have to set immediatly the counters for generating chart series.
      *
-     * @param array $legends
+     * @param  array  $legends
      */
-    public function setLegends ($legends)
+    public function setLegends($legends)
     {
         $this->legends = $legends;
         // $this->legends = array_filter($legends, function ($key)
@@ -179,25 +183,25 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
      *
      * @return array
      */
-    public function legends ()
+    public function legends()
     {
         return $this->legends;
     }
 
-
     /**
      * Set the selected column to display
      *
-     * @param array $column
+     * @param  array  $column
      */
-    public function setSelectedColumn ($columns)
+    public function setSelectedColumn($columns)
     {
-        if(!$columns || @$columns[0] == 'all') return;
+        if (! $columns || @$columns[0] == 'all') {
+            return;
+        }
 
-        $this->columns = array_filter($this->columns, function ($val) use($columns)
-        {
+        $this->columns = array_filter($this->columns, function ($val) use ($columns) {
             // returns whether the input integer is odd
-            return(in_array($val, $columns));
+            return in_array($val, $columns);
         });
 
     }
@@ -207,22 +211,21 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
      *
      * @return array
      */
-    public function columns ()
+    public function columns()
     {
         return $this->columns;
     }
 
     /**
      * Set counters for generating chart series, index is from config.consolidatedgraph.legends.
-     *
      */
-    public function setcounters ()
+    public function setcounters()
     {
         // Initiate counters
         $this->counters = collect(array_keys($this->legends))->flatMap(function ($legend) {
             return [$legend => [
                 'date_count' => 0,
-                'data_count' => 0
+                'data_count' => 0,
             ]];
         })->toArray();
 
@@ -231,10 +234,10 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
     /**
      * Set the date range for chart x-axis label.
      *
-     * @param string $from
-     * @param string $to
+     * @param  string  $from
+     * @param  string  $to
      */
-    public function setDateRange ($dateFrom, $dateTo)
+    public function setDateRange($dateFrom, $dateTo)
     {
         // Use for chart categories
         $this->dateRange = $this->generateDateRange($this->carbon->parse($dateFrom), $this->carbon->parse($dateTo));
@@ -247,7 +250,7 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
     /**
      * Set series p ers lide.
      *
-     * @param integer $seriesPerSlide
+     * @param  int  $seriesPerSlide
      */
     public function setSeriesPerSlide($seriesPerSlide)
     {
@@ -259,7 +262,7 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
      *
      * @return array
      */
-    public function dateRange ()
+    public function dateRange()
     {
         return $this->dateRange;
     }
@@ -269,7 +272,7 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
      *
      * @return array
      */
-    public function categories ()
+    public function categories()
     {
         return $this->categories;
     }
@@ -279,24 +282,24 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
      *
      * @return array
      */
-    public function colors ()
+    public function colors()
     {
         return $this->colors;
     }
 
     /**
      * Get the consilidated data to be use in chart.
-     * @model ConsolidatedGraph.
      *
+     * @model ConsolidatedGraph.
      */
-    public function getConsolidatedData ()
+    public function getConsolidatedData()
     {
         $this->records = $this->model
             ->where('revenue_tracker_id', $this->revenueTrackerID)
             ->whereBetween('created_at', [$this->dateFrom, $this->dateTo])
             ->get()
-            ->keyBy(function($data) {
-                 return $this->carbon->parse($data->created_at)->format('Y-m-d');
+            ->keyBy(function ($data) {
+                return $this->carbon->parse($data->created_at)->format('Y-m-d');
             })
             ->toArray();
 
@@ -306,11 +309,14 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
     /**
      * Check if has records.
      *
-     * @return boolean
+     * @return bool
      */
-    public function hasRecords ()
+    public function hasRecords()
     {
-        if(count($this->records)) return true;
+        if (count($this->records)) {
+            return true;
+        }
+
         return false;
     }
 
@@ -319,17 +325,17 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
      *
      * @return array
      */
-    public function records ()
+    public function records()
     {
         return $this->records;
     }
-    
-    public function perSubIDRecords ()
+
+    public function perSubIDRecords()
     {
         return $this->perSubIDRecords;
     }
 
-    public function subIDSummaryRecords ()
+    public function subIDSummaryRecords()
     {
         return $this->subIDSummaryRecords;
     }
@@ -339,7 +345,7 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
      *
      * @return string
      */
-    public function message ()
+    public function message()
     {
         return $this->message;
     }
@@ -349,7 +355,7 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
      *
      * @return array
      */
-    public function legendsValue2Percent ()
+    public function legendsValue2Percent()
     {
         return $this->valueToPercent;
     }
@@ -359,7 +365,7 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
      *
      * @return array
      */
-    public function series ()
+    public function series()
     {
         return $this->series;
     }
@@ -378,7 +384,6 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
      *  7. If passed #3, #4, and #5 push data to the existing date count grouping and existing column/data.
      *  8. Fetch colors for colmn.
      *  9. Group the date/categories per slide.
-     *
      */
     public function setSeriesThenCategories()
     {
@@ -386,35 +391,39 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
         foreach ($this->dateRange as $date) {
             // #2 ....
             foreach ($this->legends as $legend => $details) {
-                #3 ....
-                if($this->excludeThisLegend($legend)) continue;
+                //3 ....
+                if ($this->excludeThisLegend($legend)) {
+                    continue;
+                }
                 // Increment the legend counter
                 $this->counters[$legend]['data_count']++;
                 // Parameters for functions.
                 $param = [$legend, $details['alias'], $date];
                 // #4 ....
-                if($this->dateCountGroupingExistsInSeries(...$param)) {
+                if ($this->dateCountGroupingExistsInSeries(...$param)) {
                     // #5 ....
-                    if($col = $this->aliasExistsInSeriesColumn(...$param)) { // search value in the array
+                    if ($col = $this->aliasExistsInSeriesColumn(...$param)) { // search value in the array
                         // #6 ....
-                         if($this->counterDatacountIsLessThanSeriesPerSlide(...$param)) {
-                             // #7 ....
+                        if ($this->counterDatacountIsLessThanSeriesPerSlide(...$param)) {
+                            // #7 ....
                             $this->pushDAtaToSeries(...(array_merge($param, [$details['percentage'], $col])));
                             // Skip code below, next legend.
                             continue;
-                         }
-                         // If exceed as #6 ...
-                         $this->incrementDateCountAndResetDataCount(...$param);
+                        }
+                        // If exceed as #6 ...
+                        $this->incrementDateCountAndResetDataCount(...$param);
                     }
                 }
                 // If failed as #4 and #5 ...
                 $this->pushDAtaToSeriesAsNewDateCountGrouping(...(array_merge($param, [$details['percentage']])));
 
                 // #8 ....
-                if(!in_array($details['color'], $this->colors)) $this->colors[] = $details['color'];
+                if (! in_array($details['color'], $this->colors)) {
+                    $this->colors[] = $details['color'];
+                }
             }
             // #8 ....
-            $this->categories['slide_' . $this->counters['mp_per_views']['date_count']][] = $date;
+            $this->categories['slide_'.$this->counters['mp_per_views']['date_count']][] = $date;
         }
     }
 
@@ -422,13 +431,15 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
      * Exclude legend if not included in selected column and the selected is not all columns.
      *
      * @param  string  $legend
-     * @return boolean
+     * @return bool
      */
     protected function excludeThisLegend($legend)
     {
         // if(count($this->columns) > 1 || (count($this->columns) == 1 && $this->columns[0] != 'all')) {
-        if(count($this->columns) > 1 || (count($this->columns) == 1 && $this->columns[0] != 'all')) {
-            if(!in_array($legend, $this->columns)) return true;
+        if (count($this->columns) > 1 || (count($this->columns) == 1 && $this->columns[0] != 'all')) {
+            if (! in_array($legend, $this->columns)) {
+                return true;
+            }
         }
 
         return false;
@@ -437,39 +448,47 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
     /**
      *  Check if the grouping by date exist in series container.
      *
-     * @param  string $legend
-     * @return  boolean
+     * @param  string  $legend
+     * @return  bool
      */
-    protected function dateCountGroupingExistsInSeries ($legend)
+    protected function dateCountGroupingExistsInSeries($legend)
     {
-        if(array_key_exists('slide_' . $this->counters[$legend]['date_count'], $this->series)) return true;
+        if (array_key_exists('slide_'.$this->counters[$legend]['date_count'], $this->series)) {
+            return true;
+        }
+
         return false;
     }
 
     /**
      * If the legend alias is in the date grouping
      *
-     * @param  string $legend
-     * @param  string $alias
+     * @param  string  $legend
+     * @param  string  $alias
      * @return array|void
      */
-    protected function aliasExistsInSeriesColumn ($legend, $alias)
+    protected function aliasExistsInSeriesColumn($legend, $alias)
     {
-        $col = array_column($this->series['slide_' . $this->counters[$legend]['date_count']], 'name');
+        $col = array_column($this->series['slide_'.$this->counters[$legend]['date_count']], 'name');
 
-        if(in_array($alias, $col)) return $col;
-        return;
+        if (in_array($alias, $col)) {
+            return $col;
+        }
+
     }
 
     /**
      * Check if the data counter exceed the series per slide value.
      *
-     * @param  string $legend
-     * @return boolean
+     * @param  string  $legend
+     * @return bool
      */
-    protected function counterDatacountIsLessThanSeriesPerSlide ($legend)
+    protected function counterDatacountIsLessThanSeriesPerSlide($legend)
     {
-        if($this->counters[$legend]['data_count'] <= $this->seriesPerSlide) return true;
+        if ($this->counters[$legend]['data_count'] <= $this->seriesPerSlide) {
+            return true;
+        }
+
         return false;
     }
 
@@ -477,14 +496,16 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
      * Some column data is not really visible to graph, we have to add more points to make it visible.
      * Tooltip should reverse this function.
      *
-     * @param boolean $percentage
-     * @param string $alias
+     * @param  bool  $percentage
+     * @param  string  $alias
      */
-    protected function addPoints2MakeColumnVisible ($percentage, $alias, $data)
+    protected function addPoints2MakeColumnVisible($percentage, $alias, $data)
     {
-        if($percentage && $data > 0) {
+        if ($percentage && $data > 0) {
             $data = ($data * 100) + 100;
-            if(!in_array($alias, $this->valueToPercent)) $this->valueToPercent[] = $alias;
+            if (! in_array($alias, $this->valueToPercent)) {
+                $this->valueToPercent[] = $alias;
+            }
         }
 
         return $data;
@@ -493,66 +514,65 @@ class GraphByDateRange implements \App\Http\Services\Contracts\ConsolidatedGraph
     /**
      * Push data to existing grouping.
      *
-     * @param  string $legend
-     * @param  string $alias
-     * @param  string $date
-     * @param  array $col
+     * @param  string  $legend
+     * @param  string  $alias
+     * @param  string  $date
+     * @param  array  $col
      * @return void
      */
-    protected function pushDAtaToSeries ($legend, $alias, $date, $percentage, $col)
+    protected function pushDAtaToSeries($legend, $alias, $date, $percentage, $col)
     {
         $data = (array_key_exists($date, $this->records)) ? (float) $this->records[$date][$legend] : 0;
         $data = $this->addPoints2MakeColumnVisible($percentage, $alias, $data);
 
         array_push(
-            $this->series['slide_' . $this->counters[$legend]['date_count']][array_search($alias, $col)]['data'], // Array
+            $this->series['slide_'.$this->counters[$legend]['date_count']][array_search($alias, $col)]['data'], // Array
             $data // data to push
         );
     }
 
-     /**
-      * Push data to new grouping and new column
-      *
-      * @param  string $legend
-      * @param  string $alias
-      * @param  string $date
-      * @return void
-      */
-     protected function pushDAtaToSeriesAsNewDateCountGrouping ($legend, $alias, $date, $percentage)
-     {
-         $data = (array_key_exists($date, $this->records)) ? (float) $this->records[$date][$legend] : 0;
-         $data = $this->addPoints2MakeColumnVisible($percentage, $alias, $data);
+    /**
+     * Push data to new grouping and new column
+     *
+     * @param  string  $legend
+     * @param  string  $alias
+     * @param  string  $date
+     * @return void
+     */
+    protected function pushDAtaToSeriesAsNewDateCountGrouping($legend, $alias, $date, $percentage)
+    {
+        $data = (array_key_exists($date, $this->records)) ? (float) $this->records[$date][$legend] : 0;
+        $data = $this->addPoints2MakeColumnVisible($percentage, $alias, $data);
 
-         $this->series['slide_' . $this->counters[$legend]['date_count']][] = [
-             'name' =>  $alias,
-             'data' => [$data]
-         ];
-     }
+        $this->series['slide_'.$this->counters[$legend]['date_count']][] = [
+            'name' => $alias,
+            'data' => [$data],
+        ];
+    }
 
-     /**
-      * Increment the date counter and reset the data counter for the data counter exceed the series per slide value.
-      *
-      * @param string $legend
-      */
-     protected function incrementDateCountAndResetDataCount ($legend)
-     {
-          $this->counters[$legend]['date_count']++;
-          $this->counters[$legend]['data_count'] = 1;
-      }
-
+    /**
+     * Increment the date counter and reset the data counter for the data counter exceed the series per slide value.
+     *
+     * @param  string  $legend
+     */
+    protected function incrementDateCountAndResetDataCount($legend)
+    {
+        $this->counters[$legend]['date_count']++;
+        $this->counters[$legend]['data_count'] = 1;
+    }
 
     /**
      * Generate the date ranges.
      *
-     * @param  Carbon $start_date
-     * @param  Carbon $end_date
+     * @param  Carbon  $start_date
+     * @param  Carbon  $end_date
      * @return array
      */
     protected function generateDateRange(Carbon $startDate, Carbon $endDate)
     {
         $dates = [];
 
-        for($date = $startDate; $date->lte($endDate); $date->addDay()) {
+        for ($date = $startDate; $date->lte($endDate); $date->addDay()) {
             $dates[] = $date->format('Y-m-d');
         }
 

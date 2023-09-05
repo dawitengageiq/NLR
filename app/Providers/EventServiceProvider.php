@@ -6,7 +6,6 @@ use App\Events\UserActionEvent;
 use App\User;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Log;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -17,14 +16,13 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         'App\Events\UserActionEvent' => [
-            'App\Listeners\UserActionListener'
-        ]
+            'App\Listeners\UserActionListener',
+        ],
     ];
 
     /**
      * Register any other events for your application.
      *
-     * @param  \Illuminate\Contracts\Events\Dispatcher  $events
      * @return void
      */
     public function boot(DispatcherContract $events)
@@ -45,7 +43,7 @@ class EventServiceProvider extends ServiceProvider
                 'change_severity' => 1,
                 'summary' => "$user->first_name attempted to login with $email.",
                 'old_value' => null,
-                'new_value' => null
+                'new_value' => null,
             ]));
         });
 
@@ -58,7 +56,7 @@ class EventServiceProvider extends ServiceProvider
                 'change_severity' => 1,
                 'summary' => "$user->first_name logged in with $user->email.",
                 'old_value' => null,
-                'new_value' => null
+                'new_value' => null,
             ]));
         });
 
@@ -71,7 +69,7 @@ class EventServiceProvider extends ServiceProvider
                 'change_severity' => 1,
                 'summary' => $user->first_name.' logged out',
                 'old_value' => null,
-                'new_value' => null
+                'new_value' => null,
             ]));
         });
     }

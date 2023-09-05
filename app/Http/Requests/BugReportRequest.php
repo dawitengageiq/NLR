@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Http\Requests\Request;
 use Input;
+
 // use Log;
 
 class BugReportRequest extends Request
@@ -26,8 +26,8 @@ class BugReportRequest extends Request
     public function rules()
     {
         $rules = [
-            'summary'       => 'required|max:500',
-            'description'   => 'required'
+            'summary' => 'required|max:500',
+            'description' => 'required',
         ];
 
         // $inputs = Input::all();
@@ -40,11 +40,11 @@ class BugReportRequest extends Request
         // }
         // Log::info($files);
 
-        if($list_of_files != '') {
+        if ($list_of_files != '') {
             $list_of_files = json_decode($list_of_files);
             $c = 0;
-            foreach($files as $file) {
-                $rules['bug_evidence_files.' . $c++] = 'max:2000';
+            foreach ($files as $file) {
+                $rules['bug_evidence_files.'.$c++] = 'max:2000';
             }
         }
         // $nbr = count($this->input('bug_evidence_files')) - 1;

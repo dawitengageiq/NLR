@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AddSubidsToAffiliateWebsiteReports extends Migration
 {
@@ -48,7 +48,7 @@ class AddSubidsToAffiliateWebsiteReports extends Migration
                 's2',
                 's3',
                 's4',
-                's5'
+                's5',
             ]);
         });
 
@@ -60,7 +60,7 @@ class AddSubidsToAffiliateWebsiteReports extends Migration
                 's2',
                 's3',
                 's4',
-                's5'
+                's5',
             ]);
         });
     }

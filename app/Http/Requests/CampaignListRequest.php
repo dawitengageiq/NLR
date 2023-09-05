@@ -1,29 +1,28 @@
 <?php
+
 namespace App\Http\Requests;
-
-use View;
-
-use App\Http\Requests\Request;
-
-use Illuminate\Foundation\Http\FormRequest;
 
 use App\Exceptions\CampaignListsResolverException;
 
 class CampaignListRequest extends Request
 {
-
     /**
      * Default variables
-     *
      */
     protected $limit;
+
     protected $settings;
+
     protected $limitType = 'No';
+
     protected $orderType = 'default';
+
     protected $stackType = 'default';
+
     protected $filter = true;
 
     protected $incomplete = false;
+
     protected $required = [
         'first_name',
         'last_name',
@@ -32,7 +31,7 @@ class CampaignListRequest extends Request
         'dobmonth',
         'dobday',
         'dobyear',
-        'gender'
+        'gender',
     ];
 
     protected $userDetails = [
@@ -72,12 +71,11 @@ class CampaignListRequest extends Request
         'cs4' => '',
         'cs5' => '',
         'ip' => '',
-        'filter_questions' => []
+        'filter_questions' => [],
     ];
 
     /**
      * Empty the rules for we are not using the default validation
-     *
      */
     public function rules()
     {
@@ -92,14 +90,19 @@ class CampaignListRequest extends Request
      */
     public function authorize()
     {
-        if($this->incompleteRequestData()) throw new CampaignListsResolverException('incomplete_parameters');
+        if ($this->incompleteRequestData()) {
+            throw new CampaignListsResolverException('incomplete_parameters');
+        }
 
-        if($this->has('filter')) $this->filter = $this->get('filter');
+        if ($this->has('filter')) {
+            $this->filter = $this->get('filter');
+        }
         $this->limit = $this->get('limit');
 
         $this->setProperties();
 
         $this->filterUserdata();
+
         return true;
     }
 
@@ -115,7 +118,6 @@ class CampaignListRequest extends Request
 
     /**
      * Limit details
-     *
      */
     public function limit()
     {
@@ -124,7 +126,6 @@ class CampaignListRequest extends Request
 
     /**
      * Limit details
-     *
      */
     public function limitType()
     {
@@ -133,7 +134,6 @@ class CampaignListRequest extends Request
 
     /**
      * Limit details
-     *
      */
     public function orderType()
     {
@@ -142,7 +142,6 @@ class CampaignListRequest extends Request
 
     /**
      * Limit details
-     *
      */
     public function stackType()
     {
@@ -151,7 +150,6 @@ class CampaignListRequest extends Request
 
     /**
      * filter details
-     *
      */
     public function filter()
     {
@@ -161,20 +159,26 @@ class CampaignListRequest extends Request
     protected function setProperties()
     {
         // Save to global variable
-        if($this->has('limit_type')) $this->limitType = str_replace('_', ' ', ucwords($this->get('limit_type')));
-        if($this->has('order_type')) $this->orderType = str_replace('_', ' ', ucwords($this->get('order_type')));
-        if($this->has('stack_type')) $this->stackType = str_replace('_', ' ', ucwords($this->get('stack_type')));
+        if ($this->has('limit_type')) {
+            $this->limitType = str_replace('_', ' ', ucwords($this->get('limit_type')));
+        }
+        if ($this->has('order_type')) {
+            $this->orderType = str_replace('_', ' ', ucwords($this->get('order_type')));
+        }
+        if ($this->has('stack_type')) {
+            $this->stackType = str_replace('_', ' ', ucwords($this->get('stack_type')));
+        }
     }
 
     /**
      * Update user details with request data
      *
-     * @var array $userDetails
+     * @var array
      */
-    protected function filterUserdata ()
+    protected function filterUserdata()
     {
         $this->userDetails = collect($this->userDetails)
-            ->map(function($detail, $key)  {
+            ->map(function ($detail, $key) {
                 return ($this->has($key)) ? $this->sanitize($this->get($key)) : $detail;
             })->toArray();
     }
@@ -184,12 +188,13 @@ class CampaignListRequest extends Request
      * when showing offers, we use the php pre define function:eval().
      *
      * @method sanitize
-     * @param  string $data
+     *
+     * @param  string  $data
      * @return string
      */
-    protected function sanitize ($data)
+    protected function sanitize($data)
     {
-        if(! is_array($data)) {
+        if (! is_array($data)) {
             $data = preg_replace('[ \t\r]', '', $data);
             $data = strip_tags($data);
 
@@ -218,8 +223,9 @@ class CampaignListRequest extends Request
     protected function incompleteRequestData()
     {
         collect($this->required)->each(function ($required) {
-            if(!$this->get($required)) {
+            if (! $this->get($required)) {
                 $this->incomplete = true;
+
                 return false;
             }
         });

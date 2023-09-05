@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Http\Requests\Request;
-
 class UpdateContactInfoRequest extends Request
 {
     /**
@@ -23,16 +21,16 @@ class UpdateContactInfoRequest extends Request
      */
     public function rules()
     {
-        return [            
+        return [
             'title' => 'required',
-            'first_name' => 'required',            
+            'first_name' => 'required',
             'last_name' => 'required',
-            'gender' => 'required',                        
+            'gender' => 'required',
             'email' => 'required|email',
             'address' => 'required',
             'position' => 'required',
             'mobile_number' => 'numeric',
-            'phone_number' => 'numeric',            
+            'phone_number' => 'numeric',
         ];
     }
 }

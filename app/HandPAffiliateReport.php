@@ -2,15 +2,16 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-use Log;
-use DB;
 use Carbon\Carbon;
+use DB;
+use Illuminate\Database\Eloquent\Model;
 
 class HandPAffiliateReport extends Model
 {
     protected $connection;
+
     protected $table = 'handp_affiliate_reports';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -24,13 +25,13 @@ class HandPAffiliateReport extends Model
         'lead_count',
         'received',
         'payout',
-        'created_at'
+        'created_at',
     ];
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') != 'reports') {
+        if (config('app.type') != 'reports') {
             $this->connection = 'secondary';
         }
     }
@@ -39,15 +40,14 @@ class HandPAffiliateReport extends Model
     {
         $date = [];
 
-        switch($value)
-        {
+        switch ($value) {
             case 'today' :
                 $date['from'] = Carbon::now()->toDateString();
-                $date['to'] =  Carbon::now()->toDateString();
+                $date['to'] = Carbon::now()->toDateString();
                 break;
             case 'yesterday' :
                 $date['from'] = Carbon::yesterday()->toDateString();
-                $date['to'] =  Carbon::yesterday()->toDateString();
+                $date['to'] = Carbon::yesterday()->toDateString();
                 break;
             case 'last_week' :
                 $date['from'] = Carbon::now()->subWeek()->startOfWeek()->toDateString();
@@ -57,21 +57,21 @@ class HandPAffiliateReport extends Model
                 $date['from'] = Carbon::now()->subMonth()->startOfMonth()->toDateString();
                 $date['to'] = Carbon::now()->subMonth()->endOfMonth()->toDateString();
                 break;
-            case 'week_to_date': 
+            case 'week_to_date':
                 $date['from'] = Carbon::now()->startOfWeek()->toDateString();
-                $date['to'] =  Carbon::now()->toDateString();
+                $date['to'] = Carbon::now()->toDateString();
                 break;
-            case 'month_to_date': 
+            case 'month_to_date':
                 $date['from'] = Carbon::now()->startOfMonth()->toDateString();
-                $date['to'] =  Carbon::now()->toDateString();
+                $date['to'] = Carbon::now()->toDateString();
                 break;
-            case 'year_to_date': 
+            case 'year_to_date':
                 $date['from'] = Carbon::now()->startOfYear()->toDateString();
-                $date['to'] =  Carbon::now()->toDateString();
+                $date['to'] = Carbon::now()->toDateString();
                 break;
             default:
                 $date['from'] = Carbon::now()->toDateString();
-                $date['to'] =  Carbon::now()->toDateString();
+                $date['to'] = Carbon::now()->toDateString();
                 break;
         }
 
@@ -86,30 +86,23 @@ class HandPAffiliateReport extends Model
             'payout',
             'revenue',
             'we_get',
-            'margin'
+            'margin',
         ];
 
         $date = [];
 
-        if(isset($params['period']))
-        {
-            if($params['period']=='none' && (!empty($params['start_date']) && !empty($params['end_date'])))
-            {
+        if (isset($params['period'])) {
+            if ($params['period'] == 'none' && (! empty($params['start_date']) && ! empty($params['end_date']))) {
                 //use the date range
                 $date['from'] = $params['start_date'];
                 $date['to'] = $params['end_date'];
-            }
-            else
-            {
+            } else {
                 $date = self::getSnapShotPeriodRange($params['period']);
             }
-        }
-        else
-        {
+        } else {
             $date = self::getSnapShotPeriodRange('none');
 
-            if(!empty($params['start_date']) && !empty($params['end_date']))
-            {
+            if (! empty($params['start_date']) && ! empty($params['end_date'])) {
                 $date['from'] = $params['start_date'];
                 $date['to'] = $params['end_date'];
             }
@@ -156,30 +149,23 @@ class HandPAffiliateReport extends Model
             'payout',
             'revenue',
             'we_get',
-            'margin'
+            'margin',
         ];
 
         $date = [];
 
-        if(isset($params['period']))
-        {
-            if($params['period']=='none' && (!empty($params['start_date']) && !empty($params['end_date'])))
-            {
+        if (isset($params['period'])) {
+            if ($params['period'] == 'none' && (! empty($params['start_date']) && ! empty($params['end_date']))) {
                 //use the date range
                 $date['from'] = $params['start_date'];
                 $date['to'] = $params['end_date'];
-            }
-            else
-            {
+            } else {
                 $date = self::getSnapShotPeriodRange($params['period']);
             }
-        }
-        else
-        {
+        } else {
             $date = self::getSnapShotPeriodRange('none');
 
-            if(!empty($params['start_date']) && !empty($params['end_date']))
-            {
+            if (! empty($params['start_date']) && ! empty($params['end_date'])) {
                 $date['from'] = $params['start_date'];
                 $date['to'] = $params['end_date'];
             }
@@ -189,34 +175,32 @@ class HandPAffiliateReport extends Model
         $dateTo = $date['to'];
 
         $query->select('affiliate_id',
-                's1',
-                's2',
-                's3',
-                's4',
-                's5',
-                DB::raw('SUM(lead_count) AS leads'),
-                DB::raw('SUM(payout) AS payout'),
-                DB::raw('SUM(received) AS revenue'),
-                DB::raw('(SUM(received) - SUM(payout)) AS we_get'),
-                DB::raw('((SUM(received) - SUM(payout))/SUM(received) * 100) AS margin'))
+            's1',
+            's2',
+            's3',
+            's4',
+            's5',
+            DB::raw('SUM(lead_count) AS leads'),
+            DB::raw('SUM(payout) AS payout'),
+            DB::raw('SUM(received) AS revenue'),
+            DB::raw('(SUM(received) - SUM(payout)) AS we_get'),
+            DB::raw('((SUM(received) - SUM(payout))/SUM(received) * 100) AS margin'))
                 // ->join('affiliates','affiliates.id','=','handp_affiliate_reports.affiliate_id')
-                ->whereRaw('handp_affiliate_reports.created_at >= ? AND handp_affiliate_reports.created_at <= ?', [$dateFrom, $dateTo]);
+            ->whereRaw('handp_affiliate_reports.created_at >= ? AND handp_affiliate_reports.created_at <= ?', [$dateFrom, $dateTo]);
 
-        if (isset($params['search']['value']) && $params['search']['value'] != '')
-        {
+        if (isset($params['search']['value']) && $params['search']['value'] != '') {
             $search = $params['search']['value'];
-            $query->where(function($q) use($search) {
-                $q->where('s1', 'LIKE', '%' . $params['search']['value'] . '%')
-                    ->orWhere('s2', 'LIKE', '%' . $params['search']['value'] . '%')
-                    ->orWhere('s3', 'LIKE', '%' . $params['search']['value'] . '%')
-                    ->orWhere('s4', 'LIKE', '%' . $params['search']['value'] . '%')
-                    ->orWhere('s5', 'LIKE', '%' . $params['search']['value'] . '%');
+            $query->where(function ($q) {
+                $q->where('s1', 'LIKE', '%'.$params['search']['value'].'%')
+                    ->orWhere('s2', 'LIKE', '%'.$params['search']['value'].'%')
+                    ->orWhere('s3', 'LIKE', '%'.$params['search']['value'].'%')
+                    ->orWhere('s4', 'LIKE', '%'.$params['search']['value'].'%')
+                    ->orWhere('s5', 'LIKE', '%'.$params['search']['value'].'%');
             });
         }
 
-        if(isset($params['affiliate_id']))
-        {
-            $query->where('affiliate_id','=',$params['affiliate_id']);
+        if (isset($params['affiliate_id'])) {
+            $query->where('affiliate_id', '=', $params['affiliate_id']);
         }
 
         $query->groupBy('handp_affiliate_reports.s1')
@@ -239,30 +223,23 @@ class HandPAffiliateReport extends Model
         $columns = [ //for ordering
             'campaign',
             'leads',
-            'revenue'
+            'revenue',
         ];
 
         $date = [];
 
-        if(isset($params['period']))
-        {
-            if($params['period']=='none' && (!empty($params['start_date']) && !empty($params['end_date'])))
-            {
+        if (isset($params['period'])) {
+            if ($params['period'] == 'none' && (! empty($params['start_date']) && ! empty($params['end_date']))) {
                 //use the date range
                 $date['from'] = $params['start_date'];
                 $date['to'] = $params['end_date'];
-            }
-            else
-            {
+            } else {
                 $date = self::getSnapShotPeriodRange($params['period']);
             }
-        }
-        else
-        {
+        } else {
             $date = self::getSnapShotPeriodRange('none');
 
-            if(!empty($params['start_date']) && !empty($params['end_date']))
-            {
+            if (! empty($params['start_date']) && ! empty($params['end_date'])) {
                 $date['from'] = $params['start_date'];
                 $date['to'] = $params['end_date'];
             }
@@ -272,22 +249,21 @@ class HandPAffiliateReport extends Model
         $dateTo = $date['to'];
 
         $query->select(
-                       'campaign_id',
-                       DB::raw('SUM(lead_count) AS leads'),
-                       DB::raw('SUM(received) AS revenue'),
-                       DB::raw('SUM(payout) AS payout'))
-                       ->where(function($subQuery) use($dateFrom, $dateTo){
-                            $subQuery->whereRaw('handp_affiliate_reports.created_at >= ? AND handp_affiliate_reports.created_at <= ?', [$dateFrom, $dateTo]);
-                       });
+            'campaign_id',
+            DB::raw('SUM(lead_count) AS leads'),
+            DB::raw('SUM(received) AS revenue'),
+            DB::raw('SUM(payout) AS payout'))
+            ->where(function ($subQuery) use ($dateFrom, $dateTo) {
+                $subQuery->whereRaw('handp_affiliate_reports.created_at >= ? AND handp_affiliate_reports.created_at <= ?', [$dateFrom, $dateTo]);
+            });
 
         // if(isset($params['search']['value']) && $params['search']['value'] != '')
         // {
         //     $query->where('campaigns.name', 'LIKE', '%' . $params['search']['value'] . '%');
         // }
 
-        if(isset($params['affiliate_id']))
-        {
-            $query->where('affiliate_id','=',$params['affiliate_id']);
+        if (isset($params['affiliate_id'])) {
+            $query->where('affiliate_id', '=', $params['affiliate_id']);
         }
 
         /*
@@ -314,18 +290,14 @@ class HandPAffiliateReport extends Model
         }
         */
 
-        if(isset($params['s1']) && $params['s1'] != '')
-        {
-            if(empty($params['s1']))
-            {
-                $query->where(function($subQuery){
+        if (isset($params['s1']) && $params['s1'] != '') {
+            if (empty($params['s1'])) {
+                $query->where(function ($subQuery) {
                     $subQuery->whereNull('s1');
-                    $subQuery->orWhere('s1','=','');
+                    $subQuery->orWhere('s1', '=', '');
                 });
-            }
-            else
-            {
-                $query->where('s1','=',$params['s1']);
+            } else {
+                $query->where('s1', '=', $params['s1']);
             }
         }
         // else
@@ -336,9 +308,9 @@ class HandPAffiliateReport extends Model
         //     });
         // }
 
-        $query->groupBy('handp_affiliate_reports.affiliate_id','handp_affiliate_reports.s1','handp_affiliate_reports.campaign_id');
+        $query->groupBy('handp_affiliate_reports.affiliate_id', 'handp_affiliate_reports.s1', 'handp_affiliate_reports.campaign_id');
 
-        if(isset($params['order'])) {
+        if (isset($params['order'])) {
             $order_col = $columns[$params['order'][0]['column']];
             $order_dir = $params['order'][0]['dir'];
             $query->orderBy($order_col, $order_dir);
@@ -351,82 +323,18 @@ class HandPAffiliateReport extends Model
     {
         $date = [];
 
-        if(isset($params['period']))
-        {
-            if($params['period']=='none' && (!empty($params['start_date']) && !empty($params['end_date'])))
-            {
+        if (isset($params['period'])) {
+            if ($params['period'] == 'none' && (! empty($params['start_date']) && ! empty($params['end_date']))) {
                 //use the date range
                 $date['from'] = $params['start_date'];
                 $date['to'] = $params['end_date'];
-            }
-            else
-            {
+            } else {
                 $date = self::getSnapShotPeriodRange($params['period']);
             }
-        }
-        else
-        {
+        } else {
             $date = self::getSnapShotPeriodRange('none');
 
-            if(!empty($params['start_date']) && !empty($params['end_date']))
-            {
-                $date['from'] = $params['start_date'];
-                $date['to'] = $params['end_date'];
-            }
-        }
-
-        $dateFrom = $date['from'];
-        $dateTo = $date['to'];
-
-        $query->select( 
-                        //'affiliates.company',
-                        'affiliate_id',
-                        'campaign_id',
-                        //'campaigns.name AS campaign',
-                        's1',
-                        DB::raw('SUM(lead_count) AS leads'),
-                        DB::raw('SUM(payout) AS payout'),
-                        DB::raw('SUM(received) AS revenue'))
-                        // ->join('campaigns','campaigns.id','=','handp_affiliate_reports.campaign_id')
-                        // ->join('affiliates','affiliates.id','=','handp_affiliate_reports.affiliate_id')
-                        ->where(function($subQuery) use($dateFrom, $dateTo){
-                            $subQuery->whereRaw('handp_affiliate_reports.created_at >= ? AND handp_affiliate_reports.created_at <= ?', [$dateFrom, $dateTo]);
-                        });
-
-        if(isset($params['affiliate_id']))
-        {
-            $query->where('affiliate_id','=',$params['affiliate_id']);
-        }
-
-        $query->groupBy('handp_affiliate_reports.affiliate_id','handp_affiliate_reports.s1','handp_affiliate_reports.campaign_id');
-        $query->orderBy('handp_affiliate_reports.affiliate_id','asc');
-
-        return $query;
-    }
-
-    public function scopeWebsiteRevenueStats($query, $params)
-    {
-        $date = [];
-
-        if(isset($params['period']))
-        {
-            if($params['period']=='none' && (!empty($params['start_date']) && !empty($params['end_date'])))
-            {
-                //use the date range
-                $date['from'] = $params['start_date'];
-                $date['to'] = $params['end_date'];
-            }
-            else
-            {
-                $date = self::getSnapShotPeriodRange($params['period']);
-            }
-        }
-        else
-        {
-            $date = self::getSnapShotPeriodRange('none');
-
-            if(!empty($params['start_date']) && !empty($params['end_date']))
-            {
+            if (! empty($params['start_date']) && ! empty($params['end_date'])) {
                 $date['from'] = $params['start_date'];
                 $date['to'] = $params['end_date'];
             }
@@ -436,30 +344,77 @@ class HandPAffiliateReport extends Model
         $dateTo = $date['to'];
 
         $query->select(
-           'campaign_id',
-           'affiliate_id',
-           DB::raw('s1 AS website'),
-           DB::raw('SUM(lead_count) AS leads'),
-           DB::raw('SUM(received) AS revenue'),
-           DB::raw('SUM(payout) AS payout'))
-           ->where(function($subQuery) use($dateFrom, $dateTo){
+            //'affiliates.company',
+            'affiliate_id',
+            'campaign_id',
+            //'campaigns.name AS campaign',
+            's1',
+            DB::raw('SUM(lead_count) AS leads'),
+            DB::raw('SUM(payout) AS payout'),
+            DB::raw('SUM(received) AS revenue'))
+                        // ->join('campaigns','campaigns.id','=','handp_affiliate_reports.campaign_id')
+                        // ->join('affiliates','affiliates.id','=','handp_affiliate_reports.affiliate_id')
+            ->where(function ($subQuery) use ($dateFrom, $dateTo) {
                 $subQuery->whereRaw('handp_affiliate_reports.created_at >= ? AND handp_affiliate_reports.created_at <= ?', [$dateFrom, $dateTo]);
-            }
-        );
+            });
 
-        if(isset($params['affiliate_id']))
-        {
-            $query->where('affiliate_id','=',$params['affiliate_id']);
+        if (isset($params['affiliate_id'])) {
+            $query->where('affiliate_id', '=', $params['affiliate_id']);
         }
 
-        if(isset($params['campaign_id']))
-        {
-            $query->where('campaign_id','=',$params['campaign_id']);
+        $query->groupBy('handp_affiliate_reports.affiliate_id', 'handp_affiliate_reports.s1', 'handp_affiliate_reports.campaign_id');
+        $query->orderBy('handp_affiliate_reports.affiliate_id', 'asc');
+
+        return $query;
+    }
+
+    public function scopeWebsiteRevenueStats($query, $params)
+    {
+        $date = [];
+
+        if (isset($params['period'])) {
+            if ($params['period'] == 'none' && (! empty($params['start_date']) && ! empty($params['end_date']))) {
+                //use the date range
+                $date['from'] = $params['start_date'];
+                $date['to'] = $params['end_date'];
+            } else {
+                $date = self::getSnapShotPeriodRange($params['period']);
+            }
+        } else {
+            $date = self::getSnapShotPeriodRange('none');
+
+            if (! empty($params['start_date']) && ! empty($params['end_date'])) {
+                $date['from'] = $params['start_date'];
+                $date['to'] = $params['end_date'];
+            }
+        }
+
+        $dateFrom = $date['from'];
+        $dateTo = $date['to'];
+
+        $query->select(
+            'campaign_id',
+            'affiliate_id',
+            DB::raw('s1 AS website'),
+            DB::raw('SUM(lead_count) AS leads'),
+            DB::raw('SUM(received) AS revenue'),
+            DB::raw('SUM(payout) AS payout'))
+            ->where(function ($subQuery) use ($dateFrom, $dateTo) {
+                $subQuery->whereRaw('handp_affiliate_reports.created_at >= ? AND handp_affiliate_reports.created_at <= ?', [$dateFrom, $dateTo]);
+            }
+            );
+
+        if (isset($params['affiliate_id'])) {
+            $query->where('affiliate_id', '=', $params['affiliate_id']);
+        }
+
+        if (isset($params['campaign_id'])) {
+            $query->where('campaign_id', '=', $params['campaign_id']);
         }
 
         $query->groupBy('handp_affiliate_reports.s1');
 
-        if(isset($params['order'])) {
+        if (isset($params['order'])) {
             $order_col = $columns[$params['order'][0]['column']];
             $order_dir = $params['order'][0]['dir'];
             $query->orderBy($order_col, $order_dir);

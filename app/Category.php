@@ -11,19 +11,19 @@ class Category extends Model
     protected $fillable = [
         'name',
         'description',
-        'status'
+        'status',
     ];
 
     public function scopeGetAllNames($query)
     {
         return $query->select('name')
-                     ->orderBy('name','asc');
+            ->orderBy('name', 'asc');
     }
 
     public function scopeGetAllActiveNames($query)
     {
         return $query->select('name')
-            ->where('status','=',1)
-            ->orderBy('name','asc');
+            ->where('status', '=', 1)
+            ->orderBy('name', 'asc');
     }
 }

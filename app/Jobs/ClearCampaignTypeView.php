@@ -2,12 +2,11 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Job;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
+use DB;
 use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use DB;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class ClearCampaignTypeView extends Job implements SelfHandling, ShouldQueue
 {
@@ -28,8 +27,7 @@ class ClearCampaignTypeView extends Job implements SelfHandling, ShouldQueue
      */
     public function handle()
     {
-        if ($this->attempts() > 1)
-        {
+        if ($this->attempts() > 1) {
             return;
         }
 

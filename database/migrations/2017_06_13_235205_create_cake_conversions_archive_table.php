@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateCakeConversionsArchiveTable extends Migration
 {
@@ -26,22 +26,22 @@ class CreateCakeConversionsArchiveTable extends Migration
             $table->integer('affiliate_id')->unsigned()->index();
             $table->integer('advertiser_id')->unsigned()->index();
             $table->integer('offer_id')->unsigned()->index();
-            $table->string('offer_name',100)->nullable();
+            $table->string('offer_name', 100)->nullable();
             $table->integer('campaign_id')->unsigned()->index();
             $table->integer('creative_id')->unsigned()->index();
-            $table->string('sub_id_1',255)->nullable();
-            $table->string('sub_id_2',255)->nullable();
-            $table->string('sub_id_3',255)->nullable();
-            $table->string('sub_id_4',255)->nullable();
-            $table->string('sub_id_5',255)->index()->nullable();
-            $table->string('conversion_ip_address',16)->nullable();
-            $table->string('click_ip_address',16)->nullable();
+            $table->string('sub_id_1', 255)->nullable();
+            $table->string('sub_id_2', 255)->nullable();
+            $table->string('sub_id_3', 255)->nullable();
+            $table->string('sub_id_4', 255)->nullable();
+            $table->string('sub_id_5', 255)->index()->nullable();
+            $table->string('conversion_ip_address', 16)->nullable();
+            $table->string('click_ip_address', 16)->nullable();
             $table->double('received_amount', 8, 3)->default(0.0);
             $table->boolean('test');
-            $table->string('transaction_id',255)->nullable();
+            $table->string('transaction_id', 255)->nullable();
             $table->timestamps();
 
-            $table->unique(['sub_id_5','offer_id']);
+            $table->unique(['sub_id_5', 'offer_id']);
         });
     }
 

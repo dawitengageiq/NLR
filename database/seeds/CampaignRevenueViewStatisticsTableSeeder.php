@@ -23,18 +23,16 @@ class CampaignRevenueViewStatisticsTableSeeder extends Seeder
 
         $faker = Faker\Factory::create();
 
-        for($i = 0; $i < $numberOfDays; $i++){
+        for ($i = 0; $i < $numberOfDays; $i++) {
 
             $date = $startDate->addDay()->toDateString();
 
-            foreach ($campaignIDs as $campaignID)
-            {
-                foreach ($revTrackerIDs as $revTrackerID)
-                {
+            foreach ($campaignIDs as $campaignID) {
+                foreach ($revTrackerIDs as $revTrackerID) {
                     $stat = CampaignRevenueViewStatistic::firstOrNew([
                         'revenue_tracker_id' => $revTrackerID,
                         'campaign_id' => $campaignID,
-                        'created_at' => $date
+                        'created_at' => $date,
                     ]);
 
                     $stat->revenue = $faker->randomNumber(3);

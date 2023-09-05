@@ -5,25 +5,25 @@ namespace App\Http\Controllers;
 use App\AffiliateRevenueTracker;
 use App\Campaign;
 use App\CampaignTypeOrder;
-use App\MixedCoregCampaignOrder;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\RevenueTrackerRequest;
-use Bus;
 use App\Commands\GetUserActionPermission;
-use Log;
+use App\Http\Requests\RevenueTrackerRequest;
+use App\Http\Services;
+use App\MixedCoregCampaignOrder;
+use Bus;
+use Carbon\Carbon;
 use DB;
 use Excel;
-
-use App\Http\Services;
+use Illuminate\Http\Request;
+use Log;
 
 class RevenueTrackerController extends Controller
 {
     protected $canEdit = false;
+
     protected $canDelete = false;
+
     protected $user;
+
     protected $logger;
 
     public function __construct(Services\UserActionLogger $logger)
@@ -31,8 +31,8 @@ class RevenueTrackerController extends Controller
         //get the user
         $user = auth()->user();
 
-        $this->canEdit = Bus::dispatch(new GetUserActionPermission($user,'use_edit_revenue_trackers'));
-        $this->canDelete = Bus::dispatch(new GetUserActionPermission($user,'use_delete_revenue_trackers'));
+        $this->canEdit = Bus::dispatch(new GetUserActionPermission($user, 'use_edit_revenue_trackers'));
+        $this->canDelete = Bus::dispatch(new GetUserActionPermission($user, 'use_delete_revenue_trackers'));
         $this->user = $user;
         $this->logger = $logger;
     }
@@ -40,7 +40,6 @@ class RevenueTrackerController extends Controller
     /**
      * Server side data table processing for revenue trackers
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
@@ -63,22 +62,21 @@ class RevenueTrackerController extends Controller
             7 => 's3',
             8 => 's4',
             9 => 's5',
-            10 => 'subid_breakdown'
+            10 => 'subid_breakdown',
         ];
 
-        session()->put('revenue_trackers_input',$inputs);
+        session()->put('revenue_trackers_input', $inputs);
 
-        $revenueTrackers = AffiliateRevenueTracker::searchRevenueTrackers($param,$start,$length,$columns[$inputs['order'][0]['column']],$inputs['order'][0]['dir'])
-            ->select(DB::raw("affiliate_revenue_trackers.*, affiliates.company, revTracker.company as revenue_tracker_name"))
+        $revenueTrackers = AffiliateRevenueTracker::searchRevenueTrackers($param, $start, $length, $columns[$inputs['order'][0]['column']], $inputs['order'][0]['dir'])
+            ->select(DB::raw('affiliate_revenue_trackers.*, affiliates.company, revTracker.company as revenue_tracker_name'))
             // ->with('campaignTypeOrders')
             ->get();
 
-        $totalFiltered = AffiliateRevenueTracker::searchRevenueTrackers($param,null,null,null,null)->count();
+        $totalFiltered = AffiliateRevenueTracker::searchRevenueTrackers($param, null, null, null, null)->count();
 
         $subid_status = config('constants.UNI_STATUS2');
 
-        foreach($revenueTrackers as $tracker)
-        {
+        foreach ($revenueTrackers as $tracker) {
             $data = [];
 
             // //for id html
@@ -87,47 +85,47 @@ class RevenueTrackerController extends Controller
 
             //for website html
             $websiteHTML = '<span id="trk-'.$tracker->id.'-web">'.$tracker->website.'</span>';
-            array_push($data,$websiteHTML);
+            array_push($data, $websiteHTML);
 
             //create the company html
             $affiliateHTML = '<span id="trk-'.$tracker->id.'-aff" data-affiliate="'.$tracker->affiliate_id.'">'.$tracker->company.' ('.$tracker->affiliate_id.')'.'</span>';
-            array_push($data,$affiliateHTML);
+            array_push($data, $affiliateHTML);
 
             //create the campaign id html
             $campaignIDHTML = '<span id="trk-'.$tracker->id.'-cmp">'.$tracker->campaign_id.'</span>';
-            array_push($data,$campaignIDHTML);
+            array_push($data, $campaignIDHTML);
 
             //create the offer id html
             $offerIDHTML = '<span id="trk-'.$tracker->id.'-ofr">'.$tracker->offer_id.'</span>';
-            array_push($data,$offerIDHTML);
+            array_push($data, $offerIDHTML);
 
             //create the revenue tracker id html
             $revenueTrackerIDHTML = '<span id="trk-'.$tracker->id.'-rti" data-revenue_tracker_name="'.$tracker->revenue_tracker_name." ($tracker->revenue_tracker_id)".'">'.$tracker->revenue_tracker_id.'</span>';
-            array_push($data,$revenueTrackerIDHTML);
+            array_push($data, $revenueTrackerIDHTML);
 
             //create the s1 html
             $s1HTML = '<span id="trk-'.$tracker->id.'-s1">'.$tracker->s1.'</span>';
-            array_push($data,$s1HTML);
+            array_push($data, $s1HTML);
 
             //create the s2 html
             $s2HTML = '<span id="trk-'.$tracker->id.'-s2">'.$tracker->s2.'</span>';
-            array_push($data,$s2HTML);
+            array_push($data, $s2HTML);
 
             //create the s3 html
             $s3HTML = '<span id="trk-'.$tracker->id.'-s3">'.$tracker->s3.'</span>';
-            array_push($data,$s3HTML);
+            array_push($data, $s3HTML);
 
             //create the s4 html
             $s4HTML = '<span id="trk-'.$tracker->id.'-s4">'.$tracker->s4.'</span>';
-            array_push($data,$s4HTML);
+            array_push($data, $s4HTML);
 
             //create the s5 html
             $s5HTML = '<span id="trk-'.$tracker->id.'-s5">'.$tracker->s5.'</span>';
-            array_push($data,$s5HTML);
+            array_push($data, $s5HTML);
 
             //create the subid breakdown html
             $sidbHTML = $subid_status[$tracker->subid_breakdown];
-            array_push($data,$sidbHTML);
+            array_push($data, $sidbHTML);
 
             //mixed coreg campaign reordering
             $mixedCoregDetails = '<input type="hidden" id="trk-'.$tracker->id.'-mixed_coreg_order_by" value="'.$tracker->mixed_coreg_order_by.'" />';
@@ -137,42 +135,39 @@ class RevenueTrackerController extends Controller
 
             $campaignOrderHiddenInputs = null;
 
-            $editButton='';
+            $editButton = '';
             $deleteButton = '';
 
             $details = '<textarea id="trk-'.$tracker->id.'-details" class="hidden">'.json_encode($tracker).'</textarea>';
 
-            if($this->canEdit)
-            {
+            if ($this->canEdit) {
                 $editButton = '<button class="editTracker btn-actions btn btn-primary" title="Edit" data-id="'.$tracker->id.'"><span class="glyphicon glyphicon-pencil"></span></button>';
                 $editButton .= '<button class="trackerCampaignType btn-actions btn btn-info" title="Campaign Type" data-id="'.$tracker->revenue_tracker_id.'" data-rt_id="'.$tracker->id.'"><span class="glyphicon glyphicon-th-list"></span></button>';
                 $editButton .= '<button class="mixedCoregCampaignOrdering btn-actions btn btn-success" title="Mixed Coreg" data-id="'.$tracker->revenue_tracker_id.'" data-rt_id="'.$tracker->id.'"><span class="glyphicon glyphicon-th-list"></span></button>';
             }
 
-            if($this->canDelete)
-            {
+            if ($this->canDelete) {
                 $deleteButton = '<button class="deleteTracker btn-actions btn btn-danger" title="Delete" data-id="'.$tracker->id.'"><span class="glyphicon glyphicon-trash"></span></button>';
             }
 
-            array_push($data,$mixedCoregDetails.$campaignOrderHiddenInputs.$editButton.$deleteButton.$details);
+            array_push($data, $mixedCoregDetails.$campaignOrderHiddenInputs.$editButton.$deleteButton.$details);
 
-            array_push($revenueTrackersData,$data);
+            array_push($revenueTrackersData, $data);
         }
 
         $responseData = [
-            'draw'            => intval($inputs['draw']),   // for every request/draw by client side , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
-            'recordsTotal'    => AffiliateRevenueTracker::count(),  // total number of records
+            'draw' => intval($inputs['draw']),   // for every request/draw by client side , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
+            'recordsTotal' => AffiliateRevenueTracker::count(),  // total number of records
             'recordsFiltered' => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
-            'data'            => $revenueTrackersData   // total data array
+            'data' => $revenueTrackersData,   // total data array
         ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
     /**
      * Store a newly created revenue tracker resource in storage.
      *
-     * @param RevenueTrackerRequest $request
      * @return mixed
      */
     public function store(RevenueTrackerRequest $request)
@@ -197,7 +192,7 @@ class RevenueTrackerController extends Controller
         $tracker->crg_limit = $crg_limit;
         $tracker->ext_limit = $ext_limit;
         $tracker->lnk_limit = $lnk_limit;
-        $tracker->path_type =  $request->input('type');
+        $tracker->path_type = $request->input('type');
         $tracker->website = $request->input('website');
         $tracker->fire_at = $request->input('fire') != null && $request->input('fire') > 0 ? $request->input('fire') : null;
         $tracker->pixel = $request->input('pixel');
@@ -248,18 +243,17 @@ class RevenueTrackerController extends Controller
         $this->logger->log(7, null, $tracker->revenue_tracker_id, null, null, $tracker->toArray(), $key_mask, $value_mask);
 
         $responseData = [
-            'id'=>$tracker->id,
+            'id' => $tracker->id,
             'canEdit' => $this->canEdit,
-            'canDelete' => $this->canDelete
+            'canDelete' => $this->canDelete,
         ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param RevenueTrackerRequest $request
      * @return mixed
      */
     public function update(RevenueTrackerRequest $request)
@@ -281,28 +275,28 @@ class RevenueTrackerController extends Controller
         //     CampaignTypeOrder::where('revenue_tracker_id', $old_rev_tracker)->update(['revenue_tracker_id' => $new_rev_tracker]);
         // }
 
-        $tracker->website               = $request->input('website');
-        $tracker->affiliate_id          = $request->input('affiliate');
-        $tracker->campaign_id           = $request->input('campaign');
-        $tracker->offer_id              = $request->input('offer');
-        $tracker->revenue_tracker_id    = $new_rev_tracker;
-        $tracker->s1                    = $request->input('s1');
-        $tracker->s2                    = $request->input('s2');
-        $tracker->s3                    = $request->input('s3');
-        $tracker->s4                    = $request->input('s4');
-        $tracker->s5                    = $request->input('s5');
-        $tracker->note                  = $request->input('notes');
-        $tracker->tracking_link         = $request->input('link');
-        $tracker->crg_limit             = $crg_limit;
-        $tracker->ext_limit             = $ext_limit;
-        $tracker->lnk_limit             = $lnk_limit;
-        $tracker->path_type             = $request->input('type');
+        $tracker->website = $request->input('website');
+        $tracker->affiliate_id = $request->input('affiliate');
+        $tracker->campaign_id = $request->input('campaign');
+        $tracker->offer_id = $request->input('offer');
+        $tracker->revenue_tracker_id = $new_rev_tracker;
+        $tracker->s1 = $request->input('s1');
+        $tracker->s2 = $request->input('s2');
+        $tracker->s3 = $request->input('s3');
+        $tracker->s4 = $request->input('s4');
+        $tracker->s5 = $request->input('s5');
+        $tracker->note = $request->input('notes');
+        $tracker->tracking_link = $request->input('link');
+        $tracker->crg_limit = $crg_limit;
+        $tracker->ext_limit = $ext_limit;
+        $tracker->lnk_limit = $lnk_limit;
+        $tracker->path_type = $request->input('type');
         $tracker->fire_at = $request->input('fire') != null && $request->input('fire') > 0 ? $request->input('fire') : null;
-        $tracker->pixel                 = $request->input('pixel');
-        $tracker->order_type            = $request->input('order_type');
-        $tracker->pixel_header          = $request->input('pixel_header');
-        $tracker->pixel_body            = $request->input('pixel_body');
-        $tracker->pixel_footer          = $request->input('pixel_footer');
+        $tracker->pixel = $request->input('pixel');
+        $tracker->order_type = $request->input('order_type');
+        $tracker->pixel_header = $request->input('pixel_header');
+        $tracker->pixel_body = $request->input('pixel_body');
+        $tracker->pixel_footer = $request->input('pixel_footer');
         // $tracker->exit_page_id          =  $request->input('exit_page') != '' ? $request->input('exit_page') : null;
         // $tracker->subid_breakdown = $request->input('subid_breakdown');
         $tracker->new_subid_breakdown_status = $request->input('new_subid_breakdown_status') != 'null' && $request->input('new_subid_breakdown_status') != '' ? $request->input('new_subid_breakdown_status') : null;
@@ -312,7 +306,7 @@ class RevenueTrackerController extends Controller
         $tracker->nsib_s4 = $request->input('nsib_s4') != '' ? $request->input('nsib_s4') : null;
 
         $tracker->save();
-        
+
         //Action Logger: Edit Revenue Tracker
         $value_mask = [
             'fire_at' => config('constants.PAGE_FIRE_PIXEL'),
@@ -342,8 +336,6 @@ class RevenueTrackerController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param Request $request
      */
     public function destroy(Request $request)
     {
@@ -354,7 +346,7 @@ class RevenueTrackerController extends Controller
             'fire_at' => config('constants.PAGE_FIRE_PIXEL'),
             'order_type' => config('constants.PATH_ORDER_TYPE'),
             // 'exit_page_id' => Campaign::where('campaign_type', 6)->lists('name', 'id'),
-            'path_type' => config('constants.PATH_TYPES')
+            'path_type' => config('constants.PATH_TYPES'),
         ];
         $key_mask = [
             'fire_at' => 'affiliate pixel fires at',
@@ -371,54 +363,57 @@ class RevenueTrackerController extends Controller
         $reference_dates = [];
         $campaign_orders = [];
         $campaign_types = CampaignTypeOrder::where('revenue_tracker_id', $id)->get();
-        foreach($campaign_types as $type) {
+        foreach ($campaign_types as $type) {
             $campaign_orders[$type->campaign_type_id] = $type->campaign_id_order;
             $reference_dates[$type->campaign_type_id] = $type->reorder_reference_date;
         }
         // Log::info($campaign_orders);
-        if(count($campaign_orders) == 0) $campaign_orders = null;
-        if(count($reference_dates) == 0) $reference_dates = null;
+        if (count($campaign_orders) == 0) {
+            $campaign_orders = null;
+        }
+        if (count($reference_dates) == 0) {
+            $reference_dates = null;
+        }
 
         $responseData = [
             'campaignOrder' => $campaign_orders,
-            'referenceDate' => $reference_dates
+            'referenceDate' => $reference_dates,
         ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
     public function mixedCoregCampaignOrderDetails($id)
     {
         //$campaign_orders = CampaignTypeOrder::where('revenue_tracker_id', $id)->lists('campaign_id_order','campaign_type_id');
-        $mixedCoregCampaignOrder = MixedCoregCampaignOrder::where('revenue_tracker_id',$id)
-        ->with(['affiliateRevenueTracker' => function ($query) {
-            return $query->select('revenue_tracker_id', 'mixed_coreg_recurrence', 'mixed_coreg_daily');
-        }])->first();
+        $mixedCoregCampaignOrder = MixedCoregCampaignOrder::where('revenue_tracker_id', $id)
+            ->with(['affiliateRevenueTracker' => function ($query) {
+                return $query->select('revenue_tracker_id', 'mixed_coreg_recurrence', 'mixed_coreg_daily');
+            }])->first();
 
         $campaignOrders = null;
         $referenceDate = null;
         $daily = [
             'recurence' => 'views',
-            'daily_time' => '00:00:00'
+            'daily_time' => '00:00:00',
         ];
 
-        if($mixedCoregCampaignOrder)
-        {
+        if ($mixedCoregCampaignOrder) {
             $campaignOrders = $mixedCoregCampaignOrder->campaign_id_order;
             $referenceDate = $mixedCoregCampaignOrder->reorder_reference_date;
             $daily = [
                 'recurence' => $mixedCoregCampaignOrder->affiliateRevenueTracker->mixed_coreg_recurrence,
-                'daily_time' => $mixedCoregCampaignOrder->affiliateRevenueTracker->mixed_coreg_daily
+                'daily_time' => $mixedCoregCampaignOrder->affiliateRevenueTracker->mixed_coreg_daily,
             ];
         }
 
         $responseData = [
             'campaignOrder' => $campaignOrders,
             'reorderReferenceDate' => $referenceDate,
-            'daily' => $daily
+            'daily' => $daily,
         ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
     public function updateCampaignOrder(Request $request)
@@ -439,19 +434,21 @@ class RevenueTrackerController extends Controller
         //create the campaign_type_order records
         $campaignTypes = config('constants.CAMPAIGN_TYPES');
 
-        foreach($inputs['campaign_type_order'] as $type => $order) {
+        foreach ($inputs['campaign_type_order'] as $type => $order) {
             $campaignTypeOrder = CampaignTypeOrder::firstOrNew([
                 'revenue_tracker_id' => $id,
-                'campaign_type_id' => $type
+                'campaign_type_id' => $type,
             ]);
-            
-            if(! $campaignTypeOrder->exists) $cur_order_state = null;
-            else $cur_order_state = $campaignTypeOrder->toArray();
-            
+
+            if (! $campaignTypeOrder->exists) {
+                $cur_order_state = null;
+            } else {
+                $cur_order_state = $campaignTypeOrder->toArray();
+            }
+
             $campaignTypeOrder->campaign_id_order = $order == '' ? '[]' : $order;
 
-            if( ($campaignTypeOrder->reorder_reference_date=='' || $campaignTypeOrder->reorder_reference_date==null || $campaignTypeOrder->reorder_reference_date=='0000-00-00 00:00:00') || ($reorder==1 && ($tracker->order_status!=$reorder))) 
-            {
+            if (($campaignTypeOrder->reorder_reference_date == '' || $campaignTypeOrder->reorder_reference_date == null || $campaignTypeOrder->reorder_reference_date == '0000-00-00 00:00:00') || ($reorder == 1 && ($tracker->order_status != $reorder))) {
                 $campaignTypeOrder->reorder_reference_date = $new_ref_date;
                 $change_ref_date = true;
             }
@@ -475,18 +472,18 @@ class RevenueTrackerController extends Controller
         $tracker->save();
 
         $response = [
-            'id'                =>  $art_id,
-            'change_ref_date'   =>  $change_ref_date,
-            'tracker'           =>  $tracker
+            'id' => $art_id,
+            'change_ref_date' => $change_ref_date,
+            'tracker' => $tracker,
         ];
 
         //User Action Logging: Update Campaign Order Details in AffiliateRevenueTracker Table
         $value_mask = [
             'order_by' => config('constants.CAMPAIGN_ORDER_DIRECTION'),
-            'order_status' => ['Disabled', 'Enabled']
+            'order_status' => ['Disabled', 'Enabled'],
         ];
         $key_mask = [
-            'order_status' => 'reorder'
+            'order_status' => 'reorder',
         ];
         $this->logger->log(7, 72, $tracker->revenue_tracker_id, null, $current_state, $tracker->toArray(), $key_mask, $value_mask);
 
@@ -512,25 +509,31 @@ class RevenueTrackerController extends Controller
         $current_state = $tracker->toArray(); //For Logging
 
         $mixedCoregCampaignOrder = MixedCoregCampaignOrder::firstOrNew([
-            'revenue_tracker_id' => $id
+            'revenue_tracker_id' => $id,
         ]);
 
         //For Logging
         $current_mc_state = null;
-        if($mixedCoregCampaignOrder->exists) $current_mc_state = $mixedCoregCampaignOrder->toArray();
+        if ($mixedCoregCampaignOrder->exists) {
+            $current_mc_state = $mixedCoregCampaignOrder->toArray();
+        }
 
         // Log::info($tracker);
-        if(array_key_exists('mixed_coreg_daily', $inputs)) {
+        if (array_key_exists('mixed_coreg_daily', $inputs)) {
             $time = explode(' ', $inputs['mixed_coreg_daily']);
             $hourMinute = explode(':', $time[0]);
-            if(strtolower($time[1]) == 'pm') $hourMinute[0] = (int) $hourMinute[0] + 12;
-            if($hourMinute[0] == 24) $hourMinute[0] = '00';
-            $tracker->mixed_coreg_daily = $hourMinute[0] . ':' . $hourMinute[1];
+            if (strtolower($time[1]) == 'pm') {
+                $hourMinute[0] = (int) $hourMinute[0] + 12;
+            }
+            if ($hourMinute[0] == 24) {
+                $hourMinute[0] = '00';
+            }
+            $tracker->mixed_coreg_daily = $hourMinute[0].':'.$hourMinute[1];
         }
-        if(array_key_exists('mixed_coreg_views', $inputs)) {
+        if (array_key_exists('mixed_coreg_views', $inputs)) {
             $tracker->mixed_coreg_campaign_views = $inputs['mixed_coreg_views'];
         }
-        if(array_key_exists('mixed_coreg_recurrence', $inputs)) {
+        if (array_key_exists('mixed_coreg_recurrence', $inputs)) {
             $tracker->mixed_coreg_recurrence = $inputs['mixed_coreg_recurrence'];
         }
 
@@ -542,13 +545,11 @@ class RevenueTrackerController extends Controller
 
         $mixedCoregCampaignOrder->campaign_id_order = $inputs['mixed_coreg_campaign_order'] == '' ? '[]' : $inputs['mixed_coreg_campaign_order'];
 
-        if(empty($mixedCoregCampaignOrder->reorder_reference_date) || $mixedCoregCampaignOrder->reorder_reference_date=='0000-00-00 00:00:00')
-        {
+        if (empty($mixedCoregCampaignOrder->reorder_reference_date) || $mixedCoregCampaignOrder->reorder_reference_date == '0000-00-00 00:00:00') {
             $mixedCoregCampaignOrder->reorder_reference_date = $new_ref_date;
         }
 
-        if($mixedCoregReorder==1 && ($tracker->mixed_coreg_order_status!=$mixedCoregReorder))
-        {
+        if ($mixedCoregReorder == 1 && ($tracker->mixed_coreg_order_status != $mixedCoregReorder)) {
             $mixedCoregCampaignOrder->reorder_reference_date = $new_ref_date;
         }
 
@@ -562,12 +563,12 @@ class RevenueTrackerController extends Controller
         //User Action Logging: Update Mixed Coreg Order
         $value_mask = [
             'mixed_coreg_order_by' => config('constants.CAMPAIGN_ORDER_DIRECTION'),
-            'mixed_coreg_order_status' => ['Disabled', 'Enabled']
+            'mixed_coreg_order_status' => ['Disabled', 'Enabled'],
         ];
         $key_mask = [
-            'mixed_coreg_order_status' => 'reorder'
+            'mixed_coreg_order_status' => 'reorder',
         ];
-        
+
         $new_state = $tracker->toArray();
         $new_state['mixed_coreg_daily'] = Carbon::parse($tracker->mixed_coreg_daily)->toTimeString();
         $this->logger->log(7, 73, $id, null, $current_state, $new_state, $key_mask, $value_mask);
@@ -592,35 +593,35 @@ class RevenueTrackerController extends Controller
             7 => 's3',
             8 => 's4',
             9 => 's5',
-            10 => 'subid_breakdown'
+            10 => 'subid_breakdown',
         ];
 
-        $revenueTrackers = AffiliateRevenueTracker::searchRevenueTrackers($param,null,null,$columns[$inputs['order'][0]['column']],$inputs['order'][0]['dir'])
-            ->select(DB::raw("affiliate_revenue_trackers.*, affiliates.company, revTracker.company as revenue_tracker_name"))
+        $revenueTrackers = AffiliateRevenueTracker::searchRevenueTrackers($param, null, null, $columns[$inputs['order'][0]['column']], $inputs['order'][0]['dir'])
+            ->select(DB::raw('affiliate_revenue_trackers.*, affiliates.company, revTracker.company as revenue_tracker_name'))
             ->get();
 
         $title = 'RevenueTrackers_'.Carbon::now()->toDateString();
         $subid_status = config('constants.UNI_STATUS2');
 
-        Excel::create($title, function($excel) use($title,$revenueTrackers,$inputs, $subid_status){
-            $excel->sheet($title,function($sheet) use ($title,$revenueTrackers,$inputs, $subid_status){
+        Excel::create($title, function ($excel) use ($title, $revenueTrackers, $subid_status) {
+            $excel->sheet($title, function ($sheet) use ($revenueTrackers, $subid_status) {
 
                 // Set auto size for sheet
                 $sheet->setAutoSize(true);
 
-                $headers = ['Website', 'Affiliate', 'Campaign ID', 'Offer ID', 'Revenue Tracker ID', 'S1', 'S2', 'S3', 'S4', 'S5', 'Sub ID Breakdown','Path Type', 'Order Type','Tracking Link', 'Landing URL', 'Co-reg Limit', 'External Limit', 'Link Out Limit', 'Affiliate Pixel', 'Affiliate Pixel Fires at', 'Header Pixel', 'Body Pixel', 'Footer Pixel', 'Notes'];
+                $headers = ['Website', 'Affiliate', 'Campaign ID', 'Offer ID', 'Revenue Tracker ID', 'S1', 'S2', 'S3', 'S4', 'S5', 'Sub ID Breakdown', 'Path Type', 'Order Type', 'Tracking Link', 'Landing URL', 'Co-reg Limit', 'External Limit', 'Link Out Limit', 'Affiliate Pixel', 'Affiliate Pixel Fires at', 'Header Pixel', 'Body Pixel', 'Footer Pixel', 'Notes'];
 
                 //set up the title header row
                 $sheet->appendRow($headers);
 
                 //style the headers
-                $sheet->cells('A1:W1', function($cells) {
+                $sheet->cells('A1:W1', function ($cells) {
 
                     // Set font
-                    $cells->setFont(array(
-                        'size'       => '12',
-                        'bold'       =>  true
-                    ));
+                    $cells->setFont([
+                        'size' => '12',
+                        'bold' => true,
+                    ]);
 
                     $cells->setAlignment('center');
                     $cells->setValignment('center');
@@ -630,8 +631,7 @@ class RevenueTrackerController extends Controller
                 $order_types = config('constants.PATH_ORDER_TYPE');
                 $fire_at = config('constants.PAGE_FIRE_PIXEL');
 
-                foreach($revenueTrackers as $tracker)
-                {
+                foreach ($revenueTrackers as $tracker) {
                     // $landing_url = '';
                     // if($tracker->tracking_link != '') {
                     //     $ch = curl_init();
@@ -668,30 +668,28 @@ class RevenueTrackerController extends Controller
                         $tracker->pixel_header,
                         $tracker->pixel_body,
                         $tracker->pixel_footer,
-                        $tracker->notes
+                        $tracker->notes,
                     ]);
                 }
 
             });
-        })->store('xls',storage_path('downloads'));
+        })->store('xls', storage_path('downloads'));
 
         $file_path = storage_path('downloads').'/'.$title.'.xls';
 
         // Log::info(DB::getQueryLog());
 
-        if(file_exists($file_path))
-        {
-            return response()->download($file_path,$title.'.xls',[
-                'Content-Length: '.filesize($file_path)
+        if (file_exists($file_path)) {
+            return response()->download($file_path, $title.'.xls', [
+                'Content-Length: '.filesize($file_path),
             ]);
-        }
-        else
-        {
+        } else {
             exit('Requested file does not exist on our server!');
         }
     }
 
-    public function getRevenueTrackersWithExitPageDataTable(Request $request) {
+    public function getRevenueTrackersWithExitPageDataTable(Request $request)
+    {
         $inputs = $request->all();
         // Log::info($inputs);
         $revenueTrackersData = [];
@@ -706,33 +704,33 @@ class RevenueTrackerController extends Controller
         $inputs['order_dir'] = $inputs['order'][0]['dir'];
         // DB::enableQueryLog();
         $revenueTrackers = AffiliateRevenueTracker::GetRevenueTrackersWithExitPage($inputs, $justForCount = false)
-            ->select(DB::raw("affiliate_revenue_trackers.id, affiliate_revenue_trackers.affiliate_id, affiliates.company, affiliate_revenue_trackers.revenue_tracker_id"))
+            ->select(DB::raw('affiliate_revenue_trackers.id, affiliate_revenue_trackers.affiliate_id, affiliates.company, affiliate_revenue_trackers.revenue_tracker_id'))
             ->get();
 
-        $totalCount =AffiliateRevenueTracker::GetRevenueTrackersWithExitPage($inputs, true)->count();
+        $totalCount = AffiliateRevenueTracker::GetRevenueTrackersWithExitPage($inputs, true)->count();
         // Log::info(DB::getQueryLog());
-        foreach($revenueTrackers as $tracker)
-        {
+        foreach ($revenueTrackers as $tracker) {
             $data = [
                 '<input name="revenue_tracker_id[]" type="checkbox" value="'.$tracker->id.'" class="eprt-checkbox">',
                 $tracker->revenue_tracker_id,
-                $tracker->affiliate_id.' - '.$tracker->company
+                $tracker->affiliate_id.' - '.$tracker->company,
             ];
 
-            array_push($revenueTrackersData,$data);
+            array_push($revenueTrackersData, $data);
         }
 
         $responseData = [
-            'draw'            => intval($inputs['draw']),   // for every request/draw by client side , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
-            'recordsTotal'    => $totalCount,  // total number of records
+            'draw' => intval($inputs['draw']),   // for every request/draw by client side , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
+            'recordsTotal' => $totalCount,  // total number of records
             'recordsFiltered' => $totalCount, // total number of records after searching, if there is no searching then totalFiltered = totalData
-            'data'            => $revenueTrackersData   // total data array
+            'data' => $revenueTrackersData,   // total data array
         ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
-    public function changeRevTrackerExitPage(Request $request) {
+    public function changeRevTrackerExitPage(Request $request)
+    {
         $inputs = $request->all();
 
         // $cur_exit_page = AffiliateRevenueTracker::whereIn('id', $inputs['revenue_tracker_id'])->lists('exit_page_id', 'id')->toArray(); //For Logging
@@ -740,7 +738,7 @@ class RevenueTrackerController extends Controller
         $rev_tracker_ids = [];
         //For Logging
         $affRevTracks = AffiliateRevenueTracker::whereIn('id', $inputs['revenue_tracker_id'])->select('exit_page_id', 'id', 'revenue_tracker_id')->get();
-        foreach($affRevTracks as $rev_tracker) {
+        foreach ($affRevTracks as $rev_tracker) {
             $cur_exit_page[$rev_tracker->id] = $rev_tracker->exit_page_id;
             $rev_tracker_ids[$rev_tracker->id] = $rev_tracker->revenue_tracker_id;
         }
@@ -750,12 +748,13 @@ class RevenueTrackerController extends Controller
 
         //Action Logger
         $value_mask = ['exit_page_id' => Campaign::where('campaign_type', 6)->lists('name', 'id')];
-        foreach($inputs['revenue_tracker_id'] as $rt_id) {
+        foreach ($inputs['revenue_tracker_id'] as $rt_id) {
             $old_value['exit_page_id'] = null;
-            if(isset($cur_exit_page[$rt_id])) $old_value['exit_page_id'] = $cur_exit_page[$rt_id];
-            $this->logger->log(7, 71, $rev_tracker_ids[$rt_id], null, $old_value, ['exit_page_id' => $exit_page_id], null, $value_mask );
+            if (isset($cur_exit_page[$rt_id])) {
+                $old_value['exit_page_id'] = $cur_exit_page[$rt_id];
+            }
+            $this->logger->log(7, 71, $rev_tracker_ids[$rt_id], null, $old_value, ['exit_page_id' => $exit_page_id], null, $value_mask);
         }
 
-        return;
     }
 }

@@ -1,25 +1,22 @@
 <?php
-namespace App\Jobs\Reordering\Helpers;
 
-use DB;
-use App\AffiliateRevenueTracker;
+namespace App\Jobs\Reordering\Helpers;
 
 class MixedCoregCampaignOrder
 {
     /**
      * Inintialize
-     *
      */
-    public function __construct ()
+    public function __construct()
     {
     }
 
     /**
      * set mix coreg campaign type ids
      *
-     * @param  array $mixedCoreg
+     * @param  array  $mixedCoreg
      */
-    public function set ($mixedCoreg)
+    public function set($mixedCoreg)
     {
         $this->mixedCoreg = $mixedCoreg;
     }
@@ -30,7 +27,7 @@ class MixedCoregCampaignOrder
      *
      * @param  string|timestamp  $now
      */
-    public function setCurrentDate ($now)
+    public function setCurrentDate($now)
     {
         $this->newReferenceDate = $now;
     }
@@ -40,7 +37,7 @@ class MixedCoregCampaignOrder
      *
      * @return array
      */
-    public function campaignIdOrder ()
+    public function campaignIdOrder()
     {
         return $this->mixedCoreg->campaign_id_order;
     }
@@ -48,9 +45,9 @@ class MixedCoregCampaignOrder
     /**
      * Save the new order
      *
-     * @param string|json $newOrders
+     * @param  string|json  $newOrders
      */
-    public function save ($newOrders)
+    public function save($newOrders)
     {
         // reset the reference date and order
         $this->mixedCoreg->campaign_id_order = $newOrders;

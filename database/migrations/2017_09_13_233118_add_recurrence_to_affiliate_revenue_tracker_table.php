@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AddRecurrenceToAffiliateRevenueTrackerTable extends Migration
 {
@@ -26,7 +26,7 @@ class AddRecurrenceToAffiliateRevenueTrackerTable extends Migration
     public function down()
     {
         Schema::table('affiliate_revenue_trackers', function (Blueprint $table) {
-            $table->dropColumn(['mixed_coreg_recurrence','mixed_coreg_daily']);
+            $table->dropColumn(['mixed_coreg_recurrence', 'mixed_coreg_daily']);
         });
     }
 }

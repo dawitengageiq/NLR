@@ -2,18 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use DB;
-use App\OfferGoesDown;
 use App\CampaignRevenueBreakdown;
-use Log;
+use App\OfferGoesDown;
+use App\PathSpeed;
+use App\Setting;
 use Cache;
 use Carbon\Carbon;
-use App\Setting;
-use App\PathSpeed;
+use DB;
+use Illuminate\Http\Request;
+use Log;
 
 class DashboardController extends Controller
 {
@@ -30,8 +27,8 @@ class DashboardController extends Controller
         $totalRecords = OfferGoesDown::where('revenue', '>', 0)
             ->where('revenue', '>=', $filter)
             ->count();
-            
-        $campaigns = OfferGoesDown::leftJoin('campaigns', 'campaigns.id','=','offer_goes_downs.campaign_id')
+
+        $campaigns = OfferGoesDown::leftJoin('campaigns', 'campaigns.id', '=', 'offer_goes_downs.campaign_id')
             ->select(DB::RAW('offer_goes_downs.*, campaigns.name'))
             ->where('revenue', '>', 0)
             ->where('revenue', '>=', $filter)
@@ -39,11 +36,11 @@ class DashboardController extends Controller
             ->skip($start)->take($length)->get();
         $campaignsData = [];
 
-        foreach ($campaigns as $campaign)
-        {
+        foreach ($campaigns as $campaign) {
             $affs = explode(',', $campaign->affiliates);
-            if(count($affs) <= 3) $affData = str_replace(',', ', ', $campaign->affiliates);
-            else {
+            if (count($affs) <= 3) {
+                $affData = str_replace(',', ', ', $campaign->affiliates);
+            } else {
                 $morBtn = '<a href="javascript:;"data-container="body" data-toggle="popover" data-placement="bottom" data-content="'.str_replace(',', ', ', str_replace('All,', '', $campaign->affiliates)).'">...</a>';
                 $display = $affs[0] == 'All' ? $affs[0] : $affs[0].', '.$affs[1].', '.$affs[2];
                 $affData = $display.' '.$morBtn;
@@ -59,13 +56,13 @@ class DashboardController extends Controller
         }
 
         $responseData = [
-            'draw'            => intval($inputs['draw']),   // for every request/draw by client side , they send a number as a parameter, when they receive a response/data they first check the draw number, so we are sending same number in draw.
-            'recordsTotal'    => $totalRecords,  // total number of records
+            'draw' => intval($inputs['draw']),   // for every request/draw by client side , they send a number as a parameter, when they receive a response/data they first check the draw number, so we are sending same number in draw.
+            'recordsTotal' => $totalRecords,  // total number of records
             'recordsFiltered' => $totalRecords, // total number of records after searching, if there is no searching then totalFiltered = totalData
-            'data'            => $campaignsData   // total data array
+            'data' => $campaignsData,   // total data array
         ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
     public function campaignRevenueBreakdown(Request $request, $id)
@@ -77,7 +74,7 @@ class DashboardController extends Controller
             'created_at',
             'revenue',
             'records',
-            'average_revenue'
+            'average_revenue',
         ];
 
         $start = $inputs['start'];
@@ -90,8 +87,7 @@ class DashboardController extends Controller
         // DB::getQueryLog();
         $campaignsData = [];
 
-        foreach ($campaigns as $campaign)
-        {
+        foreach ($campaigns as $campaign) {
             $data = [
                 $campaign->created_at,
                 number_format($campaign->revenue, 2),
@@ -103,16 +99,17 @@ class DashboardController extends Controller
         }
 
         $responseData = [
-            'draw'            => intval($inputs['draw']),   // for every request/draw by client side , they send a number as a parameter, when they receive a response/data they first check the draw number, so we are sending same number in draw.
-            'recordsTotal'    => $totalRecords,  // total number of records
+            'draw' => intval($inputs['draw']),   // for every request/draw by client side , they send a number as a parameter, when they receive a response/data they first check the draw number, so we are sending same number in draw.
+            'recordsTotal' => $totalRecords,  // total number of records
             'recordsFiltered' => $totalRecords, // total number of records after searching, if there is no searching then totalFiltered = totalData
-            'data'            => $campaignsData   // total data array
+            'data' => $campaignsData,   // total data array
         ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
-    public function pathSpeed(Request $request, $path) {
+    public function pathSpeed(Request $request, $path)
+    {
         // if(Cache::has('monitisPaths')) {
         //    $paths = Cache::get('monitisPaths');
         // }else {
@@ -128,7 +125,7 @@ class DashboardController extends Controller
             'created_at',
             'up_time',
             'sum_time',
-            'avg_time'
+            'avg_time',
         ];
 
         $start = $inputs['start'];
@@ -141,23 +138,22 @@ class DashboardController extends Controller
         // DB::getQueryLog();
         $data = [];
 
-        foreach ($stats as $stat)
-        {
+        foreach ($stats as $stat) {
             array_push($data, [
                 Carbon::parse($stat->created_at)->toDateString(),
-                number_format($stat->up_time) .' %',
+                number_format($stat->up_time).' %',
                 $stat->sum_time,
                 number_format($stat->avg_time),
             ]);
         }
 
         $responseData = [
-            'draw'            => intval($inputs['draw']),   // for every request/draw by client side , they send a number as a parameter, when they receive a response/data they first check the draw number, so we are sending same number in draw.
-            'recordsTotal'    => $totalRecords,  // total number of records
+            'draw' => intval($inputs['draw']),   // for every request/draw by client side , they send a number as a parameter, when they receive a response/data they first check the draw number, so we are sending same number in draw.
+            'recordsTotal' => $totalRecords,  // total number of records
             'recordsFiltered' => $totalRecords, // total number of records after searching, if there is no searching then totalFiltered = totalData
-            'data'            => $data   // total data array
+            'data' => $data,   // total data array
         ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 }

@@ -1,9 +1,9 @@
 <?php
+
 namespace App\Http\Services\Consolidated;
 
-use Carbon\Carbon;
-
 use App\ConsolidatedGraph;
+use Carbon\Carbon;
 
 /**
  * Consolidate graph class.
@@ -21,16 +21,15 @@ class GraphAllInbox extends GraphByDateRange implements \App\Http\Services\Contr
     /**
      * All inbox revenue.
      *
-     * @var  integer
+     * @var  int
      */
     protected $allInboxRevenue = 0;
 
     /**
      * Instantiate.
      * Provide the eloquent model.
-     *
      */
-    public function __construct (ConsolidatedGraph $model, Carbon $carbon)
+    public function __construct(ConsolidatedGraph $model, Carbon $carbon)
     {
         $this->model = $model;
         $this->carbon = $carbon;
@@ -39,9 +38,9 @@ class GraphAllInbox extends GraphByDateRange implements \App\Http\Services\Contr
     /**
      * Set the date.
      *
-     * @param  string $date
+     * @param  string  $date
      */
-    public function setdate ($date)
+    public function setdate($date)
     {
         // Use for Query
         $this->date = $date;
@@ -52,18 +51,19 @@ class GraphAllInbox extends GraphByDateRange implements \App\Http\Services\Contr
     /**
      * Set the .
      *
-     * @param  string $date
+     * @param  string  $date
      */
-    public function setAllInboxRevenue ($allInboxRevenue)
+    public function setAllInboxRevenue($allInboxRevenue)
     {
         $this->allInboxRevenue = $allInboxRevenue;
     }
 
     /**
      * [getConsolidatedData description]
+     *
      * @return [type] [description]
      */
-    public function getConsolidatedData ()
+    public function getConsolidatedData()
     {
         // First fetch the record exists.
         $records = $this->model->where('revenue_tracker_id', $this->revenueTrackerID)
@@ -71,13 +71,13 @@ class GraphAllInbox extends GraphByDateRange implements \App\Http\Services\Contr
             ->first();
 
         // If not exists.
-        if(!$records && $this->allInboxRevenue) {
+        if (! $records && $this->allInboxRevenue) {
             // $records = new ConsolidatedGraph;
             // $records->revenue_tracker_id = $this->revenueTrackerID;
         }
 
-        if($records) {
-            if($this->allInboxRevenue) {
+        if ($records) {
+            if ($this->allInboxRevenue) {
                 $records->all_inbox_revenue = number_format($this->allInboxRevenue, 2, '.', '');
                 $records->save();
                 $this->message = 'Updated! All inbox revenue was updated successfully.';

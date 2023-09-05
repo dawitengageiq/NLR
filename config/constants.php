@@ -1,7 +1,7 @@
 <?php
 
-$USA = array(
-    'Alabama' => array(
+$USA = [
+    'Alabama' => [
         'Abbeville',
         'Adamsville',
         'Addison',
@@ -495,9 +495,9 @@ $USA = array(
         'Woodland',
         'Woodville',
         'Yellow Bluff',
-        'York'
-    ),
-    'Alaska' => array(
+        'York',
+    ],
+    'Alaska' => [
         'Adak',
         'Akhiok',
         'Akiachak',
@@ -846,9 +846,9 @@ $USA = array(
         'Womens Bay',
         'Wrangell',
         'Y',
-        'Yakutat'
-    ),
-    'Arizona' => array(
+        'Yakutat',
+    ],
+    'Arizona' => [
         'Ajo',
         'Ak-chin Village',
         'Amado',
@@ -1097,9 +1097,9 @@ $USA = array(
         'Yarnell',
         'Young',
         'Youngtown',
-        'Yuma'
-    ),
-    'Arkansas' => array(
+        'Yuma',
+    ],
+    'Arkansas' => [
         'Adona',
         'Alexander',
         'Alicia',
@@ -1618,9 +1618,9 @@ $USA = array(
         'Wrightsville',
         'Wynne',
         'Yellville',
-        'Zinc'
-    ),
-    'California' => array(
+        'Zinc',
+    ],
+    'California' => [
         'Acton',
         'Adelanto',
         'Agoura Hills',
@@ -2700,9 +2700,9 @@ $USA = array(
         'Yreka',
         'Yuba City',
         'Yucaipa',
-        'Yucca Valley'
-    ),
-    'Colorado' => array(
+        'Yucca Valley',
+    ],
+    'Colorado' => [
         'Acres Green',
         'Aguilar',
         'Air Force Academy',
@@ -3056,9 +3056,9 @@ $USA = array(
         'Woodmoor',
         'Wray',
         'Yampa',
-        'Yuma'
-    ),
-    'Connecticut' => array(
+        'Yuma',
+    ],
+    'Connecticut' => [
         'Ansonia',
         'Bantam',
         'Bethel',
@@ -3178,9 +3178,9 @@ $USA = array(
         'Windsor Locks',
         'Winsted',
         'Woodbury Center',
-        'Woodmont'
-    ),
-    'Delaware' => array(
+        'Woodmont',
+    ],
+    'Delaware' => [
         'Arden',
         'Ardencroft',
         'Ardentown',
@@ -3255,12 +3255,12 @@ $USA = array(
         'Wilmington Manor',
         'Woodside',
         'Woodside East',
-        'Wyoming'
-    ),
-    'District Of Columbia' => array(
-        'Washington'
-    ),
-    'Florida' => array(
+        'Wyoming',
+    ],
+    'District Of Columbia' => [
+        'Washington',
+    ],
+    'Florida' => [
         'Alachua',
         'Alford',
         'Altamonte Springs',
@@ -4148,9 +4148,9 @@ $USA = array(
         'Zephyrhills North',
         'Zephyrhills South',
         'Zephyrhills West',
-        'Zolfo Springs'
-    ),
-    'Georgia' => array(
+        'Zolfo Springs',
+    ],
+    'Georgia' => [
         'Abbeville',
         'Acworth',
         'Adairsville',
@@ -4746,9 +4746,9 @@ $USA = array(
         'Wrightsville',
         'Yatesville',
         'Young Harris',
-        'Zebulon'
-    ),
-    'Hawaii' => array(
+        'Zebulon',
+    ],
+    'Hawaii' => [
         'Ahuimanu',
         'Aiea',
         'Ainaloa',
@@ -4879,9 +4879,9 @@ $USA = array(
         'Waipio',
         'Waipio Acres',
         'Wheeler Afb',
-        'Whitmore Village'
-    ),
-    'Idaho' => array(
+        'Whitmore Village',
+    ],
+    'Idaho' => [
         'Aberdeen',
         'Acequia',
         'Albion',
@@ -5086,9 +5086,9 @@ $USA = array(
         'White Bird',
         'Wilder',
         'Winchester',
-        'Worley'
-    ),
-    'Illinois' => array(
+        'Worley',
+    ],
+    'Illinois' => [
         'Abingdon',
         'Addieville',
         'Addison',
@@ -6400,9 +6400,9 @@ $USA = array(
         'Yates City',
         'Yorkville',
         'Zeigler',
-        'Zion'
-    ),
-    'Indiana' => array(
+        'Zion',
+    ],
+    'Indiana' => [
         'Advance',
         'Akron',
         'Alamo',
@@ -7003,9 +7003,9 @@ $USA = array(
         'Yeoman',
         'Yorktown',
         'Zanesville',
-        'Zionsville'
-    ),
-    'Iowa' => array(
+        'Zionsville',
+    ],
+    'Iowa' => [
         'Ackley',
         'Ackworth',
         'Adair',
@@ -7959,9 +7959,9 @@ $USA = array(
         'Yetter',
         'Yorktown',
         'Zearing',
-        'Zwingle'
-    ),
-    'Kansas' => array(
+        'Zwingle',
+    ],
+    'Kansas' => [
         'Abbyville',
         'Abilene',
         'Admire',
@@ -8592,9 +8592,9 @@ $USA = array(
         'Woodston',
         'Yates Center',
         'Zenda',
-        'Zurich'
-    ),
-    'Kentucky' => array(
+        'Zurich',
+    ],
+    'Kentucky' => [
         'Adairville',
         'Albany',
         'Alexandria',
@@ -9061,9 +9061,9 @@ $USA = array(
         'Worthington',
         'Worthington Hills',
         'Worthville',
-        'Wurtland'
-    ),
-    'Louisiana' => array(
+        'Wurtland',
+    ],
+    'Louisiana' => [
         'Abbeville',
         'Abita Springs',
         'Addis',
@@ -9461,9 +9461,9 @@ $USA = array(
         'Woodworth',
         'Youngsville',
         'Zachary',
-        'Zwolle'
-    ),
-    'Maine' => array(
+        'Zwolle',
+    ],
+    'Maine' => [
         'Anson',
         'Auburn',
         'Augusta',
@@ -9574,9 +9574,9 @@ $USA = array(
         'Wiscasset',
         'Woodland',
         'Yarmouth',
-        'York Harbor'
-    ),
-    'Maryland' => array(
+        'York Harbor',
+    ],
+    'Maryland' => [
         'Aberdeen',
         'Aberdeen Proving Ground',
         'Accident',
@@ -9944,9 +9944,9 @@ $USA = array(
         'Woodlawn',
         'Woodlawn',
         'Woodmore',
-        'Woodsboro'
-    ),
-    'Massachusetts' => array(
+        'Woodsboro',
+    ],
+    'Massachusetts' => [
         'Abington',
         'Acushnet Center',
         'Adams',
@@ -10181,9 +10181,9 @@ $USA = array(
         'Woburn',
         'Woods Hole',
         'Worcester',
-        'Yarmouth Port'
-    ),
-    'Michigan' => array(
+        'Yarmouth Port',
+    ],
+    'Michigan' => [
         'Addison',
         'Adrian',
         'Ahmeek',
@@ -10813,9 +10813,9 @@ $USA = array(
         'Yale',
         'Ypsilanti',
         'Zeeland',
-        'Zilwaukee'
-    ),
-    'Minnesota' => array(
+        'Zilwaukee',
+    ],
+    'Minnesota' => [
         'Ada',
         'Adams',
         'Adrian',
@@ -11682,9 +11682,9 @@ $USA = array(
         'Zemple',
         'Zimmerman',
         'Zumbro Falls',
-        'Zumbrota'
-    ),
-    'Mississippi' => array(
+        'Zumbrota',
+    ],
+    'Mississippi' => [
         'Abbeville',
         'Aberdeen',
         'Ackerman',
@@ -12013,9 +12013,9 @@ $USA = array(
         'Winstonville',
         'Woodland',
         'Woodville',
-        'Yazoo City'
-    ),
-    'Missouri' => array(
+        'Yazoo City',
+    ],
+    'Missouri' => [
         'Adrian',
         'Advance',
         'Affton',
@@ -12987,9 +12987,9 @@ $USA = array(
         'Wright City',
         'Wyaconda',
         'Wyatt',
-        'Zalma'
-    ),
-    'Montana' => array(
+        'Zalma',
+    ],
+    'Montana' => [
         'Absarokee',
         'Agency',
         'Alberton',
@@ -13264,9 +13264,9 @@ $USA = array(
         'Woods Bay',
         'Worden',
         'Wye',
-        'Wyola'
-    ),
-    'Nebraska' => array(
+        'Wyola',
+    ],
+    'Nebraska' => [
         'Abie',
         'Adams',
         'Ainsworth',
@@ -13803,9 +13803,9 @@ $USA = array(
         'Wymore',
         'Wynot',
         'York',
-        'Yutan'
-    ),
-    'Nevada' => array(
+        'Yutan',
+    ],
+    'Nevada' => [
         'Battle Mountain',
         'Beatty',
         'Blue Diamond',
@@ -13876,9 +13876,9 @@ $USA = array(
         'Winchester',
         'Winnemucca',
         'Yerington',
-        'Zephyr Cove-round Hill Village'
-    ),
-    'New Hampshire' => array(
+        'Zephyr Cove-round Hill Village',
+    ],
+    'New Hampshire' => [
         'Antrim',
         'Berlin',
         'Bristol',
@@ -13938,9 +13938,9 @@ $USA = array(
         'Wilton',
         'Winchester',
         'Wolfeboro',
-        'Woodsville'
-    ),
-    'New Jersey' => array(
+        'Woodsville',
+    ],
+    'New Jersey' => [
         'Absecon',
         'Allamuchy-panther Valley',
         'Allendale',
@@ -14445,9 +14445,9 @@ $USA = array(
         'Wrightstown',
         'Wyckoff',
         'Yardville-groveville',
-        'Yorketown'
-    ),
-    'New Mexico' => array(
+        'Yorketown',
+    ],
+    'New Mexico' => [
         'Acomita Lake',
         'Agua Fria',
         'Alamo',
@@ -14681,9 +14681,9 @@ $USA = array(
         'Williamsburg',
         'Yah-ta-hey',
         'Zia Pueblo',
-        'Zuni Pueblo'
-    ),
-    'New York' => array(
+        'Zuni Pueblo',
+    ],
+    'New York' => [
         'Accord',
         'Adams',
         'Adams Center',
@@ -15733,9 +15733,9 @@ $USA = array(
         'Yorktown Heights',
         'Yorkville',
         'Youngstown',
-        'Zena'
-    ),
-    'North Carolina' => array(
+        'Zena',
+    ],
+    'North Carolina' => [
         'Aberdeen',
         'Ahoskie',
         'Alamance',
@@ -16390,9 +16390,9 @@ $USA = array(
         'Yadkinville',
         'Yanceyville',
         'Youngsville',
-        'Zebulon'
-    ),
-    'North Dakota' => array(
+        'Zebulon',
+    ],
+    'North Dakota' => [
         'Abercrombie',
         'Adams',
         'Alamo',
@@ -16765,9 +16765,9 @@ $USA = array(
         'Wyndmere',
         'York',
         'Zap',
-        'Zeeland'
-    ),
-    'Ohio' => array(
+        'Zeeland',
+    ],
+    'Ohio' => [
         'Aberdeen',
         'Ada',
         'Adamsville',
@@ -17821,9 +17821,9 @@ $USA = array(
         'Zaleski',
         'Zanesfield',
         'Zanesville',
-        'Zoar'
-    ),
-    'Oklahoma' => array(
+        'Zoar',
+    ],
+    'Oklahoma' => [
         'Achille',
         'Ada',
         'Adair',
@@ -18514,9 +18514,9 @@ $USA = array(
         'Yukon',
         'Zeb',
         'Zena',
-        'Zion'
-    ),
-    'Oregon' => array(
+        'Zion',
+    ],
+    'Oregon' => [
         'Adair Village',
         'Adams',
         'Adrian',
@@ -18825,9 +18825,9 @@ $USA = array(
         'Wood Village',
         'Yachats',
         'Yamhill',
-        'Yoncalla'
-    ),
-    'Pennsylvania' => array(
+        'Yoncalla',
+    ],
+    'Pennsylvania' => [
         'Aaronsburg',
         'Abbottstown',
         'Adamsburg',
@@ -20227,9 +20227,9 @@ $USA = array(
         'Youngsville',
         'Youngwood',
         'Zelienople',
-        'Zion'
-    ),
-    'Rhode Island' => array(
+        'Zion',
+    ],
+    'Rhode Island' => [
         'Ashaway',
         'Barrington',
         'Bradford',
@@ -20256,9 +20256,9 @@ $USA = array(
         'Warwick',
         'Westerly',
         'West Warwick',
-        'Woonsocket'
-    ),
-    'South Carolina' => array(
+        'Woonsocket',
+    ],
+    'South Carolina' => [
         'Abbeville',
         'Aiken',
         'Allendale',
@@ -20626,9 +20626,9 @@ $USA = array(
         'Woodford',
         'Woodruff',
         'Yemassee',
-        'York'
-    ),
-    'South Dakota' => array(
+        'York',
+    ],
+    'South Dakota' => [
         'Aberdeen',
         'Agar',
         'Akaska',
@@ -20978,9 +20978,9 @@ $USA = array(
         'Worthing',
         'Wounded Knee',
         'Yale',
-        'Yankton'
-    ),
-    'Tennessee' => array(
+        'Yankton',
+    ],
+    'Tennessee' => [
         'Adams',
         'Adamsville',
         'Alamo',
@@ -21362,9 +21362,9 @@ $USA = array(
         'Winfield',
         'Woodbury',
         'Woodland Mills',
-        'Yorkville'
-    ),
-    'Texas' => array(
+        'Yorkville',
+    ],
+    'Texas' => [
         'Abbott',
         'Abernathy',
         'Abilene',
@@ -22872,9 +22872,9 @@ $USA = array(
         'Zapata',
         'Zapata Ranch',
         'Zavalla',
-        'Zuehl'
-    ),
-    'Utah' => array(
+        'Zuehl',
+    ],
+    'Utah' => [
         'Alpine',
         'Alta',
         'Altamont',
@@ -23163,9 +23163,9 @@ $USA = array(
         'Woodland',
         'Woodland Hills',
         'Woodruff',
-        'Woods Cross'
-    ),
-    'Vermont' => array(
+        'Woods Cross',
+    ],
+    'Vermont' => [
         'Albany',
         'Alburg',
         'Arlington',
@@ -23232,9 +23232,9 @@ $USA = array(
         'White River Junction',
         'Wilder',
         'Winooski',
-        'Woodstock'
-    ),
-    'Virginia' => array(
+        'Woodstock',
+    ],
+    'Virginia' => [
         'Abingdon',
         'Accomac',
         'Adwolf',
@@ -23605,9 +23605,9 @@ $USA = array(
         'Wyndham',
         'Wytheville',
         'Yorkshire',
-        'Yorktown'
-    ),
-    'Washington' => array(
+        'Yorktown',
+    ],
+    'Washington' => [
         'Aberdeen',
         'Aberdeen Gardens',
         'Acme',
@@ -24129,9 +24129,9 @@ $USA = array(
         'Yakima',
         'Yarrow Point',
         'Yelm',
-        'Zillah'
-    ),
-    'West Virginia' => array(
+        'Zillah',
+    ],
+    'West Virginia' => [
         'Addison (webster Springs)',
         'Albright',
         'Alderson',
@@ -24413,9 +24413,9 @@ $USA = array(
         'Windsor Heights',
         'Winfield',
         'Womelsdorf (coalton)',
-        'Worthington'
-    ),
-    'Wisconsin' => array(
+        'Worthington',
+    ],
+    'Wisconsin' => [
         'Abbotsford',
         'Adams',
         'Adell',
@@ -25045,9 +25045,9 @@ $USA = array(
         'Wyeville',
         'Wyocena',
         'Yuba',
-        'Zoar'
-    ),
-    'Wyoming' => array(
+        'Zoar',
+    ],
+    'Wyoming' => [
         'Afton',
         'Airport Road',
         'Albany',
@@ -25245,9 +25245,9 @@ $USA = array(
         'Worland',
         'Wright',
         'Yoder',
-        'Y-o Ranch'
-    ),
-    'Puerto Rico' => array(
+        'Y-o Ranch',
+    ],
+    'Puerto Rico' => [
         'Aceitunas',
         'Adjuntas',
         'Aguada',
@@ -25472,66 +25472,66 @@ $USA = array(
         'Villalba',
         'Yabucoa',
         'Yauco',
-        'Yaurel'
-    )
-);
+        'Yaurel',
+    ],
+];
 
-$statesAndAbbr = array(
-    null    =>      '',
-    'AL'    =>      'Alabama',
-    'AK'    =>      'Alaska',
-    'AZ'    =>      'Arizona',
-    'AR'    =>      'Arkansas',
-    'CA'    =>      'California',
-    'CO'    =>      'Colorado',
-    'CT'    =>      'Connecticut',
-    'DE'    =>      'Delaware',
-    'DC'    =>      'District Of Columbia',
-    'FL'    =>      'Florida',
-    'GA'    =>      'Georgia',
-    'HI'    =>      'Hawaii',
-    'ID'    =>      'Idaho',
-    'IL'    =>      'Illinois',
-    'IN'    =>      'Indiana',
-    'IA'    =>      'Iowa',
-    'KS'    =>      'Kansas',
-    'KY'    =>      'Kentucky',
-    'LA'    =>      'Louisiana',
-    'ME'    =>      'Maine',
-    'MD'    =>      'Maryland',
-    'MA'    =>      'Massachusetts',
-    'MI'    =>      'Michigan',
-    'MN'    =>      'Minnesota',
-    'MS'    =>      'Mississippi',
-    'MO'    =>      'Missouri',
-    'MT'    =>      'Montana',
-    'NE'    =>      'Nebraska',
-    'NV'    =>      'Nevada',
-    'NH'    =>      'New Hampshire',
-    'NJ'    =>      'New Jersey',
-    'NM'    =>      'New Mexico',
-    'NY'    =>      'New York',
-    'NC'    =>      'North Carolina',
-    'ND'    =>      'North Dakota',
-    'OH'    =>      'Ohio',
-    'OK'    =>      'Oklahoma',
-    'OR'    =>      'Oregon',
-    'PA'    =>      'Pennsylvania',
-    'RI'    =>      'Rhode Island',
-    'SC'    =>      'South Carolina',
-    'SD'    =>      'South Dakota',
-    'TN'    =>      'Tennessee',
-    'TX'    =>      'Texas',
-    'UT'    =>      'Utah',
-    'VT'    =>      'Vermont',
-    'VA'    =>      'Virginia',
-    'WA'    =>      'Washington',
-    'WV'    =>      'West Virginia',
-    'WI'    =>      'Wisconsin',
-    'WY'    =>      'Wyoming',
-);
+$statesAndAbbr = [
+    null => '',
+    'AL' => 'Alabama',
+    'AK' => 'Alaska',
+    'AZ' => 'Arizona',
+    'AR' => 'Arkansas',
+    'CA' => 'California',
+    'CO' => 'Colorado',
+    'CT' => 'Connecticut',
+    'DE' => 'Delaware',
+    'DC' => 'District Of Columbia',
+    'FL' => 'Florida',
+    'GA' => 'Georgia',
+    'HI' => 'Hawaii',
+    'ID' => 'Idaho',
+    'IL' => 'Illinois',
+    'IN' => 'Indiana',
+    'IA' => 'Iowa',
+    'KS' => 'Kansas',
+    'KY' => 'Kentucky',
+    'LA' => 'Louisiana',
+    'ME' => 'Maine',
+    'MD' => 'Maryland',
+    'MA' => 'Massachusetts',
+    'MI' => 'Michigan',
+    'MN' => 'Minnesota',
+    'MS' => 'Mississippi',
+    'MO' => 'Missouri',
+    'MT' => 'Montana',
+    'NE' => 'Nebraska',
+    'NV' => 'Nevada',
+    'NH' => 'New Hampshire',
+    'NJ' => 'New Jersey',
+    'NM' => 'New Mexico',
+    'NY' => 'New York',
+    'NC' => 'North Carolina',
+    'ND' => 'North Dakota',
+    'OH' => 'Ohio',
+    'OK' => 'Oklahoma',
+    'OR' => 'Oregon',
+    'PA' => 'Pennsylvania',
+    'RI' => 'Rhode Island',
+    'SC' => 'South Carolina',
+    'SD' => 'South Dakota',
+    'TN' => 'Tennessee',
+    'TX' => 'Texas',
+    'UT' => 'Utah',
+    'VT' => 'Vermont',
+    'VA' => 'Virginia',
+    'WA' => 'Washington',
+    'WV' => 'West Virginia',
+    'WI' => 'Wisconsin',
+    'WY' => 'Wyoming',
+];
 
-$states = array(
+$states = [
     'Alabama',
     'Alaska',
     'Arizona',
@@ -25581,77 +25581,77 @@ $states = array(
     'Washington',
     'West Virginia',
     'Wisconsin',
-    'Wyoming'
-);
+    'Wyoming',
+];
 
-$USER_TITLES = array(
-    'Mr.'=>'Mr.',
-    'Mrs.'=>'Mrs.',
-    'Ms.'=>'Ms.',
-    'Engr.'=>'Engr.',
-    'Architect'=>'Architect',
-    'Dr.'=>'Dr.',
-    'Sir'=>'Sir',
-);
+$USER_TITLES = [
+    'Mr.' => 'Mr.',
+    'Mrs.' => 'Mrs.',
+    'Ms.' => 'Ms.',
+    'Engr.' => 'Engr.',
+    'Architect' => 'Architect',
+    'Dr.' => 'Dr.',
+    'Sir' => 'Sir',
+];
 
 return [
 
     'APP_BASE_URL' => env('APP_BASE_URL', 'http://leadreactor.engageiq.com'),
 
-	/*
-	|--------------------------------------------------------------------------
-	| States of the USA
-	|--------------------------------------------------------------------------
-	| Array List all States no abbreviation
-	|
-	*/
-	'US_STATES' => $states,
-
-	/*
-	|--------------------------------------------------------------------------
-	| States of the USA
-	|--------------------------------------------------------------------------
-	| Array List all States of USA with abbreviations
-	| abbr => name
-	|
-	*/
-	'US_STATES_ABBR' => $statesAndAbbr,
-
-	/*
-	|--------------------------------------------------------------------------
-	| States and Cities of the USA
-	|--------------------------------------------------------------------------
-	| Array List all States and cities of USA
-	| state ( cities )
-	|
-	|
-	*/
-	'US_STATES_CITIES' => $USA,
+    /*
+    |--------------------------------------------------------------------------
+    | States of the USA
+    |--------------------------------------------------------------------------
+    | Array List all States no abbreviation
+    |
+    */
+    'US_STATES' => $states,
 
     /*
-	|--------------------------------------------------------------------------
-	| User titles
-	|--------------------------------------------------------------------------
-	|
-	| Title for user
-	|
-	*/
+    |--------------------------------------------------------------------------
+    | States of the USA
+    |--------------------------------------------------------------------------
+    | Array List all States of USA with abbreviations
+    | abbr => name
+    |
+    */
+    'US_STATES_ABBR' => $statesAndAbbr,
+
+    /*
+    |--------------------------------------------------------------------------
+    | States and Cities of the USA
+    |--------------------------------------------------------------------------
+    | Array List all States and cities of USA
+    | state ( cities )
+    |
+    |
+    */
+    'US_STATES_CITIES' => $USA,
+
+    /*
+    |--------------------------------------------------------------------------
+    | User titles
+    |--------------------------------------------------------------------------
+    |
+    | Title for user
+    |
+    */
     'USER_TITLES' => $USER_TITLES,
 
-	/*
+    /*
     |--------------------------------------------------------------------------
     | Lead Cap Type
     |--------------------------------------------------------------------------
     | Array List of Lead Cap Types
     |
     */
-    'LEAD_CAP_TYPES' => array(
-        0     =>  'Unlimited',
-        1     =>  'Daily',
-        2     =>  'Weekly',
-        3     =>  'Monthly',
-        4     =>  'Yearly'
-    ),
+    'LEAD_CAP_TYPES' => [
+        0 => 'Unlimited',
+        1 => 'Daily',
+        2 => 'Weekly',
+        3 => 'Monthly',
+        4 => 'Yearly',
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -25660,11 +25660,11 @@ return [
     | Array List of Lead Cap Types
     |
     */
-    'FILTER_TYPES' => array(
+    'FILTER_TYPES' => [
         'profile' => 'Profile',
         'question' => 'Question',
-        'custom' => 'Custom'
-    ),
+        'custom' => 'Custom',
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -25673,10 +25673,10 @@ return [
     | Array of lead steps
     |
     */
-    'LEAD_STEPS' => array(
+    'LEAD_STEPS' => [
         1 => 'RECEIVE_LEAD',
-        2 => 'SEND_LEAD'
-    ),
+        2 => 'SEND_LEAD',
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -25685,13 +25685,13 @@ return [
     | Array of subs
     |
     */
-    'SUBS' => array(
+    'SUBS' => [
         's1' => 's1',
         's2' => 's2',
         's3' => 's3',
         's4' => 's4',
-        's5' => 's5'
-    ),
+        's5' => 's5',
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -25700,7 +25700,7 @@ return [
     | Array of lead status
     |
     */
-    'LEAD_STATUS' => array(
+    'LEAD_STATUS' => [
         '' => 'ALL',
         0 => 'FAIL',
         1 => 'SUCCESS',
@@ -25708,8 +25708,8 @@ return [
         3 => 'PENDING',
         4 => 'QUEUED',
         5 => 'CAP REACHED',
-        6 => 'TIMEOUT'
-    ),
+        6 => 'TIMEOUT',
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -25718,7 +25718,7 @@ return [
     | Limit Rows
     |
     */
-    'LIMIT_ROWS' => array(
+    'LIMIT_ROWS' => [
         200 => 200,
         300 => 300,
         700 => 700,
@@ -25728,8 +25728,8 @@ return [
         5000 => 5000,
         10000 => 10000,
         20000 => 20000,
-        50000 => 50000
-    ),
+        50000 => 50000,
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -25738,12 +25738,12 @@ return [
     | Array of Value Types
     |
     */
-    'VALUE_TYPES' => array(
-        1   => 'Text',
-        2   => 'Boolean',
-        3   => 'Date',
-        4   => 'Integer'
-    ),
+    'VALUE_TYPES' => [
+        1 => 'Text',
+        2 => 'Boolean',
+        3 => 'Date',
+        4 => 'Integer',
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -25752,15 +25752,15 @@ return [
     | Array of Value Types
     |
     */
-    'ETHNIC_GROUPS' => array(
-        2   => 'Caucasian',
-        3   => 'Hispanic',
-        4   => 'African American',
-        5   => 'Asian',
-        6   => 'East Indian',
-        1   => 'Other',
-        0   => 'Prefer not to answer',
-    ),
+    'ETHNIC_GROUPS' => [
+        2 => 'Caucasian',
+        3 => 'Hispanic',
+        4 => 'African American',
+        5 => 'Asian',
+        6 => 'East Indian',
+        1 => 'Other',
+        0 => 'Prefer not to answer',
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -25768,12 +25768,12 @@ return [
     |--------------------------------------------------------------------------
     | Array of Value Types
     */
-    'CAMPAIGN_STATUS' => array(
+    'CAMPAIGN_STATUS' => [
         0 => 'Inactive',
         1 => 'Private',
         2 => 'Public',
-        3 => 'Hidden'
-    ),
+        3 => 'Hidden',
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -25782,16 +25782,16 @@ return [
     | Array of Value Types
     |
     */
-    'CAMPAIGN_TYPES' => array(
-        1  => 'Mixed Co-reg (1st Grp)',
-        2  => 'Mixed Co-reg (2nd Grp)',
-        3  => 'Long Form Co-reg (1st Grp)',
-        4  => 'External Path',
-        5  => 'Link Out',
-        6  => 'Exit Page',
-        7  => 'Long Form Co-reg (2nd Grp)',
-        8  => 'Mixed Co-reg (3rd Grp)',
-        9  => 'Simple Co-reg',
+    'CAMPAIGN_TYPES' => [
+        1 => 'Mixed Co-reg (1st Grp)',
+        2 => 'Mixed Co-reg (2nd Grp)',
+        3 => 'Long Form Co-reg (1st Grp)',
+        4 => 'External Path',
+        5 => 'Link Out',
+        6 => 'Exit Page',
+        7 => 'Long Form Co-reg (2nd Grp)',
+        8 => 'Mixed Co-reg (3rd Grp)',
+        9 => 'Simple Co-reg',
         10 => 'Custom Co-reg',
         11 => 'Targeted Offers (1st Grp)',
         12 => 'Targeted Offers (2nd Grp)',
@@ -25799,7 +25799,7 @@ return [
         14 => 'Iframe (1st Grp)',
         15 => 'Iframe (2nd Grp)',
         16 => 'Iframe (3rd Grp)',
-    ),
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -25809,10 +25809,10 @@ return [
     |
     */
     'MIXED_COREG_TYPE_FOR_ORDERING' => [
-        1  => 'Mixed Co-reg (1st Grp)',
-        2  => 'Mixed Co-reg (2nd Grp)',
-        8  => 'Mixed Co-reg (3rd Grp)',
-        13 => 'Mixed Co-reg (4th Grp)'
+        1 => 'Mixed Co-reg (1st Grp)',
+        2 => 'Mixed Co-reg (2nd Grp)',
+        8 => 'Mixed Co-reg (3rd Grp)',
+        13 => 'Mixed Co-reg (4th Grp)',
     ],
 
     /*
@@ -25822,7 +25822,7 @@ return [
     | Array of Value Types
     |
     */
-    'COREG_CAMPAIGN_TYPES' => [1,2,3,7,8,9,10,11,12,13],
+    'COREG_CAMPAIGN_TYPES' => [1, 2, 3, 7, 8, 9, 10, 11, 12, 13],
 
     /*
     |--------------------------------------------------------------------------
@@ -25831,10 +25831,10 @@ return [
     | Array of Value Types
     |
     */
-    'PATH_TYPES' => array(
+    'PATH_TYPES' => [
         1 => 'Long Path',
         2 => 'Stack Path',
-    ),
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -25843,10 +25843,10 @@ return [
     | Array of Universal Status
     |
     */
-    'UNI_STATUS' => array(
+    'UNI_STATUS' => [
         0 => 'Inactive',
         1 => 'Active',
-    ),
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -25864,14 +25864,14 @@ return [
     | Array of Input Types
     |
     */
-    'INPUT_TYPES' => array(
+    'INPUT_TYPES' => [
         1 => 'Text',
         2 => 'Boolean',
         3 => 'Checkbox',
         4 => 'Radio Button',
         5 => 'Drop Down',
-        6 => 'Text Box'
-    ),
+        6 => 'Text Box',
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -25880,12 +25880,12 @@ return [
     | Array List of Affiliate Request Statuses used for Apply to Run Campaign
     |
     */
-    'AFFILIATE_REQUEST_STATUSES' => array(
-        '0'     =>  'Apply To Run',
-        '1'     =>  'Active',
-        '2'     =>  'Pending',
-        '3'     =>  'Rejected'
-    ),
+    'AFFILIATE_REQUEST_STATUSES' => [
+        '0' => 'Apply To Run',
+        '1' => 'Active',
+        '2' => 'Pending',
+        '3' => 'Rejected',
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -25899,14 +25899,14 @@ return [
 
     'AFFILIATE_TYPE' => [
         1 => 'Internal',
-        2 => 'Hosted And Posted'
+        2 => 'Hosted And Posted',
     ],
 
     /*
-	|--------------------------------------------------------------------------
-	| cake api key prefix for Sabre xml response
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | cake api key prefix for Sabre xml response
+    |--------------------------------------------------------------------------
+    */
     //API V2
     'CAKE_SABRE_PREFIX' => '{http://cakemarketing.com/api/2/}',
     //API V11
@@ -25923,18 +25923,18 @@ return [
     'CAKE_SABRE_PREFIX_V1' => '{http://cakemarketing.com/api/1/}',
 
     /*
-	|--------------------------------------------------------------------------
-	| cake api key prefix for Sabre xml response
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | cake api key prefix for Sabre xml response
+    |--------------------------------------------------------------------------
+    */
     //API V6
     'CAKE_SABRE_AFFILIATES_PREFIX' => '{http://cakemarketing.com/affiliates/api/6/}',
 
     /*
-	|--------------------------------------------------------------------------
-	| cake api key sub prefix Sabre xml response
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | cake api key sub prefix Sabre xml response
+    |--------------------------------------------------------------------------
+    */
     'CAKE_SABRE_SUB_PREFIX_V11' => '{API:id_name_store}',
 
     /*
@@ -25956,85 +25956,85 @@ return [
     'CAKE_API_CAMPAIGN_SUMMARY_ALL_CAMPAIGNS_BASE_URL_V5' => 'http://engageiq.performance-stats.com/api/5/reports.asmx/CampaignSummary?api_key=zDv2V1bMTwk3my5bUAV3vkue1BJRTQ&campaign_id=0&source_affiliate_id=0&subid_id=&site_offer_id=0&source_affiliate_tag_id=0&site_offer_tag_id=0&source_affiliate_manager_id=0&brand_advertiser_manager_id=0&event_id=0&event_type=macro_event_conversions',
 
     /*
-	|--------------------------------------------------------------------------
-	| Cake api source affiliate summary base URL
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Cake api source affiliate summary base URL
+    |--------------------------------------------------------------------------
+    */
     //API V3
     'CAKE_API_SOURCE_AFFILIATE_SUMMARY_BASE_URL_V3' => 'http://engageiq.performance-stats.com/api/3/reports.asmx/SourceAffiliateSummary?api_key=zDv2V1bMTwk3my5bUAV3vkue1BJRTQ&source_affiliate_manager_id=0&source_affiliate_tag_id=0&site_offer_tag_id=0&event_id=0&event_type=all',
 
     /*
-	|--------------------------------------------------------------------------
-	| Cake api source daily summary export base URL
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Cake api source daily summary export base URL
+    |--------------------------------------------------------------------------
+    */
     //API V1
     'CAKE_API_DAILY_SUMMARY' => '',
 
     /*
-	|--------------------------------------------------------------------------
-	| Affluent cake api campaign summary base URL
-	|--------------------------------------------------------------------------
-	| Cake api base URL with API KEY
-	|
-	*/
+    |--------------------------------------------------------------------------
+    | Affluent cake api campaign summary base URL
+    |--------------------------------------------------------------------------
+    | Cake api base URL with API KEY
+    |
+    */
     //API V6
     'AFFLUENT_CAKE_API_CAMPAIGN_SUMMARY_BASE_URL_V6' => 'http://login.affluentco.com/affiliates/api/6/reports.asmx/CampaignSummary?api_key=H105mTAo6pBMqfw4FlKA&affiliate_id=201158&event_type=all&start_at_row=1&row_limit=0&sort_field=site_offer_id&sort_descending=false',
 
     /*
-	|--------------------------------------------------------------------------
-	| Affluent cake api sub affiliate summary base URL
-	|--------------------------------------------------------------------------
-	| Cake api base URL with API KEY
-	|
-	*/
+    |--------------------------------------------------------------------------
+    | Affluent cake api sub affiliate summary base URL
+    |--------------------------------------------------------------------------
+    | Cake api base URL with API KEY
+    |
+    */
     //API V3
     'AFFLUENT_CAKE_API_SUB_AFFILIATE_SUMMARY_BASE_URL_V3' => 'http://login.affluentco.com/affiliates/api/3/reports.asmx/SubAffiliateSummary?api_key=H105mTAo6pBMqfw4FlKA&affiliate_id=201158&offer_id=0&start_at_row=0&row_limit=0',
 
     /*
-	|--------------------------------------------------------------------------
-	| SBG cake api campaign summary base URL
-	|--------------------------------------------------------------------------
-	| Cake api base URL with API KEY
-	|
-	*/
+    |--------------------------------------------------------------------------
+    | SBG cake api campaign summary base URL
+    |--------------------------------------------------------------------------
+    | Cake api base URL with API KEY
+    |
+    */
     //API V6
     'SBG_CAKE_API_CAMPAIGN_SUMMARY_BASE_URL_V6' => 'http://affiliates.fireclickmedia.com/affiliates/api/6/reports.asmx/CampaignSummary?api_key=fr6vkUlDGPWDgiajccYZA&affiliate_id=12577&event_type=all&start_at_row=1&row_limit=0&sort_field=site_offer_id&sort_descending=false',
 
     /*
-	|--------------------------------------------------------------------------
-	| SBG cake api sub affiliate summary base URL
-	|--------------------------------------------------------------------------
-	| Cake api base URL with API KEY
-	|
-	*/
+    |--------------------------------------------------------------------------
+    | SBG cake api sub affiliate summary base URL
+    |--------------------------------------------------------------------------
+    | Cake api base URL with API KEY
+    |
+    */
     //API V3
     'SBG_CAKE_API_SUB_AFFILIATE_SUMMARY_BASE_URL_V3' => 'http://affiliates.fireclickmedia.com/affiliates/api/3/reports.asmx/SubAffiliateSummary?api_key=fr6vkUlDGPWDgiajccYZA&affiliate_id=12577&offer_id=0&start_at_row=0&row_limit=0',
 
     /*
-	|--------------------------------------------------------------------------
-	| SubID Summary CAKE api base URL
-	|--------------------------------------------------------------------------
-	| Cake api base URL with API KEY
-	|
-	*/
+    |--------------------------------------------------------------------------
+    | SubID Summary CAKE api base URL
+    |--------------------------------------------------------------------------
+    | Cake api base URL with API KEY
+    |
+    */
     'CAKE_SUBID_SUMMARY_BASE_URL_V1' => 'http://engageiq.performance-stats.com/api/1/reports.asmx/SubIDSummary?api_key=zDv2V1bMTwk3my5bUAV3vkue1BJRTQ&site_offer_id=0&event_id=0&revenue_filter=conversions_and_events',
 
     /*
-	|--------------------------------------------------------------------------
-	| Cake Affiliate ID for Push Crew Notifications
-	|--------------------------------------------------------------------------
-	|
-	*/
+    |--------------------------------------------------------------------------
+    | Cake Affiliate ID for Push Crew Notifications
+    |--------------------------------------------------------------------------
+    |
+    */
     'PUSH_CREW_NOTIFICATIONS_CAKE_AFFILIATE_ID' => 18632,
 
     /*
-	|--------------------------------------------------------------------------
-	| Cake Offer Revenue To Be Deducted to CPA WALL EngageIQ
-	|--------------------------------------------------------------------------
-	| List of Offers to be Deducted
-	|
-	*/
+    |--------------------------------------------------------------------------
+    | Cake Offer Revenue To Be Deducted to CPA WALL EngageIQ
+    |--------------------------------------------------------------------------
+    | List of Offers to be Deducted
+    |
+    */
     'CAKE_OFFERS_TO_BE_DEDUCTED' => [
         '196' => 196, 	//iPhone6 vs. Galaxy S5 US(Non-incent) - 196
         '200' => 200, 	//Samples and Savings US CPC (All Age/Gender)
@@ -26055,34 +26055,34 @@ return [
         '185' => 185, 	//Samples and Savings US CPC (Desktop,Mobile,Female 40+)
         '186' => 186, 	//Samples and Savings US CPC (Desktop,Mobile,Male 40+)
         '299' => 299, 	//Survey Voices CPC (US, non incent)
-        '272' => 272 	//Survey Voices US(Non-incent)
+        '272' => 272, 	//Survey Voices US(Non-incent)
     ],
 
     /*
-	|--------------------------------------------------------------------------
-	| Epoll Surveys base URL
-	|--------------------------------------------------------------------------
-	| Has offer api base URL with API KEY
-	|
-	*/
+    |--------------------------------------------------------------------------
+    | Epoll Surveys base URL
+    |--------------------------------------------------------------------------
+    | Has offer api base URL with API KEY
+    |
+    */
     'HAS_OFFERS_EPOLL_SURVEYS_BASE_URL' => 'http://api.hasoffers.com/Apiv3/json?NetworkId=epollsurveys&Target=Affiliate_Report&Method=getStats&api_key=ab5f781d44740da55b17c0d8bafd193d1cae0e9b88543771582bcb47eb44f447&fields%5B%5D=Stat.date&fields%5B%5D=Offer.name&fields%5B%5D=Stat.payout&fields%5B%5D=Stat.affiliate_info1&groups%5B%5D=Stat.affiliate_info1',
 
     /*
-	|--------------------------------------------------------------------------
-	| JobToShop base URL
-	|--------------------------------------------------------------------------
-	| Has offer api base URL with API KEY
-	|
-	*/
+    |--------------------------------------------------------------------------
+    | JobToShop base URL
+    |--------------------------------------------------------------------------
+    | Has offer api base URL with API KEY
+    |
+    */
     'HAS_OFFERS_JOB_TO_SHOP_BASE_URL' => 'http://api.hasoffers.com/Apiv3/json?NetworkId=modaramo&Target=Affiliate_Report&Method=getStats&api_key=8dee15372b1f5e3519eddddd1ef53efc049786a019b7cf15a702253c36b1370f&fields%5B%5D=Stat.date&fields%5B%5D=Offer.name&fields%5B%5D=Stat.payout&fields%5B%5D=Stat.affiliate_info1&groups%5B%5D=Stat.affiliate_info1',
 
     /*
-	|--------------------------------------------------------------------------
-	| EngageIQReportExcelUploader
-	|--------------------------------------------------------------------------
-	| Used to determine aggregated file report upload
-	|
-	*/
+    |--------------------------------------------------------------------------
+    | EngageIQReportExcelUploader
+    |--------------------------------------------------------------------------
+    | Used to determine aggregated file report upload
+    |
+    */
     'ENGAGE_IQ_REPORT_EXCEL_UPLOADER' => 'EngageIQReportExcelUploader',
 
     /*
@@ -26095,7 +26095,7 @@ return [
     'CAMPAIGN_ORDER_DIRECTION' => [
         1 => 'Ascending',
         2 => 'Descending',
-        3 => 'Random'
+        3 => 'Random',
     ],
 
     /*
@@ -26118,7 +26118,7 @@ return [
         10 => '8th Offer Page',
         11 => '9th Offer Page',
         12 => 'CPAWALL Page',
-        13 => 'Last Submit Page'
+        13 => 'Last Submit Page',
     ],
 
     /*
@@ -26155,13 +26155,13 @@ return [
     'PATH_ORDER_TYPE' => [
         'Default',
         'Campaign Type',
-        'Mixed Coreg Type'
+        'Mixed Coreg Type',
     ],
     /*
-	|--------------------------------------------------------------------------
-	| Cake api source affiliate summary base URL
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Cake api source affiliate summary base URL
+    |--------------------------------------------------------------------------
+    */
     //API V10
     'CAKE_CLICKS_REPORTS_API_V10' => 'http://engageiq.performance-stats.com/api/10/reports.asmx/Clicks?api_key=zDv2V1bMTwk3my5bUAV3vkue1BJRTQ&advertiser_id=0&offer_id=0&creative_id=0&price_format_id=0&include_tests=false&start_at_row=0&row_limit=0&include_duplicates=false',
     'CAKE_CLICKS_REPORTS_API_V12_UNIQUE' => 'http://engageiq.performance-stats.com/api/12/reports.asmx/Clicks?api_key=zDv2V1bMTwk3my5bUAV3vkue1BJRTQ&advertiser_id=0&offer_id=0&creative_id=0&price_format_id=0&include_tests=false&start_at_row=0&row_limit=0&include_duplicates=false',
@@ -26196,7 +26196,7 @@ return [
         'REX' => 'rex',
         'CPAWALL' => 'cpawall',
         'EXITPAGE' => 'exitpage',
-        'ADS' => 'ads'
+        'ADS' => 'ads',
     ],
 
     /*
@@ -26204,7 +26204,7 @@ return [
     | FORM BUILDER CONSTANTS
     |---------------------------------------------------------------
     */
-    'FIELD_TYPES' => ['hidden'=>'Hidden','text' => 'Text','dropdown' => 'Dropdown', 'radio' => 'Radio', 'checkbox' => 'Checkbox', 'textbox' => 'TextBox', 'article' => 'Article'],
+    'FIELD_TYPES' => ['hidden' => 'Hidden', 'text' => 'Text', 'dropdown' => 'Dropdown', 'radio' => 'Radio', 'checkbox' => 'Checkbox', 'textbox' => 'TextBox', 'article' => 'Article'],
 
     'SHORT_CODES' => [
         '[VALUE_AGE]' => 'Age',
@@ -26240,12 +26240,12 @@ return [
         '[VALUE_PUB_TIME]' => 'Current Date Time (yyyy-mm-dd hh:mm:ss)',
         // '[VALUE_URL_REDIRECT_PAGE]',
         // '[VALUE_URL_REDIRECT_STACK_PAGE]',
-        '[DETECT_OS]'  => 'Operating System',
-        '[DETECT_OS_VER]'  => 'OS Version',
-        '[DETECT_BROWSER]'  => 'Browser',
-        '[DETECT_BROWSER_VER]'  => 'Browser Version',
-        '[DETECT_USER_AGENT]'  => 'User Agent',
-        '[DETECT_DEVICE]'  => 'Device Used',
+        '[DETECT_OS]' => 'Operating System',
+        '[DETECT_OS_VER]' => 'OS Version',
+        '[DETECT_BROWSER]' => 'Browser',
+        '[DETECT_BROWSER_VER]' => 'Browser Version',
+        '[DETECT_USER_AGENT]' => 'User Agent',
+        '[DETECT_DEVICE]' => 'Device Used',
         '[VALUE_REV_TRACKER]' => 'Revenue Tracker ID',
         '[VALUE_AFFILIATE_ID]' => 'Affiliate ID',
         '[VALUE_CREATIVE_ID]' => 'Campaign\'s Creative',
@@ -26269,11 +26269,11 @@ return [
         'rev_tracker' => 'CD[VALUE_REV_TRACKER]',
         'eiq_creative_id' => '[VALUE_CREATIVE_ID]',
         'eiq_path_id' => '[VALUE_PATH_ID]',
-        's1'          => '[VALUE_S1]',
-        's2'          => '[VALUE_S2]',
-        's3'          => '[VALUE_S3]',
-        's4'          => '[VALUE_S4]',
-        's5'          => '[VALUE_S5]',
+        's1' => '[VALUE_S1]',
+        's2' => '[VALUE_S2]',
+        's3' => '[VALUE_S3]',
+        's4' => '[VALUE_S4]',
+        's5' => '[VALUE_S5]',
     ],
 
     'STANDARD_LF_REQUIRED_FIELDS' => [
@@ -26283,7 +26283,7 @@ return [
         'email' => '[VALUE_EMAIL]',
         'firstname' => '[VALUE_FIRST_NAME]',
         'lastname' => '[VALUE_LAST_NAME]',
-        'lr' => 'new'
+        'lr' => 'new',
     ],
 
     /*
@@ -26293,16 +26293,16 @@ return [
     | Array of Value Types
     |
     */
-    'PAGE_VIEW_STATISTICS_CAMPAIGN_TYPES' => array(
-        1  => 'mo1', //Mixed Co-reg (1st Grp)
-        2  => 'mo2', //Mixed Co-reg (2nd Grp)
-        3  => 'lfc1', //Long Form Co-reg (1st Grp)
-        4  => env('PAGEVIEWSTATS_ASSIGNED_EXTERNAL', 'tbr1'), //External Path,
-        5  => 'cpawall', //Link Out
-        6  => 'exitpage', //Exit Page
-        7  => 'lfc2', //Long Form Co-reg (2nd Grp)
-        8  => 'mo3', //Mixed Co-reg (3rd Grp)
-        9  => '', //Simple Co-reg
+    'PAGE_VIEW_STATISTICS_CAMPAIGN_TYPES' => [
+        1 => 'mo1', //Mixed Co-reg (1st Grp)
+        2 => 'mo2', //Mixed Co-reg (2nd Grp)
+        3 => 'lfc1', //Long Form Co-reg (1st Grp)
+        4 => env('PAGEVIEWSTATS_ASSIGNED_EXTERNAL', 'tbr1'), //External Path,
+        5 => 'cpawall', //Link Out
+        6 => 'exitpage', //Exit Page
+        7 => 'lfc2', //Long Form Co-reg (2nd Grp)
+        8 => 'mo3', //Mixed Co-reg (3rd Grp)
+        9 => '', //Simple Co-reg
         10 => '', //Custom Co-reg
         11 => 'to1', //Targeted Offers (1st Grp)
         12 => 'to2', //Targeted Offers (2nd Grp)
@@ -26310,7 +26310,7 @@ return [
         14 => '', //Iframe (1st Grp)
         15 => '', //Iframe (2nd Grp)
         16 => '', //Iframe (3rd Grp)
-    ),
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -26319,13 +26319,13 @@ return [
     | Array of External Campaigns and their Affiliate Report ID
     |
     */
-    'EXTERNAL_CAMPAIGN_AFFILIATE_REPORT_ID' => array(
+    'EXTERNAL_CAMPAIGN_AFFILIATE_REPORT_ID' => [
         env('EXTERNAL_PATH_TIBURON_CAMPAIGN_ID', '290') => 'Tiburon',
         env('EXTERNAL_PATH_PERMISSION_DATA_CAMPAIGN_ID', '283') => 'Permission Data',
         env('EXTERNAL_PATH_IFFICIENT_CAMPAIGN_ID', '287') => 'Ifficient',
         env('EXTERNAL_PATH_REXADS_CAMPAIGN_ID', '289') => 'Rexadz',
 
-    ),
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -26334,12 +26334,12 @@ return [
     | Array of External Campaigns and their Affiliate Report ID
     |
     */
-    'EXTERNAL_CAMPAIGN_PAGE_VIEW_STATISTICS_COL' => array(
+    'EXTERNAL_CAMPAIGN_PAGE_VIEW_STATISTICS_COL' => [
         env('EXTERNAL_PATH_IFFICIENT_CAMPAIGN_ID', '287') => 'iff',
         env('EXTERNAL_PATH_PERMISSION_DATA_CAMPAIGN_ID', '283') => 'pd',
         env('EXTERNAL_PATH_REXADS_CAMPAIGN_ID', '289') => 'rex',
         env('EXTERNAL_PATH_TIBURON_CAMPAIGN_ID', '290') => 'tbr1',
-    ),
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -26348,10 +26348,10 @@ return [
     | Array of FTP PROTOCOLS
     |
     */
-    'FTP_PROTOCOL_TYPES' => array(
+    'FTP_PROTOCOL_TYPES' => [
         1 => 'FTP',
-        2 => 'SFTP'
-    ),
+        2 => 'SFTP',
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -26360,11 +26360,11 @@ return [
     | Array of SEVERITY
     |
     */
-    'USER_ACTION_SEVERITY' => array(
+    'USER_ACTION_SEVERITY' => [
         'trivial' => 1,
         'normal' => 2,
-        'critical' => 3
-    ),
+        'critical' => 3,
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -26439,11 +26439,11 @@ return [
         10 => 'sign in',
         11 => 'note',
         111 => 'note category',
-        74 => 'click log tracking source'
+        74 => 'click log tracking source',
     ],
 
-    'UNI_STATUS2' => array(
+    'UNI_STATUS2' => [
         0 => 'Disabled',
         1 => 'Enabled',
-    ),
+    ],
 ];

@@ -2,16 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use App\Note;
 use App\NoteCategory;
-use App\NoteTracking;
-use Log;
-use DB;
 use Auth;
+use DB;
+use Illuminate\Http\Request;
+use Log;
 
 class NotesController extends Controller
 {
@@ -19,21 +15,20 @@ class NotesController extends Controller
     {
         return response()->json([
             'categories' => NoteCategory::all(),
-            'tracking' => $this->get_unread_stats()
-        ],200);
+            'tracking' => $this->get_unread_stats(),
+        ], 200);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store_category(Request $request,
         \App\Http\Services\UserActionLogger $userAction)
     {
         $this->validate($request, [
-            'name'              => 'required|unique:note_categories,name',
+            'name' => 'required|unique:note_categories,name',
         ]);
 
         $category = new NoteCategory;
@@ -46,13 +41,12 @@ class NotesController extends Controller
         return $category->id;
     }
 
-    public function update_category( Request $request,
+    public function update_category(Request $request,
         \App\Http\Services\UserActionLogger $userAction
-        )
-    {
+    ) {
         $id = $request->input('id');
         $this->validate($request, [
-            'name'              => 'required|unique:note_categories,name,' . $id,
+            'name' => 'required|unique:note_categories,name,'.$id,
         ]);
         $category = NoteCategory::find($id);
 
@@ -84,13 +78,15 @@ class NotesController extends Controller
         $userAction->logger(11, 111, $id, $category->toArray(), null, 'Delete category: '.$category->name);
     }
 
-    public function get_notes_by_category(Request $request, $id) {
+    public function get_notes_by_category(Request $request, $id)
+    {
         $user = Auth::id();
-        $notes = Note::leftJoin('note_trackings', function($q) use($user){
-            $q->on( 'notes.id', '=', 'note_trackings.note_id')
-            ->where('note_trackings.user_id','=', $user);
+        $notes = Note::leftJoin('note_trackings', function ($q) use ($user) {
+            $q->on('notes.id', '=', 'note_trackings.note_id')
+                ->where('note_trackings.user_id', '=', $user);
         })->where('category_id', $id)->select(DB::RAW('notes.*, note_trackings.id as ifNew'))->orderBy('updated_at', 'DESC')->get();
-        return response()->json($notes,200);
+
+        return response()->json($notes, 200);
     }
 
     public function store_note(Request $request,
@@ -130,19 +126,22 @@ class NotesController extends Controller
         return $note;
     }
 
-    public function get_unread_stats() {
-        $user =  Auth::id();
+    public function get_unread_stats()
+    {
+        $user = Auth::id();
         $tracking = DB::select('SELECT category_id, COUNT(*) as count FROM notes LEFT JOIN note_trackings ON notes.id = note_trackings.note_id AND note_trackings.user_id = '.$user.' WHERE note_trackings.id IS NULL GROUP BY category_id');
 
         return $tracking;
     }
 
-    public function note_viewed(Request $request, $id) {
+    public function note_viewed(Request $request, $id)
+    {
         DB::table('note_trackings')->insert(['user_id' => Auth::id(), 'note_id' => $id]);
     }
 
     public function delete_note(Request $request,
-        \App\Http\Services\UserActionLogger $userAction) {
+        \App\Http\Services\UserActionLogger $userAction)
+    {
         $id = $request->input('id');
         $note = Note::find($id);
         $note->delete();

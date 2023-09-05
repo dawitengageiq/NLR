@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateCampaignFilterGroupFiltersTable extends Migration
 {
@@ -16,7 +16,7 @@ class CreateCampaignFilterGroupFiltersTable extends Migration
             $table->increments('id');
             $table->integer('campaign_filter_group_id')->unsigned()->index();
             $table->integer('filter_type_id')->unsigned()->index();
-            $table->string('value_text',150)->nullable();
+            $table->string('value_text', 150)->nullable();
             $table->tinyInteger('value_min_integer')->nullable();
             $table->bigInteger('value_max_integer')->nullable();
             $table->date('value_min_date')->nullable();
@@ -28,7 +28,7 @@ class CreateCampaignFilterGroupFiltersTable extends Migration
             $table->timestamps();
 
             $table->foreign('campaign_filter_group_id')->references('id')->on('campaign_filter_groups')->onDelete('cascade');
-            $table->foreign('filter_type_id')->references('id')->on('filter_types')->onDelete('cascade');            
+            $table->foreign('filter_type_id')->references('id')->on('filter_types')->onDelete('cascade');
         });
     }
 

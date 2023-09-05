@@ -1,18 +1,17 @@
 <?php
 
 namespace App\Helpers;
-use App\Affiliate;
+
 use App\AffiliateReport;
 use App\RevenueTrackerCakeStatistic;
-use App\AffiliateRevenueTracker;
-use Carbon\Carbon;
 use DB;
 use Log;
 
-class CleanAffiliateReportHelper {
-	protected $date;
+class CleanAffiliateReportHelper
+{
+    protected $date;
 
-	public function __construct($date)
+    public function __construct($date)
     {
         $this->date = $date;
     }
@@ -33,21 +32,20 @@ class CleanAffiliateReportHelper {
         HAVING lead_count = 0 AND revenue = 0");
         Log::info(DB::getQueryLog());
         Log::info($results);
-        foreach($results as $res) {
+        foreach ($results as $res) {
             AffiliateReport::where('revenue_tracker_id', $res->revenue_tracker_id)
-            ->where('s1', $res->s1)->where('s2', $res->s2)->where('s3', $res->s3)
-            ->where('s4', $res->s4)->where('s5', $res->s5)
-            ->where('created_at', $this->date)
-            ->delete();
+                ->where('s1', $res->s1)->where('s2', $res->s2)->where('s3', $res->s3)
+                ->where('s4', $res->s4)->where('s5', $res->s5)
+                ->where('created_at', $this->date)
+                ->delete();
 
             RevenueTrackerCakeStatistic::where('revenue_tracker_id', $res->revenue_tracker_id)
-            ->where('s1', $res->s1)->where('s2', $res->s2)->where('s3', $res->s3)
-            ->where('s4', $res->s4)->where('s5', $res->s5)
-            ->where('created_at', $this->date)
-            ->delete();
+                ->where('s1', $res->s1)->where('s2', $res->s2)->where('s3', $res->s3)
+                ->where('s4', $res->s4)->where('s5', $res->s5)
+                ->where('created_at', $this->date)
+                ->delete();
         }
 
         Log::info('Clean Affiliate Report Done');
     }
 }
-?>

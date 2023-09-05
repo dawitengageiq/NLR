@@ -2,26 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\AddUserRequest;
+use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\UpdateUserRequest;
-use Log;
-use DB;
 use App\Role;
 use App\User;
+use DB;
 use File;
-use App\Http\Requests\ChangePasswordRequest;
+use Illuminate\Http\Request;
+use Log;
 
 class UserController extends Controller
 {
-
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('restrict_access',['only' => [
-            'index'
+        $this->middleware('restrict_access', ['only' => [
+            'index',
         ]]);
     }
 
@@ -33,7 +31,7 @@ class UserController extends Controller
     public function index()
     {
         //get all roles
-        $roles = Role::lists('name','id')->toArray();
+        $roles = Role::lists('name', 'id')->toArray();
 
         return view('management.user', compact('roles'));
     }
@@ -48,7 +46,6 @@ class UserController extends Controller
     /**
      * Server side process for users datatable
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function users(Request $request)
@@ -77,28 +74,23 @@ class UserController extends Controller
 
         $selectSQL = "SELECT users.id, CONCAT(users.title,' ',users.first_name,' ',users.middle_name,' ',users.last_name) AS name, users.email, users.mobile_number, users.phone_number, users.gender, users.position, users.address, users.instant_messaging, users.role_id, roles.name AS role_name FROM users ";
         //do not include the current user's account
-        $whereSQL = "LEFT JOIN roles ON users.role_id = roles.id WHERE users.account_type = 2 AND users.id != ".$currentUser->id;
+        $whereSQL = 'LEFT JOIN roles ON users.role_id = roles.id WHERE users.account_type = 2 AND users.id != '.$currentUser->id;
         $userIDAdded = false;
 
         //where
-        if(!empty($param))
-        {
-            $whereSQL = $whereSQL." AND ";
+        if (! empty($param)) {
+            $whereSQL = $whereSQL.' AND ';
 
             //id
-            if(is_numeric($param))
-            {
+            if (is_numeric($param)) {
                 //for id
-                $whereSQL = $whereSQL."(users.id=".intval($param);
+                $whereSQL = $whereSQL.'(users.id='.intval($param);
                 $userIDAdded = true;
             }
 
-            if($userIDAdded)
-            {
+            if ($userIDAdded) {
                 $whereSQL = $whereSQL." OR users.title LIKE '%".$param."%'";
-            }
-            else
-            {
+            } else {
                 $whereSQL = $whereSQL."(users.title LIKE '%".$param."%'";
             }
 
@@ -111,12 +103,11 @@ class UserController extends Controller
             $whereSQL = $whereSQL." OR roles.name LIKE '%".$param."%')";
         }
 
-        $orderSQL = " ORDER BY ".$columns[$inputs['order'][0]['column']]." ".$inputs['order'][0]['dir'];
+        $orderSQL = ' ORDER BY '.$columns[$inputs['order'][0]['column']].' '.$inputs['order'][0]['dir'];
 
         $limitSQL = '';
-        if($length>1)
-        {
-            $limitSQL = " LIMIT ".$start.",".$length;
+        if ($length > 1) {
+            $limitSQL = ' LIMIT '.$start.','.$length;
         }
 
         $sqlWithLimit = $selectSQL.$whereSQL.$orderSQL.$limitSQL;
@@ -127,33 +118,32 @@ class UserController extends Controller
 
         $users = DB::select($sqlWithLimit);
 
-        foreach($users as $user)
-        {
+        foreach ($users as $user) {
             $data = [];
 
             //for id html
             $idHTML = '<span id="user-'.$user->id.'-id">'.$user->id.'</span>';
-            array_push($data,$idHTML);
+            array_push($data, $idHTML);
 
             //for name html
             $nameHTML = '<span id="user-'.$user->id.'-full_name">'.$user->name.'</span>';
-            array_push($data,$nameHTML);
+            array_push($data, $nameHTML);
 
             //for email HTML
             $emailHTML = '<span id="user-'.$user->id.'-email">'.$user->email.'</span>';
-            array_push($data,$emailHTML);
+            array_push($data, $emailHTML);
 
             //for mobile HTML
             $mobileHTML = '<span id="user-'.$user->id.'-mobile_number">'.$user->mobile_number.'</span>';
-            array_push($data,$mobileHTML);
+            array_push($data, $mobileHTML);
 
             //for phone HTML
             $phoneHTML = '<span id="user-'.$user->id.'-phone_number">'.$user->phone_number.'</span>';
-            array_push($data,$phoneHTML);
+            array_push($data, $phoneHTML);
 
             //for phone HTML
             $roleNameHTML = '<span id="user-'.$user->id.'-role_name">'.$user->role_name.'</span>';
-            array_push($data,$roleNameHTML);
+            array_push($data, $roleNameHTML);
 
             //action buttons
             $hiddenUserID = '<input type="hidden" id="user-'.$user->id.'-id" value="'.$user->id.'"/>';
@@ -166,25 +156,24 @@ class UserController extends Controller
             $editButton = '<button class="editUser btn-actions btn btn-primary" title="Edit" data-id="'.$user->id.'"><span class="glyphicon glyphicon-pencil"></span></button>';
             $deleteButton = '<button class="deleteUser btn-actions btn btn-danger" title="Delete" data-id="'.$user->id.'"><span class="glyphicon glyphicon-trash"></span></button>';
 
-            array_push($data,$hiddenUserID.$gender.$position.$roleID.$address.$instantMessaging.$editButton.$deleteButton);
+            array_push($data, $hiddenUserID.$gender.$position.$roleID.$address.$instantMessaging.$editButton.$deleteButton);
 
-            array_push($usersData,$data);
+            array_push($usersData, $data);
         }
 
-        if(!empty($param) || $param!='')
-        {
+        if (! empty($param) || $param != '') {
             //$totalFiltered = count($affiliatesData);
             $totalFiltered = count(DB::select($sqlWithoutLimit));
         }
 
-        $responseData = array(
-            "draw"            => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
-            "recordsTotal"    => $allAdminCount,  // total number of records
-            "recordsFiltered" => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
-            "data"            => $usersData   // total data array
-        );
+        $responseData = [
+            'draw' => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
+            'recordsTotal' => $allAdminCount,  // total number of records
+            'recordsFiltered' => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
+            'data' => $usersData,   // total data array
+        ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
     /**
@@ -200,7 +189,6 @@ class UserController extends Controller
     /**
      * Store a newly created contact in storage.
      *
-     * @param AddUserRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(AddUserRequest $request)
@@ -213,7 +201,8 @@ class UserController extends Controller
         // Log::info($inputs);
 
         $user = User::create($inputs);
-        return response()->json(['status'=>200,'id'=>$user->id]);
+
+        return response()->json(['status' => 200, 'id' => $user->id]);
     }
 
     /**
@@ -241,8 +230,6 @@ class UserController extends Controller
     /**
      * Update the specified user resource in storage.
      *
-     * @param UpdateUserRequest $request
-     * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(UpdateUserRequest $request, $id)
@@ -259,8 +246,7 @@ class UserController extends Controller
 
         $password = '';
 
-        if(isset($inputs['password']) && !empty($inputs['password']))
-        {
+        if (isset($inputs['password']) && ! empty($inputs['password'])) {
             $password = $inputs['password'];
         }
 
@@ -280,8 +266,7 @@ class UserController extends Controller
         $user->gender = $gender;
         $user->position = $position;
 
-        if(!empty($password))
-        {
+        if (! empty($password)) {
             $user->password = bcrypt($password);
         }
 
@@ -294,13 +279,12 @@ class UserController extends Controller
 
         $user->save();
 
-        return response()->json(['status'=>200,'id'=>$user->id]);
+        return response()->json(['status' => 200, 'id' => $user->id]);
     }
 
     /**
      * Update user profile
      *
-     * @param Requests\UpdateUserProfileRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function updateProfile(Requests\UpdateUserProfileRequest $request)
@@ -336,7 +320,7 @@ class UserController extends Controller
 
         $user->save();
 
-        return response()->json(['status'=>200,'id'=>$user->id]);
+        return response()->json(['status' => 200, 'id' => $user->id]);
     }
 
     public function changePassword(ChangePasswordRequest $request)
@@ -348,13 +332,12 @@ class UserController extends Controller
         $user->password = bcrypt($newPassword);
         $user->save();
 
-        return response()->json(['status'=>200,'message'=>'password was successfully changed!']);
+        return response()->json(['status' => 200, 'message' => 'password was successfully changed!']);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id)
@@ -362,18 +345,15 @@ class UserController extends Controller
         $responseMessage = [
             'status' => 200,
             'delete_status' => true,
-            'message'=> 'user successfully deleted!'
+            'message' => 'user successfully deleted!',
         ];
 
         $user = User::find($id);
 
-        if(!$user->exists())
-        {
+        if (! $user->exists()) {
             $responseMessage['delete_status'] = false;
             $responseMessage['message'] = 'User not found!';
-        }
-        else if(!$user->delete())
-        {
+        } elseif (! $user->delete()) {
             $responseMessage['delete_status'] = false;
             $responseMessage['message'] = 'User not found!';
         }
@@ -384,7 +364,6 @@ class UserController extends Controller
     /**
      * user profile image upload
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function profile_image_upload(Request $request)
@@ -397,11 +376,10 @@ class UserController extends Controller
 
         $responseMessage = [
             'message' => 'upload successful!',
-            'filename' => ''
+            'filename' => '',
         ];
 
-        if($request->hasFile('profileImageInput'))
-        {
+        if ($request->hasFile('profileImageInput')) {
             $file = $request->file('profileImageInput');
             $ext = $file->getClientOriginalExtension();
             $filename = md5(time()).'.'.$ext;
@@ -410,8 +388,7 @@ class UserController extends Controller
             $oldProfileImagePath = public_path().'\images\profile\\'.$oldProfileName;
 
             //delete the previous image
-            if(!empty($oldProfileName) && file_exists($oldProfileImagePath))
-            {
+            if (! empty($oldProfileName) && file_exists($oldProfileImagePath)) {
                 unlink($oldProfileImagePath);
             }
 
@@ -423,23 +400,18 @@ class UserController extends Controller
             $user->save();
 
             $responseMessage['filename'] = $filename;
-        }
-        else if(!$request->hasFile('profileImageInput') && !empty($currentProfileImage))
-        {
+        } elseif (! $request->hasFile('profileImageInput') && ! empty($currentProfileImage)) {
             $responseMessage = [
                 'message' => 'Please choose a new image if you want to change your profile image!',
             ];
-        }
-        else
-        {
+        } else {
             $oldProfileName = basename($user->profile_image);
             $oldProfileImagePath = public_path().'\images\profile\\'.$oldProfileName;
             // Log::info('oldProfileImagePath: '.$oldProfileImagePath);
             // Log::info('fileExist: '.file_exists($oldProfileImagePath));
 
             //delete the previous image
-            if(!empty(basename($user->profile_image)) && file_exists($oldProfileImagePath))
-            {
+            if (! empty(basename($user->profile_image)) && file_exists($oldProfileImagePath)) {
                 unlink($oldProfileImagePath);
             }
 
@@ -451,6 +423,6 @@ class UserController extends Controller
             ];
         }
 
-        return response()->json($responseMessage,200);
+        return response()->json($responseMessage, 200);
     }
 }

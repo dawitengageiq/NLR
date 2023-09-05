@@ -3,10 +3,10 @@
 namespace App\Helpers\auth;
 
 use App\User;
+use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Lang;
-use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Support\Facades\Validator;
 use Log;
 
@@ -31,7 +31,6 @@ trait AuthenticatesUsers
     /**
      * Handle a login request to the application.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function postLogin(Request $request)
@@ -56,18 +55,13 @@ trait AuthenticatesUsers
         // Log::info($credentials);
 
         //validate the email
-        $validator = Validator::make($credentials, ['email' => 'email',],['email'=>'Please enter a valid email address!']);
+        $validator = Validator::make($credentials, ['email' => 'email'], ['email' => 'Please enter a valid email address!']);
 
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
             $errorMessage = $validator->errors()->all();
-        }
-        else if(!User::where('email', '=', $credentials['email'])->exists())
-        {
+        } elseif (! User::where('email', '=', $credentials['email'])->exists()) {
             $errorMessage = 'Sorry, we don\'t recognize that email.';
-        }
-        else if(Auth::attempt($credentials, $request->has('remember')))
-        {
+        } elseif (Auth::attempt($credentials, $request->has('remember'))) {
             return $this->handleUserWasAuthenticated($request, $throttles);
         }
 
@@ -89,7 +83,6 @@ trait AuthenticatesUsers
     /**
      * Send the response after the user was authenticated.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  bool  $throttles
      * @return \Illuminate\Http\Response
      */
@@ -109,7 +102,6 @@ trait AuthenticatesUsers
     /**
      * Get the needed authorization credentials from the request.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return array
      */
     protected function getCredentials(Request $request)

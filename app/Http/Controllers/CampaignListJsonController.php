@@ -2,40 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests;
-use Illuminate\Http\Request;
-
-use Zip;
-use ApiConfig;
-use SurveyStack;
-use RevenueTracker;
 use CampaignSettings;
-use AffiliateWebsites;
-
-use App\Jobs\SaveLeadUser;
+use Illuminate\Http\Request;
+use RevenueTracker;
 
 class CampaignListJsonController extends Controller
 {
     /**
      * Injected class
-     *
      */
     protected $campaignList;
 
     /**
      * Load the needed dependencies
-     *
      */
-    public function __construct (\App\Http\Services\Campaigns\ListsWithJson $campaignList)
+    public function __construct(\App\Http\Services\Campaigns\ListsWithJson $campaignList)
     {
         $this->campaignList = $campaignList;
     }
 
     /**
      * Get campaigns list
-     *
      */
-    public function getCampaigns (Request $request)
+    public function getCampaigns(Request $request)
     {
         echo '<h1>GetCampaignsAndJsonContent</h1>';
 
@@ -64,7 +53,7 @@ class CampaignListJsonController extends Controller
             ->map(function ($type) {
                 // Check the campaign type(item) is't in the saved stack
                 // if available: return the stack as new item of stack campaign type order collections
-                if(array_key_exists($type, $this->qualifiedCampaigns)) {
+                if (array_key_exists($type, $this->qualifiedCampaigns)) {
 
                     return $this->qualifiedCampaigns[$type];
                 }
@@ -77,6 +66,7 @@ class CampaignListJsonController extends Controller
                 ksort($campaigns[0]);
                 // arrange the keys as incremental from 0
                 $campaigns[0] = array_values($campaigns[0]);
+
                 return $campaigns;
             })
             // Filter: remove empty indexes in stack campaign type order collections

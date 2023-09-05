@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\User;
-use Validator;
-use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\ThrottlesLogins;
 use App\Helpers\auth\AuthenticatesAndRegistersUsers;
+use App\User;
+use Illuminate\Foundation\Auth\ThrottlesLogins;
+use Validator;
 
 class AuthenticationController extends Controller
 {
@@ -26,7 +25,6 @@ class AuthenticationController extends Controller
 
     /**
      * Create a new authentication controller instance.
-     *
      */
     public function __construct()
     {
@@ -36,7 +34,6 @@ class AuthenticationController extends Controller
     /**
      * Get a validator for an incoming registration request.
      *
-     * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
     protected function validator(array $data)
@@ -51,7 +48,6 @@ class AuthenticationController extends Controller
     /**
      * Create a new user instance after a valid registration.
      *
-     * @param  array  $data
      * @return User
      */
     protected function create(array $data)
