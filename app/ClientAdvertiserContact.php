@@ -15,11 +15,11 @@ class ClientAdvertiserContact extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo(\App\User::class);
     }
 
     public function advertiser()
     {
-        return $this->belongsTo('App\Advertiser');
+        return $this->belongsTo(\App\Advertiser::class);
     }
 }

@@ -26,7 +26,7 @@ class Graph
     /**
      * Path name of campaign list interface.
      */
-    protected $contract = '\App\Http\Services\Contracts\ConsolidatedGraphContract';
+    protected $contract = \App\Http\Services\Contracts\ConsolidatedGraphContract::class;
 
     /**
      * Path name list with class name equivalent.

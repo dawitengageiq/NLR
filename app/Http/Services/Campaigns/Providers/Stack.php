@@ -32,7 +32,7 @@ class Stack
     /**
      * Path name of campaign list interface.
      */
-    protected $contract = '\App\Http\Services\Campaigns\Utils\Lists\Contracts\StackContract';
+    protected $contract = \App\Http\Services\Campaigns\Utils\Lists\Contracts\StackContract::class;
 
     /**
      * Stack type list with class name equivalent.

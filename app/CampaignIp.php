@@ -15,6 +15,6 @@ class CampaignIp extends Model
 
     public function campaign()
     {
-        return $this->belongsTo('App\Campaign');
+        return $this->belongsTo(\App\Campaign::class);
     }
 }

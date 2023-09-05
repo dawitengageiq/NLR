@@ -32,12 +32,12 @@ class CampaignContent extends Model
 
     public function campaign()
     {
-        return $this->belongsTo('App\Campaign', 'id', 'id');
+        return $this->belongsTo(\App\Campaign::class, 'id', 'id');
     }
 
     public function campaign_type()
     {
-        return $this->belongsTo('App\Campaign', 'id', 'id')->select(['id', 'campaign_type']);
+        return $this->belongsTo(\App\Campaign::class, 'id', 'id')->select(['id', 'campaign_type']);
     }
 
     public function __construct(array $attributes = [])

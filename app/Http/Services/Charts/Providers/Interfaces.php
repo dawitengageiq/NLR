@@ -21,7 +21,7 @@ class Interfaces
     /**
      * Path name of campaign list interface.
      */
-    protected $contract = '\App\Http\Services\Contracts\ChartContract';
+    protected $contract = \App\Http\Services\Contracts\ChartContract::class;
 
     /**
      * Path name list with class name equivalent.

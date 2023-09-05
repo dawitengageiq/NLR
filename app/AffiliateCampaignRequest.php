@@ -16,11 +16,11 @@ class AffiliateCampaignRequest extends Model
 
     public function campaign()
     {
-        return $this->belongsTo('App\Campaign');
+        return $this->belongsTo(\App\Campaign::class);
     }
 
     public function affiliate()
     {
-        return $this->belongsTo('App\Affiliate');
+        return $this->belongsTo(\App\Affiliate::class);
     }
 }

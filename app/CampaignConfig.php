@@ -38,7 +38,7 @@ class CampaignConfig extends Model
 
     public function campaign()
     {
-        return $this->belongsTo('App\Campaign', 'id', 'id');
+        return $this->belongsTo(\App\Campaign::class, 'id', 'id');
     }
 
     public function __construct(array $attributes = [])

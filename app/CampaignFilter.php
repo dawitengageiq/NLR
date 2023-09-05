@@ -24,11 +24,11 @@ class CampaignFilter extends Model
 
     public function campaign()
     {
-        return $this->belongsTo('App\Campaign');
+        return $this->belongsTo(\App\Campaign::class);
     }
 
     public function filter_type()
     {
-        return $this->belongsTo('App\FilterType');
+        return $this->belongsTo(\App\FilterType::class);
     }
 }

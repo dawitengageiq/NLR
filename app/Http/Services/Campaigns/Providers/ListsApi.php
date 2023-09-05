@@ -21,7 +21,7 @@ class ListsApi
     /**
      * Path name of campaign list interface.
      */
-    protected $contract = '\App\Http\Services\Contracts\CampaignListContract';
+    protected $contract = \App\Http\Services\Contracts\CampaignListContract::class;
 
     /**
      * Path name list with class name equivalent.

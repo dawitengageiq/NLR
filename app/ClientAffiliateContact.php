@@ -15,11 +15,11 @@ class ClientAffiliateContact extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo(\App\User::class);
     }
 
     public function affiliate()
     {
-        return $this->belongsTo('App\Affiliate');
+        return $this->belongsTo(\App\Affiliate::class);
     }
 }

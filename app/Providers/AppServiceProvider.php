@@ -64,12 +64,12 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(
-            'App\Helpers\Repositories\LeadDataInterface',
-            'App\Helpers\Repositories\LeadData');
+            \App\Helpers\Repositories\LeadDataInterface::class,
+            \App\Helpers\Repositories\LeadData::class);
 
         $this->app->bind(
-            'App\Helpers\Repositories\SettingsInterface',
-            'App\Helpers\Repositories\Settings');
+            \App\Helpers\Repositories\SettingsInterface::class,
+            \App\Helpers\Repositories\Settings::class);
 
         if (env('APP_DEBUG') == true && env('APP_BUILD') == 'JTLR') {
             $this->app->register(\Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class);
@@ -80,11 +80,11 @@ class AppServiceProvider extends ServiceProvider
         }
 
         $this->app->bind(
-            'App\Helpers\Repositories\AffiliateReportCurlInterface',
-            'App\Helpers\Repositories\AffiliateReportCurl');
+            \App\Helpers\Repositories\AffiliateReportCurlInterface::class,
+            \App\Helpers\Repositories\AffiliateReportCurl::class);
 
         $this->app->bind(
-            'App\Helpers\Repositories\LeadCountsInterface',
-            'App\Helpers\Repositories\LeadCounts');
+            \App\Helpers\Repositories\LeadCountsInterface::class,
+            \App\Helpers\Repositories\LeadCounts::class);
     }
 }

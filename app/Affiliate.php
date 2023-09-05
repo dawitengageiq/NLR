@@ -37,12 +37,12 @@ class Affiliate extends Model
 
     public function user()
     {
-        return $this->hasOne('App\User', 'affiliate_id', 'id');
+        return $this->hasOne(\App\User::class, 'affiliate_id', 'id');
     }
 
     public function campaigns()
     {
-        return $this->belongsToMany('App\Campaign', 'affiliate_campaign', 'affiliate_id', 'campaign_id');
+        return $this->belongsToMany(\App\Campaign::class, 'affiliate_campaign', 'affiliate_id', 'campaign_id');
     }
 
     public function revenueTracker()

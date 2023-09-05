@@ -33,7 +33,7 @@ class Advertiser extends Model
 
     public function user()
     {
-        return $this->hasOne('App\User', 'advertiser_id', 'id');
+        return $this->hasOne(\App\User::class, 'advertiser_id', 'id');
     }
 
     public function scopeSearchAdvertisers($query, $search, $start, $length)

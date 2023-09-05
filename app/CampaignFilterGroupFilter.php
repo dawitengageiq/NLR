@@ -34,11 +34,11 @@ class CampaignFilterGroupFilter extends Model
 
     public function filter_group()
     {
-        return $this->belongsTo('App\CampaignFilterGroup', 'campaign_filter_group_id', 'id');
+        return $this->belongsTo(\App\CampaignFilterGroup::class, 'campaign_filter_group_id', 'id');
     }
 
     public function filter_type()
     {
-        return $this->belongsTo('App\FilterType');
+        return $this->belongsTo(\App\FilterType::class);
     }
 }

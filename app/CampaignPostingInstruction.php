@@ -16,6 +16,6 @@ class CampaignPostingInstruction extends Model
 
     public function campaign()
     {
-        return $this->belongsTo('App\Campaign', 'id', 'id');
+        return $this->belongsTo(\App\Campaign::class, 'id', 'id');
     }
 }

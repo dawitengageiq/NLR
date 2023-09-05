@@ -32,7 +32,7 @@ class StoreLeadsTest extends TestCase
     {
         parent::setUp();
         $this->leadRepository = $this->getMock('App\Helpers\Repositories\LeadInterface');
-        $this->leadData = $this->getMock('App\Helpers\Repositories\LeadData');
+        $this->leadData = $this->getMock(\App\Helpers\Repositories\LeadData::class);
         $this->SUT = new LeadStore($this->leadData, $this->leadRepository);
     }
 
@@ -43,7 +43,7 @@ class StoreLeadsTest extends TestCase
      */
     public function check_if_leadCreate_method_is_called_when_calling_proceedtosave_method()
     {
-        $leadData = $this->getMock('App\Helpers\Repositories\LeadData');
+        $leadData = $this->getMock(\App\Helpers\Repositories\LeadData::class);
         $leadIn = $this->getMockbuilder('App\Helpers\Repositories\LeadInterface')
             ->setMethods(['leadCreate'])
             ->getMock();

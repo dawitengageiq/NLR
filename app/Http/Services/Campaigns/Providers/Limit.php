@@ -25,7 +25,7 @@ class Limit
     /**
      * Path name of limit interface.
      */
-    protected $contract = '\App\Http\Services\Campaigns\Utils\Lists\Contracts\LimitContract';
+    protected $contract = \App\Http\Services\Campaigns\Utils\Lists\Contracts\LimitContract::class;
 
     /**
      * Limit type list with class name equivalent.

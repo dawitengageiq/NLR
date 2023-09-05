@@ -15,8 +15,8 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'App\Events\UserActionEvent' => [
-            'App\Listeners\UserActionListener',
+        \App\Events\UserActionEvent::class => [
+            \App\Listeners\UserActionListener::class,
         ],
     ];
 
