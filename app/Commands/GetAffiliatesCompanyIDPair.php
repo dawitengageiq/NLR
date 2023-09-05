@@ -4,9 +4,8 @@ namespace App\Commands;
 
 use App\Affiliate;
 use DB;
-use Illuminate\Contracts\Bus\SelfHandling;
 
-class GetAffiliatesCompanyIDPair extends Command implements SelfHandling
+class GetAffiliatesCompanyIDPair extends Command
 {
     /**
      * Create a new command instance.

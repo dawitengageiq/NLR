@@ -3,12 +3,11 @@
 namespace App\Jobs\Email;
 
 use App\Jobs\Job;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Mail\Mailer;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class AdminApplyToRunRequest extends Job implements SelfHandling, ShouldQueue
+class AdminApplyToRunRequest extends Job implements ShouldQueue
 {
     use InteractsWithQueue;
 

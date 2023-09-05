@@ -6,7 +6,6 @@ use App\CakeConversion;
 use App\CakeConversionArchive;
 use App\Helpers\Repositories\Settings;
 use ErrorException;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\QueryException;
 use Illuminate\Queue\InteractsWithQueue;
@@ -14,7 +13,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Log;
 
-class ArchiveCakeConversions extends Job implements SelfHandling, ShouldQueue
+class ArchiveCakeConversions extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

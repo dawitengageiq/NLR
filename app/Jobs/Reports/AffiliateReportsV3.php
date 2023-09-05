@@ -24,7 +24,6 @@ use App\RevenueTrackerCakeStatistic;
 use Carbon\Carbon;
 use DB;
 use ErrorException;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -32,7 +31,7 @@ use Illuminate\Support\Facades\Mail;
 use Log;
 use PDOException;
 
-class AffiliateReportsV3 extends Job implements SelfHandling, ShouldQueue
+class AffiliateReportsV3 extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

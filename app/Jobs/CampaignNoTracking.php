@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\CampaignNoTracker;
 use ErrorException;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 // use Illuminate\Database\QueryException;
@@ -12,7 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use Log;
 use PDOException;
 
-class CampaignNoTracking extends Job implements SelfHandling, ShouldQueue
+class CampaignNoTracking extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

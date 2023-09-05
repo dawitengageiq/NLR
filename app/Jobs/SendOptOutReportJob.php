@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\LeadUserRequest;
 use App\Setting;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -12,7 +11,7 @@ use Illuminate\Support\Facades\Mail;
 use Log;
 use Maatwebsite\Excel\Facades\Excel;
 
-class SendOptOutReportJob extends Job implements SelfHandling, ShouldQueue
+class SendOptOutReportJob extends Job implements ShouldQueue
 {
     protected $to;
 

@@ -19,7 +19,6 @@ use Carbon\Carbon;
 use Curl\Curl;
 use DB;
 use ErrorException;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -28,7 +27,7 @@ use Log;
 use PDOException;
 use Sabre\Xml\Reader;
 
-class AffiliateReportsV2 extends Job implements SelfHandling, ShouldQueue
+class AffiliateReportsV2 extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

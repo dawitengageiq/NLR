@@ -10,14 +10,13 @@ use App\User;
 use App\UserMeta;
 use Carbon\Carbon;
 use DB;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Log;
 use Mail;
 
-class SendRegPathRevenueEmailReportJob extends Job implements SelfHandling, ShouldQueue
+class SendRegPathRevenueEmailReportJob extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

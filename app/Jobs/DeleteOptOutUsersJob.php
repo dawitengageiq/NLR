@@ -16,14 +16,13 @@ use App\LeadUser;
 use App\LeadUserRequest;
 use Carbon\Carbon;
 use ErrorException;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\QueryException;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Log;
 
-class DeleteOptOutUsersJob extends Job implements SelfHandling, ShouldQueue
+class DeleteOptOutUsersJob extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

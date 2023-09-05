@@ -6,13 +6,12 @@ use App\AffiliateRevenueTracker;
 use App\Helpers\Repositories\AffiliateReportCurl;
 use App\Jobs\Job;
 use App\PageViewStatistics;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Log;
 
-class GenerateCakePageViewStatistics extends Job implements SelfHandling, ShouldQueue
+class GenerateCakePageViewStatistics extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

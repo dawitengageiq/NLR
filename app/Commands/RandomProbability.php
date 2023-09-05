@@ -2,9 +2,8 @@
 
 namespace App\Commands;
 
-use Illuminate\Contracts\Bus\SelfHandling;
 
-class RandomProbability extends Command implements SelfHandling
+class RandomProbability extends Command
 {
     private $set = [];
 

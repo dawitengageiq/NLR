@@ -7,13 +7,12 @@ use App\Jobs\Job;
 use App\LeadUser;
 use App\WebsitesViewTracker;
 use DB;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Log;
 
-class GenerateAffiliateWebsiteReport extends Job implements SelfHandling, ShouldQueue
+class GenerateAffiliateWebsiteReport extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

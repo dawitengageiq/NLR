@@ -10,14 +10,13 @@ use App\LeadUser;
 use Carbon\Carbon;
 use Curl\Curl;
 use DB;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Log;
 
-class ExternalPathAffiliateReportJob extends Job implements SelfHandling, ShouldQueue
+class ExternalPathAffiliateReportJob extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

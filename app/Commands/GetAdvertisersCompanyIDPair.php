@@ -3,9 +3,8 @@
 namespace App\Commands;
 
 use App\Advertiser;
-use Illuminate\Contracts\Bus\SelfHandling;
 
-class GetAdvertisersCompanyIDPair extends Command implements SelfHandling
+class GetAdvertisersCompanyIDPair extends Command
 {
     /**
      * Create a new command instance.

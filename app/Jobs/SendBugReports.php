@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\BugReport;
 use GuzzleHttp\Client;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -12,7 +11,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
 use Log;
 
-class SendBugReports extends Job implements SelfHandling, ShouldQueue
+class SendBugReports extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

@@ -7,7 +7,6 @@ use App\Http\Services\UserActionLogger;
 use App\Setting;
 use Carbon\Carbon;
 use Curl\Curl;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -15,7 +14,7 @@ use Illuminate\Support\Facades\Mail;
 use Log;
 use Maatwebsite\Excel\Facades\Excel;
 
-class UpdateCampaignPayoutJob extends Job implements SelfHandling, ShouldQueue
+class UpdateCampaignPayoutJob extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

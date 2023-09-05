@@ -4,14 +4,13 @@ namespace App\Jobs;
 
 use App\CampaignView;
 use App\CampaignViewReport;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\QueryException;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Log;
 
-class SaveCampaignView extends Job implements SelfHandling, ShouldQueue
+class SaveCampaignView extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

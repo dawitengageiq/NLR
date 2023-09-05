@@ -9,13 +9,12 @@ use App\Lead;
 use App\MixedCoregCampaignOrder;
 use Carbon\Carbon;
 use DB;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Log;
 
-class ReorderingMixedCoregCampaigns extends Job implements SelfHandling, ShouldQueue
+class ReorderingMixedCoregCampaigns extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

@@ -10,14 +10,13 @@ use Carbon\Carbon;
 use Curl\Curl;
 use DB;
 use Exception;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Log;
 
-class GenerateClicksVsRegistrationStatsV2 extends Job implements SelfHandling, ShouldQueue
+class GenerateClicksVsRegistrationStatsV2 extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

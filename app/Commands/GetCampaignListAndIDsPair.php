@@ -4,9 +4,8 @@ namespace App\Commands;
 
 use App\Campaign;
 use Cache;
-use Illuminate\Contracts\Bus\SelfHandling;
 
-class GetCampaignListAndIDsPair extends Command implements SelfHandling
+class GetCampaignListAndIDsPair extends Command
 {
     protected $activeOnly;
 

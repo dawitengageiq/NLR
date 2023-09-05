@@ -7,14 +7,13 @@ use App\ClicksVsRegistrationStatistics;
 use App\Helpers\Repositories\AffiliateReportCurl;
 use App\Jobs\Job;
 use App\LeadUser;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Log;
 
-class GenerateClicksVsRegistrationStats extends Job implements SelfHandling, ShouldQueue
+class GenerateClicksVsRegistrationStats extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

@@ -10,14 +10,13 @@ use Carbon\Carbon;
 use Curl\Curl;
 use DB;
 use Exception;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Log;
 use Sabre\Xml\Reader;
 
-class GeneratePrepopStatistics extends Job implements SelfHandling, ShouldQueue
+class GeneratePrepopStatistics extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

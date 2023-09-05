@@ -4,14 +4,13 @@ namespace App\Jobs;
 
 use App\Helpers\AffiliateReportExcelGeneratorHelper;
 use Carbon\Carbon;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Log;
 
-class GenerateAffiliateExcelReport extends Job implements SelfHandling, ShouldQueue
+class GenerateAffiliateExcelReport extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

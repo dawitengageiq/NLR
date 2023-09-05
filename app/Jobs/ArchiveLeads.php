@@ -12,7 +12,6 @@ use App\LeadDataCsvArchive;
 use App\LeadMessageArchive;
 use App\LeadSentResultArchive;
 use ErrorException;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\QueryException;
 use Illuminate\Queue\InteractsWithQueue;
@@ -20,7 +19,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Log;
 
-class ArchiveLeads extends Job implements SelfHandling, ShouldQueue
+class ArchiveLeads extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

@@ -4,9 +4,8 @@ namespace App\Commands;
 
 use App\User;
 use DB;
-use Illuminate\Contracts\Bus\SelfHandling;
 
-class GetAvailableUsers extends Command implements SelfHandling
+class GetAvailableUsers extends Command
 {
     protected $db;
 

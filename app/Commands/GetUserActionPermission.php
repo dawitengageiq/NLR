@@ -2,9 +2,8 @@
 
 namespace App\Commands;
 
-use Illuminate\Contracts\Bus\SelfHandling;
 
-class GetUserActionPermission extends Command implements SelfHandling
+class GetUserActionPermission extends Command
 {
     protected $user;
 

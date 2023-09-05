@@ -8,7 +8,6 @@ use App\LinkOutCount;
 use Carbon\Carbon;
 use Curl\Curl;
 use DB;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\QueryException;
 use Illuminate\Queue\InteractsWithQueue;
@@ -17,7 +16,7 @@ use Illuminate\Support\Facades\Mail;
 use Log;
 use Sabre\Xml\Reader;
 
-class GetCakeConversions extends Job implements SelfHandling, ShouldQueue
+class GetCakeConversions extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

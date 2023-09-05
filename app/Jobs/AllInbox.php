@@ -3,14 +3,13 @@
 namespace App\Jobs;
 
 use Curl\Curl;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Log;
 
-class AllInbox extends Job implements SelfHandling, ShouldQueue
+class AllInbox extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

@@ -5,14 +5,13 @@ namespace App\Jobs;
 use App\AffiliateRevenueTracker;
 use App\CakeRevenue;
 use App\Helpers\Repositories\AffiliateReportCurl;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Log;
 
-class GenerateCakeRevenues extends Job implements SelfHandling, ShouldQueue
+class GenerateCakeRevenues extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

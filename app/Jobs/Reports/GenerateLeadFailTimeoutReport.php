@@ -7,13 +7,12 @@ use App\Jobs\Job;
 use App\Setting;
 use Carbon\Carbon;
 use DB;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 
-class GenerateLeadFailTimeoutReport extends Job implements SelfHandling, ShouldQueue
+class GenerateLeadFailTimeoutReport extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

@@ -7,14 +7,13 @@ use App\Jobs\Job;
 use App\Lead;
 use Carbon\Carbon;
 use DB;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Log;
 
-class HandPReports extends Job implements SelfHandling, ShouldQueue
+class HandPReports extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

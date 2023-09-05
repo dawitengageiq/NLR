@@ -12,14 +12,13 @@ use App\RevenueTrackerWebsiteViewStatistic;
 use Carbon\Carbon;
 use DB;
 use ErrorException;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Log;
 
-class IframeAffiliateReports extends Job implements SelfHandling, ShouldQueue
+class IframeAffiliateReports extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

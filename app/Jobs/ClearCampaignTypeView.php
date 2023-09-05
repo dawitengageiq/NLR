@@ -3,12 +3,11 @@
 namespace App\Jobs;
 
 use DB;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class ClearCampaignTypeView extends Job implements SelfHandling, ShouldQueue
+class ClearCampaignTypeView extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

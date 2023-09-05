@@ -5,13 +5,12 @@ namespace App\Jobs\Jira;
 use App\Jobs\Job;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Log;
 
-class CreateJIRAIssueTicket extends Job implements SelfHandling, ShouldQueue
+class CreateJIRAIssueTicket extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

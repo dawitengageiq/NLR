@@ -8,9 +8,8 @@ use App\HandPAffiliateReport;
 use App\Lead;
 use App\Setting;
 use Carbon\Carbon;
-use Illuminate\Contracts\Bus\SelfHandling;
 
-class AffiliateEarningsByDateFilter extends Command implements SelfHandling
+class AffiliateEarningsByDateFilter extends Command
 {
     protected $affiliate_id;
 

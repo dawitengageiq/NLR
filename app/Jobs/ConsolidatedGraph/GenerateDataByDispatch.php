@@ -4,13 +4,12 @@ namespace App\Jobs\ConsolidatedGraph;
 
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Mail;
 
-class GenerateDataByDispatch implements SelfHandling, ShouldQueue
+class GenerateDataByDispatch implements ShouldQueue
 {
     use Queueable, InteractsWithQueue, SerializesModels;
 

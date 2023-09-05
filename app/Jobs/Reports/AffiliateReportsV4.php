@@ -20,7 +20,6 @@ use App\Setting;
 use Carbon\Carbon;
 use Curl\Curl;
 use DB;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\QueryException;
 use Illuminate\Queue\InteractsWithQueue;
@@ -28,7 +27,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Log;
 
-class AffiliateReportsV4 extends Job implements SelfHandling, ShouldQueue
+class AffiliateReportsV4 extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
