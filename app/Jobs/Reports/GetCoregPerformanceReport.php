@@ -60,9 +60,9 @@ class GetCoregPerformanceReport extends Job implements ShouldQueue
         }
 
         //Get OLR Program ID => Campaign ID
-        $coregs = Campaign::whereIn('campaign_type', [1, 2, 3, 7, 8, 9, 10, 11, 12])->lists('id', 'olr_program_id')->toArray();
+        $coregs = Campaign::whereIn('campaign_type', [1, 2, 3, 7, 8, 9, 10, 11, 12])->pluck('id', 'olr_program_id')->toArray();
         //Get Rev Tracker => Affiliate ID
-        $revAffiliates = AffiliateRevenueTracker::lists('affiliate_id', 'revenue_tracker_id')->toArray();
+        $revAffiliates = AffiliateRevenueTracker::pluck('affiliate_id', 'revenue_tracker_id')->toArray();
 
         //Get Campaign default and affiliate-specific received and payout for OLR leads
         // $payouts = DB::select('SELECT campaigns.id, campaign_payouts.affiliate_id, campaigns.default_payout, campaigns.default_received,
@@ -607,12 +607,12 @@ class GetCoregPerformanceReport extends Job implements ShouldQueue
         $affs = $reports->map(function ($st) {
             return $st->affiliate_id;
         });
-        $affiliates = Affiliate::whereIn('id', $affs)->lists('company', 'id');
+        $affiliates = Affiliate::whereIn('id', $affs)->pluck('company', 'id');
 
         $cmps = $reports->map(function ($st) {
             return $st->campaign_id;
         });
-        $campaigns = Campaign::whereIn('id', $cmps)->lists('name', 'id');
+        $campaigns = Campaign::whereIn('id', $cmps)->pluck('name', 'id');
 
         if ($reports) {
             Log::info('Creating Excel');

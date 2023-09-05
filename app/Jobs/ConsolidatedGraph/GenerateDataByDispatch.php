@@ -107,7 +107,7 @@ class GenerateDataByDispatch implements ShouldQueue
         $this->affiliates->setDate($this->date->format('Y-m-d'));
 
         // Fetch affilates with coresponding relationship in reference to current date
-        $this->affiliates->fetch();
+        $this->affiliates->pluck();
 
         // go through all the revenue trackers the affilate has.
         foreach ($this->getAffiliateRevenueTracker() as $revenueTracker) {

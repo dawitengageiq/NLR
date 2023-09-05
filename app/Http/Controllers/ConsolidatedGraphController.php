@@ -132,7 +132,7 @@ class ConsolidatedGraphController extends Controller
         $this->viewData['columns'] = $this->graph->columns();
 
         // Get all the afilliates id, its company name and campaign id.
-        $this->affiliates->fetch();
+        $this->affiliates->pluck();
         // Share the data to view, use for affiliates selections
         $this->viewData['affiliates'] = $this->affiliates->get();
 
@@ -203,7 +203,7 @@ class ConsolidatedGraphController extends Controller
         $this->graph->setSelectedColumn($request->get('legends'));
 
         // Get all the afilliates id, its company name and campaign id.
-        // $this->affiliates->fetch();
+        // $this->affiliates->pluck();
 
         // Provide request data
         $this->provideDataFromRequest($request);

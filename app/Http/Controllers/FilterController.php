@@ -125,10 +125,10 @@ class FilterController extends Controller
         /*** TIMER ***/ $time2 = microtime(true);
 
         /* GET ALL LEADS ANSWERED BY EMAIL */
-        $lead_campaigns = Lead::where('lead_email', $user['email'])->whereIn('lead_status', [1, 2, 3, 4, 5])->lists('campaign_id')->toArray();
+        $lead_campaigns = Lead::where('lead_email', $user['email'])->whereIn('lead_status', [1, 2, 3, 4, 5])->pluck('campaign_id')->toArray();
 
         /* GET CAKE CONVERSIONS CLICKED BY EMAIL */
-        $cake_clicks = CakeConversion::where('sub_id_5', $user['email'])->lists('offer_id')->toArray();
+        $cake_clicks = CakeConversion::where('sub_id_5', $user['email'])->pluck('offer_id')->toArray();
 
         /*** TIMER ***/ $time3 = microtime(true);
 
@@ -681,10 +681,10 @@ class FilterController extends Controller
         /*** TIMER ***/ $time2 = microtime(true);
 
         /* GET ALL LEADS ANSWERED BY EMAIL */
-        $lead_campaigns = Lead::where('lead_email', $user['email'])->whereIn('lead_status', [1, 2, 3, 4, 5])->lists('campaign_id')->toArray();
+        $lead_campaigns = Lead::where('lead_email', $user['email'])->whereIn('lead_status', [1, 2, 3, 4, 5])->pluck('campaign_id')->toArray();
 
         /* GET CAKE CONVERSIONS CLICKED BY EMAIL */
-        $cake_clicks = CakeConversion::where('sub_id_5', $user['email'])->lists('offer_id')->toArray();
+        $cake_clicks = CakeConversion::where('sub_id_5', $user['email'])->pluck('offer_id')->toArray();
 
         /*** TIMER ***/ $time3 = microtime(true);
 
@@ -1054,7 +1054,7 @@ class FilterController extends Controller
         // Log::info($campaign_type . ' - TYPE');
 
         /* Campaign Reordering View Tracking */
-        $rs = Setting::whereIn('code', ['campaign_reordering_status', 'mixed_coreg_campaign_reordering_status'])->lists('integer_value', 'code');
+        $rs = Setting::whereIn('code', ['campaign_reordering_status', 'mixed_coreg_campaign_reordering_status'])->pluck('integer_value', 'code');
         $rtSetting = AffiliateRevenueTracker::where('revenue_tracker_id', $affiliate_id)->select(['mixed_coreg_order_status', 'order_status', 'subid_breakdown', 'sib_s1', 'sib_s2', 'sib_s3', 'sib_s4'])->first();
 
         if ($rtSetting && $rtSetting->subid_breakdown == 0) { //Check if rev tracker allowed for subid breakdown
@@ -1121,7 +1121,7 @@ class FilterController extends Controller
         $not_coreg_campaigns = [4, 5, 6];
 
         // Log::info($campaigns);
-        $stack_contents = CampaignContent::whereIn('id', $campaigns)->lists('stack', 'id');
+        $stack_contents = CampaignContent::whereIn('id', $campaigns)->pluck('stack', 'id');
         foreach ($campaigns as $id) {
             $content = isset($stack_contents[$id]) ? $stack_contents[$id] : '';
             $return_str .= '<!-------------- Campaign: '.$id.'-------------->';
@@ -1611,7 +1611,7 @@ class FilterController extends Controller
             foreach ($page as $cid) {
                 $creative_id = null;
                 //Get Campaign Creatives if any and get Creative ID by random probability
-                $campCreatives = CampaignCreative::where('campaign_id', $cid)->where('weight', '!=', 0)->lists('weight', 'id')->toArray();
+                $campCreatives = CampaignCreative::where('campaign_id', $cid)->where('weight', '!=', 0)->pluck('weight', 'id')->toArray();
                 if ($campCreatives) {
                     $creative_id = Bus::dispatch(new RandomProbability($campCreatives));
                 }
@@ -1680,12 +1680,12 @@ class FilterController extends Controller
         /*** For Testing ***/ /*** TIMER ***/ $time2 = microtime(true);
 
         /* GET ALL LEADS ANSWERED BY EMAIL */
-        $lead_campaigns = Lead::where('lead_email', $user['email'])->whereIn('lead_status', [1, 2, 3, 4, 5])->lists('campaign_id')->toArray();
+        $lead_campaigns = Lead::where('lead_email', $user['email'])->whereIn('lead_status', [1, 2, 3, 4, 5])->pluck('campaign_id')->toArray();
 
         /*** For Testing ***/ /*** TIMER ***/ $time3 = microtime(true);
 
         /* GET CAKE CONVERSIONS CLICKED BY EMAIL */
-        $cake_clicks = CakeConversion::where('sub_id_5', $user['email'])->lists('offer_id')->toArray();
+        $cake_clicks = CakeConversion::where('sub_id_5', $user['email'])->pluck('offer_id')->toArray();
 
         /*** For Testing ***/ /*** TIMER ***/ $time4 = microtime(true);
 
@@ -2051,7 +2051,7 @@ class FilterController extends Controller
                 } else {
                     //check if has [VALUE_CREATIVE_DESCRIPTION] OR [VALUE_CREATIVE_IMAGE]
                     if (strpos($campaign->stack, '[VALUE_CREATIVE_DESCRIPTION]') !== false || strpos($campaign->stack, '[VALUE_CREATIVE_IMAGE]') !== false) {
-                        $campCreatives = CampaignCreative::where('campaign_id', $id)->where('weight', '!=', 0)->lists('weight', 'id')->toArray();
+                        $campCreatives = CampaignCreative::where('campaign_id', $id)->where('weight', '!=', 0)->pluck('weight', 'id')->toArray();
                         if ($campCreatives) {
                             $creative_id = Bus::dispatch(new RandomProbability($campCreatives));
                             $stack_content = $this->getStackCreativeById($campaign->stack, $id, $creative_id);
@@ -2211,7 +2211,7 @@ class FilterController extends Controller
                     ->limit($limit)
                     ->select(['campaigns.id', 'campaigns.name', 'campaigns.lead_cap_type', 'campaigns.lead_cap_value', 'lead_counts.count'])
                     ->get();
-                // ->lists('campaigns.id');
+                // ->pluck('campaigns.id');
             }
             // Log::info(DB::getQueryLog());
             // Log::info($campaigns);
@@ -2232,7 +2232,7 @@ class FilterController extends Controller
                     $campaign_ids[] = $campaign->id;
 
                     //Get Campaign Creatives if any and get Creative ID by random probability
-                    $campCreatives = CampaignCreative::where('campaign_id', $campaign->id)->where('weight', '!=', 0)->lists('weight', 'id')->toArray();
+                    $campCreatives = CampaignCreative::where('campaign_id', $campaign->id)->where('weight', '!=', 0)->pluck('weight', 'id')->toArray();
                     if ($campCreatives) {
                         $creative_id = Bus::dispatch(new RandomProbability($campCreatives));
                     }
@@ -2255,7 +2255,7 @@ class FilterController extends Controller
             $campaign_type = $inputs['get_pre_reg_campaigns'];
             $limit = isset($inputs['get_pre_reg_campaigns_limit']) ? $inputs['get_pre_reg_campaigns_limit'] : null;
 
-            $details['get_pre_reg_campaigns'] = Campaign::getFilterFreeCampaigns($campaign_type, $revenue_tracker_id, $limit)->lists('creative_id', 'id')->toArray();
+            $details['get_pre_reg_campaigns'] = Campaign::getFilterFreeCampaigns($campaign_type, $revenue_tracker_id, $limit)->pluck('creative_id', 'id')->toArray();
         }
 
         return $details;
@@ -2281,7 +2281,7 @@ class FilterController extends Controller
 
         // check if has [VALUE_CREATIVE_DESCRIPTION] OR [VALUE_CREATIVE_IMAGE]
         if (strpos($campaign->stack, '[VALUE_CREATIVE_DESCRIPTION]') !== false || strpos($campaign->stack, '[VALUE_CREATIVE_IMAGE]') !== false) {
-            $campCreatives = CampaignCreative::where('campaign_id', $id)->where('weight', '!=', 0)->lists('weight', 'id')->toArray();
+            $campCreatives = CampaignCreative::where('campaign_id', $id)->where('weight', '!=', 0)->pluck('weight', 'id')->toArray();
             if ($campCreatives) {
                 $creative_id = Bus::dispatch(new RandomProbability($campCreatives));
             }
@@ -2296,7 +2296,7 @@ class FilterController extends Controller
         $id = $request->input('id');
         $creative_id = null;
 
-        $campCreatives = CampaignCreative::where('campaign_id', $id)->where('weight', '!=', 0)->lists('weight', 'id')->toArray();
+        $campCreatives = CampaignCreative::where('campaign_id', $id)->where('weight', '!=', 0)->pluck('weight', 'id')->toArray();
         if ($campCreatives) {
             $creative_id = Bus::dispatch(new RandomProbability($campCreatives));
         }
@@ -2326,7 +2326,7 @@ class FilterController extends Controller
             ->whereIn('campaigns.campaign_type', [1, 2, 8, 13])
             ->orderBy('priority', 'ASC')
             ->limit($limit)
-            ->lists('campaigns.id');
+            ->pluck('campaigns.id');
     }
 
     //gets all public and private campaigns from campaign type given
@@ -2338,7 +2338,7 @@ class FilterController extends Controller
             ->where('status', '!=', 0)->where('status', '!=', 3)->where('campaign_type', $ct_id)
             ->orderBy('priority', 'ASC')
             ->selectRaw('campaign_creatives.id as creative_id, campaigns.id')
-            ->lists('creative_id', 'campaigns.id');
+            ->pluck('creative_id', 'campaigns.id');
     }
 
     public function getAllCampaignsForQA(Request $request)
@@ -2402,7 +2402,7 @@ class FilterController extends Controller
         }
 
         /* Campaign Reordering View Tracking */
-        $rs = Setting::whereIn('code', ['campaign_reordering_status', 'mixed_coreg_campaign_reordering_status'])->lists('integer_value', 'code');
+        $rs = Setting::whereIn('code', ['campaign_reordering_status', 'mixed_coreg_campaign_reordering_status'])->pluck('integer_value', 'code');
 
         $rtSetting = AffiliateRevenueTracker::where('revenue_tracker_id', $affiliate_id)->select(['mixed_coreg_order_status', 'order_status', 'subid_breakdown', 'sib_s1', 'sib_s2', 'sib_s3', 'sib_s4'])->first();
         if ($rtSetting && $rtSetting->subid_breakdown == 0) { //Check if rev tracker allowed for subid breakdown
@@ -2673,7 +2673,7 @@ class FilterController extends Controller
         // Log::info($campaign_type . ' - TYPE');
 
         /* Campaign Reordering View Tracking */
-        $rs = Setting::whereIn('code', ['campaign_reordering_status', 'mixed_coreg_campaign_reordering_status'])->lists('integer_value', 'code');
+        $rs = Setting::whereIn('code', ['campaign_reordering_status', 'mixed_coreg_campaign_reordering_status'])->pluck('integer_value', 'code');
         $rtSetting = AffiliateRevenueTracker::where('revenue_tracker_id', $affiliate_id)->select(['mixed_coreg_order_status', 'order_status', 'subid_breakdown', 'sib_s1', 'sib_s2', 'sib_s3', 'sib_s4'])->first();
 
         if ($rtSetting && $rtSetting->subid_breakdown == 0) { //Check if rev tracker allowed for subid breakdown
@@ -2755,7 +2755,7 @@ class FilterController extends Controller
         $not_coreg_campaigns = [4, 5, 6];
 
         // Log::info($campaigns);
-        $stack_contents = CampaignContent::whereIn('id', $campaigns)->lists('stack', 'id');
+        $stack_contents = CampaignContent::whereIn('id', $campaigns)->pluck('stack', 'id');
         foreach ($campaigns as $id) {
             $content = isset($stack_contents[$id]) ? $stack_contents[$id] : '';
             $creative_id = null;

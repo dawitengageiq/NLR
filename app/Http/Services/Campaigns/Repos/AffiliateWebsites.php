@@ -36,7 +36,7 @@ final class AffiliateWebsites
      * @param  string  $email
      * @param  int  $timeInterval
      */
-    public function fetch($websiteID, $affiliateID, $email, $timeInterval)
+    public function pluck($websiteID, $affiliateID, $email, $timeInterval)
     {
         $this->email = $email;
         $this->websiteID = $websiteID;

@@ -78,8 +78,8 @@ class ExternalPathAffiliateReportJob extends Job implements ShouldQueue
             ->groupBy('leads.affiliate_id', 'leads.campaign_id', 'leads.s1', 'leads.s2', 'leads.s3', 'leads.s3', 'leads.s4', 'leads.s5', DB::raw('DATE(leads.created_at)'))->get();
 
         //Get Affiliate IDs that run the external path
-        $this->affiliates = LeadUser::where('affiliate_id', '>', 0)->where('s5', 'EXTPATH')->whereBetween('created_at', [$this->dateFromStr.' 00:00:00', $this->dateToStr.' 23:59:59'])->groupBy('affiliate_id')->lists('affiliate_id')->toArray();
-        $this->campaigns = Campaign::where('linkout_offer_id', '>', 0)->lists('id', 'linkout_offer_id')->toArray();
+        $this->affiliates = LeadUser::where('affiliate_id', '>', 0)->where('s5', 'EXTPATH')->whereBetween('created_at', [$this->dateFromStr.' 00:00:00', $this->dateToStr.' 23:59:59'])->groupBy('affiliate_id')->pluck('affiliate_id')->toArray();
+        $this->campaigns = Campaign::where('linkout_offer_id', '>', 0)->pluck('id', 'linkout_offer_id')->toArray();
 
         Log::info('Main');
         Log::info(DB::getQueryLog());

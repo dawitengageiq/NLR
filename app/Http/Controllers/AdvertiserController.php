@@ -309,18 +309,18 @@ class AdvertiserController extends Controller
      */
     public function campaigns()
     {
-        $advertisers = array_merge(['0' => ''], Advertiser::lists('company', 'id')->toArray());
+        $advertisers = array_merge(['0' => ''], Advertiser::pluck('company', 'id')->toArray());
 
         $affiliates = Affiliate::select('id', DB::raw('CONCAT(id, " - ",company) AS company_name'))
             ->orderBy('id', 'asc')
-            ->lists('company_name', 'id')->toArray();
+            ->pluck('company_name', 'id')->toArray();
 
         $lead_types = config('constants.LEAD_CAP_TYPES');
         $campaign_types = config('constants.CAMPAIGN_TYPES');
 
         $filter_types = FilterType::select('id', DB::raw('CONCAT(type, " - ",name) AS filter_name'))
             ->orderBy('filter_name', 'asc')
-            ->lists('filter_name', 'id')->toArray();
+            ->pluck('filter_name', 'id')->toArray();
 
         return view('advertiser.campaigns', compact('advertisers', 'lead_types', 'totalCampaignCount', 'affiliates', 'filter_types', 'campaign_types'));
     }

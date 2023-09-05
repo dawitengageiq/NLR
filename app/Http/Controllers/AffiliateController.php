@@ -261,8 +261,8 @@ class AffiliateController extends Controller
 
         // Log::info($campaignsData);
 
-        $advertiserNames = Advertiser::lists('company', 'id');
-        $categoryNames = Category::lists('name', 'id');
+        $advertiserNames = Advertiser::pluck('company', 'id');
+        $categoryNames = Category::pluck('name', 'id');
         $totalFiltered = $totalRecords;
 
         // Log::info(DB::getQueryLog());
@@ -352,7 +352,7 @@ class AffiliateController extends Controller
         $inputs['affiliate_id'] = $request->user()->affiliate_id;
         $inputs['period'] = $inputs['period'] == '' ? 'none' : $inputs['period'];
 
-        $websites = AffiliateWebsite::where('affiliate_id', $request->user()->affiliate_id)->lists('website_name', 'id')->toArray();
+        $websites = AffiliateWebsite::where('affiliate_id', $request->user()->affiliate_id)->pluck('website_name', 'id')->toArray();
 
         $inputs['website_ids'] = array_keys($websites);
         // \Log::info($websites);
@@ -366,7 +366,7 @@ class AffiliateController extends Controller
         $responseData = [
             'records' => $items,
             'websites' => $websites,
-            // 'payouts' => AffiliateWebsite::where('affiliate_id', $request->user()->affiliate_id)->lists('payout','id')->toArray()
+            // 'payouts' => AffiliateWebsite::where('affiliate_id', $request->user()->affiliate_id)->pluck('payout','id')->toArray()
         ];
 
         return response()->json($responseData, 200);
@@ -378,7 +378,7 @@ class AffiliateController extends Controller
         // $inputs['affiliate_id'] = $request->user()->affiliate_id;
         $inputs['period'] = $inputs['period'] == '' ? 'none' : $inputs['period'];
 
-        // $websites = AffiliateWebsite::where('website_id', $inputs['period'])->lists('website_name','id')->toArray();
+        // $websites = AffiliateWebsite::where('website_id', $inputs['period'])->pluck('website_name','id')->toArray();
 
         // $inputs['website_ids'] = array_keys($websites);
         // \Log::info($websites);
@@ -389,7 +389,7 @@ class AffiliateController extends Controller
         // \Log::info($items);
         $responseData = [
             'records' => $items,
-            'payouts' => AffiliateWebsite::where('affiliate_id', $request->user()->affiliate_id)->lists('payout', 'id')->toArray(),
+            'payouts' => AffiliateWebsite::where('affiliate_id', $request->user()->affiliate_id)->pluck('payout', 'id')->toArray(),
             // 'websites' => $websites
         ];
 
@@ -417,7 +417,7 @@ class AffiliateController extends Controller
         $cmps = $stats->map(function ($st) {
             return $st->campaign_id;
         });
-        $campaigns = Campaign::whereIn('id', $cmps)->lists('name', 'id');
+        $campaigns = Campaign::whereIn('id', $cmps)->pluck('name', 'id');
 
         $responseData = [
             'records' => $stats,
@@ -784,22 +784,22 @@ class AffiliateController extends Controller
         //$campaigns = Campaign::take(5)->get();
         // $totalCampaignCount = Campaign::count();
 
-        // $advertisers = array_merge(array('0'=>''), Advertiser::lists('company','id')->toArray());
-        // //$affiliates = Affiliate::orderBy('company','asc')->lists('company','id')->toArray();
+        // $advertisers = array_merge(array('0'=>''), Advertiser::pluck('company','id')->toArray());
+        // //$affiliates = Affiliate::orderBy('company','asc')->pluck('company','id')->toArray();
 
         // $affiliates = Affiliate::select('id',DB::raw('CONCAT(id, " - ",company) AS company_name'))
         //     ->orderBy('id','asc')
-        //     ->lists('company_name','id')->toArray();
+        //     ->pluck('company_name','id')->toArray();
 
         // $lead_types = config('constants.LEAD_CAP_TYPES');
         // $campaign_types = config('constants.CAMPAIGN_TYPES');
 
         // $filter_types = FilterType::select('id',DB::raw('CONCAT(type, " - ",name) AS filter_name'))
         //     ->orderBy('filter_name','asc')
-        //     ->lists('filter_name','id')->toArray();
+        //     ->pluck('filter_name','id')->toArray();
         $affiliateID = $request->user()->affiliate_id;
         // $revTracker = AffiliateRevenueTracker::where('revenue_tracker_id', $affiliateID)->first()->toArray();
-        $websites = AffiliateWebsite::where('affiliate_id', $affiliateID)->lists('website_name', 'id')->toArray();
+        $websites = AffiliateWebsite::where('affiliate_id', $affiliateID)->pluck('website_name', 'id')->toArray();
 
         return view('affiliate.campaigns', compact('websites'));
     }
@@ -1454,7 +1454,7 @@ class AffiliateController extends Controller
         // Log::info($request->all());
         $term = trim($request->input('term'));
 
-        $affiliates = Affiliate::where('id', 'like', '%'.$term.'%')->lists('id')->toArray();
+        $affiliates = Affiliate::where('id', 'like', '%'.$term.'%')->pluck('id')->toArray();
         // Log::info($affiliates);
 
         return response()->json($affiliates, 200);

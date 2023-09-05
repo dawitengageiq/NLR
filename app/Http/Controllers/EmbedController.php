@@ -25,7 +25,7 @@ class EmbedController extends Controller
 
         $creative_id = $request->creative_id;
         if ($creative_id == '') {
-            $campCreatives = CampaignCreative::where('campaign_id', $id)->where('weight', '!=', 0)->lists('weight', 'id')->toArray();
+            $campCreatives = CampaignCreative::where('campaign_id', $id)->where('weight', '!=', 0)->pluck('weight', 'id')->toArray();
             if ($campCreatives) {
                 $creative_id = Bus::dispatch(new RandomProbability($campCreatives));
             }

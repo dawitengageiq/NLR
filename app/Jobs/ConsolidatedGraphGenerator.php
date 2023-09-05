@@ -78,7 +78,7 @@ class ConsolidatedGraphGenerator extends Job implements ShouldQueue
 
         //Campaigns
         //get campaign type
-        // $campaigns_type = Campaign::lists('campaign_type','id')->toArray();
+        // $campaigns_type = Campaign::pluck('campaign_type','id')->toArray();
         $campaigns_type = [];
         $campaigns_oid = [];
         $campaigns = Campaign::select('id', 'campaign_type', 'linkout_offer_id')->get();
@@ -89,7 +89,7 @@ class ConsolidatedGraphGenerator extends Job implements ShouldQueue
 
         //Affiliate Revenue Trackers Exit Page
         $has_rev_tracker_exit = AffiliateRevenueTracker::whereNotNull('exit_page_id')
-            ->lists('exit_page_id', 'revenue_tracker_id')->toArray();
+            ->pluck('exit_page_id', 'revenue_tracker_id')->toArray();
 
         //get default exit page's offer_id
         $def_exit_oid = $campaigns_oid[$default_exit_page];
@@ -106,7 +106,7 @@ class ConsolidatedGraphGenerator extends Job implements ShouldQueue
             }
         }
 
-        $exit_page_linkout_ids = Campaign::where('campaign_type', 6)->where('linkout_offer_id', '>', 0)->lists('linkout_offer_id');
+        $exit_page_linkout_ids = Campaign::where('campaign_type', 6)->where('linkout_offer_id', '>', 0)->pluck('linkout_offer_id');
         $crevs = CakeRevenue::whereIn('offer_id', $exit_page_linkout_ids)->where('created_at', $date)
             ->select(DB::RAW('revenue_tracker_id, s1, s2, s3, s4, s5, SUM(revenue) as revenue'))->groupBy('revenue_tracker_id', 's1', 's2', 's3', 's4', 's5')->get();
         $exit_page_revenues = [];

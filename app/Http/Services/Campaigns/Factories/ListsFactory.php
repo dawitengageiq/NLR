@@ -154,12 +154,12 @@ abstract class ListsFactory
         /* GET ALL LEADS ANSWERED BY EMAIL */
         $this->leadCampaigns = Lead::where('lead_email', $this->userDetails['email'])
             ->whereIn('lead_status', [1, 3, 4])
-            ->lists('campaign_id')
+            ->pluck('campaign_id')
             ->toArray();
 
         /* GET CAKE CONVERSIONS CLICKED BY EMAIL */
         $this->cakeClicks = CakeConversion::where('sub_id_5', $this->userDetails['email'])
-            ->lists('offer_id')
+            ->pluck('offer_id')
             ->toArray();
     }
 

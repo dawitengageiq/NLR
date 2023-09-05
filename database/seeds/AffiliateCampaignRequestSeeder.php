@@ -12,8 +12,8 @@ class AffiliateCampaignRequestSeeder extends Seeder
     public function run()
     {
         $faker = Faker\Factory::create();
-        $affiliates = \App\Affiliate::lists('id')->take(10)->toArray();
-        $campaigns = \App\Campaign::lists('id')->take(10)->toArray();
+        $affiliates = \App\Affiliate::pluck('id')->take(10)->toArray();
+        $campaigns = \App\Campaign::pluck('id')->take(10)->toArray();
 
         for ($x = 0; $x < 3; $x++) {
 

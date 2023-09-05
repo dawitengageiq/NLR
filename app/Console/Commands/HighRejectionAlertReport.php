@@ -315,10 +315,10 @@ class HighRejectionAlertReport extends Command
         }
         // Log::info('- removing unwanted lead details.');
 
-        $the_campaigns = Campaign::whereIn('id', $cids)->lists('name', 'id');
-        $the_affiliate_ids = AffiliateRevenueTracker::whereIn('affiliate_revenue_trackers.revenue_tracker_id', $affids)->lists('affiliate_id', 'revenue_tracker_id')->toArray();
+        $the_campaigns = Campaign::whereIn('id', $cids)->pluck('name', 'id');
+        $the_affiliate_ids = AffiliateRevenueTracker::whereIn('affiliate_revenue_trackers.revenue_tracker_id', $affids)->pluck('affiliate_id', 'revenue_tracker_id')->toArray();
         $the_affiliates = Affiliate::whereIn('id', array_merge($affids, array_values($the_affiliate_ids)))
-            ->lists('company', 'id');
+            ->pluck('company', 'id');
 
         $full_rejects = [];
         $full_reject_campaigns = [];
@@ -928,7 +928,7 @@ class HighRejectionAlertReport extends Command
                 // \DB::connection('secondary')->enableQueryLog();
                 $qualifiedCampaigns = Lead::whereBetween('created_at', [$from.' 00:00:00', $to.' 23:59:59'])
                     ->groupBy('campaign_id')->having('total', '>=', $full_rejection_alert_min_leads)->select(['campaign_id', \DB::RAW('COUNT(*) as total')])
-                    ->lists('campaign_id')->toArray();
+                    ->pluck('campaign_id')->toArray();
                 // \Log::info(\DB::getQueryLog());
                 // \Log::info(\DB::connection('secondary')->getQueryLog());
                 // \Log::info($full_reject_campaigns);

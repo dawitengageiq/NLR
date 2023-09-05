@@ -136,7 +136,7 @@ class CampaignRejectionController extends Controller
         } else {
             $dateDisplay = $date_from;
         }
-        $highcharts = ['date' => $dateDisplay, 'date_from' => $date_from, 'date_to' => $date_to, 'series' => $stats, 'categories' => $categories, 'campaigns' => Campaign::whereIn('id', $cids)->lists('name', 'id'), 'has_data' => $hasData, 'actual' => $actual];
+        $highcharts = ['date' => $dateDisplay, 'date_from' => $date_from, 'date_to' => $date_to, 'series' => $stats, 'categories' => $categories, 'campaigns' => Campaign::whereIn('id', $cids)->pluck('name', 'id'), 'has_data' => $hasData, 'actual' => $actual];
         $inputs = $request->all();
         $inputs['date_range'] = $range;
 
@@ -265,7 +265,7 @@ class CampaignRejectionController extends Controller
         } else {
             $dateDisplay = $date_from;
         }
-        $highcharts = ['date' => $dateDisplay, 'date_from' => $date_from, 'date_to' => $date_to, 'series' => $stats, 'categories' => $categories, 'campaigns' => Campaign::whereIn('id', $cids)->lists('name', 'id'), 'has_data' => $hasData, 'actual' => $actual];
+        $highcharts = ['date' => $dateDisplay, 'date_from' => $date_from, 'date_to' => $date_to, 'series' => $stats, 'categories' => $categories, 'campaigns' => Campaign::whereIn('id', $cids)->pluck('name', 'id'), 'has_data' => $hasData, 'actual' => $actual];
         $inputs = $request->all();
         $inputs['date_range'] = $range;
 

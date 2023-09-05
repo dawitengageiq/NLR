@@ -37,7 +37,7 @@ class UpdateRevTrackerLandingUrl extends Job implements ShouldQueue
         }
 
         // Log::info('Update Landing URL');
-        $revenue_trackers = AffiliateRevenueTracker::lists('tracking_link', 'id');
+        $revenue_trackers = AffiliateRevenueTracker::pluck('tracking_link', 'id');
         foreach ($revenue_trackers as $id => $tracking_link) {
             $landing_url = '';
             if ($tracking_link != '') {

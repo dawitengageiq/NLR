@@ -57,7 +57,7 @@ class DeleteOptOutUsersNotJob extends Command
         Log::info('Deleting Opt out users');
         $status = 1;
         $end_date = Carbon::now()->endOfDay();
-        $users = LeadUserRequest::where('is_sent', '=', 1)->where('is_deleted', '=', 0)->where('request_type', 'like', '%Delet%')->lists('email', 'id')->toArray();
+        $users = LeadUserRequest::where('is_sent', '=', 1)->where('is_deleted', '=', 0)->where('request_type', 'like', '%Delet%')->pluck('email', 'id')->toArray();
 
         if (count($users) == 0) {
             $this->info('No requests found.');
@@ -75,7 +75,7 @@ class DeleteOptOutUsersNotJob extends Command
         Log::info('Deleting Leads');
         try {
             //Lead
-            $leads = Lead::whereIn('lead_email', $emails)->whereBetween('created_at', ['2018-01-01 00:00:00', $end_date])->lists('id')->toArray();
+            $leads = Lead::whereIn('lead_email', $emails)->whereBetween('created_at', ['2018-01-01 00:00:00', $end_date])->pluck('id')->toArray();
             LeadDataAdv::destroy($leads);
             LeadDataCsv::destroy($leads);
             LeadMessage::destroy($leads);
@@ -85,7 +85,7 @@ class DeleteOptOutUsersNotJob extends Command
             $this->info('Deleting Archived Leads');
             Log::info('Deleting Archived Leads');
             //LeadArchive
-            $archived = LeadArchive::whereIn('lead_email', $emails)->whereBetween('created_at', ['2018-01-01 00:00:00', $end_date])->lists('id')->toArray();
+            $archived = LeadArchive::whereIn('lead_email', $emails)->whereBetween('created_at', ['2018-01-01 00:00:00', $end_date])->pluck('id')->toArray();
             LeadDataAdvArchive::destroy($archived);
             LeadDataCsvArchive::destroy($archived);
             LeadMessageArchive::destroy($archived);

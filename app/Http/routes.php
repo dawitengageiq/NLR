@@ -632,7 +632,7 @@ Route::get('check-session', function () {
 Route::get('kk', 'AffiliateReportController@generateAffiliateReportXLS1');
 
 Route::get('karla', function () {
-    return \App\AffiliateRevenueTracker::lists('campaign_id', 'revenue_tracker_id')->toArray();
+    return \App\AffiliateRevenueTracker::pluck('campaign_id', 'revenue_tracker_id')->toArray();
     $date = '2022-03-28';
     \DB::enableQueryLog();
     $rev_trackers = \App\AffiliateReport::leftJoin('revenue_tracker_cake_statistics', function ($q) {
@@ -712,7 +712,7 @@ Route::get('karla', function () {
 
     return \App\Lead::whereBetween('created_at', ['2021-02-06 00:00:00', '2021-02-07 23:59:59'])
         ->groupBy('campaign_id')->having('total', '>', 30)->select(['campaign_id', \DB::RAW('COUNT(*) as total')])
-        ->lists('campaign_id')->toArray();
+        ->pluck('campaign_id')->toArray();
 
     $date = \Carbon\Carbon::parse('2022-01-13');
 
@@ -744,9 +744,9 @@ Route::get('karla', function () {
 
     return \DB::connection('secondary')->getQueryLog();
 
-    return $campaigns = \App\Campaign::where('campaign_type', 5)->where('linkout_offer_id', '!=', 0)->where('linkout_cake_status', 1)->lists('linkout_offer_id', 'id')->toArray();
+    return $campaigns = \App\Campaign::where('campaign_type', 5)->where('linkout_offer_id', '!=', 0)->where('linkout_cake_status', 1)->pluck('linkout_offer_id', 'id')->toArray();
 
-    return \App\UserMeta::where('key', 'coworker_email')->lists('value', 'user_id')->toArray();
+    return \App\UserMeta::where('key', 'coworker_email')->pluck('value', 'user_id')->toArray();
 
     return;
 
@@ -761,7 +761,7 @@ Route::get('karla', function () {
 
     return \App\AffiliateWebsite::where('affiliate_id', '!=', 0)
         ->select(['affiliate_id', 'id'])
-        ->lists('affiliate_id', 'id');
+        ->pluck('affiliate_id', 'id');
 
     \DB::enableQueryLog();
     $c = \App\Campaign::where(function ($query) {
@@ -777,7 +777,7 @@ Route::get('karla', function () {
 
     return \DB::getQueryLog();
 
-    return \App\Campaign::where('linkout_offer_id', '>', 0)->lists('id', 'linkout_offer_id')->toArray();
+    return \App\Campaign::where('linkout_offer_id', '>', 0)->pluck('id', 'linkout_offer_id')->toArray();
     // 	$a1=array("0"=>"red","1"=>"green");
     // $a2=array("0"=>"purple","1"=>"orange");
     // array_splice($a1,1,0,$a2);

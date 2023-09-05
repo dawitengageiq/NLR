@@ -45,8 +45,8 @@ class SendRegPathRevenueEmailReportJob extends Job implements ShouldQueue
         Log::info('Affilaite Reg Path Email Report');
         Log::info($this->from.' - '.$this->to);
 
-        $websites = AffiliateWebsite::lists('website_name', 'id')->toArray();
-        $payouts = AffiliateWebsite::lists('payout', 'id')->toArray();
+        $websites = AffiliateWebsite::pluck('website_name', 'id')->toArray();
+        $payouts = AffiliateWebsite::pluck('payout', 'id')->toArray();
         // DB::enableQueryLog();
         // DB::connection('secondary')->enableQueryLog();
         // $user_ids = UserMeta::where('key', 'reg_path_revenue_email_report')->where('value',1)->get();
@@ -115,7 +115,7 @@ class SendRegPathRevenueEmailReportJob extends Job implements ShouldQueue
         $ss = Setting::where('code', 'js_midpath_email_report')->first();
         $cc_emails = explode(';', $ss->description);
 
-        $affiliates_names = Affiliate::whereIn('id', $aff_ids)->lists('company', 'id')->toArray();
+        $affiliates_names = Affiliate::whereIn('id', $aff_ids)->pluck('company', 'id')->toArray();
         // Log::info($affiliates_names);
         $date = Carbon::yesterday()->format('m/d/Y');
         $display_date = Carbon::parse($this->from)->format('F Y');

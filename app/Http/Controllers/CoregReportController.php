@@ -52,7 +52,7 @@ class CoregReportController extends Controller
         $orderDir = $inputs['order'][0]['dir'];
 
         if (! isset($inputs['show_inactive_campaign']) && $inputs['campaign_id'] == '') {
-            $inputs['campaign_ids'] = Campaign::where('status', '!=', 0)->lists('id')->toArray();
+            $inputs['campaign_ids'] = Campaign::where('status', '!=', 0)->pluck('id')->toArray();
         }
 
         // Log::info($inputs);
@@ -68,12 +68,12 @@ class CoregReportController extends Controller
         $affs = $reports->map(function ($st) {
             return $st->affiliate_id;
         });
-        $affiliates = Affiliate::whereIn('id', $affs)->lists('company', 'id');
+        $affiliates = Affiliate::whereIn('id', $affs)->pluck('company', 'id');
 
         $cmps = $reports->map(function ($st) {
             return $st->campaign_id;
         });
-        $campaigns = Campaign::whereIn('id', $cmps)->lists('name', 'id');
+        $campaigns = Campaign::whereIn('id', $cmps)->pluck('name', 'id');
 
         $inputs['order_col'] = $orderCol;
         $inputs['order_dir'] = $orderDir;
@@ -153,12 +153,12 @@ class CoregReportController extends Controller
         $affs = $reports->map(function ($st) {
             return $st->affiliate_id;
         });
-        $affiliates = Affiliate::whereIn('id', $affs)->lists('company', 'id');
+        $affiliates = Affiliate::whereIn('id', $affs)->pluck('company', 'id');
 
         $cmps = $reports->map(function ($st) {
             return $st->campaign_id;
         });
-        $campaigns = Campaign::whereIn('id', $cmps)->lists('name', 'id');
+        $campaigns = Campaign::whereIn('id', $cmps)->pluck('name', 'id');
 
         $date = Carbon::parse($inputs['lead_date'])->format('m/d/Y');
         $title = 'CoregReport_'.Carbon::parse($inputs['lead_date'])->toDateString();

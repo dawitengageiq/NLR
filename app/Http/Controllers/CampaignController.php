@@ -583,7 +583,7 @@ class CampaignController extends Controller
 
     public function xxsample()
     {
-        $campaigns = Campaign::orderBy('priority', 'asc')->lists('id', 'priority');
+        $campaigns = Campaign::orderBy('priority', 'asc')->pluck('id', 'priority');
         $new_prio = Campaign::max('priority');
         $old_prio = 49;
         $id = 49;
@@ -686,7 +686,7 @@ class CampaignController extends Controller
         $return['filter_groups'] = $filter_groups;
 
         /* AFFILIATES */
-        $return_value['available'] = []; // Affiliate::getAvailableAffiliates($campaign)->lists('name','id')->toArray();
+        $return_value['available'] = []; // Affiliate::getAvailableAffiliates($campaign)->pluck('name','id')->toArray();
         // $affiliated = AffiliateCampaign::where('campaign_id','=',$campaign)->orderBy('affiliate_id','asc')->get();
         $affiliated = AffiliateCampaign::join('affiliates', 'affiliates.id', '=', 'affiliate_campaign.affiliate_id')
             ->where('campaign_id', '=', $campaign)
@@ -696,7 +696,7 @@ class CampaignController extends Controller
         $lead_cap_type = config('constants.LEAD_CAP_TYPES');
 
         if ($eiq_iframe_id == $campaign) {
-            $websites = AffiliateWebsite::selectRAW('DISTINCT(affiliate_id) as affiliate_id, status')->lists('status', 'affiliate_id')->toArray();
+            $websites = AffiliateWebsite::selectRAW('DISTINCT(affiliate_id) as affiliate_id, status')->pluck('status', 'affiliate_id')->toArray();
         }
 
         foreach ($affiliated as $affiliate) {
@@ -721,7 +721,7 @@ class CampaignController extends Controller
         $return['affiliates'] = $return_value;
 
         /* PAYOUTS */
-        $pay_return['available'] = []; //Affiliate::getAvailableAffiliatesForPayout($campaign)->lists('name','id')->toArray();
+        $pay_return['available'] = []; //Affiliate::getAvailableAffiliatesForPayout($campaign)->pluck('name','id')->toArray();
         $payouts = CampaignPayout::join('affiliates', 'affiliates.id', '=', 'campaign_payouts.affiliate_id')
             ->where('campaign_id', '=', $campaign)
             ->select(['campaign_payouts.id', 'affiliate_id', 'affiliates.company', 'received', 'payout', 'campaign_id'])
@@ -797,14 +797,14 @@ class CampaignController extends Controller
     {
         $id = $request->input('id');
 
-        return Affiliate::getCampaignAffiliateChoices($id)->lists('name', 'id')->toArray();
+        return Affiliate::getCampaignAffiliateChoices($id)->pluck('name', 'id')->toArray();
         //return Affiliate::getCampaignAffiliateChoices($id)->get()->toArray();
     }
 
     public function getAffiliatesData(Request $request)
     {
         $id = $request->input('id');
-        $return_value['available'] = Affiliate::getAvailableAffiliates($id)->lists('name', 'id')->toArray();
+        $return_value['available'] = Affiliate::getAvailableAffiliates($id)->pluck('name', 'id')->toArray();
         $affiliated = AffiliateCampaign::where('campaign_id', '=', $id)->get();
         $c = 0;
         foreach ($affiliated as $affiliate) {
@@ -987,7 +987,7 @@ class CampaignController extends Controller
         $tracking = (new OfferGoesDownJob($campaign, $the_affiliates, null));
         $this->dispatch($tracking);
 
-        return Affiliate::getAvailableAffiliates($campaign)->lists('name', 'id')->toArray();
+        return Affiliate::getAvailableAffiliates($campaign)->pluck('name', 'id')->toArray();
     }
 
     public function addCampaignPayout(Request $request)
@@ -1311,7 +1311,7 @@ class CampaignController extends Controller
     {
         // Log::info('DUPE CHECKER');
         // Log::info($id.' - '.$old_prio.' - '.$new_prio);
-        $campaigns = Campaign::orderBy('priority', 'asc')->lists('priority', 'id')->toArray();
+        $campaigns = Campaign::orderBy('priority', 'asc')->pluck('priority', 'id')->toArray();
         $count_campaigns = count($campaigns);
         // Log::info($campaigns);
 
@@ -1355,7 +1355,7 @@ class CampaignController extends Controller
         }
 
         // Log::info($campaigns);
-        // $campaigns = Campaign::orderBy('priority','asc')->lists('id');
+        // $campaigns = Campaign::orderBy('priority','asc')->pluck('id');
         // Log::info($campaigns);
 
         if ($old_prio > $new_prio) {
@@ -1572,7 +1572,7 @@ class CampaignController extends Controller
     public function addCampaignFilterGroup(Request $request)
     {
         $campaign_id = $request->input('this_campaign');
-        $campaign_filter_groups = CampaignFilterGroup::where('campaign_id', $campaign_id)->lists('name')->toArray();
+        $campaign_filter_groups = CampaignFilterGroup::where('campaign_id', $campaign_id)->pluck('name')->toArray();
         $campaign_filter_groups = implode($campaign_filter_groups, ',');
         $this->validate($request, [
             'filter_group_name' => 'required|not_in:'.$campaign_filter_groups,
@@ -1635,13 +1635,13 @@ class CampaignController extends Controller
         $filter_type = $request->input('filter_type');
 
         //for logging
-        $filter_names = FilterType::where('id', $filter_type)->lists('name', 'id');
+        $filter_names = FilterType::where('id', $filter_type)->pluck('name', 'id');
         $value_mask = [
             'value_boolean' => ['False', 'True'],
             'filter_type_id' => $filter_names,
         ];
         $campaign_id = CampaignFilterGroup::where('id', $filter_groups[0])->first()->campaign_id;
-        $group_names = CampaignFilterGroup::whereIn('id', $filter_groups)->lists('name', 'id');
+        $group_names = CampaignFilterGroup::whereIn('id', $filter_groups)->pluck('name', 'id');
 
         foreach ($filter_groups as $filter_group) {
             $filter = new CampaignFilterGroupFilter();
@@ -1701,13 +1701,13 @@ class CampaignController extends Controller
         $listOfAffected = [];
 
         //for logging
-        $filter_names = FilterType::lists('name', 'id');
+        $filter_names = FilterType::pluck('name', 'id');
         $value_mask = [
             'value_boolean' => ['False', 'True'],
             'filter_type_id' => $filter_names,
         ];
         $campaign_id = CampaignFilterGroup::where('id', $filter_groups[0])->first()->campaign_id;
-        $group_names = CampaignFilterGroup::whereIn('id', $filter_groups)->lists('name', 'id');
+        $group_names = CampaignFilterGroup::whereIn('id', $filter_groups)->pluck('name', 'id');
 
         foreach ($filter_groups as $filter_group_id) {
             $checkIfExists = CampaignFilterGroupFilter::where('campaign_filter_group_id', $filter_group_id)
@@ -1823,7 +1823,7 @@ class CampaignController extends Controller
         $filter_type = $filter->filter_type_id;
 
         //for logging
-        $filter_names = FilterType::where('id', $filter_type)->lists('name', 'id');
+        $filter_names = FilterType::where('id', $filter_type)->pluck('name', 'id');
         $value_mask = [
             'value_boolean' => ['False', 'True'],
             'filter_type_id' => $filter_names,
@@ -2867,7 +2867,7 @@ class CampaignController extends Controller
         $eiq_frame = env('EIQ_IFRAME_ID', 0);
 
         if (isset($inputs['all_cam_campaigns']) && $inputs['all_cam_campaigns'] == 'ALL') {
-            $getCampaigns = Campaign::lists('campaign_type', 'id')->toArray();
+            $getCampaigns = Campaign::pluck('campaign_type', 'id')->toArray();
             foreach ($getCampaigns as $c => $t) {
                 $campaigns[] = $c;
                 $campaign_types[$c] = $t;
@@ -3194,7 +3194,7 @@ class CampaignController extends Controller
     public function getAvailableCampaignAffiliates(Request $request)
     {
         $id = $request->input('id');
-        $affiliates = Affiliate::getAvailableAffiliates($id)->lists('name', 'id')->toArray();
+        $affiliates = Affiliate::getAvailableAffiliates($id)->pluck('name', 'id')->toArray();
 
         return response()->json($affiliates, 200);
     }
@@ -3202,7 +3202,7 @@ class CampaignController extends Controller
     public function getAvailableAffiliatePayouts(Request $request)
     {
         $id = $request->input('id');
-        $affiliates = Affiliate::getAvailableAffiliatesForPayout($id)->lists('name', 'id')->toArray();
+        $affiliates = Affiliate::getAvailableAffiliatesForPayout($id)->pluck('name', 'id')->toArray();
 
         return response()->json($affiliates, 200);
     }

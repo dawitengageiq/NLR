@@ -18,7 +18,7 @@ class LeadUsersController extends Controller
     {
         $inputs = $request->all();
         session()->put('survey_takers_input', $inputs);
-        $totalFiltered = LeadUser::searchUsers($inputs)->lists('id')->count();
+        $totalFiltered = LeadUser::searchUsers($inputs)->pluck('id')->count();
         $leadUsersData = [];
 
         $start = $inputs['start'];

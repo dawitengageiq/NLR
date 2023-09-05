@@ -32,7 +32,7 @@ class GetAvailableUsers extends Command
             ->whereNull($this->db.'.id')
             ->orWhere($this->db.'.id', $this->id)
             ->select('users.id as uid', DB::raw('CONCAT(CONCAT(users.first_name," ", users.last_name)," - ", users.email) AS full_name'))
-            ->lists('full_name', 'uid')
+            ->pluck('full_name', 'uid')
             ->toArray();
     }
 }

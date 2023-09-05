@@ -169,7 +169,7 @@ class CampaignList2Controller extends Controller
         $user->save();
 
         //Get Email Leads
-        $lead_campaigns = Lead::where('lead_email', $user->email)->whereIn('lead_status', [1, 2, 3, 4, 5])->lists('campaign_id')->toArray();
+        $lead_campaigns = Lead::where('lead_email', $user->email)->whereIn('lead_status', [1, 2, 3, 4, 5])->pluck('campaign_id')->toArray();
 
         //Campaigns
         $campaigns = Campaign::where('status', '!=', 0)->where('status', '!=', 3)
@@ -577,10 +577,10 @@ class CampaignList2Controller extends Controller
         /*** TIMER ***/ $time2 = microtime(true);
 
         /* GET ALL LEADS ANSWERED BY EMAIL */
-        $lead_campaigns = Lead::where('lead_email', $user['email'])->whereIn('lead_status', [1, 2, 3, 4, 5])->lists('campaign_id')->toArray();
+        $lead_campaigns = Lead::where('lead_email', $user['email'])->whereIn('lead_status', [1, 2, 3, 4, 5])->pluck('campaign_id')->toArray();
 
         /* GET CAKE CONVERSIONS CLICKED BY EMAIL */
-        $cake_clicks = CakeConversion::where('sub_id_5', $user['email'])->lists('offer_id')->toArray();
+        $cake_clicks = CakeConversion::where('sub_id_5', $user['email'])->pluck('offer_id')->toArray();
 
         /*** TIMER ***/ $time3 = microtime(true);
 
@@ -1243,7 +1243,7 @@ class CampaignList2Controller extends Controller
         $groupAsOne = isset($params['campaign_grouped']) ? true : false;
 
         //Get Email Leads
-        $lead_campaigns = Lead::where('lead_email', $user->email)->whereIn('lead_status', [1, 2, 3, 4, 5])->lists('campaign_id')->toArray();
+        $lead_campaigns = Lead::where('lead_email', $user->email)->whereIn('lead_status', [1, 2, 3, 4, 5])->pluck('campaign_id')->toArray();
 
         //Campaigns
         // \DB::connection('secondary')->enableQueryLog();

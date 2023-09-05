@@ -178,7 +178,7 @@ class SettingSeeder extends Seeder
             'code' => 'campaign_type_benchmarks',
         ]);
         if (! $campaign_type_benchmarks->exists) {
-            $campaigns = Campaign::where('status', 2)->groupBy('campaign_type')->lists('id', 'campaign_type');
+            $campaigns = Campaign::where('status', 2)->groupBy('campaign_type')->pluck('id', 'campaign_type');
             $campaigns[4] = env('EXTERNAL_PATH_IFFICIENT_CAMPAIGN_ID', '287');
             $campaign_type_benchmarks->name = 'Campaign Type ';
             $campaign_type_benchmarks->description = json_encode($campaigns);

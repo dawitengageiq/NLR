@@ -12,7 +12,7 @@ class ProgramIdExtractorSeeder extends Seeder
      */
     public function run()
     {
-        $campaigns = Campaign::whereIn('campaign_type', [1, 2, 3, 7, 8, 9, 10, 11, 12])->lists('name', 'id');
+        $campaigns = Campaign::whereIn('campaign_type', [1, 2, 3, 7, 8, 9, 10, 11, 12])->pluck('name', 'id');
 
         foreach ($campaigns as $id => $name) {
             // echo $id.' - '.$name.'<br>';

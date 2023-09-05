@@ -81,10 +81,10 @@ class AffiliateReportsV3 extends Job implements ShouldQueue
                 $subQuery->where('revenue_tracker_id', '=', 1);
             })
             ->groupBy('affiliate_revenue_trackers.affiliate_id', 'affiliate_revenue_trackers.revenue_tracker_id');
-        //->lists('revenue_tracker_id','campaign_affiliate');
+        //->pluck('revenue_tracker_id','campaign_affiliate');
 
         $revenueTrackers = $revTrackers;
-        $revenueTrackers = $revenueTrackers->lists('revenue_tracker_id', 'campaign_affiliate');
+        $revenueTrackers = $revenueTrackers->pluck('revenue_tracker_id', 'campaign_affiliate');
         $fullDataRevenueTrackers = $revTrackers;
         $fullDataRevenueTrackers = $fullDataRevenueTrackers->get();
 

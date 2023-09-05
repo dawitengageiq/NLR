@@ -75,7 +75,7 @@ class ListsApi
         }
 
         /* AFFILIATE WEBSITES */
-        $this->affiliateWebsites->fetch(
+        $this->affiliateWebsites->pluck(
             $this->app->request->get('website_id'),
             $this->app->request->get('affiliate_id'),
             $this->app->request->get('email'),

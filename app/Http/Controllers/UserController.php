@@ -31,7 +31,7 @@ class UserController extends Controller
     public function index()
     {
         //get all roles
-        $roles = Role::lists('name', 'id')->toArray();
+        $roles = Role::pluck('name', 'id')->toArray();
 
         return view('management.user', compact('roles'));
     }

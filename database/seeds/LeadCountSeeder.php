@@ -11,7 +11,7 @@ class LeadCountSeeder extends Seeder
      */
     public function run()
     {
-        $campaigns = App\Campaign::lists('id')->toArray();
+        $campaigns = App\Campaign::pluck('id')->toArray();
 
         $date_now = Carbon\Carbon::now()->toDateString();
         foreach ($campaigns as $campaign) {
@@ -23,7 +23,7 @@ class LeadCountSeeder extends Seeder
                 'reference_date' => $date_now,
             ]);
 
-            $affiliates = App\AffiliateCampaign::where('campaign_id', $campaign)->lists('affiliate_id')->toArray();
+            $affiliates = App\AffiliateCampaign::where('campaign_id', $campaign)->pluck('affiliate_id')->toArray();
             foreach ($affiliates as $affiliate) {
                 App\LeadCount::firstOrCreate([
                     'campaign_id' => $campaign,

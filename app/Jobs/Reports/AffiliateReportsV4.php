@@ -83,7 +83,7 @@ class AffiliateReportsV4 extends Job implements ShouldQueue
         $this->startLog = Carbon::now();
         $this->dateFromStr = $dateFromStr;
         $this->dateToStr = $dateToStr;
-        $this->affiliates = AffiliateRevenueTracker::lists('affiliate_id', 'revenue_tracker_id');
+        $this->affiliates = AffiliateRevenueTracker::pluck('affiliate_id', 'revenue_tracker_id');
         $this->errors = [];
         $this->restriction = $restriction;
         $this->revTrackerRestrict = $rev_tracker_id;
@@ -101,7 +101,7 @@ class AffiliateReportsV4 extends Job implements ShouldQueue
         $settings = Setting::where('code', 'clic_logs_apply_all_affiliates')->select('integer_value')->first();
         $this->clickLogAllAffiliates = $settings->integer_value == 1 ? true : false;
         if (! $this->clickLogAllAffiliates) {
-            $this->clickLogRevTrackers = ClickLogRevTrackers::lists('revenue_tracker_id')->toArray();
+            $this->clickLogRevTrackers = ClickLogRevTrackers::pluck('revenue_tracker_id')->toArray();
         }
         \Log::info('Click Log Settings');
         \Log::info($this->clickLogAllAffiliates ? 'All Affiliates' : 'Not all');
@@ -344,7 +344,7 @@ class AffiliateReportsV4 extends Job implements ShouldQueue
         if (count($this->clickLogEmails) > 0) {
             Log::info('Get DB prepop');
             // DB::enableQueryLog();
-            $db_existing = LeadUserUniqueInfo::whereIn('email', $this->clickLogEmails)->lists('email')->toArray();
+            $db_existing = LeadUserUniqueInfo::whereIn('email', $this->clickLogEmails)->pluck('email')->toArray();
             Log::info('Get Reg details');
             $users = LeadUser::whereIn('email', $this->clickLogEmails)
                 ->select('id', 'email', 'revenue_tracker_id', 'created_at')
@@ -2758,7 +2758,7 @@ class AffiliateReportsV4 extends Job implements ShouldQueue
         $cakeLRID = env('CPA_WALL_ENGAGEIQ_CAMPAIGN_ID', 94);
         $date = $this->dateFromStr;
         // DB::enableQueryLog();
-        $rev_campaigns = AffiliateRevenueTracker::lists('campaign_id', 'revenue_tracker_id')->toArray();
+        $rev_campaigns = AffiliateRevenueTracker::pluck('campaign_id', 'revenue_tracker_id')->toArray();
 
         $rev_trackers = AffiliateReport::leftJoin('revenue_tracker_cake_statistics', function ($q) {
             $q->on('revenue_tracker_cake_statistics.created_at', '=', 'affiliate_reports.created_at')
@@ -2860,7 +2860,7 @@ class AffiliateReportsV4 extends Job implements ShouldQueue
 
         // $affiliate_websites = AffiliateWebsite::where('affiliate_id', '!=', 0)
         //     ->select(['affiliate_id', 'id'])
-        //     ->lists('affiliate_id', 'id')->toArray();
+        //     ->pluck('affiliate_id', 'id')->toArray();
         // // \Log::info($affiliate_websites);
 
         // $affiliate_website_reports = [];

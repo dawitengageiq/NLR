@@ -38,7 +38,7 @@ class GetLeadUserSubscribedCampaignsJob extends Job implements ShouldQueue
         //$start_date = '2018-01-01 00:00:00';
         $start_date = Carbon::now()->subYear(1)->startOfYear();
         $end_date = Carbon::now()->endOfDay();
-        $users = LeadUserRequest::whereNull('subscribed_campaigns')->where('request_type', 'like', '%Delet%')->distinct('email')->lists('email')->toArray();
+        $users = LeadUserRequest::whereNull('subscribed_campaigns')->where('request_type', 'like', '%Delet%')->distinct('email')->pluck('email')->toArray();
 
         if (count($users) == 0) {
             Log::info('No new opt out users');

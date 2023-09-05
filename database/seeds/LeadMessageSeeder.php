@@ -16,7 +16,7 @@ class LeadMessageSeeder extends Seeder
         // use the factory to create a Faker\Generator instance
         $faker = Faker\Factory::create();
 
-        $leadIDs = Lead::lists('id')->toArray();
+        $leadIDs = Lead::pluck('id')->toArray();
 
         foreach ($leadIDs as $leadID) {
             $data = LeadMessage::firstOrCreate([

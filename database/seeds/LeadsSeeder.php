@@ -16,8 +16,8 @@ class LeadsSeeder extends Seeder
      */
     public function run()
     {
-        $coregs = Campaign::whereNotIn('campaign_type', [4, 5, 6])->where('status', '!=', 0)->lists('id')->toArray();
-        $rev_trackers = AffiliateRevenueTracker::lists('revenue_tracker_id')->toArray();
+        $coregs = Campaign::whereNotIn('campaign_type', [4, 5, 6])->where('status', '!=', 0)->pluck('id')->toArray();
+        $rev_trackers = AffiliateRevenueTracker::pluck('revenue_tracker_id')->toArray();
 
         // $coregs = [12,1,7,4,129,92,20,218,30,211];
         $rev_trackers = [7819, 7789, 7876, 7875, 7881, 7874, 7899, 7898, 7900, 7882];

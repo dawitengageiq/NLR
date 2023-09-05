@@ -15,9 +15,9 @@ class PageViewStatisticsSeeder extends Seeder
         $date = Carbon\Carbon::yesterday()->toDateString();
 
         $revenue_trackers = [1, 7612, 7820, 8245, 7819, 8094, 8093, 7789, 8095, 8128, 8294, 8095, 8053, 8106, 18657, 7932, 7790, 7861, 8206];
-        // $revenue_trackers = App\AffiliateRevenueTracker::lists('revenue_tracker_id')->limit('50')->toArray();
+        // $revenue_trackers = App\AffiliateRevenueTracker::pluck('revenue_tracker_id')->limit('50')->toArray();
         // DB::enableQueryLog();
-        $aff_rev = App\AffiliateRevenueTracker::whereIn('revenue_tracker_id', $revenue_trackers)->lists('affiliate_id', 'revenue_tracker_id');
+        $aff_rev = App\AffiliateRevenueTracker::whereIn('revenue_tracker_id', $revenue_trackers)->pluck('affiliate_id', 'revenue_tracker_id');
         // Log::info(DB::getQueryLog());
         // Log::info($aff_rev);
         foreach ($aff_rev as $rev => $aff) {
@@ -75,8 +75,8 @@ class PageViewStatisticsSeeder extends Seeder
         }
 
         $revenue_trackers = [1, 7612, 7820, 8245, 7819, 8094, 8093, 7789, 8095, 8128, 8294, 8095, 8053, 8106, 18657, 7932, 7790, 7861, 8206];
-        $aff_rev = App\AffiliateRevenueTracker::whereIn('revenue_tracker_id', $revenue_trackers)->lists('affiliate_id', 'revenue_tracker_id');
-        $offer_ids = App\Campaign::whereNotNull('linkout_offer_id')->where('linkout_offer_id', '!=', 0)->lists('linkout_offer_id')->toArray();
+        $aff_rev = App\AffiliateRevenueTracker::whereIn('revenue_tracker_id', $revenue_trackers)->pluck('affiliate_id', 'revenue_tracker_id');
+        $offer_ids = App\Campaign::whereNotNull('linkout_offer_id')->where('linkout_offer_id', '!=', 0)->pluck('linkout_offer_id')->toArray();
 
         foreach ($aff_rev as $rev => $aff) {
             $count = 10;

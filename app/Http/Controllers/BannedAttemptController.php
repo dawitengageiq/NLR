@@ -14,7 +14,7 @@ class BannedAttemptController extends Controller
         $inputs = $request->all();
         // \Log::info($inputs);
         session()->put('banned_attempt_input', $inputs);
-        $totalFiltered = BannedAttempt::searchUsers($inputs)->lists('id')->count();
+        $totalFiltered = BannedAttempt::searchUsers($inputs)->pluck('id')->count();
         $leadUsersData = [];
 
         $start = $inputs['start'];

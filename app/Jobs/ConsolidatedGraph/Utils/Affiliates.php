@@ -66,7 +66,7 @@ class Affiliates extends \App\Http\Services\Consolidated\Utils\Affiliates
      * Fetch the affilate records from database.
      * Eager load the related records.
      */
-    public function fetch()
+    public function pluck()
     {
         $this->affiliates = $this->model->has('revenueTracker')
             ->with([

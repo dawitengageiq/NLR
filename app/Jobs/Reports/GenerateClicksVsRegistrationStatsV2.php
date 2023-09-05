@@ -47,7 +47,7 @@ class GenerateClicksVsRegistrationStatsV2 extends Job implements ShouldQueue
         $date = Carbon::parse($date);
         $this->date_from = $date->toDateString();
         $this->date_to = $date->addDay()->toDateString();
-        $this->affiliates = Affiliate::lists('id')->toArray();
+        $this->affiliates = Affiliate::pluck('id')->toArray();
     }
 
     /**

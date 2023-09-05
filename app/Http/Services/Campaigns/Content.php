@@ -213,7 +213,7 @@ class Content
         $limit = '')
     {
         // Log::info($campaigns);
-        $this->stackContents = CampaignContent::whereIn('id', $this->campaigns)->lists('stack', 'id');
+        $this->stackContents = CampaignContent::whereIn('id', $this->campaigns)->pluck('stack', 'id');
 
         // go through campaigns
         collect($this->campaigns)->each(function ($campaignID) use ($limit) {

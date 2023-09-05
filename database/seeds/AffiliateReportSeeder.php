@@ -12,7 +12,7 @@ class AffiliateReportSeeder extends Seeder
     public function run()
     {
         $faker = Faker\Factory::create();
-        $rev_trackers = \App\AffiliateRevenueTracker::lists('affiliate_id', 'revenue_tracker_id')->toArray();
+        $rev_trackers = \App\AffiliateRevenueTracker::pluck('affiliate_id', 'revenue_tracker_id')->toArray();
 
         foreach ($rev_trackers as $rev => $aff) {
             $affiliate = \App\Affiliate::find($aff);

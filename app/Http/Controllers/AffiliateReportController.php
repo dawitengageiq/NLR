@@ -47,7 +47,7 @@ class AffiliateReportController extends Controller
         $affs = $stats->map(function ($st) {
             return $st->affiliate_id;
         });
-        $affiliates = Affiliate::whereIn('id', $affs)->lists('company', 'id');
+        $affiliates = Affiliate::whereIn('id', $affs)->pluck('company', 'id');
 
         $responseData = [
             'records' => $stats,
@@ -68,7 +68,7 @@ class AffiliateReportController extends Controller
         $affs = $stats->map(function ($st) {
             return $st->affiliate_id;
         });
-        $affiliates = Affiliate::whereIn('id', $affs)->lists('company', 'id');
+        $affiliates = Affiliate::whereIn('id', $affs)->pluck('company', 'id');
 
         $responseData = [
             'records' => $stats,
@@ -89,7 +89,7 @@ class AffiliateReportController extends Controller
         $cmps = $stats->map(function ($st) {
             return $st->campaign_id;
         });
-        $campaigns = Campaign::whereIn('id', $cmps)->lists('name', 'id');
+        $campaigns = Campaign::whereIn('id', $cmps)->pluck('name', 'id');
 
         $responseData = [
             'records' => $stats,
@@ -114,7 +114,7 @@ class AffiliateReportController extends Controller
         $affs = $stats->map(function ($st) {
             return $st->affiliate_id;
         });
-        $affiliates = Affiliate::whereIn('id', $affs)->lists('company', 'id');
+        $affiliates = Affiliate::whereIn('id', $affs)->pluck('company', 'id');
 
         // \Log::info(\DB::connection('secondary')->getQueryLog());
         // \Log::info(\DB::getQueryLog());
@@ -443,7 +443,7 @@ class AffiliateReportController extends Controller
         $rts = $stats->map(function ($st) {
             return $st->revenue_tracker_id;
         });
-        $websites = AffiliateRevenueTracker::whereIn('revenue_tracker_id', $rts)->lists('website', 'revenue_tracker_id');
+        $websites = AffiliateRevenueTracker::whereIn('revenue_tracker_id', $rts)->pluck('website', 'revenue_tracker_id');
 
         // \Log::info(\DB::connection('secondary')->getQueryLog());
         // \Log::info(\DB::getQueryLog());
@@ -470,7 +470,7 @@ class AffiliateReportController extends Controller
         $cids = $stats->map(function ($st) {
             return $st->campaign_id;
         });
-        $campaigns = Campaign::whereIn('id', $cids)->lists('name', 'id');
+        $campaigns = Campaign::whereIn('id', $cids)->pluck('name', 'id');
 
         $responseData = [
             'records' => $stats,
@@ -720,7 +720,7 @@ class AffiliateReportController extends Controller
 
                     $has_data = RevenueTrackerCakeStatistic::where('created_at', '=', $date)
                         ->whereIn('revenue_tracker_id', $rev_trackers)
-                        ->lists('revenue_tracker_id')->toArray();
+                        ->pluck('revenue_tracker_id')->toArray();
                     // Log::info($has_data);
 
                     $rows = [];
@@ -877,12 +877,12 @@ class AffiliateReportController extends Controller
         $cids = $handpAffiliateStats->map(function ($st) {
             return $st->campaign_id;
         });
-        $campaigns = Campaign::whereIn('id', $cids)->lists('name', 'id');
+        $campaigns = Campaign::whereIn('id', $cids)->pluck('name', 'id');
 
         $aids = $handpAffiliateStats->map(function ($st) {
             return $st->affiliate_id;
         });
-        $affiliates = Affiliate::whereIn('id', $aids)->lists('company', 'id');
+        $affiliates = Affiliate::whereIn('id', $aids)->pluck('company', 'id');
 
         //check if there are h and p types
         if (count($handpAffiliateStats) <= 0) {

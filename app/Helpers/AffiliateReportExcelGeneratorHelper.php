@@ -69,13 +69,13 @@ class AffiliateReportExcelGeneratorHelper
         $this->hasSubIDBreakdown = $sidb ? true : false;
 
         //Get Campaigns
-        $this->campaigns = Campaign::lists('name', 'id');
+        $this->campaigns = Campaign::pluck('name', 'id');
 
         //Get JS PATH Rev Trackers
-        $this->jsRevTrackers = AffiliateRevenueTracker::where('offer_id', 1)->where('revenue_tracker_id', '!=', 1)->lists('revenue_tracker_id')->toArray();
+        $this->jsRevTrackers = AffiliateRevenueTracker::where('offer_id', 1)->where('revenue_tracker_id', '!=', 1)->pluck('revenue_tracker_id')->toArray();
 
         //Revenue Tracker Website Names
-        $this->revWebsites = AffiliateWebsite::where('revenue_tracker_id', '!=', '')->lists('website_name', 'revenue_tracker_id')->toArray();
+        $this->revWebsites = AffiliateWebsite::where('revenue_tracker_id', '!=', '')->pluck('website_name', 'revenue_tracker_id')->toArray();
         // Log::info($this->revWebsites);
     }
 
@@ -599,7 +599,7 @@ class AffiliateReportExcelGeneratorHelper
         })->toArray();
         $affiliate_ids = collect(array_merge($affs, $affs2))->unique();
         //Log::info($affiliate_ids);
-        $this->affiliates = Affiliate::whereIn('id', $affiliate_ids)->lists('company', 'id');
+        $this->affiliates = Affiliate::whereIn('id', $affiliate_ids)->pluck('company', 'id');
         $affiliates = $this->affiliates;
         Log::info('DB::END');
         // Log::info(DB::getQueryLog());

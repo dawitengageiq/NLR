@@ -43,13 +43,13 @@ class NoCPLReminder extends Job implements ShouldQueue
         $date = Carbon::now()->toDateString();
         $sixty_days = Carbon::now()->subDay(60)->toDateString();
         //Get Existing Campaigns with no CPL
-        $existing_campaigns = CplChecker::lists('campaign_id')->toArray();
+        $existing_campaigns = CplChecker::pluck('campaign_id')->toArray();
 
         //Get Campaigns with no CPL
         $campaigns = Campaign::where(function ($q) {
             $q->where('default_payout', '=', 0)->orWhere('default_received', '=', 0);
         })->where('status', '!=', 0)->select('id', 'status', 'campaign_type')->get();
-        // ->where('status', '!=', 0)->whereNotIn('campaign_type', [4,5,6])->lists('id')->toArray();
+        // ->where('status', '!=', 0)->whereNotIn('campaign_type', [4,5,6])->pluck('id')->toArray();
 
         //Get Excluded Campaign Ids
         $setting = Setting::where('code', 'cplchecker_excluded_campaigns')->first();
@@ -92,7 +92,7 @@ class NoCPLReminder extends Job implements ShouldQueue
 
         //Get No CPL 60 days old
         $alert = CplChecker::leftJoin('campaigns', 'campaigns.id', '=', 'cpl_checkers.campaign_id')
-            ->where('cpl_checkers.created_at', '<=', $sixty_days)->lists('campaigns.name', 'campaign_id');
+            ->where('cpl_checkers.created_at', '<=', $sixty_days)->pluck('campaigns.name', 'campaign_id');
 
         if (count($alert) > 0) {
             $setting = Setting::where('code', 'nocpl_recipient')->first();

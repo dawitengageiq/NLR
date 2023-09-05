@@ -81,7 +81,7 @@ class ClickLogTraceInfoController extends Controller
             $inputs['date_to'] = $inputs['date_to'] != '' ? $inputs['date_to'] : $inputs['date_from'];
         }
 
-        $totalFiltered = ClickLogTraceInfo::search($inputs)->lists('id')->count();
+        $totalFiltered = ClickLogTraceInfo::search($inputs)->pluck('id')->count();
         $leads = ClickLogTraceInfo::search($inputs)
             ->select(DB::RAW('id, email, click_date, click_id, affiliate_id, revenue_tracker_id, ip, is_dbprepoped, reg_count, first_entry_rev_id, first_entry_timestamp, last_entry_rev_id, last_entry_timestamp'))
             ->orderBy($columns[$inputs['order'][0]['column']], $inputs['order'][0]['dir'])

@@ -334,9 +334,9 @@ class ApiController extends Controller
     {
         $faker = Factory::create();
 
-        $campaignIDs = Campaign::lists('id')->toArray();
-        $affiliateIDs = Affiliate::lists('id')->toArray();
-        $emails = User::lists('email')->toArray();
+        $campaignIDs = Campaign::pluck('id')->toArray();
+        $affiliateIDs = Affiliate::pluck('id')->toArray();
+        $emails = User::pluck('email')->toArray();
 
         $urls = [];
 

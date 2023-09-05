@@ -71,7 +71,7 @@ class AffiliateReportsV2 extends Job implements ShouldQueue
             ->join('affiliates', 'affiliate_revenue_trackers.affiliate_id', '=', 'affiliates.id')
             ->where('affiliates.type', '=', 1)
             ->groupBy('affiliate_revenue_trackers.affiliate_id', 'affiliate_revenue_trackers.revenue_tracker_id')
-            ->lists('revenue_tracker_id', 'campaign_affiliate');
+            ->pluck('revenue_tracker_id', 'campaign_affiliate');
 
         $campaignSummaryBaseURL = config('constants.CAKE_API_CAMPAIGN_SUMMARY_ALL_CAMPAIGNS_BASE_URL_V5');
         $campaignSummaryURL = $campaignSummaryBaseURL.'&start_date='.$this->dateFromStr.'&end_date='.$this->dateToStr;

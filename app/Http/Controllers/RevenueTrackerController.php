@@ -223,7 +223,7 @@ class RevenueTrackerController extends Controller
         $value_mask = [
             'fire_at' => config('constants.PAGE_FIRE_PIXEL'),
             'order_type' => config('constants.PATH_ORDER_TYPE'),
-            // 'exit_page_id' => Campaign::where('id', $tracker->exit_page_id)->lists('name', 'id'),
+            // 'exit_page_id' => Campaign::where('id', $tracker->exit_page_id)->pluck('name', 'id'),
             'path_type' => config('constants.PATH_TYPES'),
             'subid_breakdown' => config('constants.UNI_STATUS2'),
             'new_subid_breakdown_status' => config('constants.UNI_STATUS2'),
@@ -311,7 +311,7 @@ class RevenueTrackerController extends Controller
         $value_mask = [
             'fire_at' => config('constants.PAGE_FIRE_PIXEL'),
             'order_type' => config('constants.PATH_ORDER_TYPE'),
-            // 'exit_page_id' => Campaign::whereIn('id',[$current_state['exit_page_id'], $tracker->exit_page_id])->lists('name', 'id'),
+            // 'exit_page_id' => Campaign::whereIn('id',[$current_state['exit_page_id'], $tracker->exit_page_id])->pluck('name', 'id'),
             'path_type' => config('constants.PATH_TYPES'),
             'subid_breakdown' => config('constants.UNI_STATUS2'),
             'new_subid_breakdown_status' => config('constants.UNI_STATUS2'),
@@ -345,7 +345,7 @@ class RevenueTrackerController extends Controller
         $value_mask = [
             'fire_at' => config('constants.PAGE_FIRE_PIXEL'),
             'order_type' => config('constants.PATH_ORDER_TYPE'),
-            // 'exit_page_id' => Campaign::where('campaign_type', 6)->lists('name', 'id'),
+            // 'exit_page_id' => Campaign::where('campaign_type', 6)->pluck('name', 'id'),
             'path_type' => config('constants.PATH_TYPES'),
         ];
         $key_mask = [
@@ -359,7 +359,7 @@ class RevenueTrackerController extends Controller
 
     public function campaignOrderDetails($id)
     {
-        // $campaign_orders = CampaignTypeOrder::where('revenue_tracker_id', $id)->lists('campaign_id_order','campaign_type_id');
+        // $campaign_orders = CampaignTypeOrder::where('revenue_tracker_id', $id)->pluck('campaign_id_order','campaign_type_id');
         $reference_dates = [];
         $campaign_orders = [];
         $campaign_types = CampaignTypeOrder::where('revenue_tracker_id', $id)->get();
@@ -385,7 +385,7 @@ class RevenueTrackerController extends Controller
 
     public function mixedCoregCampaignOrderDetails($id)
     {
-        //$campaign_orders = CampaignTypeOrder::where('revenue_tracker_id', $id)->lists('campaign_id_order','campaign_type_id');
+        //$campaign_orders = CampaignTypeOrder::where('revenue_tracker_id', $id)->pluck('campaign_id_order','campaign_type_id');
         $mixedCoregCampaignOrder = MixedCoregCampaignOrder::where('revenue_tracker_id', $id)
             ->with(['affiliateRevenueTracker' => function ($query) {
                 return $query->select('revenue_tracker_id', 'mixed_coreg_recurrence', 'mixed_coreg_daily');
@@ -733,7 +733,7 @@ class RevenueTrackerController extends Controller
     {
         $inputs = $request->all();
 
-        // $cur_exit_page = AffiliateRevenueTracker::whereIn('id', $inputs['revenue_tracker_id'])->lists('exit_page_id', 'id')->toArray(); //For Logging
+        // $cur_exit_page = AffiliateRevenueTracker::whereIn('id', $inputs['revenue_tracker_id'])->pluck('exit_page_id', 'id')->toArray(); //For Logging
         $cur_exit_page = [];
         $rev_tracker_ids = [];
         //For Logging
@@ -747,7 +747,7 @@ class RevenueTrackerController extends Controller
         AffiliateRevenueTracker::whereIn('id', $inputs['revenue_tracker_id'])->update(['exit_page_id' => $exit_page_id]);
 
         //Action Logger
-        $value_mask = ['exit_page_id' => Campaign::where('campaign_type', 6)->lists('name', 'id')];
+        $value_mask = ['exit_page_id' => Campaign::where('campaign_type', 6)->pluck('name', 'id')];
         foreach ($inputs['revenue_tracker_id'] as $rt_id) {
             $old_value['exit_page_id'] = null;
             if (isset($cur_exit_page[$rt_id])) {

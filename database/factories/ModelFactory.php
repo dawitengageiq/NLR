@@ -51,7 +51,7 @@ $factory->define(App\Affiliate::class, function (Faker\Generator $faker) {
 
 $factory->define(App\Campaign::class, function (Faker\Generator $faker) {
 
-    $advertisers = \App\Advertiser::lists('id')->toArray();
+    $advertisers = \App\Advertiser::pluck('id')->toArray();
     $campaign_types = config('constants.CAMPAIGN_TYPES');
     $campaign_types = array_keys($campaign_types);
     $campaign_count = \App\Campaign::count();
@@ -73,22 +73,22 @@ $factory->define(App\Campaign::class, function (Faker\Generator $faker) {
 
 $factory->define(App\Lead::class, function (Faker\Generator $faker) {
 
-    //$campaigns = App\Campaign::whereIn('campaign_type',[4,255,32,209,208,139,247,92,129,83,210,20,23,5,168,147,200,186,101,90,169,206,265,213,135,6,134,192,292,266,279,264,38,259,220,33,28,159,40,19,199,46,296,112,189,22,47,128,239,240,276,277,278,291,254,122,256,232,126,251,175,80,27,253,35,182,120,119,153,82,152,29,109,234,233,102,149,103,219,174,167,217,180,214,154,173,183,177,142,138,121,117,132,113,155,156,133,79,166,110,111,18,137,36,91,44,78,45,43,11,87,181,165,260,295,299,300])->lists('id')->toArray();
+    //$campaigns = App\Campaign::whereIn('campaign_type',[4,255,32,209,208,139,247,92,129,83,210,20,23,5,168,147,200,186,101,90,169,206,265,213,135,6,134,192,292,266,279,264,38,259,220,33,28,159,40,19,199,46,296,112,189,22,47,128,239,240,276,277,278,291,254,122,256,232,126,251,175,80,27,253,35,182,120,119,153,82,152,29,109,234,233,102,149,103,219,174,167,217,180,214,154,173,183,177,142,138,121,117,132,113,155,156,133,79,166,110,111,18,137,36,91,44,78,45,43,11,87,181,165,260,295,299,300])->pluck('id')->toArray();
     //$campaigns = [4,255,32,209,208,139,247,92,129,83,210,20,23,5,168,147,200,186,101,90,169,206,265,213,135,6,134,192,292,266,279,264,38,259,220,33,28,159,40,19,199,46,296,112,189,22,47,128,239,240,276,277,278,291,254,122,256,232,126,251,175,80,27,253,35,182,120,119,153,82,152,29,109,234,233,102,149,103,219,174,167,217,180,214,154,173,183,177,142,138,121,117,132,113,155,156,133,79,166,110,111,18,137,36,91,44,78,45,43,11,87,181,165,260,295,299,300];
-    // $campaigns = App\Campaign::where('status','=',1)->lists('id')->toArray();
+    // $campaigns = App\Campaign::where('status','=',1)->pluck('id')->toArray();
     $campaigns = [32, 65];
-    // $campaigns = App\Campaign::lists('id')->toArray();
-    //$affiliates = App\Affiliate::where('type','=',2)->lists('id')->toArray();
-    //$affiliates = App\AffiliateRevenueTracker::lists('revenue_tracker_id')->toArray();
-    //$affiliates = App\AffiliateRevenueTracker::where('offer_id',1)->lists('revenue_tracker_id')->toArray();
-    //$affiliates = App\AffiliateRevenueTracker::where('offer_id', '!=', 1)->lists('revenue_tracker_id')->toArray();
+    // $campaigns = App\Campaign::pluck('id')->toArray();
+    //$affiliates = App\Affiliate::where('type','=',2)->pluck('id')->toArray();
+    //$affiliates = App\AffiliateRevenueTracker::pluck('revenue_tracker_id')->toArray();
+    //$affiliates = App\AffiliateRevenueTracker::where('offer_id',1)->pluck('revenue_tracker_id')->toArray();
+    //$affiliates = App\AffiliateRevenueTracker::where('offer_id', '!=', 1)->pluck('revenue_tracker_id')->toArray();
     $affiliates = [1, 7612, 7820, 8245, 7819, 8094, 8093, 7789, 8095, 8128];
 
     /*
     $affiliates = App\AffiliateRevenueTracker::where('offer_id', '=',1)
                                                 ->where('campaign_id','=',1)
                                                 ->where('revenue_tracker_id','=',1)
-                                                ->lists('revenue_tracker_id')->toArray();
+                                                ->pluck('revenue_tracker_id')->toArray();
     */
 
     $campaignID = $faker->randomElement($campaigns);
@@ -171,7 +171,7 @@ $factory->define(App\AffiliateWebsite::class, function (Faker\Generator $faker) 
 
 $factory->define(App\WebsitesViewTracker::class, function (Faker\Generator $faker) {
 
-    $affiliateWebsites = App\AffiliateWebsite::whereIn('affiliate_id', [1, 2, 3, 3432])->lists('id')->toArray();
+    $affiliateWebsites = App\AffiliateWebsite::whereIn('affiliate_id', [1, 2, 3, 3432])->pluck('id')->toArray();
 
     //$dateStr = Carbon\Carbon::now()->subDay()->toDateTimeString();
     $dateStr = '2017-10-01';
@@ -187,7 +187,7 @@ $factory->define(App\WebsitesViewTracker::class, function (Faker\Generator $fake
 
 $factory->define(App\WebsitesViewTracker::class, function (Faker\Generator $faker) {
 
-    $affiliateWebsites = App\AffiliateWebsite::whereIn('affiliate_id', [1, 2, 3, 3432])->lists('id')->toArray();
+    $affiliateWebsites = App\AffiliateWebsite::whereIn('affiliate_id', [1, 2, 3, 3432])->pluck('id')->toArray();
 
     //$dateStr = Carbon\Carbon::now()->subDay()->toDateTimeString();
     $dateStr = '2017-10-01';

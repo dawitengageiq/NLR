@@ -14,7 +14,7 @@ class CampaignFilterGroupSeeder extends Seeder
      */
     public function run()
     {
-        $campaigns = CampaignFilter::groupBy('campaign_id')->lists('campaign_id');
+        $campaigns = CampaignFilter::groupBy('campaign_id')->pluck('campaign_id');
 
         foreach ($campaigns as $campaign) {
             $group = CampaignFilterGroup::firstOrNew([

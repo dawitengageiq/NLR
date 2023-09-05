@@ -481,22 +481,22 @@ class AdminController extends Controller
         //$campaigns = Campaign::take(5)->get();
         $totalCampaignCount = Campaign::count();
 
-        //$advertisers = Advertiser::lists('company','id')->toArray();
-        //$affiliates = Affiliate::orderBy('company','asc')->lists('company','id')->toArray();
+        //$advertisers = Advertiser::pluck('company','id')->toArray();
+        //$affiliates = Affiliate::orderBy('company','asc')->pluck('company','id')->toArray();
         /*
-        $advertiser_campaign = Campaign::groupBy('advertiser_id')->lists('advertiser_id');
+        $advertiser_campaign = Campaign::groupBy('advertiser_id')->pluck('advertiser_id');
         $advertisers = Advertiser::select(DB::raw('CONCAT(company," (",id,")") AS name'),'id')
                                    ->whereIn('id',$advertiser_campaign)
                                    ->where('status',1)
                                    ->get()
-                                   ->lists('name','id')->toArray();
+                                   ->pluck('name','id')->toArray();
         */
 
         $advertisers = [null => ''] + Bus::dispatch(new GetAdvertisersCompanyIDPair());
 
         $affiliates = Affiliate::select('id', DB::raw('CONCAT(id, " - ",company) AS company_name'))
             ->orderBy('id', 'asc')
-            ->lists('company_name', 'id')->toArray();
+            ->pluck('company_name', 'id')->toArray();
 
         $lead_types = config('constants.LEAD_CAP_TYPES');
         $campaign_types = config('constants.CAMPAIGN_TYPES');
@@ -504,9 +504,9 @@ class AdminController extends Controller
 
         $filter_types = FilterType::select('id', DB::raw('CONCAT(type, " - ",name) AS filter_name'))
             ->orderBy('filter_name', 'asc')
-            ->lists('filter_name', 'id')->toArray();
+            ->pluck('filter_name', 'id')->toArray();
 
-        $categories = Category::where('status', '=', 1)->lists('name', 'id')->toArray();
+        $categories = Category::where('status', '=', 1)->pluck('name', 'id')->toArray();
 
         $forceEdit = Action::where('code', 'use_force_edit_default_received_payout')->first();
         $forceUserToUpdate = 0;
@@ -901,7 +901,7 @@ class AdminController extends Controller
         }
 
         //get benchmark names
-        $campaigns = Campaign::whereIn('id', array_keys($inputs['benchmark_types']))->lists('name', 'id');
+        $campaigns = Campaign::whereIn('id', array_keys($inputs['benchmark_types']))->pluck('name', 'id');
 
         $activeTypes = [];
         foreach ($campaign_type_active as $type) {
@@ -1190,7 +1190,7 @@ class AdminController extends Controller
 
     public function clicksVsRegsStats(Request $request)
     {
-        $affiliates = Affiliate::select('id', DB::raw('CONCAT(id, " - ", company) AS id_company'))->where('status', 1)->orderBy('id_company', 'asc')->lists('id_company', 'id')->toArray();
+        $affiliates = Affiliate::select('id', DB::raw('CONCAT(id, " - ", company) AS id_company'))->where('status', 1)->orderBy('id_company', 'asc')->pluck('id_company', 'id')->toArray();
 
         return view('admin.clicksvsregstats', compact('affiliates'));
     }
@@ -1248,7 +1248,7 @@ class AdminController extends Controller
         $affs = $stats->map(function ($st) {
             return $st->affiliate_id;
         });
-        $affiliates = Affiliate::whereIn('id', $affs)->lists('company', 'id');
+        $affiliates = Affiliate::whereIn('id', $affs)->pluck('company', 'id');
 
         // $allStatCount = ClicksVsRegistrationStatistics::clicksRegistrationStats($columns, $inputs)->get()->count();
         // $totalFiltered = $allStatCount;
@@ -1432,7 +1432,7 @@ class AdminController extends Controller
         $affs = $latestClicksVsRegistrationStats->map(function ($st) {
             return $st->affiliate_id;
         });
-        $affiliates = Affiliate::whereIn('id', $affs)->lists('company', 'id');
+        $affiliates = Affiliate::whereIn('id', $affs)->pluck('company', 'id');
 
         Excel::create($reportTitle, function ($excel) use ($sheetTitle, $latestClicksVsRegistrationStats, $groupBy, $affiliates, $inputs) {
             $excel->sheet($sheetTitle, function ($sheet) use ($latestClicksVsRegistrationStats, $groupBy, $affiliates, $inputs) {
@@ -1558,7 +1558,7 @@ class AdminController extends Controller
     public function pageViewStats(Request $request)
     {
         $inputs = $request->all();
-        $affiliates = Affiliate::select('id', DB::raw('CONCAT(id, " - ", company) AS id_company'))->where('status', 1)->orderBy('id_company', 'asc')->lists('id_company', 'id')->toArray();
+        $affiliates = Affiliate::select('id', DB::raw('CONCAT(id, " - ", company) AS id_company'))->where('status', 1)->orderBy('id_company', 'asc')->pluck('id_company', 'id')->toArray();
 
         return view('admin.pageViewStats', compact('affiliates', 'inputs'));
     }
@@ -1656,7 +1656,7 @@ class AdminController extends Controller
         $affs = $stats->map(function ($st) {
             return $st->affiliate_id;
         });
-        $affiliates = Affiliate::whereIn('id', $affs)->lists('company', 'id');
+        $affiliates = Affiliate::whereIn('id', $affs)->pluck('company', 'id');
 
         $statData = [];
 
@@ -1891,7 +1891,7 @@ class AdminController extends Controller
         $affs = $latestPageViewStats->map(function ($st) {
             return $st->affiliate_id;
         });
-        $affiliates = Affiliate::whereIn('id', $affs)->lists('company', 'id');
+        $affiliates = Affiliate::whereIn('id', $affs)->pluck('company', 'id');
 
         Excel::create($reportTitle, function ($excel) use ($sheetTitle, $latestPageViewStats, $groupBy, $average_percentage, $average_ceiling, $inputs, $affiliates) {
             $excel->sheet($sheetTitle, function ($sheet) use ($latestPageViewStats, $groupBy, $average_percentage, $average_ceiling, $inputs, $affiliates) {
@@ -2096,7 +2096,7 @@ class AdminController extends Controller
         $inputs = $request->all();
 
         if (! isset($inputs['show_inactive_campaign']) && isset($inputs['campaign_id']) && $inputs['campaign_id'] == '') {
-            $inputs['campaign_ids'] = Campaign::where('status', '!=', 0)->lists('id')->toArray();
+            $inputs['campaign_ids'] = Campaign::where('status', '!=', 0)->pluck('id')->toArray();
         }
         $leads = [];
         // Log::info($inputs);
@@ -2295,7 +2295,7 @@ class AdminController extends Controller
         $campaign_types = config('constants.CAMPAIGN_TYPES');
 
         if (! isset($inputs['show_inactive_campaign']) && $inputs['campaign_id'] == '') {
-            $inputs['campaign_ids'] = Campaign::where('status', '!=', 0)->lists('id')->toArray();
+            $inputs['campaign_ids'] = Campaign::where('status', '!=', 0)->pluck('id')->toArray();
         }
 
         // \Log::info($inputs);
@@ -2331,12 +2331,12 @@ class AdminController extends Controller
             return $st->affiliate_id;
         })->toArray();
         $aff_ids = array_unique($aff_ids);
-        $rev_trackers = AffiliateRevenueTracker::whereIn('revenue_tracker_id', $aff_ids)->lists('affiliate_id', 'revenue_tracker_id')->toArray();
+        $rev_trackers = AffiliateRevenueTracker::whereIn('revenue_tracker_id', $aff_ids)->pluck('affiliate_id', 'revenue_tracker_id')->toArray();
         $diff = array_diff($aff_ids, array_keys($rev_trackers));
         foreach ($diff as $d) {
             $rev_trackers[$d] = $d;
         }
-        $affiliates = Affiliate::whereIn('id', $rev_trackers)->lists('company', 'id')->toArray();
+        $affiliates = Affiliate::whereIn('id', $rev_trackers)->pluck('company', 'id')->toArray();
         // Log::info($rev_trackers);
         // Log::info($affiliates);
 
@@ -2749,12 +2749,12 @@ class AdminController extends Controller
             return $st->affiliate_id;
         })->toArray();
         $aff_ids = array_unique($aff_ids);
-        $rev_trackers = AffiliateRevenueTracker::whereIn('revenue_tracker_id', $aff_ids)->lists('affiliate_id', 'revenue_tracker_id')->toArray();
+        $rev_trackers = AffiliateRevenueTracker::whereIn('revenue_tracker_id', $aff_ids)->pluck('affiliate_id', 'revenue_tracker_id')->toArray();
         $diff = array_diff($aff_ids, array_keys($rev_trackers));
         foreach ($diff as $d) {
             $rev_trackers[$d] = $d;
         }
-        $affiliates = Affiliate::whereIn('id', $rev_trackers)->lists('company', 'id')->toArray();
+        $affiliates = Affiliate::whereIn('id', $rev_trackers)->pluck('company', 'id')->toArray();
 
         // session()->put('revenue_leads',$allLeads->get());
 
@@ -2983,7 +2983,7 @@ class AdminController extends Controller
      */
     public function revenueTrackers()
     {
-        $affiliates = Affiliate::select('id', DB::raw('CONCAT(id, " - ", company) AS id_company'))->where('status', 1)->orderBy('id_company', 'asc')->lists('id_company', 'id')->toArray();
+        $affiliates = Affiliate::select('id', DB::raw('CONCAT(id, " - ", company) AS id_company'))->where('status', 1)->orderBy('id_company', 'asc')->pluck('id_company', 'id')->toArray();
         $path_types = config('constants.PATH_TYPES');
         $campaignStatuses = config('constants.CAMPAIGN_STATUS');
 
@@ -4144,7 +4144,7 @@ class AdminController extends Controller
             ->groupBy('campaign_id')
             ->orderBy('total', 'desc')
             ->take(10)
-            ->lists('campaign_id')
+            ->pluck('campaign_id')
             ->toArray();
 
         if (! is_array($campaigns)) {
@@ -4451,10 +4451,10 @@ class AdminController extends Controller
     {
         $inputs = $request->all();
         // \Log::info($inputs);
-        //$paths = \App\Path::lists('name','id');
-        $affiliates = AffiliateRevenueTracker::lists('affiliate_id', 'revenue_tracker_id')->toArray();
+        //$paths = \App\Path::pluck('name','id');
+        $affiliates = AffiliateRevenueTracker::pluck('affiliate_id', 'revenue_tracker_id')->toArray();
         $date_today = Carbon::now()->toDateString();
-        $campaignList = Campaign::orderBy('name')->lists('name', 'id')->toArray();
+        $campaignList = Campaign::orderBy('name')->pluck('name', 'id')->toArray();
         // $campaigns[''] = 'ALL';
 
         foreach ($campaignList as $key => $campaign) {
@@ -4462,7 +4462,7 @@ class AdminController extends Controller
         }
 
         if (! isset($inputs['show_inactive_campaign']) && isset($inputs['campaign_id']) && $inputs['campaign_id'] == '') {
-            $inputs['campaign_ids'] = Campaign::where('status', '!=', 0)->lists('id')->toArray();
+            $inputs['campaign_ids'] = Campaign::where('status', '!=', 0)->pluck('id')->toArray();
         }
 
         $summary = $this->generateCreativeReport($inputs);
@@ -4480,9 +4480,9 @@ class AdminController extends Controller
     {
         $inputs = session()->get('searched_creatives_input');
         $summary = $this->generateCreativeReport($inputs);
-        // $paths = \App\Path::lists('name','id');
-        $campaigns = Campaign::orderBy('name')->lists('name', 'id')->toArray();
-        $affiliates = \App\AffiliateRevenueTracker::lists('affiliate_id', 'revenue_tracker_id')->toArray();
+        // $paths = \App\Path::pluck('name','id');
+        $campaigns = Campaign::orderBy('name')->pluck('name', 'id')->toArray();
+        $affiliates = \App\AffiliateRevenueTracker::pluck('affiliate_id', 'revenue_tracker_id')->toArray();
 
         $date = Carbon::now()->toDateString();
         if (isset($inputs['lead_date_from'], $inputs['lead_date_to']) && $inputs['lead_date_from'] != '' && $inputs['lead_date_to'] != '') {
@@ -4561,7 +4561,7 @@ class AdminController extends Controller
         // users
         $users = User::select('id', DB::raw('CONCAT(first_name, " ", middle_name, " ", last_name, " (",id,") ") AS full_name'))
             ->orderBy('full_name', 'asc')
-            ->lists('full_name', 'id')
+            ->pluck('full_name', 'id')
             ->toArray();
 
         $sectionsConfig = config('constants.USER_ACTION_SECTIONS');
@@ -4775,7 +4775,7 @@ class AdminController extends Controller
         // Log::info($inputs['term']);
 
         // get all campaigns involved with affiliate IDs
-        // $campaignIDs = AffiliateReport::getCampaignsByAffiliateIDs($affiliateIDs, $inputs)->lists('campaign_id')->toArray();
+        // $campaignIDs = AffiliateReport::getCampaignsByAffiliateIDs($affiliateIDs, $inputs)->pluck('campaign_id')->toArray();
 
         // $whereInCampaignID = '';
         // $ids = '';
@@ -4951,7 +4951,7 @@ class AdminController extends Controller
             return $st->campaign_id;
         });
 
-        $campaigns = Campaign::whereIn('id', $cids)->lists('name', 'id');
+        $campaigns = Campaign::whereIn('id', $cids)->pluck('name', 'id');
         // Log::info($statistics);
         $reports = [];
         foreach ($statistics as $s) {

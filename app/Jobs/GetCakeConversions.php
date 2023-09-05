@@ -143,7 +143,7 @@ class GetCakeConversions extends Job implements ShouldQueue
 
             //RESET
             $now_date = Carbon::now();
-            $reset_caps = LinkOutCount::where('expiration_date', '<=', $now_date)->lists('id');
+            $reset_caps = LinkOutCount::where('expiration_date', '<=', $now_date)->pluck('id');
             $not_included = [];
 
             foreach ($reset_caps as $rc) {

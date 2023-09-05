@@ -23,7 +23,7 @@ final class Creatives
     public function set($creatives, $campaignID)
     {
         if ($creatives && count($creatives) > 0) {
-            if ($creativeID = Bus::dispatch(new RandomProbability(collect($creatives)->lists('weight', 'id')))) {
+            if ($creativeID = Bus::dispatch(new RandomProbability(collect($creatives)->pluck('weight', 'id')))) {
                 $this->creatives[$campaignID] = $creativeID; //Save creative id of campaign
             }
         }

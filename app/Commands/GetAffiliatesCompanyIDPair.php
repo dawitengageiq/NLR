@@ -22,7 +22,7 @@ class GetAffiliatesCompanyIDPair extends Command
      */
     public function handle()
     {
-        $affiliates = Affiliate::select('id', DB::raw('CONCAT(company," (",id,") ") AS id_company'))->where('status', 1)->orderBy('id_company', 'asc')->lists('id_company', 'id')->toArray();
+        $affiliates = Affiliate::select('id', DB::raw('CONCAT(company," (",id,") ") AS id_company'))->where('status', 1)->orderBy('id_company', 'asc')->pluck('id_company', 'id')->toArray();
 
         return $affiliates;
     }

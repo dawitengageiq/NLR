@@ -30,8 +30,8 @@ class UserSeeder extends Seeder
 
         $faker = Faker\Factory::create();
 
-        $affiliateIDs = Affiliate::lists('id')->toArray();
-        $advertiserIDs = Advertiser::lists('id')->toArray();
+        $affiliateIDs = Affiliate::pluck('id')->toArray();
+        $advertiserIDs = Advertiser::pluck('id')->toArray();
 
         $affiliate = App\User::firstOrCreate([
             'email' => 'karla@engageiq.com',

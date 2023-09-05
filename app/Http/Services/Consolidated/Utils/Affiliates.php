@@ -43,7 +43,7 @@ class Affiliates
      * Fetch the affilate records from database.
      * Determine after if the records contain a lists.
      */
-    public function fetch()
+    public function pluck()
     {
         $affiliates = $this->model->select('id', 'company')
             ->where('status', 1)
