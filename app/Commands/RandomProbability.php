@@ -2,7 +2,6 @@
 
 namespace App\Commands;
 
-
 class RandomProbability extends Command
 {
     private $set = [];

@@ -2,7 +2,6 @@
 
 namespace App\Commands;
 
-
 class GetUserActionPermission extends Command
 {
     protected $user;
