@@ -11,12 +11,11 @@ return [
     | API, giving you convenient access to each back-end using the same
     | syntax for each one. Here you may set the default queue driver.
     |
-    | Supported: "null", "sync", "database", "beanstalkd",
-    |            "sqs", "iron", "redis"
+    | Supported: "null", "sync", "database", "beanstalkd", "sqs", "redis"
     |
     */
 
-    'default' => env('QUEUE_DRIVER', 'beanstalkd'),
+    'default' => env('QUEUE_DRIVER', 'sync'),
 
     /*
     |--------------------------------------------------------------------------
@@ -39,42 +38,23 @@ return [
             'driver' => 'database',
             'table' => 'jobs',
             'queue' => 'default',
-            'expire' => 100,
+            'expire' => 60,
         ],
 
-        //default connection for NLR used by the laravel-worker.conf
         'beanstalkd' => [
             'driver' => 'beanstalkd',
             'host' => 'localhost',
             'queue' => 'default',
-            'ttr' => 10800,
+            'ttr' => 60,
         ],
-
-        //connection for Affiliate Reports used by the affiliate-reports.conf
-        /*
-        'beanstalkd_affiliate_reports' => [
-            'driver' => 'beanstalkd',
-            'host'   => 'localhost',
-            'queue'  => 'default',
-            'ttr'    => 480,
-        ],
-        */
 
         'sqs' => [
             'driver' => 'sqs',
             'key' => 'your-public-key',
             'secret' => 'your-secret-key',
-            'queue' => 'your-queue-url',
-            'region' => 'us-east-1',
-        ],
-
-        'iron' => [
-            'driver' => 'iron',
-            'host' => 'mq-aws-us-east-1.iron.io',
-            'token' => 'your-token',
-            'project' => 'your-project-id',
+            'prefix' => 'https://sqs.us-east-1.amazonaws.com/your-account-id',
             'queue' => 'your-queue-name',
-            'encrypt' => true,
+            'region' => 'us-east-1',
         ],
 
         'redis' => [
@@ -98,7 +78,8 @@ return [
     */
 
     'failed' => [
-        'database' => 'mysql', 'table' => 'failed_jobs',
+        'database' => env('DB_CONNECTION', 'mysql'),
+        'table' => 'failed_jobs',
     ],
 
 ];
