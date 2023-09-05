@@ -28,12 +28,12 @@ User Management
 @section('content')
 
 <?php
-    $attributes = array(
+    $attributes = [
             'url' 		=> url('admin/user/save'),
             'class'			=> 'this_form',
             'data-confirmation' => '',
             'data-process' 	=> 'add_user'
-    );
+    ];
 ?>
 
 <button id="addUser" class="btn btn-primary addBtn" type="button">Add User</button>

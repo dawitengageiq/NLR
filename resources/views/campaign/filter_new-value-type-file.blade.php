@@ -96,13 +96,13 @@
 	<div class="collapse" id="campaignFilterForm" style="margin: 10px 0px;">
 		<div class="well">
 		  	<?php
-		  		$attributes = array(
+		  		$attributes = [
 		  			'url' 					=> 'add_campaign_filter',
 		  			'class'					=> 'form_with_file',
 		  			'data-confirmation' 	=> '',
 		  			'data-process' 			=> 'add_campaign_filter',
 		  			'files'					=> true
-		  		);
+		  		];
 		  	?>
 		  	{!! Form::open($attributes) !!}
 		  	<div class="row">

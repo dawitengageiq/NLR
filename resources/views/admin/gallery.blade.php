@@ -35,12 +35,12 @@ Gallery
 <div class="modal fade" id="addGalImgModal" tabindex="-1" role="dialog" aria-labelledby="addGalImgModal">
   <div class="modal-dialog" role="document">
   	<?php
-  		$attributes = array(
+  		$attributes = [
   			'url' 					=> 'add_gallery_image',
   			'class'					=> 'form_with_file',
   			'data-confirmation' 	=> '',
   			'data-process' 			=> 'add_gallery_image'
-  		);
+  		];
   	?>
   	{!! Form::open($attributes) !!}
     <div class="modal-content">

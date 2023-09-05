@@ -2,13 +2,13 @@
 {!! Form::hidden('standardLFRequiredFields', json_encode(config('constants.STANDARD_LF_REQUIRED_FIELDS')) ,array('id' => 'standardLFRequiredFields')) !!}
 <div class="modal fade" id="cmpFormBuilderModal" tabindex="-1" role="dialog" aria-labelledby="cmpFormBuilderModal">
 	<?php
-  		$attributes = array(
+  		$attributes = [
   			'url' 					=> 'campaign_form_builder',
   			'class'					=> '',
   			'data-confirmation' 	=> '',
   			'data-process' 			=> 'campaign_form_builder',
   			'id'					=> 'campaign_form_builder'
-  		);
+  		];
   	?>
 	{!! Form::open($attributes) !!}
 	{!! Form::hidden('this_campaign', '',array('id' => 'this_campaign','class' => 'this_field this_campaign')) !!}
@@ -209,13 +209,13 @@ $short_codes = config('constants.SHORT_CODES');
 
 <div id="cmpFormFieldModal" class="modal fade" tabindex="-1" role="dialog">
   <?php
-    $attributes = array(
+    $attributes = [
       'url'           => 'form_builder_field',
       'class'         => '',
       'data-confirmation'   => '',
       'data-process'      => 'form_builder_field',
       'id'          => 'form_builder_field'
-    );
+    ];
   ?>
   {!! Form::open($attributes) !!}
   {!! Form::hidden('field_id', '',array('id' => 'field_id','class' => 'this_field')) !!}

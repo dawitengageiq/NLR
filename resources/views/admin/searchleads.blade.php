@@ -140,12 +140,12 @@ table.dataTable tbody tr td, table.dataTable thead tr th {
     <div class="modal-dialog modal-lg" role="document">
 
         <?php
-            $attributes = array(
+            $attributes = [
                     'url' 		=> url('admin/updateLeadDetails'),
                     'class'			=> 'this_form',
                     'data-confirmation' => 'Are you sure you want to update the details of this lead?',
                     'data-process' 	=> 'update_lead_details'
-            );
+            ];
         ?>
 
         {!! Form::open($attributes) !!}
@@ -301,12 +301,12 @@ table.dataTable tbody tr td, table.dataTable thead tr th {
     <div class="modal-dialog" role="document">
 
     <?php
-        $attributes = array(
+        $attributes = [
                 'url'       => url('updateLeadRejectionRateSettings'),
                 'class'         => 'this_form',
                 'data-confirmation' => 'Are you sure you want to update?',
                 'data-process'  => 'update_lead_rejection_rate_settings'
-        );
+        ];
     ?>
 
     {!! Form::open($attributes) !!}

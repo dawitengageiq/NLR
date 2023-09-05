@@ -21,12 +21,12 @@
 	  	</ul>
 	</div>
 	<?php
-  		$attributes = array(
+  		$attributes = [
   			'url' 					=> 'edit_campaign_long_content',
   			'class'					=> 'this_form',
   			'data-confirmation' 	=> 'Are you sure you want to edit the campaign\'s long content?',
   			'data-process' 			=> 'edit_campaign_long_content'
-  		);
+  		];
   	?>
   	<div class="row">
 		{!! Form::open($attributes) !!}

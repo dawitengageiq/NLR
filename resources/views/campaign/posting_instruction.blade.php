@@ -11,12 +11,12 @@
 		</div>
 	
 		<?php
-	  		$attributes = array(
+	  		$attributes = [
 	  			'url' 					=> 'edit_campaign_posting_instruction',
 	  			'class'					=> 'this_form',
 	  			'data-confirmation' 	=> 'Are you sure you want to edit the campaign\'s posting instruction?',
 	  			'data-process' 			=> 'edit_campaign_posting_instruction'
-	  		);
+	  		];
 	  	?>
 	  	{!! Form::open($attributes) !!}
   	

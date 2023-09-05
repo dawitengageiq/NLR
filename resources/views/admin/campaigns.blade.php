@@ -77,14 +77,14 @@
 {!! Form::hidden('eiq_iframe_id', env('EIQ_IFRAME_ID',0),array('id' => 'eiq_iframe_id')) !!}
 
 <?php
-    $attributes = array(
+    $attributes = [
             'url' 		=> url('uploadCampaignPayout'),
             'class'			=> 'form-inline form_with_file_not_modal',
             'data-confirmation' => '',
             'data-process' 	=> 'upload_campaign_payout',
             'id' =>	'upload_campaign_payout_form',
             'enctype' => 'multipart/form-data'
-    );
+    ];
 ?>
 <div class="row">
 	<div class="col-lg-9 col-md-9">
@@ -184,13 +184,13 @@
 <!-- ADD Campaign Modal -->
 <div class="modal fade" id="addCmpFormModal" role="dialog" aria-labelledby="addCmpFormModal">
 <?php
-	$attributes = array(
+	$attributes = [
 		'url' 					=> 'add_campaign',
 		'class'					=> 'form_with_file',
 		'data-confirmation' 	=> '',
 		'data-process' 			=> 'add_campaign',
 		'files'					=> true
-	);
+	];
 ?>
 {!! Form::open($attributes) !!}
   <div class="modal-dialog modal-lg" role="document">
@@ -583,13 +583,13 @@
 <!-- Config Automation -->
 <div class="modal fade" id="cmpConfigAutomationModal" tabindex="-1" role="dialog" aria-labelledby="cmpConfigAutomationModal">
 	<?php
-  		$attributes = array(
+  		$attributes = [
   			'url' 					=> 'campaign_config_interface',
   			'class'					=> 'this_form',
   			'data-confirmation' 	=> '',
   			'data-process' 			=> 'campaign_config_interface',
   			'id'					=> 'campaign_config_interface_form'
-  		);
+  		];
   	?>
 	{!! Form::open($attributes) !!}
 	{!! Form::hidden('this_campaign', '',array('id' => 'this_campaign','class' => 'this_field this_campaign')) !!}
@@ -732,12 +732,12 @@
 <!-- Affiliate Campaign Management -->
 <div id="affCampMgmtModal" class="modal fade" role="dialog">
 	<?php
-		$attributes = array(
+		$attributes = [
 			'url' 					=> 'campaign_affiliate_management',
 			'class'					=> 'this_form',
 			'data-confirmation' 	=> '',
 			'data-process' 			=> 'campaign_affiliate_management'
-		);
+		];
 	?>
 	{!! Form::open($attributes) !!}
 	  <div class="modal-dialog modal-lg" role="document">

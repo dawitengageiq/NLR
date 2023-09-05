@@ -11,12 +11,12 @@
 	</button>
 
 	<?php
-  		$attributes = array(
+  		$attributes = [
   			'url' 					=> 'edit_campaign_config',
   			'class'					=> 'this_form',
   			'data-confirmation' 	=> '',
   			'data-process' 			=> 'edit_campaign_config'
-  		);
+  		];
   	?>
 	{!! Form::open($attributes) !!}
 	{!! Form::hidden('this_campaign', '',array('id' => 'this_campaign','class' => 'this_field this_campaign')) !!}

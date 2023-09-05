@@ -24,13 +24,13 @@
             <div class="form-group">
                 {!! Form::label('period','Snapshot Period: ',array('style' => 'padding-top: 8px;')) !!}
                 <?php
-                    $periods = array(
+                    $periods = [
                         'none'              =>  'Select Period',
                         // 'today'         =>  'TODAY',
                             'yesterday'     =>  'YESTERDAY',
                             'last_week'     =>  'LAST WEEK',
                             'last_month'    =>  'LAST MONTH'
-                    );
+                    ];
                 ?>
                 {!! Form::select('period',$periods, 'yesterday',['class' => 'this_field form-control','id' => 'snapshot_period']) !!}
             </div>
@@ -94,14 +94,14 @@
             <div class="row">
 
                 <?php
-                    $attributes = array(
+                    $attributes = [
                             'url'       => url('uploadReports'),
                             'class'         => 'form-inline form_with_file_not_modal',
                             'data-confirmation' => '',
                             'data-process'  => 'upload_affiliate_reports',
                             'id' => 'uploadReportForm',
                             'enctype' => 'multipart/form-data'
-                    );
+                    ];
                 ?>
 
                 <div class="col-md-12">

@@ -25,13 +25,13 @@
     <div class="modal-dialog" role="document">
 
         <?php
-            $attributes = array(
+            $attributes = [
                 'url'       => url('admin/filter/store'),
                 'class'         => 'form_with_file',
                 'data-confirmation' => '',
                 'data-process'  => 'add_filter_type',
                 'files'                 => true
-            );
+            ];
         ?>
 
         {!! Form::open($attributes) !!}

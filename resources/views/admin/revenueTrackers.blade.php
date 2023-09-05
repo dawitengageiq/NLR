@@ -47,12 +47,12 @@
         <div class="modal-dialog modal-lg" role="document">
 
             <?php
-            $attributes = array(
+            $attributes = [
                     'url' 					=> 'add_revenue_tracker',
                     'class'					=> 'this_form',
                     'data-confirmation' 	=> '',
                     'data-process' 			=> 'add_revenue_tracker'
-            );
+            ];
             ?>
 
             {!! Form::open($attributes) !!}
@@ -328,13 +328,13 @@
         <div class="modal-dialog modal-lg" role="document">
 
             <?php
-            $attributes = array(
+            $attributes = [
                     'url'                   => 'update_revenue_tracker_campaign_order',
                     'class'                 => 'this_form',
                     'data-confirmation'     => '',
                     'data-process'          => 'update_revenue_tracker_campaign_order',
                     'id'                    => 'campaign_order_form'
-            );
+            ];
             ?>
 
             {!! Form::open($attributes) !!}
@@ -410,13 +410,13 @@
         <div class="modal-dialog modal-lg" role="document">
 
             <?php
-            $attributes = array(
+            $attributes = [
                     'url'                   => 'update_revenue_tracker_mixed_coreg_campaign_order',
                     'class'                 => 'this_form',
                     'data-confirmation'     => '',
                     'data-process'          => 'update_revenue_tracker_mixed_coreg_campaign_order',
                     'id'                    => 'mixed_coreg_campaign_order_form'
-            );
+            ];
             ?>
 
             {!! Form::open($attributes) !!}
@@ -520,12 +520,12 @@
                 </div>
                 <div class="modal-body">
                     <?php
-                    $attributes = array(
+                    $attributes = [
                             'url'                   => 'update_rev_tracker_to_exit_page_list',
                             'class'                 => 'this_form',
                             'data-confirmation'     => '',
                             'data-process'          => 'rev_tracker_to_exit_page_list'
-                    );
+                    ];
                     ?>
                     {!! Form::open($attributes) !!}
                     <div class="row">
@@ -547,12 +547,12 @@
                     {!! Form::close() !!}
 
                     <?php
-                    $attributes = array(
+                    $attributes = [
                             'url'                   => 'update_rev_tracker_to_exit_page_list',
                             'class'                 => 'this_form',
                             'data-confirmation'     => '',
                             'data-process'          => 'rev_tracker_to_exit_page_list'
-                    );
+                    ];
                     ?>
                     {!! Form::open($attributes) !!}
                     {!! Form::hidden('exit_page_id', '',array('id' => 'default_exit_page', 'class' => 'this_field')) !!}

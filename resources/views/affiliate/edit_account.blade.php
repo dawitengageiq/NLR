@@ -67,12 +67,12 @@
             <!-- TITLE, FIRST NAME & LAST NAME -->
             <h2>Contact Info</h2>
             <?php
-                  $attributes = array(
+                  $attributes = [
                   'url'                => url('affiliate/edit_account_contact_info'),
                   'class'              => 'this_form form-horizontal',
                   'data-confirmation'  => '',
                   'data-process'       => 'edit_account_contact_info'
-                );
+                ];
             ?>
             {!! Form::open($attributes) !!}
 

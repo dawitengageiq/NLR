@@ -27,13 +27,13 @@
 		  	</ul>
 		</div>
 		<?php
-	  		$attributes = array(
+	  		$attributes = [
 	  			'url' 					=> 'edit_campaign_stack_content',
 	  			'class'					=> 'this_form',
 	  			'data-confirmation' 	=> 'Are you sure you want to edit the campaign\'s stack content?',
 	  			'data-process' 			=> 'edit_campaign_stack_content',
 	  			'id'					=> 'campaignStackForm'
-	  		);
+	  		];
 	  	?>
 	  	<div class="row">
 			{!! Form::open($attributes) !!}

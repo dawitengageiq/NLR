@@ -16,13 +16,13 @@
 
 	<!-- Add AFFILIATE WEBSITE FORM Start -->
 	<?php
-		$attributes = array(
+		$attributes = [
 			'url' 					=> 'add_affiliate_website',
 			'class'					=> 'this_form',
 			'data-confirmation' 	=> '',
 			'data-process' 			=> 'add_affiliate_website',
 			'id'					=> 'affiliate_website_form'
-		);
+		];
 	?>
 	{!! Form::open($attributes) !!}
 		{!! Form::hidden('website_affiliate', '',array('id' => 'website_affiliate','class' => 'this_field website_affiliate')) !!}
@@ -104,13 +104,13 @@
 
 	<!-- Edit Campaign Affiliate FORM Start -->
 	<?php
-  		$attributes = array(
+  		$attributes = [
   			'url' 					=> 'affiliate_website_payout',
   			'class'					=> 'this_form',
   			'data-confirmation' 	=> 'Are you sure you want to edit this?',
   			'data-process' 			=> 'affiliate_website_payout',
   			'id'					=> 'affiliate_website_payout_form'
-  		);
+  		];
   	?>
 	{!! Form::open($attributes) !!}
 		{!! Form::hidden('website_affiliate', '',array('id' => 'website_affiliate','class' => 'this_field website_affiliate')) !!}

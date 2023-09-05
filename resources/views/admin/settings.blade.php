@@ -33,13 +33,13 @@
 
 <div class="row">
     <?php
-        $attributes = array(
+        $attributes = [
             'url'                   => 'admin/updateSettings',
             'class'                 => 'this_form',
             'data-confirmation'     => 'are you sure you want to update the settings?',
             'data-process'          => 'update_settings',
             'id'                    => 'save-settings'
-        );
+        ];
     ?>
     {!! Form::open($attributes) !!}
     <div class="form-group this_error_wrapper">
