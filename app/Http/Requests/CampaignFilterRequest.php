@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use Carbon\Carbon;
-use Input;
+use Illuminate\Support\Facades\Request;
 use Validator;
 
 class CampaignFilterRequest extends Request
@@ -26,13 +26,13 @@ class CampaignFilterRequest extends Request
     public function rules()
     {
         Validator::extend('num_greater_than', function ($attribute, $value, $parameters) {
-            $other = Input::get($parameters[0]);
+            $other = Request::get($parameters[0]);
 
             return isset($other) and intval($value) >= intval($other);
         });
 
         Validator::extend('less_than', function ($attribute, $value, $parameters) {
-            $other = Input::get($parameters[0]);
+            $other = Request::get($parameters[0]);
 
             return isset($other) and intval($value) <= intval($other);
         });
@@ -40,11 +40,11 @@ class CampaignFilterRequest extends Request
         Validator::extend('date_greater_equal', function ($attribute, $value, $parameters) {
 
             $max = Carbon::parse($value);
-            $min = Carbon::parse(Input::get($parameters[0]));
+            $min = Carbon::parse(Request::get($parameters[0]));
 
             // var_dump($max->gte($min));
 
-            // $other = Input::get($parameters[0]);
+            // $other = Request::get($parameters[0]);
             return isset($min) and $max->gte($min);
         });
 

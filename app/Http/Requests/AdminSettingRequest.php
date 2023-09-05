@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Input;
+use Illuminate\Support\Facades\Request;
 use Validator;
 
 class AdminSettingRequest extends Request
@@ -25,13 +25,13 @@ class AdminSettingRequest extends Request
     public function rules()
     {
         Validator::extend('num_greater_than', function ($attribute, $value, $parameters) {
-            $other = Input::get($parameters[0]);
+            $other = Request::get($parameters[0]);
 
             return isset($other) and intval($value) > intval($other);
         });
 
         // Validator::extend('num_less_than', function($attribute, $value, $parameters) {
-        //     $other = Input::get($parameters[0]);
+        //     $other = Request::get($parameters[0]);
         //     return isset($other) and intval($value) < intval($other);
         // });
 

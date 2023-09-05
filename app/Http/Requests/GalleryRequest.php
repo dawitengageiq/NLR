@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Input;
+use Illuminate\Support\Facades\Request;
 use Storage;
 use Validator;
 
@@ -28,11 +28,11 @@ class GalleryRequest extends Request
     public function rules()
     {
         Validator::extend('image_exists', function ($attribute, $value, $parameters) {
-            if (Input::get($parameters[1]) == 1) {
-                $ext = Input::file($parameters[0])->getClientOriginalExtension();
+            if (Request::get($parameters[1]) == 1) {
+                $ext = Request::file($parameters[0])->getClientOriginalExtension();
 
             } else {
-                $url = Input::get($parameters[0]);
+                $url = Request::get($parameters[0]);
                 $ext = pathinfo($url, PATHINFO_EXTENSION);
             }
             $image = $value.'.'.$ext;
@@ -46,7 +46,7 @@ class GalleryRequest extends Request
         });
 
         Validator::extend('check_if_valid_image_url', function ($attribute, $value, $parameters) {
-            if (Input::get($parameters[0]) == 1) {
+            if (Request::get($parameters[0]) == 1) {
                 return true;
             } else {
                 $curl = curl_init($value);

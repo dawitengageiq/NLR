@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Input;
+use Illuminate\Support\Facades\Request;
 
 // use Log;
 
@@ -30,10 +30,10 @@ class BugReportRequest extends Request
             'description' => 'required',
         ];
 
-        // $inputs = Input::all();
+        // $inputs = Request::all();
         $inputs = $this->all();
         // Log::info($inputs);
-        $list_of_files = Input::get('list_of_files');
+        $list_of_files = Request::get('list_of_files');
         $files = $inputs['bug_evidence_files'];
         // if(($key = array_search('', $files)) !== false) {
         //     unset($files[$key]);

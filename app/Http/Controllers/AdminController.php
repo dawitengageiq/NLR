@@ -40,7 +40,7 @@ use GetAdvertisersCompanyIDPair;
 use GetInternalAffiliatesCompanyIDPair;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Input;
+use Illuminate\Support\Facades\Request as Input;
 use Log;
 use Session;
 use Storage;
