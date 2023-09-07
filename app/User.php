@@ -1,17 +1,16 @@
 <?php
 
 namespace App;
-
 use Illuminate\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
-use Illuminate\Database\Eloquent\Model;
+use Log;
 
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract
 {
     protected $connection;
-
     use Authenticatable, CanResetPassword;
 
     /**
@@ -30,7 +29,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         'title',
         'affiliate_id',
         'advertiser_id',
-        'first_name',
+        'first_name', 
         'middle_name',
         'last_name',
         'gender',
@@ -53,14 +52,14 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      */
     protected $hidden = ['password', 'remember_token'];
 
-    public function __construct(array $attributes = [])
+    public function __construct(array $attributes = array())
     {
         parent::__construct($attributes);
-        if (config('app.type') == 'reports') {
+        if(config('app.type') == 'reports') {
             $this->connection = 'secondary';
         }
     }
-
+    
     /**
      * will determine if user is admin
      *
@@ -84,21 +83,23 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     /**
      * scope for all non admin users
      *
+     * @param $query
      * @return mixed
      */
     public function scopeAllNonAdmin($query)
     {
-        return $query->whereRaw('account_type != ?', [2]);
+        return $query->whereRaw('account_type != ?', array(2));
     }
 
     /**
      * scope for all admin users
      *
+     * @param $query
      * @return mixed
      */
     public function scopeAllAdmin($query)
     {
-        return $query->whereRaw('account_type != ?', [1]);
+        return $query->whereRaw('account_type != ?', array(1));
     }
 
     /**
@@ -136,9 +137,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return $this->role_id == 1;
     }
 
-    public function scopeUserByEmailAndID($query, $param)
+    public function scopeUserByEmailAndID($query,$param)
     {
-        return $query->where('email', $param['email'])
-            ->where('id', $param['id']);
+        return $query->where('email',$param['email'])
+                     ->where('id',$param['id']);
     }
 }
