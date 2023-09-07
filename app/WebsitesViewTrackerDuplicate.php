@@ -1,16 +1,15 @@
 <?php
-namespace App;
 
-use Carbon\Carbon;
+namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
 class WebsitesViewTrackerDuplicate extends Model
 {
     protected $connection;
+
     /**
      * Table
-     *
      */
     protected $table = 'websites_view_tracker_duplicate';
 
@@ -31,22 +30,22 @@ class WebsitesViewTrackerDuplicate extends Model
      */
     protected $dates = [
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') != 'reports') {
+        if (config('app.type') != 'reports') {
             $this->connection = 'secondary';
         }
     }
 
     /**
      * Reltionship
-     *
      */
-    public function website(){
-		return $this->Belongsto(AffiliateWebsite::class);
-	}
+    public function website()
+    {
+        return $this->Belongsto(AffiliateWebsite::class);
+    }
 }

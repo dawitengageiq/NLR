@@ -2,18 +2,19 @@
 
 namespace App\Resources;
 
+use App\Http\Services\Helpers\Reflection;
+use Illuminate\Container\Container;
 use Illuminate\Database;
 use Illuminate\Support;
-use Illuminate\Http\Request;
-use Illuminate\Container\Container;
-
-use App\Http\Services\Helpers\Reflection;
 
 class Resource
 {
-    protected $resource, $item;
+    protected $resource;
+
+    protected $item;
 
     protected $with = [];
+
     protected $additional = [
         'type' => '',
         'status' => 200,
@@ -22,8 +23,8 @@ class Resource
         'message' => [
             'userMessage' => 'Success.',
             'developerMessage' => 'Success.',
-            'moreInfo' => ''
-        ]
+            'moreInfo' => '',
+        ],
     ];
 
     /**
@@ -43,7 +44,7 @@ class Resource
     /**
      * Transform the resource into an HTTP response.
      *
-     * @param  integer|null  $statusCode
+     * @param  int|null  $statusCode
      * @return \Illuminate\Http\JsonResponse
      */
     public function response($statusCode = null)
@@ -51,11 +52,10 @@ class Resource
         return $this->toResponse($statusCode);
     }
 
-
     /**
      * Create an HTTP response that represents the object.
      *
-     * @param  integer|null  $statusCode
+     * @param  int|null  $statusCode
      * @return \Illuminate\Http\JsonResponse
      */
     public function toResponse($statusCode = null)
@@ -99,7 +99,6 @@ class Resource
     /**
      * Add additional meta data to the resource response.
      *
-     * @param  array  $data
      * @return $this
      */
     public function additional(array $data)
@@ -117,14 +116,14 @@ class Resource
     protected function resolve()
     {
         // if ($this->resource instanceof Collection) {
-            $newCollection = [];
-            $this->resource->each(function($item, $index) use(&$newCollection) {
-                $this->item = $item;
-                $newCollection[$index] = $this->toArray($this->request);
-            });
-            $this->item = null;
+        $newCollection = [];
+        $this->resource->each(function ($item, $index) use (&$newCollection) {
+            $this->item = $item;
+            $newCollection[$index] = $this->toArray($this->request);
+        });
+        $this->item = null;
 
-            return collect($newCollection);
+        return collect($newCollection);
         // }
     }
 
@@ -137,17 +136,18 @@ class Resource
     /**
      * Calculate the appropriate status code for the response.
      *
-     * @param  integer|null  $statusCode
+     * @param  int|null  $statusCode
      * @return int
      */
     protected function calculateStatus($statusCode = null)
     {
-        if($statusCode)  return $statusCode;
+        if ($statusCode) {
+            return $statusCode;
+        }
 
         return $this->resource instanceof Model &&
                $this->resource->wasRecentlyCreated ? 201 : 200;
     }
-
 
     /**
      * Wrap the given data if necessary.
@@ -171,19 +171,21 @@ class Resource
 
     /**
      * [getValue description]
+     *
      * @param  [type] $field [description]
      * @return [type]        [description]
      */
     protected function getValue($field)
     {
-        if(!$this->item) return '';
+        if (! $this->item) {
+            return '';
+        }
 
         if (($this->resource instanceof Database\Eloquent\Collection
-        || $this->resource instanceof Support\Collection) && !is_array($this->item)) {
+        || $this->resource instanceof Support\Collection) && ! is_array($this->item)) {
             return $this->item->$field;
         }
 
         return array_key_exists($field, $this->item) ? $this->item[$field] : '';
     }
-
 }

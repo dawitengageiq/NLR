@@ -12,6 +12,6 @@ class AffiliateApiConfigs extends Model
         'affiliate_id',
         'campaign_type_order',
         'excluded_campaign_id',
-        'display_limit'
+        'display_limit',
     ];
 }

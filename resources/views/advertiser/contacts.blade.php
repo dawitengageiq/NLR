@@ -21,12 +21,12 @@
     <div class="modal-dialog modal-lg" role="document">
 
         <?php
-            $attributes = array(
+            $attributes = [
                 'url' 		=> url('admin/contact/store'),
                 'class'			=> 'this_form',
                 'data-confirmation' => '',
                 'data-process' 	=> 'add_contact'
-            );
+            ];
         ?>
 
         {!! Form::open($attributes) !!}

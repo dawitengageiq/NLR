@@ -24,12 +24,11 @@ class ConsolidatedGraphDataGenerator extends Command
     /**
      * Create a new command instance.
      *
-     * @param \App\Jobs\ConsolidatedGraph\GenerateData $generator
+     * @param  \App\Jobs\ConsolidatedGraph\GenerateData  $generator
      */
     public function __construct(
         // \App\Jobs\ConsolidatedGraph\GenerateData $generator
-        )
-    {
+    ) {
         // $this->generator = $generator;
         parent::__construct();
     }

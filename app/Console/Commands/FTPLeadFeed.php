@@ -40,8 +40,7 @@ class FTPLeadFeed extends Command
     public function handle()
     {
         $date = $this->option('date');
-        if(empty($date))
-        {
+        if (empty($date)) {
             $date = Carbon::now()->subDay()->toDateString();
         }
 

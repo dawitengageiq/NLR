@@ -1,27 +1,29 @@
 <?php
+
 namespace App\Http\Services;
-use App\Setting;
+
 class RejectedLeads
 {
     /**
      * Container for leads if exists.
-     *
      */
     protected $exists = false;
 
     /**
      * Filter Collections.
-     *
      */
-    protected $acceptable = []; 
+    protected $acceptable = [];
+
     protected $duplicates = ['duplicate', 'dupe', 'already', 'exist']; // match in array
+
     protected $prePopIssues = ['invalid', 'does not', 'doesn']; // match in array
+
     protected $filterIssues = ['does not'];  // !Important Notice: looking for "no" in words but don't match in array
+
     protected $others = [];  //
 
     /**
      * Methods to use on each rejection type.
-     *
      */
     protected $methods = [
         'acceptable' => 'forDuplicateAndPrePopIssues',
@@ -34,27 +36,28 @@ class RejectedLeads
     /**
      * An extension to the query made in searchLeads method in AdminController.
      *
-     * @param Sql $query
-     * @param String $rejection
-     * @return  Object eloquent
+     * @param  Sql  $query
+     * @param  string  $rejection
+     * @return  object eloquent
      */
-    public static function searchLeadByRejection ($query, $rejection = '')
+    public static function searchLeadByRejection($query, $rejection = '')
     {
         $setting = \App\Setting::where('code', 'high_rejection_keywords')->first();
         $keywords = json_decode($setting->description, true);
-        $this->duplicates = array_filter(array_map('trim', array_map('strtolower', explode(',',$keywords['d']))));
-        $this->prePopIssues = array_filter(array_map('trim', array_map('strtolower', explode(',',$keywords['p']))));
-        $this->filterIssues = array_filter(array_map('trim', array_map('strtolower', explode(',',$keywords['f']))));
-        $this->acceptable = array_filter(array_map('trim', array_map('strtolower', explode(',',$keywords['a']))));
+        $this->duplicates = array_filter(array_map('trim', array_map('strtolower', explode(',', $keywords['d']))));
+        $this->prePopIssues = array_filter(array_map('trim', array_map('strtolower', explode(',', $keywords['p']))));
+        $this->filterIssues = array_filter(array_map('trim', array_map('strtolower', explode(',', $keywords['f']))));
+        $this->acceptable = array_filter(array_map('trim', array_map('strtolower', explode(',', $keywords['a']))));
 
-        if($rejection) {
-            $rejectedLeads = new Static();
-            return $query->with('leadSentResult')->get()->filter(function($lead) use($rejectedLeads, $rejection) {
+        if ($rejection) {
+            $rejectedLeads = new static();
+
+            return $query->with('leadSentResult')->get()->filter(function ($lead) use ($rejectedLeads, $rejection) {
                 // Check if value is included in error type
                 // If exist, include in the leads in return
                 // Else don't include
                 $leadInArray = $lead->toArray();
-                if($rejectedLeads->errorTypeExist($leadInArray['lead_sent_result']['value'], $rejection)) {
+                if ($rejectedLeads->errorTypeExist($leadInArray['lead_sent_result']['value'], $rejection)) {
                     return $lead;
                 }
             });
@@ -67,15 +70,15 @@ class RejectedLeads
     /**
      * Check if exists on rejection type.
      *
-     * @param String $value
-     * @param String $rejection
+     * @param  string  $value
+     * @param  string  $rejection
      * @return  Bolean
      */
     protected function errorTypeExist($value, $rejection = 'duplicates')
     {
         $this->others = array_merge($this->duplicates, $this->prePopIssues);  // Don't match in array
 
-        collect($this->{camelCase($rejection)})->each(function ($errorCode) use($value, $rejection) {
+        collect($this->{camelCase($rejection)})->each(function ($errorCode) use ($value, $rejection) {
             // check if leads will be included in return as list
             return $this->{$this->methods[$rejection]}($value, $errorCode);
         });
@@ -86,8 +89,8 @@ class RejectedLeads
     /**
      * Check if exists on rejection type for duplicate and pre pop iisues.
      *
-     * @param String $value
-     * @param String $error_code
+     * @param  string  $value
+     * @param  string  $error_code
      * @return  Bolean
      */
     protected function forDuplicateAndPrePopIssues($value, $errorCode)
@@ -96,8 +99,9 @@ class RejectedLeads
 
         // Should match to error code
         // Break the loop if found/ exists,
-        if(stripos(strtolower($value), $errorCode) !== false) {
+        if (stripos(strtolower($value), $errorCode) !== false) {
             $this->exists = true;
+
             return false;
         }
     }
@@ -105,47 +109,51 @@ class RejectedLeads
     /**
      * Check if exists on rejection type for filter iisues.
      *
-     * @param String $value
-     * @param String $error_code
+     * @param  string  $value
+     * @param  string  $error_code
      * @return  Bolean
      */
     protected function forFilterIssues($value, $errorCode)
     {
         // Should not match to error code
-        if(stripos(strtolower($value), $errorCode) === false) {
+        if (stripos(strtolower($value), $errorCode) === false) {
             $this->exists = false;
 
             // Look for no in words, exists if found
             // Dont break the loop, might the other error code will match
-            if(stripos(strtolower($value), 'no') !== false) {
+            if (stripos(strtolower($value), 'no') !== false) {
                 $this->exists = true;
             }
+
             return true;
         }
         // Break the loop if match, means it belongs to another rejection type(prePopIssues)
         // Doesnt exists on this rejection type
         $this->exists = false;
+
         return false;
     }
 
     /**
      * Check if exists on rejection type for others.
      *
-     * @param String $value
-     * @param String $error_code
+     * @param  string  $value
+     * @param  string  $error_code
      * @return  Bolean
      */
     protected function forOthers($value, $errorCode)
     {
         // Should not match to  error code
         // Dont break the loop, might the other error code will match
-        if(stripos(strtolower($value), $errorCode) === false) {
+        if (stripos(strtolower($value), $errorCode) === false) {
             $this->exists = true;
+
             return true;
         }
         // Break the loop if match, means it belongs to another rejection type
         // Doesnt exists on this rejection type
         $this->exists = false;
+
         return false;
     }
 }

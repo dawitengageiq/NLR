@@ -8,7 +8,6 @@ use App\Lead;
 use Carbon\Carbon;
 use Curl\Curl;
 use Illuminate\Console\Command;
-use Log;
 use Sabre\Xml\Reader;
 
 class GenerateInternalAffiliateReportsOld extends Command
@@ -29,7 +28,6 @@ class GenerateInternalAffiliateReportsOld extends Command
 
     /**
      * Create a new command instance.
-     *
      */
     public function __construct()
     {
@@ -57,15 +55,14 @@ class GenerateInternalAffiliateReportsOld extends Command
 
         $revenueTrackers = AffiliateRevenueTracker::withAffiliates($params)->get();
 
-        foreach($revenueTrackers as $tracker)
-        {
+        foreach ($revenueTrackers as $tracker) {
             $this->info('Processing for '.$tracker->affiliate_name.' with revenue_tracker_id: '.$tracker->revenue_tracker_id);
 
             //$report = new AffiliateReport;
             $report = AffiliateReport::firstOrNew([
                 'affiliate_id' => $tracker->affiliate_id,
                 'affiliate_revenue_tracker_id' => $tracker->revenue_tracker_id,
-                'created_at' => $dateNow->toDateString()
+                'created_at' => $dateNow->toDateString(),
             ]);
 
             $report->affiliate_id = $tracker->affiliate_id;
@@ -90,16 +87,14 @@ class GenerateInternalAffiliateReportsOld extends Command
 
             //get the lead statistics
             $leadStats = Lead::affiliateRevenueStats([
-                                    'affiliate_id'=>$tracker->revenue_tracker_id,
-                                    'date'=>$dateNowStr])->first();
+                'affiliate_id' => $tracker->revenue_tracker_id,
+                'date' => $dateNowStr])->first();
 
-            if(isset($leadStats->leads))
-            {
+            if (isset($leadStats->leads)) {
                 $leads = $leads + $leadStats->leads;
             }
 
-            if(isset($leadStats->received))
-            {
+            if (isset($leadStats->received)) {
                 $revenue = $revenue + floatval($leadStats->received);
             }
 
@@ -117,7 +112,7 @@ class GenerateInternalAffiliateReportsOld extends Command
             $reader = new Reader();
             $reader->elementMap = [
                 $prefix.'affiliate_summary_response' => 'Sabre\Xml\Element\KeyValue',
-                $prefix.'affiliate_summary' => 'Sabre\Xml\Element\KeyValue'
+                $prefix.'affiliate_summary' => 'Sabre\Xml\Element\KeyValue',
             ];
 
             $curl = new Curl();
@@ -131,11 +126,9 @@ class GenerateInternalAffiliateReportsOld extends Command
             $cakeRevenue = 0.0;
 
             //get the revenue of the affiliates
-            if($affiliates && count($affiliates) > 0)
-            {
+            if ($affiliates && count($affiliates) > 0) {
                 //this means the reponse has affiliate data
-                foreach ($affiliates as $value)
-                {
+                foreach ($affiliates as $value) {
                     //var_dump($value['value'][$prefix.'clicks']);
                     //var_dump($value['value'][$prefix.'revenue']);
                     //var_dump($value['value'][$prefix.'cost']);
@@ -152,9 +145,8 @@ class GenerateInternalAffiliateReportsOld extends Command
             $we_get = $totalRevenue - $payout;
             $this->info('WE_GET: '.$we_get);
 
-            if($we_get>0.0)
-            {
-                $margin = ($we_get/$totalRevenue) * 100.0;
+            if ($we_get > 0.0) {
+                $margin = ($we_get / $totalRevenue) * 100.0;
                 $margin = round($margin, 2);
             }
 

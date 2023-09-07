@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Services\Consolidated;
 
 use App\ConsolidatedGraph;
@@ -30,16 +31,15 @@ class GraphByRevenueTrackerID extends GraphByDateRange implements \App\Http\Serv
     /**
      * Series per slide container, how many date/x-axis in one slide. We are using bootstrap carousel here.
      *
-     * @var integer
+     * @var int
      */
     protected $seriesPerslide = 4;
 
     /**
      * Instantiate.
      * Provide the eloquent model.
-     *
      */
-    public function __construct (ConsolidatedGraph $model)
+    public function __construct(ConsolidatedGraph $model)
     {
         $this->model = $model;
     }
@@ -47,15 +47,15 @@ class GraphByRevenueTrackerID extends GraphByDateRange implements \App\Http\Serv
     /**
      * Set the revenue tracker ids from affilates.
      *
-     * @param array $affiliates
+     * @param  array  $affiliates
      */
-    public function setRevenueTrackerIDs ($affiliates)
+    public function setRevenueTrackerIDs($affiliates)
     {
         foreach ($affiliates as $affiliate) {
-			foreach($affiliate['revenue_tracker'] as $revenueTracker) {
-				array_push($this->revenueTrackerIDs, $revenueTracker['revenue_tracker_id']);
-			}
-		}
+            foreach ($affiliate['revenue_tracker'] as $revenueTracker) {
+                array_push($this->revenueTrackerIDs, $revenueTracker['revenue_tracker_id']);
+            }
+        }
     }
 
     /**
@@ -63,7 +63,7 @@ class GraphByRevenueTrackerID extends GraphByDateRange implements \App\Http\Serv
      *
      * @return array
      */
-    public function revenueTrackerIDs ()
+    public function revenueTrackerIDs()
     {
         return $this->revenueTrackerIDs;
     }
@@ -71,9 +71,9 @@ class GraphByRevenueTrackerID extends GraphByDateRange implements \App\Http\Serv
     /**
      * Set the date.
      *
-     * @param  string $date
+     * @param  string  $date
      */
-    public function setdate ($date)
+    public function setdate($date)
     {
         // Use for Query
         $this->date = $date;
@@ -84,24 +84,24 @@ class GraphByRevenueTrackerID extends GraphByDateRange implements \App\Http\Serv
      *
      * @return string
      */
-    public function date ()
+    public function date()
     {
         return $this->date;
     }
 
     /**
      * Get the consilidated data to be use in chart.
-     * @model ConsolidatedGraph.
      *
+     * @model ConsolidatedGraph.
      */
-    public function getConsolidatedData ()
+    public function getConsolidatedData()
     {
         $this->records = $this->model
             ->whereIn('revenue_tracker_id', $this->revenueTrackerIDs)
-    		->whereDate('created_at', '=', $this->date)
-    		->get()
-    		->keyBy('revenue_tracker_id')
-    		->toArray();
+            ->whereDate('created_at', '=', $this->date)
+            ->get()
+            ->keyBy('revenue_tracker_id')
+            ->toArray();
     }
 
     /**
@@ -118,43 +118,46 @@ class GraphByRevenueTrackerID extends GraphByDateRange implements \App\Http\Serv
      *  7. If passed #3, #4, and #5 push data to the existing date count grouping and existing column/data.
      *  8. Fetch colors for colmn.
      *  9. Group the revenue_tracker_ids/categories per slide.
-     *
      */
     public function setSeriesThenCategories()
     {
         // #1 ....
-        foreach($this->records as $record){
-			// #2 ....
-			foreach ($this->legends as $legend => $details) {
-                #3 ....
-                if($this->excludeThisLegend($legend)) continue;
-				// Increment the legend counter
-				$this->counters[$legend]['data_count']++;
-				// Parameters for functions.
-				$param = [$legend, $details['alias'], $record['revenue_tracker_id']];
-				// #4 ....
-				if($this->dateCountGroupingExistsInSeries(...$param)) {
-					// #5 ....
-					if($col = $this->aliasExistsInSeriesColumn(...$param)) { // search value in the array
-						// #6 ....
-						if($this->counterDatacountIsLessThanSeriesPerslide(...$param)) {
-							// #7 ....
-							$this->pushDAtaToSeries(...(array_merge($param, [$details['percentage'], $col])));
-							// Skip code below, next legend.
-							continue;
-						}
-						// If exceed as #6 ...
-						$this->incrementDateCountAndResetDataCount(...$param);
-					}
-				}
-				// If failed as #4 and #5 ...
-				$this->pushDAtaToSeriesAsNewDateCountGrouping(...(array_merge($param, [$details['percentage']])));
+        foreach ($this->records as $record) {
+            // #2 ....
+            foreach ($this->legends as $legend => $details) {
+                //3 ....
+                if ($this->excludeThisLegend($legend)) {
+                    continue;
+                }
+                // Increment the legend counter
+                $this->counters[$legend]['data_count']++;
+                // Parameters for functions.
+                $param = [$legend, $details['alias'], $record['revenue_tracker_id']];
+                // #4 ....
+                if ($this->dateCountGroupingExistsInSeries(...$param)) {
+                    // #5 ....
+                    if ($col = $this->aliasExistsInSeriesColumn(...$param)) { // search value in the array
+                        // #6 ....
+                        if ($this->counterDatacountIsLessThanSeriesPerslide(...$param)) {
+                            // #7 ....
+                            $this->pushDAtaToSeries(...(array_merge($param, [$details['percentage'], $col])));
+                            // Skip code below, next legend.
+                            continue;
+                        }
+                        // If exceed as #6 ...
+                        $this->incrementDateCountAndResetDataCount(...$param);
+                    }
+                }
+                // If failed as #4 and #5 ...
+                $this->pushDAtaToSeriesAsNewDateCountGrouping(...(array_merge($param, [$details['percentage']])));
 
                 // #8 ....
-                if(!in_array($details['color'], $this->colors)) $this->colors[] = $details['color'];
-			}
+                if (! in_array($details['color'], $this->colors)) {
+                    $this->colors[] = $details['color'];
+                }
+            }
             // #9 ....
-			$this->categories['slide_' . $this->counters['mp_per_views']['date_count']][] = 'CD' . $record['revenue_tracker_id'];
-		}
+            $this->categories['slide_'.$this->counters['mp_per_views']['date_count']][] = 'CD'.$record['revenue_tracker_id'];
+        }
     }
 }

@@ -2,18 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use App\ClickLogTraceInfo;
 use Carbon\Carbon;
-use Excel;
 use DB;
+use Excel;
+use Illuminate\Http\Request;
 
 class ClickLogTraceInfoController extends Controller
 {
-
     public function __construct()
     {
         $this->middleware('auth');
@@ -33,7 +29,6 @@ class ClickLogTraceInfoController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function get(Request $request)
@@ -41,11 +36,11 @@ class ClickLogTraceInfoController extends Controller
         $inputs = $request->all();
         // \Log::info($inputs);
         // \DB::enableQueryLog();
-        session()->put('click_log_trace_info_input',$inputs);
-        
+        session()->put('click_log_trace_info_input', $inputs);
+
         $start = $inputs['start'];
         $length = $inputs['length'];
-        
+
         $columns = [
             'id',
             'click_date',
@@ -55,19 +50,19 @@ class ClickLogTraceInfoController extends Controller
             'revenue_tracker_id',
             'ip',
             'is_dbprepoped',
-            'reg_count', 
+            'reg_count',
             'first_entry_rev_id',
             'last_entry_rev_id',
         ];
         //Date From and To
-        if(isset($inputs['date_range']) && $inputs['date_range'] != '') {
+        if (isset($inputs['date_range']) && $inputs['date_range'] != '') {
             //Date Range
-            switch($inputs['date_range']) {
+            switch ($inputs['date_range']) {
                 case 'yesterday':
                     $inputs['date_from'] = Carbon::yesterday()->toDateString();
                     $inputs['date_to'] = Carbon::yesterday()->toDateString();
                     break;
-                case 'week' :
+                case 'week':
                     $inputs['date_from'] = Carbon::now()->startOfWeek()->toDateString();
                     $inputs['date_to'] = Carbon::now()->endOfWeek()->toDateString();
                     break;
@@ -80,38 +75,38 @@ class ClickLogTraceInfoController extends Controller
                     $inputs['date_to'] = Carbon::now()->subMonth()->endOfMonth()->toDateString();
                     break;
             }
-        }else {
+        } else {
             //get the date if no date_from and date_to
             $inputs['date_from'] = $inputs['date_from'] != '' ? $inputs['date_from'] : Carbon::yesterday()->toDateString();
             $inputs['date_to'] = $inputs['date_to'] != '' ? $inputs['date_to'] : $inputs['date_from'];
         }
 
-        $totalFiltered = ClickLogTraceInfo::search($inputs)->lists('id')->count();
+        $totalFiltered = ClickLogTraceInfo::search($inputs)->pluck('id')->count();
         $leads = ClickLogTraceInfo::search($inputs)
             ->select(DB::RAW('id, email, click_date, click_id, affiliate_id, revenue_tracker_id, ip, is_dbprepoped, reg_count, first_entry_rev_id, first_entry_timestamp, last_entry_rev_id, last_entry_timestamp'))
-            ->orderBy($columns[$inputs['order'][0]['column']],$inputs['order'][0]['dir'])
+            ->orderBy($columns[$inputs['order'][0]['column']], $inputs['order'][0]['dir'])
             ->offset($start)->limit($length)
             ->get();
         // \Log::info(\DB::getQueryLog());
-        $responseData = array(
-            "draw"            => intval($inputs['draw']),
-            "recordsTotal"    => ClickLogTraceInfo::count(),
-            "recordsFiltered" => $totalFiltered,
-            "data"            => $leads,
-            "offset"          => $start,
-            "length"          => $length
-        );
+        $responseData = [
+            'draw' => intval($inputs['draw']),
+            'recordsTotal' => ClickLogTraceInfo::count(),
+            'recordsFiltered' => $totalFiltered,
+            'data' => $leads,
+            'offset' => $start,
+            'length' => $length,
+        ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
-    public function download() 
+    public function download()
     {
         $inputs = session()->get('click_log_trace_info_input');
 
         $start = $inputs['start'];
         $length = $inputs['length'];
-        
+
         $columns = [
             'id',
             'click_date',
@@ -121,19 +116,19 @@ class ClickLogTraceInfoController extends Controller
             'revenue_tracker_id',
             'ip',
             'is_dbprepoped',
-            'reg_count', 
+            'reg_count',
             'first_entry_rev_id',
             'last_entry_rev_id',
         ];
         //Date From and To
-        if(isset($inputs['date_range']) && $inputs['date_range'] != '') {
+        if (isset($inputs['date_range']) && $inputs['date_range'] != '') {
             //Date Range
-            switch($inputs['date_range']) {
+            switch ($inputs['date_range']) {
                 case 'yesterday':
                     $inputs['date_from'] = Carbon::yesterday()->toDateString();
                     $inputs['date_to'] = Carbon::yesterday()->toDateString();
                     break;
-                case 'week' :
+                case 'week':
                     $inputs['date_from'] = Carbon::now()->startOfWeek()->toDateString();
                     $inputs['date_to'] = Carbon::now()->endOfWeek()->toDateString();
                     break;
@@ -146,7 +141,7 @@ class ClickLogTraceInfoController extends Controller
                     $inputs['date_to'] = Carbon::now()->subMonth()->endOfMonth()->toDateString();
                     break;
             }
-        }else {
+        } else {
             //get the date if no date_from and date_to
             $inputs['date_from'] = $inputs['date_from'] != '' ? $inputs['date_from'] : Carbon::yesterday()->toDateString();
             $inputs['date_to'] = $inputs['date_to'] != '' ? $inputs['date_to'] : $inputs['date_from'];
@@ -154,30 +149,30 @@ class ClickLogTraceInfoController extends Controller
 
         $leads = ClickLogTraceInfo::search($inputs)
             ->select(DB::RAW('id, email, click_date, click_id, affiliate_id, revenue_tracker_id, ip, is_dbprepoped, reg_count, first_entry_rev_id, first_entry_timestamp, last_entry_rev_id, last_entry_timestamp'))
-            ->orderBy($columns[$inputs['order'][0]['column']],$inputs['order'][0]['dir'])
+            ->orderBy($columns[$inputs['order'][0]['column']], $inputs['order'][0]['dir'])
             ->get();
 
         $title = 'ClickLogTraceInfo_'.Carbon::now()->toDateString();
 
-        Excel::create($title, function($excel) use($title,$leads,$inputs){
-            $excel->sheet($title,function($sheet) use ($title,$leads,$inputs){
+        Excel::create($title, function ($excel) use ($title, $leads) {
+            $excel->sheet($title, function ($sheet) use ($leads) {
 
                 // Set auto size for sheet
                 $sheet->setAutoSize(true);
 
-                $headers = ['No.', 'Click Date', 'Click ID', 'Email', 'Affiliate ID','RevTracker','IP Address', 'DB Prepoped', 'No. of Registration', '1st Entry', 'Last Entry'];
+                $headers = ['No.', 'Click Date', 'Click ID', 'Email', 'Affiliate ID', 'RevTracker', 'IP Address', 'DB Prepoped', 'No. of Registration', '1st Entry', 'Last Entry'];
 
                 //set up the title header row
                 $sheet->appendRow($headers);
 
                 //style the headers
-                $sheet->cells('A1:K1', function($cells) {
+                $sheet->cells('A1:K1', function ($cells) {
 
                     // Set font
-                    $cells->setFont(array(
-                        'size'       => '12',
-                        'bold'       =>  true
-                    ));
+                    $cells->setFont([
+                        'size' => '12',
+                        'bold' => true,
+                    ]);
 
                     $cells->setAlignment('center');
                     $cells->setValignment('center');
@@ -185,8 +180,7 @@ class ClickLogTraceInfoController extends Controller
 
                 $c = 1;
 
-                foreach($leads as $l)
-                {
+                foreach ($leads as $l) {
                     $sheet->appendRow([
                         $c++,
                         $l->click_date,
@@ -202,18 +196,15 @@ class ClickLogTraceInfoController extends Controller
                     ]);
                 }
             });
-        })->store('xls',storage_path('downloads'));
+        })->store('xls', storage_path('downloads'));
 
         $file_path = storage_path('downloads').'/'.$title.'.xls';
 
-        if(file_exists($file_path))
-        {
-            return response()->download($file_path,$title.'.xls',[
-                'Content-Length: '.filesize($file_path)
+        if (file_exists($file_path)) {
+            return response()->download($file_path, $title.'.xls', [
+                'Content-Length: '.filesize($file_path),
             ]);
-        }
-        else
-        {
+        } else {
             exit('Requested file does not exist on our server!');
         }
     }

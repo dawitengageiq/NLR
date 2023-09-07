@@ -23,13 +23,13 @@
     <div id="TotalRevenueDateModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <?php
-            $attributes = array(
+            $attributes = [
                 'url'   => 'get_total_revenue_statistics_by_date',
                 'id'    => 'totalRevenueStatisticsForm',
                 'class' => 'form-inline this_form',
                 'data-confirmation'     => '',
                 'data-process'          => 'get_total_revenue_statistics'
-            );
+            ];
             ?>
             {!! Form::open($attributes) !!}
             <div class="modal-content">
@@ -84,13 +84,13 @@
         <div id="AffiliateRevenueDateModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
           <div class="modal-dialog" role="document">
             <?php
-                $attributes = array(
+                $attributes = [
                     'url'   => 'get_affiliate_revenues_by_date',
                     'id'    => 'revenueByAffStatisticsForm',
                     'class' => 'form-inline this_form',
                     'data-confirmation'     => '',
                     'data-process'          => 'get_affiliate_revenues_by_date'
-                );
+                ];
             ?>
             {!! Form::open($attributes) !!}
             <div class="modal-content">
@@ -143,13 +143,13 @@
         <div id="AffiliateSurveyTakersDateModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
           <div class="modal-dialog" role="document">
             <?php
-                $attributes = array(
+                $attributes = [
                     'url'   => 'get_affiliate_survey_takers_by_date',
                     'id'    => 'surveyTakersByAffStatisticsForm',
                     'class' => 'form-inline this_form',
                     'data-confirmation'     => '',
                     'data-process'          => 'get_affiliate_survey_takers_by_date'
-                );
+                ];
             ?>
             {!! Form::open($attributes) !!}
             <div class="modal-content">

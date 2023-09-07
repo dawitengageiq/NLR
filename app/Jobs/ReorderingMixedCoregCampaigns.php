@@ -8,14 +8,13 @@ use App\Helpers\Repositories\Settings;
 use App\Lead;
 use App\MixedCoregCampaignOrder;
 use Carbon\Carbon;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Log;
 use DB;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Log;
 
-class ReorderingMixedCoregCampaigns extends Job implements SelfHandling, ShouldQueue
+class ReorderingMixedCoregCampaigns extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
@@ -29,13 +28,10 @@ class ReorderingMixedCoregCampaigns extends Job implements SelfHandling, ShouldQ
 
     /**
      * Execute the job.
-     *
-     * @param Settings $settings
      */
     public function handle(Settings $settings)
     {
-        if($this->attempts() > 1)
-        {
+        if ($this->attempts() > 1) {
             return;
         }
 
@@ -43,30 +39,26 @@ class ReorderingMixedCoregCampaigns extends Job implements SelfHandling, ShouldQ
         $globalViews = $settings->getValue('campaign_type_view_count');
         $date_time_now = Carbon::now()->toDateTimeString();
 
-        if($globalMixedCoregOrderStatus==1)
-        {
+        if ($globalMixedCoregOrderStatus == 1) {
             /*$revenueTrackers = AffiliateRevenueTracker::where('mixed_coreg_order_status','=',1)
                                                         ->join('mixed_coreg_campaign_orders','affiliate_revenue_trackers.revenue_tracker_id','=','mixed_coreg_campaign_orders.revenue_tracker_id')
                                                         ->get();*/
 
             $revenueTrackers = AffiliateRevenueTracker::where('mixed_coreg_recurrence', '=', 'views')
-                ->join('mixed_coreg_campaign_orders','affiliate_revenue_trackers.revenue_tracker_id','=','mixed_coreg_campaign_orders.revenue_tracker_id')
+                ->join('mixed_coreg_campaign_orders', 'affiliate_revenue_trackers.revenue_tracker_id', '=', 'mixed_coreg_campaign_orders.revenue_tracker_id')
                 ->get();
 
             $mixeCoregTypes = config('constants.MIXED_COREG_TYPE_FOR_ORDERING');
 
-            foreach($revenueTrackers as $revenueTracker)
-            {
-                if($revenueTracker->mixed_coreg_order_status == 0)
-                {
+            foreach ($revenueTrackers as $revenueTracker) {
+                if ($revenueTracker->mixed_coreg_order_status == 0) {
                     //skip this since this is disabled
                     continue;
                 }
 
                 $revenueTrackerOrderBy = $revenueTracker->mixed_coreg_order_by;
 
-                if($revenueTracker->mixed_coreg_campaign_views==0)
-                {
+                if ($revenueTracker->mixed_coreg_campaign_views == 0) {
                     $revenueTracker->mixed_coreg_campaign_views = $globalViews;
                 }
 
@@ -81,36 +73,30 @@ class ReorderingMixedCoregCampaigns extends Job implements SelfHandling, ShouldQ
 
                 Log::info("revenue_tracker_id: $revenueTracker->revenue_tracker_id");
 
-                $campaignViewReports = CampaignViewReport::select('campaign_view_reports.*','campaigns.status AS campaign_status', DB::raw("(SELECT COUNT(id) FROM affiliate_campaign WHERE affiliate_id=$revenueTracker->revenue_tracker_id and campaign_id=campaign_view_reports.campaign_id) AS affiliate_campaign_record"))
-                    ->where('revenue_tracker_id','=',$revenueTracker->revenue_tracker_id)
-                    ->join('campaigns','campaign_view_reports.campaign_id','=','campaigns.id')
-                    ->where(function($query)
-                    {
-                        $query->where('campaigns.status','=',1);
-                        $query->orWhere('campaigns.status','=',2);
+                $campaignViewReports = CampaignViewReport::select('campaign_view_reports.*', 'campaigns.status AS campaign_status', DB::raw("(SELECT COUNT(id) FROM affiliate_campaign WHERE affiliate_id=$revenueTracker->revenue_tracker_id and campaign_id=campaign_view_reports.campaign_id) AS affiliate_campaign_record"))
+                    ->where('revenue_tracker_id', '=', $revenueTracker->revenue_tracker_id)
+                    ->join('campaigns', 'campaign_view_reports.campaign_id', '=', 'campaigns.id')
+                    ->where(function ($query) {
+                        $query->where('campaigns.status', '=', 1);
+                        $query->orWhere('campaigns.status', '=', 2);
                     })
-                    ->where(function($query) use ($mixeCoregTypes)
-                    {
-                        foreach($mixeCoregTypes as  $key => $value)
-                        {
-                            $query->orWhere('campaign_type_id','=',$key);
+                    ->where(function ($query) use ($mixeCoregTypes) {
+                        foreach ($mixeCoregTypes as $key => $value) {
+                            $query->orWhere('campaign_type_id', '=', $key);
                         }
                     })->get();
 
                 //if not all campaigns reached the threshold then no reordering for this tracker
                 $doNotSkipThisTracker = true;
 
-                foreach($campaignViewReports as $campaignViewReport)
-                {
+                foreach ($campaignViewReports as $campaignViewReport) {
                     //ignore if campaign is private and if revenue tracker does not belong to this campaign
                     // if($campaignViewReport->campaign_status==1 && $campaignViewReport->affiliate_campaign_record==0)
-                    if($campaignViewReport->campaign_status==1 && $campaignViewReport->affiliate_campaign_record->count==0)
-                    {
+                    if ($campaignViewReport->campaign_status == 1 && $campaignViewReport->affiliate_campaign_record->count == 0) {
                         continue;
                     }
 
-                    if($campaignViewReport->current_view_count==0 || $campaignViewReport->current_view_count < $revenueTracker->mixed_coreg_campaign_views)
-                    {
+                    if ($campaignViewReport->current_view_count == 0 || $campaignViewReport->current_view_count < $revenueTracker->mixed_coreg_campaign_views) {
                         Log::info("campaign $campaignViewReport->campaign_id does not reached the threshold with $campaignViewReport->current_view_count count!");
 
                         $doNotSkipThisTracker = false;
@@ -128,8 +114,7 @@ class ReorderingMixedCoregCampaigns extends Job implements SelfHandling, ShouldQ
                 }
                 */
 
-                if ($doNotSkipThisTracker)
-                {
+                if ($doNotSkipThisTracker) {
                     $campaignOrder = \GuzzleHttp\json_decode($revenueTracker->campaign_id_order);
 
                     /*
@@ -159,16 +144,14 @@ class ReorderingMixedCoregCampaigns extends Job implements SelfHandling, ShouldQ
                     */
 
                     $leads = Lead::whereIn('leads.campaign_id', $campaignOrder)
-                        ->join('campaigns','leads.campaign_id','=','campaigns.id')
-                        ->join('campaign_view_reports', function($query)
-                        {
+                        ->join('campaigns', 'leads.campaign_id', '=', 'campaigns.id')
+                        ->join('campaign_view_reports', function ($query) {
                             $query->on('leads.campaign_id', '=', 'campaign_view_reports.campaign_id');
                             $query->on('leads.affiliate_id', '=', 'campaign_view_reports.revenue_tracker_id');
                         })
-                        ->where(function($query)
-                        {
-                            $query->where('campaigns.status','=',1);
-                            $query->orWhere('campaigns.status','=',2);
+                        ->where(function ($query) {
+                            $query->where('campaigns.status', '=', 1);
+                            $query->orWhere('campaigns.status', '=', 2);
                         })
                         ->where('leads.affiliate_id', '=', $revenueTracker->revenue_tracker_id)
                         ->where('leads.lead_status', '=', 1)
@@ -179,12 +162,10 @@ class ReorderingMixedCoregCampaigns extends Job implements SelfHandling, ShouldQ
 
                     $stopTheOrdering = false;
 
-                    foreach ($leads as $lead)
-                    {
-                        if($lead->current_view_count<=0)
-                        {
+                    foreach ($leads as $lead) {
+                        if ($lead->current_view_count <= 0) {
                             //at this point the campaign was newly added and stop the reordering
-                            Log::info("Ordering stopped! current_view_count is 0");
+                            Log::info('Ordering stopped! current_view_count is 0');
                             $stopTheOrdering = true;
                             break;
                         }
@@ -195,27 +176,22 @@ class ReorderingMixedCoregCampaigns extends Job implements SelfHandling, ShouldQ
                         if ($lead->revenue == 0 || $lead->revenue == 0.0) {
                             $lead_report[$revenueTracker->revenue_tracker_id][$lead->campaign_id]['revView'] = 0;
                         } else {
-                            $lead_report[$revenueTracker->revenue_tracker_id][$lead->campaign_id]['revView'] = doubleval($lead->revenue) / doubleval($lead->current_view_count);
+                            $lead_report[$revenueTracker->revenue_tracker_id][$lead->campaign_id]['revView'] = floatval($lead->revenue) / floatval($lead->current_view_count);
                         }
                     }
 
-                    if(count($leads)<=0 && !isset($lead_report))
-                    {
-                        Log::info("Ordering stopped! no leads!");
+                    if (count($leads) <= 0 && ! isset($lead_report)) {
+                        Log::info('Ordering stopped! no leads!');
                         $stopTheOrdering = true;
                     }
 
                     $campaignsOrderArray = [];
 
-                    if($stopTheOrdering)
-                    {
+                    if ($stopTheOrdering) {
                         continue;
-                    }
-                    else
-                    {
-                        foreach ($campaignOrder as $campaignID)
-                        {
-                            if (!isset($lead_report[$revenueTracker->revenue_tracker_id][$campaignID])) {
+                    } else {
+                        foreach ($campaignOrder as $campaignID) {
+                            if (! isset($lead_report[$revenueTracker->revenue_tracker_id][$campaignID])) {
                                 $campaignsOrderArray[$campaignID] = 0;
                             } else {
                                 $campaignsOrderArray[$campaignID] = $lead_report[$revenueTracker->revenue_tracker_id][$campaignID]['revView'];
@@ -223,11 +199,10 @@ class ReorderingMixedCoregCampaigns extends Job implements SelfHandling, ShouldQ
                         }
                     }
 
-                    Log::info("old campaign order: ");
+                    Log::info('old campaign order: ');
                     Log::info($campaignsOrderArray);
 
-                    if (count($campaignsOrderArray) > 0)
-                    {
+                    if (count($campaignsOrderArray) > 0) {
                         //sort it according to the order by field of affiliate revenue tracker
                         switch ($revenueTrackerOrderBy) {
                             //Order campaign ascending
@@ -235,31 +210,31 @@ class ReorderingMixedCoregCampaigns extends Job implements SelfHandling, ShouldQ
                                 asort($campaignsOrderArray);
                                 break;
 
-                            //Order campaign descending
+                                //Order campaign descending
                             case 2:
                                 arsort($campaignsOrderArray);
                                 break;
 
-                            //Randomize campaign order
+                                //Randomize campaign order
                             case 3:
                                 $campaignsOrderArray = $this->shuffle_assoc($campaignsOrderArray);
                                 break;
                         }
 
-                        Log::info("new campaign order: ");
+                        Log::info('new campaign order: ');
                         Log::info($campaignsOrderArray);
 
                         $newCampaignOrder = '[';
 
                         foreach ($campaignsOrderArray as $campaignID => $revenueValue) {
-                            $newCampaignOrder = $newCampaignOrder . $campaignID . ',';
+                            $newCampaignOrder = $newCampaignOrder.$campaignID.',';
                         }
 
-                        $newCampaignOrder = rtrim($newCampaignOrder, ',') . ']';
+                        $newCampaignOrder = rtrim($newCampaignOrder, ',').']';
 
                         //replace the old order
                         $mixedCoregCampaignOrder = MixedCoregCampaignOrder::firstOrNew([
-                            'revenue_tracker_id' => $revenueTracker->revenue_tracker_id
+                            'revenue_tracker_id' => $revenueTracker->revenue_tracker_id,
                         ]);
 
                         $mixedCoregCampaignOrder->campaign_id_order = $newCampaignOrder;
@@ -281,8 +256,7 @@ class ReorderingMixedCoregCampaigns extends Job implements SelfHandling, ShouldQ
             }
 
             //reset the current count regardless if reordering is enabled or not
-            foreach($revenueTrackers as $revenueTracker)
-            {
+            foreach ($revenueTrackers as $revenueTracker) {
                 /*
                 $campaignViewReports = CampaignViewReport::where('revenue_tracker_id','=',$revenueTracker->revenue_tracker_id)
                     ->join('campaigns','campaign_view_reports.campaign_id','=','campaigns.id')
@@ -293,35 +267,31 @@ class ReorderingMixedCoregCampaigns extends Job implements SelfHandling, ShouldQ
                     })->get();
                 */
 
-                $campaignViewReports = CampaignViewReport::select('campaign_view_reports.*','campaigns.status AS campaign_status',DB::raw("(SELECT COUNT(id) FROM affiliate_campaign WHERE affiliate_id=$revenueTracker->revenue_tracker_id and campaign_id=campaign_view_reports.campaign_id) AS affiliate_campaign_record"))
-                    ->where('revenue_tracker_id','=',$revenueTracker->revenue_tracker_id)
-                    ->join('campaigns','campaign_view_reports.campaign_id','=','campaigns.id')
-                    ->where(function($query) use ($mixeCoregTypes) {foreach($mixeCoregTypes as  $key => $value)
-                    {
-                        $query->orWhere('campaign_type_id','=',$key);
-                    }
+                $campaignViewReports = CampaignViewReport::select('campaign_view_reports.*', 'campaigns.status AS campaign_status', DB::raw("(SELECT COUNT(id) FROM affiliate_campaign WHERE affiliate_id=$revenueTracker->revenue_tracker_id and campaign_id=campaign_view_reports.campaign_id) AS affiliate_campaign_record"))
+                    ->where('revenue_tracker_id', '=', $revenueTracker->revenue_tracker_id)
+                    ->join('campaigns', 'campaign_view_reports.campaign_id', '=', 'campaigns.id')
+                    ->where(function ($query) use ($mixeCoregTypes) {
+                        foreach ($mixeCoregTypes as $key => $value) {
+                            $query->orWhere('campaign_type_id', '=', $key);
+                        }
                     })->get();
 
                 //if not all campaigns reached the threshold then no reordering for this tracker
                 $skipReorderForThisTracker = false;
 
-                foreach($campaignViewReports as $campaignViewReport)
-                {
+                foreach ($campaignViewReports as $campaignViewReport) {
                     //exempt all inactive and hidden campaigns
-                    if($campaignViewReport->campaign_status!=1 && $campaignViewReport->campaign_status!=2)
-                    {
+                    if ($campaignViewReport->campaign_status != 1 && $campaignViewReport->campaign_status != 2) {
                         continue;
                     }
 
                     //ignore if campaign is private and if revenue tracker does not belong to this campaign
                     // if($campaignViewReport->campaign_status==1 && $campaignViewReport->affiliate_campaign_record==0)
-                    if($campaignViewReport->campaign_status==1 && $campaignViewReport->affiliate_campaign_record->count==0)
-                    {
+                    if ($campaignViewReport->campaign_status == 1 && $campaignViewReport->affiliate_campaign_record->count == 0) {
                         continue;
                     }
 
-                    if($campaignViewReport->current_view_count < $revenueTracker->mixed_coreg_campaign_views)
-                    {
+                    if ($campaignViewReport->current_view_count < $revenueTracker->mixed_coreg_campaign_views) {
                         Log::info("campaign $campaignViewReport->campaign_id does not reached the threshold with $campaignViewReport->current_view_count count! skip reset!");
 
                         $skipReorderForThisTracker = true;
@@ -329,14 +299,10 @@ class ReorderingMixedCoregCampaigns extends Job implements SelfHandling, ShouldQ
                     }
                 }
 
-                if($skipReorderForThisTracker)
-                {
+                if ($skipReorderForThisTracker) {
                     continue;
-                }
-                else
-                {
-                    foreach($campaignViewReports as $campaignViewReport)
-                    {
+                } else {
+                    foreach ($campaignViewReports as $campaignViewReport) {
                         $campaignViewReport->current_view_count = 0;
                         $campaignViewReport->save();
                     }
@@ -348,15 +314,14 @@ class ReorderingMixedCoregCampaigns extends Job implements SelfHandling, ShouldQ
     private function shuffle_assoc($array)
     {
         //Initialize
-        $shuffled_array = array();
+        $shuffled_array = [];
 
         //Get array's keys and shuffle them.
         $shuffled_keys = array_keys($array);
         shuffle($shuffled_keys);
 
         //Create same array, but in shuffled order.
-        foreach ($shuffled_keys AS $shuffled_key)
-        {
+        foreach ($shuffled_keys as $shuffled_key) {
             $shuffled_array[$shuffled_key] = $array[$shuffled_key];
         }
 

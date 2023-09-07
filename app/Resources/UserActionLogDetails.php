@@ -2,13 +2,8 @@
 
 namespace App\Resources;
 
-use \Illuminate\Http\Request;
-
-use App\Http\Services\Helpers\Reflection;
-
 class UserActionLogDetails extends Resource
 {
-
     /**
      * Transform the resource into an array.
      *
@@ -23,9 +18,8 @@ class UserActionLogDetails extends Resource
             'summary' => $this->getValue('summary'),
             'old_value' => $this->getValue('old_value'),
             'new_value' => $this->getValue('new_value'),
-            'created_at' => $this->getValue('created_at')->toFormattedDateString()
+            'created_at' => $this->getValue('created_at')->toFormattedDateString(),
         ];
 
     }
-
 }

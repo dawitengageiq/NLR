@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Database\Seeder;
-use App\LeadDataAdv;
 use App\Lead;
+use App\LeadDataAdv;
+use Illuminate\Database\Seeder;
 
 class LeadDataAdvSeeder extends Seeder
 {
@@ -16,12 +16,11 @@ class LeadDataAdvSeeder extends Seeder
         // use the factory to create a Faker\Generator instance
         $faker = Faker\Factory::create();
 
-        $leadIDs = Lead::lists('id')->toArray();
+        $leadIDs = Lead::pluck('id')->toArray();
 
-        foreach($leadIDs as $leadID)
-        {
+        foreach ($leadIDs as $leadID) {
             $data = LeadDataAdv::firstOrCreate([
-                'id'	=>	$leadID,
+                'id' => $leadID,
             ]);
 
             $data->value = $faker->url;

@@ -12,7 +12,7 @@ return [
 
     'outfile' => [
         'high' => public_path('charts/images/high.png'),
-        'critical' => public_path('charts/images/critical.png')
+        'critical' => public_path('charts/images/critical.png'),
     ],
 
     'column_attributes' => [
@@ -44,9 +44,8 @@ return [
         25 => ['point_width' => 12, 'group_padding' => 0.2],
     ],
 
-    'dummy_serialized_data' => Array (
-        0 => Array
-            (
+    'dummy_serialized_data' => [
+        0 => [
                 'revenue_tracker_column' => 1,
                 'affiliate_id' => 1,
                 'campaign_id' => 27,
@@ -54,11 +53,10 @@ return [
                 'reject_rate' => 'HIGH',
                 'actual_rejection' => '14.29%',
                 'split' => 'Others = 100.00%',
-                'lead_count' => 14
-            ),
+                'lead_count' => 14,
+            ],
 
-        1 => Array
-            (
+        1 => [
                 'revenue_tracker_column' => 1,
                 'affiliate_id' => 1,
                 'campaign_id' => 17,
@@ -66,11 +64,10 @@ return [
                 'reject_rate' => 'HIGH',
                 'actual_rejection' => '15.38%',
                 'split' => 'Others = 100.00%',
-                'lead_count' => 14
-            ),
+                'lead_count' => 14,
+            ],
 
-        2 => Array
-            (
+        2 => [
                 'revenue_tracker_column' => 1,
                 'affiliate_id' => 1,
                 'campaign_id' => 20,
@@ -78,11 +75,10 @@ return [
                 'reject_rate' => 'HIGH',
                 'actual_rejection' => '15.38%',
                 'split' => 'Others = 100.00%',
-                'lead_count' => 14
-            ),
+                'lead_count' => 14,
+            ],
 
-        3 => Array
-            (
+        3 => [
                 'revenue_tracker_column' => 7831,
                 'affiliate_id' => 7831,
                 'campaign_id' => 13,
@@ -90,11 +86,10 @@ return [
                 'reject_rate' => 'HIGH',
                 'actual_rejection' => '25.00%',
                 'split' => 'Filter Issue = 100.00%',
-                'lead_count' => 4
-            ),
+                'lead_count' => 4,
+            ],
 
-        4 => Array
-            (
+        4 => [
                 'revenue_tracker_column' => 7877,
                 'affiliate_id' => 7877,
                 'campaign_id' => 1,
@@ -102,11 +97,10 @@ return [
                 'reject_rate' => 'CRITICAL',
                 'actual_rejection' => '100.00%',
                 'split' => 'Duplicates = 75.00%, Others = 25.00%',
-                'lead_count' => 4
-            ),
+                'lead_count' => 4,
+            ],
 
-        5 => Array
-            (
+        5 => [
                 'revenue_tracker_column' => 7831,
                 'affiliate_id' => 7831,
                 'campaign_id' => 6,
@@ -114,11 +108,10 @@ return [
                 'reject_rate' => 'CRITICAL',
                 'actual_rejection' => '100.00%',
                 'split' => 'Filter Issue = 100.00%',
-                'lead_count' => 4
-            ),
+                'lead_count' => 4,
+            ],
 
-        6 => Array
-            (
+        6 => [
                 'revenue_tracker_column' => 7735,
                 'affiliate_id' => 7735,
                 'campaign_id' => 2,
@@ -126,11 +119,10 @@ return [
                 'reject_rate' => 'HIGH',
                 'actual_rejection' => '50.00%',
                 'split' => 'Duplicates = 50.00%, Pre-pop Issue = 50.00%',
-                'lead_count' => 4
-            ),
+                'lead_count' => 4,
+            ],
 
-        7 => Array
-            (
+        7 => [
                 'revenue_tracker_column' => 7823,
                 'affiliate_id' => 7823,
                 'campaign_id' => 6,
@@ -138,11 +130,10 @@ return [
                 'reject_rate' => 'HIGH',
                 'actual_rejection' => '50.00%',
                 'split' => 'Pre-pop Issue = 100.00%',
-                'lead_count' => 3
-            ),
+                'lead_count' => 3,
+            ],
 
-        8 => Array
-            (
+        8 => [
                 'revenue_tracker_column' => 7863,
                 'affiliate_id' => 7863,
                 'campaign_id' => 4,
@@ -150,11 +141,10 @@ return [
                 'reject_rate' => 'CRITICAL',
                 'actual_rejection' => '100.00%',
                 'split' => 'Filter Issue = 50.00%, Pre-pop Issue = 50.00%',
-                'lead_count' => 3
-            ),
+                'lead_count' => 3,
+            ],
 
-        9 => Array
-            (
+        9 => [
                 'revenue_tracker_column' => 7909,
                 'affiliate_id' => 7909,
                 'campaign_id' => 9,
@@ -162,11 +152,10 @@ return [
                 'reject_rate' => 'HIGH',
                 'actual_rejection' => '66.67%',
                 'split' => 'Others = 100.00%',
-                'lead_count' => 3
-            ),
+                'lead_count' => 3,
+            ],
 
-        10 => Array
-            (
+        10 => [
                 'revenue_tracker_column' => 165,
                 'affiliate_id' => 165,
                 'campaign_id' => 2,
@@ -174,11 +163,10 @@ return [
                 'reject_rate' => 'CRITICAL',
                 'actual_rejection' => '100.00%',
                 'split' => 'Pre-pop Issue = 100.00%',
-                'lead_count' => 3
-            ),
+                'lead_count' => 3,
+            ],
 
-        11 => Array
-            (
+        11 => [
                 'revenue_tracker_column' => 7913,
                 'affiliate_id' => 7913,
                 'campaign_id' => 2,
@@ -186,11 +174,10 @@ return [
                 'reject_rate' => 'HIGH',
                 'actual_rejection' => '50.00%',
                 'split' => 'Others = 100.00%',
-                'lead_count' => 3
-            ),
+                'lead_count' => 3,
+            ],
 
-        12 => Array
-            (
+        12 => [
                 'revenue_tracker_column' => 7920,
                 'affiliate_id' => 7920,
                 'campaign_id' => 9,
@@ -198,11 +185,10 @@ return [
                 'reject_rate' => 'CRITICAL',
                 'actual_rejection' => '100.00%',
                 'split' => 'Duplicates = 33.33%, Filter Issue = 33.33%, Pre-pop Issue = 33.33%',
-                'lead_count' => 3
-            ),
+                'lead_count' => 3,
+            ],
 
-        13 => Array
-            (
+        13 => [
                 'revenue_tracker_column' => 7872,
                 'affiliate_id' => 7872,
                 'campaign_id' => 4,
@@ -210,11 +196,10 @@ return [
                 'reject_rate' => 'HIGH',
                 'actual_rejection' => '66.67%',
                 'split' => 'Pre-pop Issue = 100.00%',
-                'lead_count' => 3
-            ),
+                'lead_count' => 3,
+            ],
 
-        14 => Array
-            (
+        14 => [
                 'revenue_tracker_column' => 169,
                 'affiliate_id' => 169,
                 'campaign_id' => 4,
@@ -222,11 +207,10 @@ return [
                 'reject_rate' => 'HIGH',
                 'actual_rejection' => '33.33%',
                 'split' => 'Others = 100.00%',
-                'lead_count' => 3
-            ),
+                'lead_count' => 3,
+            ],
 
-        15 => Array
-            (
+        15 => [
                 'revenue_tracker_column' => 7744,
                 'affiliate_id' => 7744,
                 'campaign_id' => 8,
@@ -234,11 +218,10 @@ return [
                 'reject_rate' => 'CRITICAL',
                 'actual_rejection' => '100.00%',
                 'split' => 'Pre-pop Issue = 100.00%',
-                'lead_count' => 3
-            ),
+                'lead_count' => 3,
+            ],
 
-        16 => Array
-            (
+        16 => [
                 'revenue_tracker_column' => 7799,
                 'affiliate_id' => 7799,
                 'campaign_id' => 7,
@@ -246,11 +229,10 @@ return [
                 'reject_rate' => 'HIGH',
                 'actual_rejection' => '33.33%',
                 'split' => 'Filter Issue = 100.00%',
-                'lead_count' => 3
-            ),
+                'lead_count' => 3,
+            ],
 
-        17 => Array
-            (
+        17 => [
                 'revenue_tracker_column' => 7890,
                 'affiliate_id' => 7890,
                 'campaign_id' => 15,
@@ -258,11 +240,10 @@ return [
                 'reject_rate' => 'HIGH',
                 'actual_rejection' => '50.00%',
                 'split' => 'Others = 100.00%',
-                'lead_count' => 3
-            ),
+                'lead_count' => 3,
+            ],
 
-        18 => Array
-            (
+        18 => [
                 'revenue_tracker_column' => 7846,
                 'affiliate_id' => 7846,
                 'campaign_id' => 15,
@@ -270,11 +251,10 @@ return [
                 'reject_rate' => 'HIGH',
                 'actual_rejection' => '66.67%',
                 'split' => 'Duplicates = 50.00%, Others = 50.00%',
-                'lead_count' => 3
-            ),
+                'lead_count' => 3,
+            ],
 
-        19 => Array
-            (
+        19 => [
                 'revenue_tracker_column' => '[Strosin Inc (123)]',
                 'affiliate_id' => 123,
                 'campaign_id' => 4,
@@ -282,11 +262,10 @@ return [
                 'reject_rate' => 'CRITICAL',
                 'actual_rejection' => '100.00%',
                 'split' => 'Duplicates = 33.33%, Filter Issue = 33.33%, Others = 33.33%',
-                'lead_count' => 3
-            ),
+                'lead_count' => 3,
+            ],
 
-        20 => Array
-            (
+        20 => [
                 'revenue_tracker_column' => 7942,
                 'affiliate_id' => 7942,
                 'campaign_id' => 6,
@@ -294,11 +273,10 @@ return [
                 'reject_rate' => 'HIGH',
                 'actual_rejection' => '33.33%',
                 'split' => 'Pre-pop Issue = 100.00%',
-                'lead_count' => 3
-            ),
+                'lead_count' => 3,
+            ],
 
-        21 => Array
-            (
+        21 => [
                 'revenue_tracker_column' => 7907,
                 'affiliate_id' => 7907,
                 'campaign_id' => 7,
@@ -306,11 +284,10 @@ return [
                 'reject_rate' => 'CRITICAL',
                 'actual_rejection' => '100.00%',
                 'split' => 'Duplicates = 50.00%, Others = 50.00%',
-                'lead_count' => 3
-            ),
+                'lead_count' => 3,
+            ],
 
-        22 => Array
-            (
+        22 => [
                 'revenue_tracker_column' => 7873,
                 'affiliate_id' => 7873,
                 'campaign_id' => 4,
@@ -318,11 +295,10 @@ return [
                 'reject_rate' => 'HIGH',
                 'actual_rejection' => '66.67%',
                 'split' => 'Duplicates = 50.00%, Others = 50.00%',
-                'lead_count' => 3
-            ),
+                'lead_count' => 3,
+            ],
 
-        23 => Array
-            (
+        23 => [
                 'revenue_tracker_column' => 7744,
                 'affiliate_id' => 7744,
                 'campaign_id' => 2,
@@ -330,11 +306,10 @@ return [
                 'reject_rate' => 'CRITICAL',
                 'actual_rejection' => '100.00%',
                 'split' => 'Duplicates = 50.00%, Pre-pop Issue = 50.00%',
-                'lead_count' => 3
-            ),
+                'lead_count' => 3,
+            ],
 
-        24 => Array
-            (
+        24 => [
                 'revenue_tracker_column' => 7896,
                 'affiliate_id' => 7896,
                 'campaign_id' => 1,
@@ -342,11 +317,10 @@ return [
                 'reject_rate' => 'CRITICAL',
                 'actual_rejection' => '100.00%',
                 'split' => 'Filter Issue = 100.00%',
-                'lead_count' => 3
-            ),
+                'lead_count' => 3,
+            ],
 
-        25 => Array
-            (
+        25 => [
                 'revenue_tracker_column' => 7838,
                 'affiliate_id' => 7838,
                 'campaign_id' => 13,
@@ -354,11 +328,10 @@ return [
                 'reject_rate' => 'CRITICAL',
                 'actual_rejection' => '100.00%',
                 'split' => 'Filter Issue = 50.00%, Others = 50.00%',
-                'lead_count' => 3
-            ),
+                'lead_count' => 3,
+            ],
 
-        26 => Array
-            (
+        26 => [
                 'revenue_tracker_column' => 78381,
                 'affiliate_id' => 78381,
                 'campaign_id' => 131,
@@ -366,11 +339,10 @@ return [
                 'reject_rate' => 'CRITICAL',
                 'actual_rejection' => '100.00%',
                 'split' => 'Filter Issue = 50.00%, Others = 50.00%',
-                'lead_count' => 3
-            ),
+                'lead_count' => 3,
+            ],
 
-        27 => Array
-            (
+        27 => [
                 'revenue_tracker_column' => 78382,
                 'affiliate_id' => 78382,
                 'campaign_id' => 132,
@@ -378,11 +350,10 @@ return [
                 'reject_rate' => 'CRITICAL',
                 'actual_rejection' => '100.00%',
                 'split' => 'Filter Issue = 50.00%, Others = 50.00%',
-                'lead_count' => 3
-            ),
+                'lead_count' => 3,
+            ],
 
-        28 => Array
-            (
+        28 => [
                 'revenue_tracker_column' => 78383,
                 'affiliate_id' => 78383,
                 'campaign_id' => 133,
@@ -390,11 +361,10 @@ return [
                 'reject_rate' => 'CRITICAL',
                 'actual_rejection' => '100.00%',
                 'split' => 'Filter Issue = 50.00%, Others = 50.00%',
-                'lead_count' => 3
-            ),
+                'lead_count' => 3,
+            ],
 
-        29 => Array
-            (
+        29 => [
                 'revenue_tracker_column' => 78384,
                 'affiliate_id' => 78384,
                 'campaign_id' => 134,
@@ -402,11 +372,10 @@ return [
                 'reject_rate' => 'CRITICAL',
                 'actual_rejection' => '100.00%',
                 'split' => 'Filter Issue = 50.00%, Others = 50.00%',
-                'lead_count' => 3
-            ),
+                'lead_count' => 3,
+            ],
 
-        30 => Array
-            (
+        30 => [
                 'revenue_tracker_column' => 78385,
                 'affiliate_id' => 78385,
                 'campaign_id' => 135,
@@ -414,7 +383,7 @@ return [
                 'reject_rate' => 'CRITICAL',
                 'actual_rejection' => '100.00%',
                 'split' => 'Filter Issue = 50.00%, Others = 50.00%',
-                'lead_count' => 3
-            )
-    )
+                'lead_count' => 3,
+            ],
+    ],
 ];

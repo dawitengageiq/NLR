@@ -12,8 +12,8 @@ class AffiliateWebsitesTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(AffiliateWebsite::class,5)->create([
-            'affiliate_id' => 7750
+        factory(AffiliateWebsite::class, 5)->create([
+            'affiliate_id' => 7750,
         ]);
     }
 }

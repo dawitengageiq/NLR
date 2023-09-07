@@ -2,18 +2,16 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Job;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use App\AffiliateRevenueTracker;
-use Illuminate\Support\Facades\Mail;
-use Log;
 use App\Setting;
 use Carbon\Carbon;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Mail;
+use Log;
 
-class UpdateRevTrackerLandingUrl extends Job implements SelfHandling, ShouldQueue
+class UpdateRevTrackerLandingUrl extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
@@ -34,16 +32,15 @@ class UpdateRevTrackerLandingUrl extends Job implements SelfHandling, ShouldQueu
      */
     public function handle()
     {
-        if ($this->attempts() > 1)
-        {
+        if ($this->attempts() > 1) {
             return;
         }
 
         // Log::info('Update Landing URL');
-        $revenue_trackers = AffiliateRevenueTracker::lists('tracking_link', 'id');
-        foreach($revenue_trackers as $id => $tracking_link) {
+        $revenue_trackers = AffiliateRevenueTracker::pluck('tracking_link', 'id');
+        foreach ($revenue_trackers as $id => $tracking_link) {
             $landing_url = '';
-            if($tracking_link != '') {
+            if ($tracking_link != '') {
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $tracking_link);
                 curl_setopt($ch, CURLOPT_HEADER, true);
@@ -65,10 +62,10 @@ class UpdateRevTrackerLandingUrl extends Job implements SelfHandling, ShouldQueu
         //send email to Burt to notify that Affiliate Report Queue was successfully finished
         Mail::send('emails.update_rev_tracker_landing_url',
             ['now' => Carbon::now()],
-            function ($m) use ($email){
-            $m->from('ariel@engageiq.com', 'Ariel Magbanua');
-            $m->to($email)->subject('Update Revenue Tracker Landing URL Job Queue Successfully Executed!');
-        });
+            function ($m) use ($email) {
+                $m->from('ariel@engageiq.com', 'Ariel Magbanua');
+                $m->to($email)->subject('Update Revenue Tracker Landing URL Job Queue Successfully Executed!');
+            });
         // Log::info('Update Landing URL DONE!');
     }
 }

@@ -82,14 +82,14 @@ $affiliate = auth()->user()->affiliate;
                 <ul id="bugReportDiv" class="dropdown-menu dropdown-user">
                     <li>
                         <?php
-                            $attributes = array(
+                            $attributes = [
                                 'id'                    => 'report_bug_form',
                                 'url'                   => 'report_bug',
                                 'class'                 => 'form_with_file',
                                 'data-confirmation'     => '',
                                 'data-process'          => 'report_bug',
                                 'files'                 => true
-                            );
+                            ];
                         ?>
                         {!! Form::open($attributes) !!}
                         <div class="row">

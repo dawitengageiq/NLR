@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Log;
 
 class AllInbox extends Command
 {
@@ -23,7 +22,6 @@ class AllInbox extends Command
 
     /**
      * Create a new command instance.
-     *
      */
     public function __construct()
     {

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Jobs\ConsolidatedGraph\Utils\Traits;
 
 trait Views
@@ -6,7 +7,7 @@ trait Views
     /**
      * Value for exit page views.
      *
-     * @param string $idx
+     * @param  string  $idx
      */
     protected function lspViews($idx)
     {
@@ -16,15 +17,25 @@ trait Views
     /**
      * Value for mp per views.
      *
-     * @param string $idx
+     * @param  string  $idx
      */
     protected function mpPerViews($idx)
     {
-        if(!array_key_exists('pd_revenue', $this->params)) $this->params['pd_revenue'] = 0;
-        if(!array_key_exists('tb_revenue', $this->params)) $this->params['tb_revenue'] = 0;
-        if(!array_key_exists('iff_revenue', $this->params)) $this->params['iff_revenue'] = 0;
-        if(!array_key_exists('rexadz_revenue', $this->params)) $this->params['rexadz_revenue'] = 0;
-        if(!array_key_exists('all_inbox_revenue', $this->params)) $this->params['all_inbox_revenue'] = 0;
+        if (! array_key_exists('pd_revenue', $this->params)) {
+            $this->params['pd_revenue'] = 0;
+        }
+        if (! array_key_exists('tb_revenue', $this->params)) {
+            $this->params['tb_revenue'] = 0;
+        }
+        if (! array_key_exists('iff_revenue', $this->params)) {
+            $this->params['iff_revenue'] = 0;
+        }
+        if (! array_key_exists('rexadz_revenue', $this->params)) {
+            $this->params['rexadz_revenue'] = 0;
+        }
+        if (! array_key_exists('all_inbox_revenue', $this->params)) {
+            $this->params['all_inbox_revenue'] = 0;
+        }
 
         $external = $this->params['pd_revenue'];
         $external += $this->params['tb_revenue'];
@@ -56,7 +67,7 @@ trait Views
             ((array_key_exists('rexadz_views', $this->params)) ? $this->params['rexadz_views'] : 0)
         );
 
-        $this->perClicks (
+        $this->perClicks(
             $idx,
             $external,
             $this->params['all_clicks']

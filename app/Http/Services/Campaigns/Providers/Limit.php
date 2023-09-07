@@ -1,55 +1,46 @@
 <?php
+
 namespace App\Http\Services\Campaigns\Providers;
 
-use Config;
-use RevenueTracker;
-use CampaignSettings;
-
-use App\Http\Services\Campaigns\Utils\Lists\Limit\StackType\ByPathType;
 use App\Http\Services\Campaigns\Utils\Lists\Limit\StackType\ByMixCoreg;
+use App\Http\Services\Campaigns\Utils\Lists\Limit\StackType\ByPathType;
 
 class Limit
 {
     /**
      * Application container, to be supplemented.
-     *
      */
     protected $app;
 
     /**
      * Current path.
-     *
      */
     protected $path = '';
 
     /**
      * limit.
-     *
      */
     protected $pathTypeLimit = [];
 
     /**
      * Path name of limit interface.
-     *
      */
-    protected $contract = '\App\Http\Services\Campaigns\Utils\Lists\Contracts\LimitContract';
+    protected $contract = \App\Http\Services\Campaigns\Utils\Lists\Contracts\LimitContract::class;
 
     /**
      * Limit type list with class name equivalent.
-     *
      */
     protected $limitType = [
         'campaign_type' => ByPathType::class,
         'mixed_coreg_type' => ByMixCoreg::class,
-        'default' => ByPathType::class
+        'default' => ByPathType::class,
     ];
 
     /**
      * Instantiate.
      *
-     *  @param Illuminate\Foundation\Application $app
-     *  @param String $mixedCoregLimit
-     *  @param \App\Http\Services\Campaigns\Repos\Settings $settings
+     *  @param  Illuminate\Foundation\Application  $app
+     *  @param  string  $mixedCoregLimit
      */
     public function __construct(
         \Illuminate\Foundation\Application $app,
@@ -71,22 +62,21 @@ class Limit
     /**
      * Static function.
      *
-     * @param array $args
+     * @param  array  $args
      */
-    public static function bind (...$args)
+    public static function bind(...$args)
     {
-        new Static(
+        new static(
             $args[0],
-             $args[1],
-             new \App\Http\Services\Campaigns\Repos\Settings(new \App\Setting)
-         );
+            $args[1],
+            new \App\Http\Services\Campaigns\Repos\Settings(new \App\Setting)
+        );
     }
 
     /**
      * Bind the class to use.
-     *
      */
-    protected function execute ()
+    protected function execute()
     {
         // binding limit class
         $this->app->bind($this->contract, $this->limitType[$this->stackType]);
@@ -100,12 +90,15 @@ class Limit
      *
      * @return string
      */
-    protected function resolveLimitData ()
+    protected function resolveLimitData()
     {
         $pathTypeLimit = $this->settings->pathTypeLimit();
 
-        if($pathTypeLimit) $this->pathTypeLimit = json_decode($pathTypeLimit, true);
-        else $this->pathTypeLimit = [];
+        if ($pathTypeLimit) {
+            $this->pathTypeLimit = json_decode($pathTypeLimit, true);
+        } else {
+            $this->pathTypeLimit = [];
+        }
 
         // Add some data to request, it will be used later by controller
         $this->addDAta2Request();
@@ -113,24 +106,23 @@ class Limit
 
     /**
      * Add some data to request
-     *
      */
-    protected function addDAta2Request ()
+    protected function addDAta2Request()
     {
         $limitType = [
             'campaign_type' => function () {
                 $this->app->request->request->add(['limit' => $this->pathTypeLimit]);
-                $this->app->request->request->add(['limit_type' => ($this->pathTypeLimit) ? 'Campaign type' :'First level']);
+                $this->app->request->request->add(['limit_type' => ($this->pathTypeLimit) ? 'Campaign type' : 'First level']);
             },
-            'mixed_coreg_type' =>  function () {
+            'mixed_coreg_type' => function () {
                 $this->mixedCoregLimit = $this->mixedCoregLimit;
                 $this->app->request->request->add(['limit' => $this->limit()]);
                 $this->app->request->request->add(['limit_type' => ($this->mixedCoregLimit) ? 'Mixed coreg type' : 'First level']);
             },
-            'default' =>  function () {
+            'default' => function () {
                 $this->app->request->request->add(['limit' => $this->pathTypeLimit]);
-                $this->app->request->request->add(['limit_type' => ($this->pathTypeLimit) ? 'Campaign type' :'First level']);
-            }
+                $this->app->request->request->add(['limit_type' => ($this->pathTypeLimit) ? 'Campaign type' : 'First level']);
+            },
         ];
 
         // Run callable
@@ -142,13 +134,14 @@ class Limit
      *
      * @return string
      */
-    protected function limit ()
+    protected function limit()
     {
         $coregTypes = array_keys(config('constants.MIXED_COREG_TYPE_FOR_ORDERING'));
-        if(count($this->pathTypeLimit))  {
-            foreach($coregTypes as $coregType) {
+        if (count($this->pathTypeLimit)) {
+            foreach ($coregTypes as $coregType) {
                 $this->pathTypeLimit[$coregType] = $this->mixedCoregLimit;
             }
+
             return $this->pathTypeLimit;
         }
 
@@ -163,13 +156,14 @@ class Limit
     /**
      * Iterate and apply limit
      *
-     * @param array $mixedCoregs
-     * @param string $limit
+     * @param  array  $mixedCoregs
+     * @param  string  $limit
      * @return yield
      */
-    protected function applyLimit ($coregTypes, $limit) {
+    protected function applyLimit($coregTypes, $limit)
+    {
         // foreach($mixedCoregs as $mixedCoreg) {
-        for($i = 0; $i < count($coregTypes); $i++) {
+        for ($i = 0; $i < count($coregTypes); $i++) {
             yield $coregTypes[$i] => $limit;
         }
     }

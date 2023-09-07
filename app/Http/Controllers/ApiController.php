@@ -1,32 +1,30 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Affiliate;
 use App\Campaign;
-use App\PageViewStatistics;
-use App\PageView;
-use Carbon\Carbon;
-use Faker\Factory;
-use Illuminate\Http\Request;
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Crypt;
-use Log;
-use App\User;
-use Illuminate\Contracts\Encryption\DecryptException;
-use Auth;
-use DB;
 use App\Lead;
 use App\LeadDataCsv;
-use PHPEncryptData\Simple;
+use App\PageView;
+use App\PageViewStatistics;
+use App\User;
+use Auth;
+use Carbon\Carbon;
+use DB;
 use Exception;
+use Faker\Factory;
+use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
+use Log;
+use PHPEncryptData\Simple;
 
 class ApiController extends Controller
 {
     /**
      * API for getting the API token
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function getMyToken(Request $request)
@@ -39,43 +37,35 @@ class ApiController extends Controller
         //for encryption and decryption
         $encryptionKey = env('ENCRYPTION_KEY');
         $macKey = env('MAC_KEY');
-        $encryptionApplied = env('ENCRYPTION_APPLIED',false);
+        $encryptionApplied = env('ENCRYPTION_APPLIED', false);
         $encryptor = new Simple($encryptionKey, $macKey);
 
         //decrypt if needed the encrypted useremail and password
-        if($encryptionApplied)
-        {
-            try
-            {
+        if ($encryptionApplied) {
+            try {
                 $userEmail = $encryptor->decrypt($userEmail);
                 $userPassword = $encryptor->decrypt($userPassword);
-            }
-            catch(Exception $e)
-            {
+            } catch (Exception $e) {
                 $responseMessage = [
                     'token' => null,
-                    'message' => 'unauthorized'
+                    'message' => 'unauthorized',
                 ];
 
                 //Un encrypted credentials
-                return response()->json($responseMessage,200);
+                return response()->json($responseMessage, 200);
             }
 
         }
 
         $user = null;
 
-        if (Auth::once(['email' => $userEmail, 'password' => $userPassword]))
-        {
+        if (Auth::once(['email' => $userEmail, 'password' => $userPassword])) {
             //this means user is authenticated user now check it the user has api access
             $user = User::where('email', '=', $userEmail)->first();
 
-            if($user->role && $user->role->actions)
-            {
-                foreach($user->role->actions as $action)
-                {
-                    if($action->code=='use_api_access' && $action->pivot->permitted==1)
-                    {
+            if ($user->role && $user->role->actions) {
+                foreach ($user->role->actions as $action) {
+                    if ($action->code == 'use_api_access' && $action->pivot->permitted == 1) {
                         $isAuthorized = true;
                     }
                 }
@@ -84,16 +74,13 @@ class ApiController extends Controller
 
         $responseMessage = [
             'token' => null,
-            'message' => 'unauthorized'
+            'message' => 'unauthorized',
         ];
 
-        if (!$isAuthorized)
-        {
+        if (! $isAuthorized) {
             // user doesn't exist
-            return response()->json($responseMessage,200);
-        }
-        else
-        {
+            return response()->json($responseMessage, 200);
+        } else {
 
             /*
             //get the id of the user
@@ -122,42 +109,41 @@ class ApiController extends Controller
 
             $responseMessage = [
                 'token' => $encryptedToken,
-                'message' => 'success'
+                'message' => 'success',
             ];
 
-            return response()->json($responseMessage,200);
+            return response()->json($responseMessage, 200);
         }
     }
 
     /**
      * Log Page Views
      *
-     * @param Request $request
      * @return array|\Illuminate\Http\JsonResponse
      */
-    public function logPageView(Request $request){
+    public function logPageView(Request $request)
+    {
         $inputs = $request->all();
 
-        if(!isset($inputs['affiliate_id']) || empty($inputs['affiliate_id'])){
+        if (! isset($inputs['affiliate_id']) || empty($inputs['affiliate_id'])) {
             return response()->json(['message' => 'missing or invalid affiliate_id'], 422);
         }
 
-        if(!isset($inputs['revenue_tracker_id']) || empty($inputs['revenue_tracker_id'])){
+        if (! isset($inputs['revenue_tracker_id']) || empty($inputs['revenue_tracker_id'])) {
             return response()->json(['message' => 'missing or invalid revenue_tracker_id'], 422);
         }
 
-        if(!isset($inputs['sub_id']) || empty($inputs['sub_id'])){
+        if (! isset($inputs['sub_id']) || empty($inputs['sub_id'])) {
             return response()->json(['message' => 'missing or invalid sub_id'], 422);
         }
 
         $queryResponseMessage = [
-            'message' => 'success'
+            'message' => 'success',
         ];
 
         $statusCode = 200;
 
-        try
-        {
+        try {
             $affiliateID = $inputs['affiliate_id'];
             $revenueTracker = $inputs['revenue_tracker_id'];
             $subID = strtolower($inputs['sub_id']);
@@ -179,7 +165,7 @@ class ApiController extends Controller
                 's4' => $s4,
                 's5' => $s5,
                 'created_at' => $createAt,
-                'type' => $subID
+                'type' => $subID,
             ]);
 
             // $pageViewStats = PageViewStatistics::firstOrNew([
@@ -281,9 +267,7 @@ class ApiController extends Controller
             // }
 
             // $pageViewStats->save();
-        }
-        catch(\PDOException $e)
-        {
+        } catch (\PDOException $e) {
             $code = $e->getCode();
             $errorMessage = $e->getMessage();
             $trace = $e->getTraceAsString();
@@ -300,13 +284,12 @@ class ApiController extends Controller
 
     public function removeDuplicateLeads()
     {
-        $duplicatedCampaignEmailSQL = "SELECT campaign_id, lead_email, count(id) AS count FROM leads GROUP BY campaign_id, lead_email HAVING count(id) > 1 ORDER BY campaign_id";
+        $duplicatedCampaignEmailSQL = 'SELECT campaign_id, lead_email, count(id) AS count FROM leads GROUP BY campaign_id, lead_email HAVING count(id) > 1 ORDER BY campaign_id';
         $duplicates = DB::select($duplicatedCampaignEmailSQL);
 
         $numberOfDeleted = 0;
 
-        foreach($duplicates as $duplicate)
-        {
+        foreach ($duplicates as $duplicate) {
             $campaignID = $duplicate->campaign_id;
             $leadEmail = $duplicate->lead_email;
 
@@ -318,21 +301,14 @@ class ApiController extends Controller
             $firstRejected = Lead::campaignEmailLeads(['campaign_id' => $campaignID, 'lead_email' => $leadEmail, 'lead_status' => 2])->first();
             $firstFail = Lead::campaignEmailLeads(['campaign_id' => $campaignID, 'lead_email' => $leadEmail, 'lead_status' => 0])->first();
 
-            if($firstSuccess)
-            {
-                $numberOfDeleted = $numberOfDeleted + $this->removeExceptOne($firstSuccess,$campaignEmailLeads);
-            }
-            else if($firstPending)
-            {
-                $numberOfDeleted = $numberOfDeleted + $this->removeExceptOne($firstPending,$campaignEmailLeads);
-            }
-            else if($firstRejected)
-            {
-                $numberOfDeleted = $numberOfDeleted + $this->removeExceptOne($firstRejected,$campaignEmailLeads);
-            }
-            else if($firstFail)
-            {
-                $numberOfDeleted = $numberOfDeleted + $this->removeExceptOne($firstFail,$campaignEmailLeads);
+            if ($firstSuccess) {
+                $numberOfDeleted = $numberOfDeleted + $this->removeExceptOne($firstSuccess, $campaignEmailLeads);
+            } elseif ($firstPending) {
+                $numberOfDeleted = $numberOfDeleted + $this->removeExceptOne($firstPending, $campaignEmailLeads);
+            } elseif ($firstRejected) {
+                $numberOfDeleted = $numberOfDeleted + $this->removeExceptOne($firstRejected, $campaignEmailLeads);
+            } elseif ($firstFail) {
+                $numberOfDeleted = $numberOfDeleted + $this->removeExceptOne($firstFail, $campaignEmailLeads);
             }
 
         }
@@ -340,14 +316,12 @@ class ApiController extends Controller
         return ['delete_count' => $numberOfDeleted];
     }
 
-    public function removeExceptOne($leadRemain,$leads)
+    public function removeExceptOne($leadRemain, $leads)
     {
         $count = 0;
 
-        foreach($leads as $lead)
-        {
-            if($lead->id != $leadRemain->id)
-            {
+        foreach ($leads as $lead) {
+            if ($lead->id != $leadRemain->id) {
                 $lead->delete();
                 $count++;
             }
@@ -360,19 +334,17 @@ class ApiController extends Controller
     {
         $faker = Factory::create();
 
-        $campaignIDs = Campaign::lists('id')->toArray();
-        $affiliateIDs = Affiliate::lists('id')->toArray();
-        $emails = User::lists('email')->toArray();
+        $campaignIDs = Campaign::pluck('id')->toArray();
+        $affiliateIDs = Affiliate::pluck('id')->toArray();
+        $emails = User::pluck('email')->toArray();
 
         $urls = [];
 
-        for($i=0;$i<2;$i++)
-        {
+        for ($i = 0; $i < 2; $i++) {
             $affiliateID = $faker->randomElement($affiliateIDs);
             //$affiliateID = 8;
 
-            for($j=0;$j<4;$j++)
-            {
+            for ($j = 0; $j < 4; $j++) {
                 //$campaignID = $faker->randomElement($campaignIDs);
                 $campaignID = 2;
                 //$email = $faker->randomElement($emails);
@@ -384,7 +356,7 @@ class ApiController extends Controller
                 //real time
                 //$url = url('').'/sendLead?eiq_realtime=1&eiq_campaign_id='.$campaignID.'&eiq_affiliate_id='.$affiliateID.'&eiq_email='.$email.'&rev_tracker=CD7820&program_name=Quick+Attorney+SS+(1072)&add_code=CD7820&program_id=1072&email=ronniegee57%40live.com&firstname=Ron&lastname=Gagon&lr=new&first_name=Ron&last_name=Gagon&dob=08-15-1957&ip=71.199.11.56&datetime=07%2F21%2F2016+02%3A21%3A49&city=American+Fork&state=UT&zip=84003&yesnoto=&quick_attorney_search-campaign=YES&phone=(707)+292-8024&address=14+N+900+E&q1=0&q2=0&q3=0&q4=0&q5=1&comment2=I+tried+previously+to+fill+out+the+papers+to+no+avail.&xxTrustedFormToken=https%3A%2F%2Fcert.trustedform.com%2F181acc04b339bcfca07d0862d65c6a53fe63c894&xxTrustedFormCertUrl=https%3A%2F%2Fcert.trustedform.com%2F181acc04b339bcfca07d0862d65c6a53fe63c894&_=1469082109508';
 
-                array_push($urls,$url);
+                array_push($urls, $url);
             }
         }
 
@@ -400,7 +372,7 @@ class ApiController extends Controller
         $lead->save();
 
         $leadDataCSV = new LeadDataCsv;
-        $leadDataCSV->value = "{awts:amazing_awts}";
+        $leadDataCSV->value = '{awts:amazing_awts}';
         $lead->leadDataCSV()->save($leadDataCSV);
     }
 }

@@ -12,13 +12,13 @@
 			}
 		}
 
-  		$attributes = array(
+  		$attributes = [
   			'url' 					=> 'edit_campaign',
   			'class'					=> 'form_with_file',
   			'data-confirmation' 	=> 'Are you sure you want to edit this attribute?',
   			'data-process' 			=> 'edit_campaign',
   			'files'					=> true
-  		);
+  		];
   	?>
   	{!! Form::open($attributes) !!}
 	{!! Form::hidden('this_id', '',array('id' => 'this_id','class' => 'this_campaign this_field')) !!}

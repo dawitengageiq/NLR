@@ -12,7 +12,7 @@ class LeadDataCsvArchive extends Model
         'id',
         'value',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     public function lead()

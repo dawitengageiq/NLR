@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Jobs\ConsolidatedGraph\Utils\Traits;
 
 trait PageViewStatistics
@@ -6,12 +7,14 @@ trait PageViewStatistics
     /**
      * Process pa age view statistics
      *
-     * @param \Illuminate\Database\Eloquent\PageViewStatistics|Empty $pageViewStats
+     * @param  \Illuminate\Database\Eloquent\PageViewStatistics|Empty  $pageViewStats
      * @return void
      */
-    protected function processPageViewStats ($pageViewStats)
+    protected function processPageViewStats($pageViewStats)
     {
-        if(!$pageViewStats instanceof \App\PageViewStatistics) return;
+        if (! $pageViewStats instanceof \App\PageViewStatistics) {
+            return;
+        }
 
         collect([
             'exitpage' => 'exit_page_views',
@@ -24,12 +27,13 @@ trait PageViewStatistics
             'mo1' => 'coreg_p1_views',
             'mo2' => 'coreg_p2_views',
             'mo3' => 'coreg_p3_views',
-            'mo4' => 'coreg_p4_views'
+            'mo4' => 'coreg_p4_views',
         ])
-        ->map(function ( $field, $indx) use($pageViewStats) {
-            if($pageViewStats->$field) $this->pageViewStats[$indx] = $pageViewStats->$field;
-        });
+            ->map(function ($field, $indx) use ($pageViewStats) {
+                if ($pageViewStats->$field) {
+                    $this->pageViewStats[$indx] = $pageViewStats->$field;
+                }
+            });
 
-         return;
     }
 }

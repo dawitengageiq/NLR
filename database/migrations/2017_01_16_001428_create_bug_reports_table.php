@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateBugReportsTable extends Migration
 {
@@ -15,7 +15,7 @@ class CreateBugReportsTable extends Migration
         Schema::create('bug_reports', function (Blueprint $table) {
             $table->increments('id');
             $table->string('reporter_name');
-            $table->string('reporter_email',50);
+            $table->string('reporter_email', 50);
             $table->string('bug_summary');
             $table->string('bug_description');
             $table->mediumText('evidences');

@@ -1,8 +1,6 @@
 <?php
-namespace App\Http\Services\Campaigns\Utils\Lists\Stacking;
 
-use Config;
-use CampaignSettings;
+namespace App\Http\Services\Campaigns\Utils\Lists\Stacking;
 
 class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaigns\Utils\Lists\Contracts\StackContract
 {
@@ -15,14 +13,12 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
     /**
      * Initialize, Inject dependencies
      * Type of ordering will be used: mix coreg ordering, campaign type ordering and priority ordering
-     *
      */
     public function __construct(
-            \App\Http\Services\Campaigns\Utils\Lists\Contracts\LimitContract $limit,
-            \App\Http\Services\Campaigns\Utils\Lists\Ordering\ByCampaignType $campaignTypeOrder,
-            \App\Http\Services\Campaigns\Utils\Lists\ExitPage $exitPage
-        )
-    {
+        \App\Http\Services\Campaigns\Utils\Lists\Contracts\LimitContract $limit,
+        \App\Http\Services\Campaigns\Utils\Lists\Ordering\ByCampaignType $campaignTypeOrder,
+        \App\Http\Services\Campaigns\Utils\Lists\ExitPage $exitPage
+    ) {
         $this->limit = $limit;
         $this->exitPage = $exitPage;
         $this->ordering = $campaignTypeOrder;
@@ -35,11 +31,11 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
      * Order by priority(set in query params)
      * Set limit that was provided in service provider
      *
-     * @param array $param
+     * @param  array  $param
      */
-    public function setOrderAndLimits ($param)
+    public function setOrderAndLimits($param)
     {
-        list($limit, $revenueTrackerLimit, $revenueTrackerID, $campaignTypeOrder) = $param;
+        [$limit, $revenueTrackerLimit, $revenueTrackerID, $campaignTypeOrder] = $param;
 
         /* GET CAMPAIGN ORDER PER CAMPAIGN TYPE ORDER */
         $this->ordering->get(
@@ -52,16 +48,16 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
         $this->revenueTrackerLimit = $revenueTrackerLimit;
     }
 
-
     /**
      * Check has ordering
      *
-     * @return boolean
+     * @return bool
      */
-    public function hasOrder ()
+    public function hasOrder()
     {
-        if($this->ordering->hasOrder()) {
+        if ($this->ordering->hasOrder()) {
             $this->orderType = 'Campaign Type';
+
             return true;
         }
 
@@ -71,9 +67,9 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
     /**
      * Get what type of ordering was used
      *
-     * @return boolean
+     * @return bool
      */
-    public function orderType ()
+    public function orderType()
     {
         return $this->orderType;
     }
@@ -81,20 +77,24 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
     /**
      * Stack the qualified campaign coregs
      *
-     * @param collection $campaign
-     * @var array $stack
+     * @param  collection  $campaign
+     *
+     * @var array
      */
-    protected function stackCampaignCoreg ($campaign)
+    protected function stackCampaignCoreg($campaign)
     {
         // Pre populate
-        if(!array_key_exists($campaign->campaign_type, $this->stack)) $this->stack[$campaign->campaign_type][0] = [];
+        if (! array_key_exists($campaign->campaign_type, $this->stack)) {
+            $this->stack[$campaign->campaign_type][0] = [];
+        }
 
         //get last array
         $lastSet = count($this->stack[$campaign->campaign_type]) - 1;
 
         // If the campaign type order has inner ordering (campaign type path ordering).
-        if($this->ordering->has($campaign->campaign_type)) {
+        if ($this->ordering->has($campaign->campaign_type)) {
             $this->stackByCampaignTypeOrder($campaign->id, $campaign->campaign_type, $lastSet);
+
             return;
         }
 
@@ -105,22 +105,28 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
     /**
      * Stack the qualified campaign  other coregs and exit page
      *
-     * @param collection $campaign
-     * @var array $stack
+     * @param  collection  $campaign
+     *
+     * @var array
      */
     protected function stackOtherCampaigns($campaign)
     {
-        if($this->limit->exceed($campaign->campaign_type)) return;
+        if ($this->limit->exceed($campaign->campaign_type)) {
+            return;
+        }
 
         // Pre populate
-        if(!array_key_exists($campaign->campaign_type, $this->stack)) $this->stack[$campaign->campaign_type][0] = [];
+        if (! array_key_exists($campaign->campaign_type, $this->stack)) {
+            $this->stack[$campaign->campaign_type][0] = [];
+        }
 
         //get last array
         $lastSet = count($this->stack[$campaign->campaign_type]) - 1;
 
         // If the campaign type order has inner ordering (campaign type path ordering).
-        if($this->ordering->has($campaign->campaign_type)) {
-            $this->stackByCampaignTypeOrder ($campaign->id, $campaign->campaign_type, $lastSet);
+        if ($this->ordering->has($campaign->campaign_type)) {
+            $this->stackByCampaignTypeOrder($campaign->id, $campaign->campaign_type, $lastSet);
+
             return;
         }
 
@@ -131,13 +137,14 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
     /**
      * Implement mix coreg order
      *
-     * @param integer $campaignID
+     * @param  int  $campaignID
      */
-    protected function stackByCampaignTypeOrder ($campaignID, $campaignType, $lastSet)
+    protected function stackByCampaignTypeOrder($campaignID, $campaignType, $lastSet)
     {
-        if($this->ordering->campaignIdExists($campaignID)) {
+        if ($this->ordering->campaignIdExists($campaignID)) {
             // Populate
             $this->stack = $this->ordering->stack($campaignID, $campaignType, $lastSet, $this->stack);
+
             return;
         }
         // push at the end of stack
@@ -146,14 +153,13 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
 
     /**
      * Process first level limit
-     *
      */
     protected function implementCoregsLimit()
     {
         $this->stack = $this->limit->mixedCoregLimit->apply([
-          $this->stack,
-          $this->limit->getPathLimit(),
-          $this->revenueTrackerLimit
+            $this->stack,
+            $this->limit->getPathLimit(),
+            $this->revenueTrackerLimit,
         ]);
     }
 }

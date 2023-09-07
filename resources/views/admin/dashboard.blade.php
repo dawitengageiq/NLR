@@ -246,13 +246,13 @@
                         <div class="col-md-6">
                             <div class="nCat-note-div" style="display:none">
                                 <?php
-                                    $attributes = array(
+                                    $attributes = [
                                             'url'       => url('add_note'),
                                             'class'         => 'this_form',
                                             'data-confirmation' => '',
                                             'data-process'  => 'add_note',
                                             'id' => 'notes_form',
-                                    );
+                                    ];
                                 ?>
                                 {!! Form::open($attributes) !!}
                                 {!! Form::hidden('id', '',array('id' => 'this_id','class' => 'this_field')) !!}
@@ -550,13 +550,13 @@
             </button><br>
             <div class="collapse" id="noteCategoryCollapse">
               <?php
-                $attributes = array(
+                $attributes = [
                         'url'       => url('add_notes_category'),
                         'class'         => 'this_form',
                         'data-confirmation' => '',
                         'data-process'  => 'add_notes_category',
                         'id' => 'notes_category_form',
-                );
+                ];
             ?>
             {!! Form::open($attributes) !!}
             {!! Form::hidden('id', '',array('id' => 'this_id','class' => 'this_field')) !!}

@@ -2,10 +2,9 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
-use Log;
-use Bus;
 use App\Commands\GetUserActionPermission;
+use Bus;
+use Closure;
 use Illuminate\Http\Response;
 
 class RestrictSectionAccessIfNotPermitted
@@ -14,7 +13,6 @@ class RestrictSectionAccessIfNotPermitted
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
      * @return mixed
      */
     public function handle($request, Closure $next)
@@ -25,11 +23,10 @@ class RestrictSectionAccessIfNotPermitted
         $accessCode = '';
 
         //check if user is allowed to visit the section pages if not then show view that informs them that they do not have permission
-        switch($path)
-        {
+        switch ($path) {
             //case 'affiliate/dashboard':
             case 'admin/dashboard':
-            //case 'advertiser/dashboard':
+                //case 'advertiser/dashboard':
                 $accessCode = 'access_dashboard';
                 break;
 
@@ -42,8 +39,8 @@ class RestrictSectionAccessIfNotPermitted
                 break;
 
             case 'admin/campaigns':
-            //case 'advertiser/campaigns':
-            //case 'affiliate/campaigns':
+                //case 'advertiser/campaigns':
+                //case 'affiliate/campaigns':
                 $accessCode = 'access_campaigns';
                 break;
 
@@ -56,14 +53,14 @@ class RestrictSectionAccessIfNotPermitted
                 break;
 
             case 'admin/searchLeads':
-            //case 'advertiser/searchLeads':
-            //case 'affiliate/searchLeads':
+                //case 'advertiser/searchLeads':
+                //case 'affiliate/searchLeads':
                 $accessCode = 'access_search_leads';
                 break;
 
             case 'admin/revenueStatistics':
-            //case 'advertiser/revenueStatistics':
-            //case 'affiliate/revenueStatistics':
+                //case 'advertiser/revenueStatistics':
+                //case 'affiliate/revenueStatistics':
                 $accessCode = 'access_revenue_statistics';
                 break;
 
@@ -86,7 +83,7 @@ class RestrictSectionAccessIfNotPermitted
                 $accessCode = 'access_categories';
                 break;
 
-            //apply to run
+                //apply to run
             case 'admin/affiliate_requests':
                 $accessCode = 'access_apply_to_run_request';
                 break;
@@ -95,7 +92,7 @@ class RestrictSectionAccessIfNotPermitted
                 $accessCode = 'access_survey_takers';
                 break;
 
-            //Check if user is permitted in Access Users and Roles
+                //Check if user is permitted in Access Users and Roles
             case 'admin/role_management':
             case 'admin/user_management':
                 $accessCode = 'access_users_and_roles';
@@ -118,9 +115,8 @@ class RestrictSectionAccessIfNotPermitted
         }
 
         //check if user is permitted to this page
-        if(!empty($accessCode) && !Bus::dispatch(new GetUserActionPermission($user,$accessCode)))
-        {
-            return (new Response(view('errors.not_permitted'), 401));
+        if (! empty($accessCode) && ! Bus::dispatch(new GetUserActionPermission($user, $accessCode))) {
+            return new Response(view('errors.not_permitted'), 401);
         }
 
         return $next($request);

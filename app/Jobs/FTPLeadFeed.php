@@ -2,19 +2,17 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Job;
 use App\LeadUser;
 use Carbon\Carbon;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Facades\Excel;
 use Log;
+use Maatwebsite\Excel\Facades\Excel;
 use SSH;
 
-class FTPLeadFeed extends Job implements SelfHandling, ShouldQueue
+class FTPLeadFeed extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
@@ -22,8 +20,6 @@ class FTPLeadFeed extends Job implements SelfHandling, ShouldQueue
 
     /**
      * FTPLeadFeed constructor.
-     *
-     * @param $date
      */
     public function __construct($date)
     {
@@ -37,8 +33,7 @@ class FTPLeadFeed extends Job implements SelfHandling, ShouldQueue
      */
     public function handle()
     {
-        if ($this->attempts() > 1)
-        {
+        if ($this->attempts() > 1) {
             return;
         }
 
@@ -48,11 +43,10 @@ class FTPLeadFeed extends Job implements SelfHandling, ShouldQueue
         $feedTitle = "ftp_leads_file_$this->date";
         $leadUsers = LeadUser::surveyTakersFeed()->get();
 
-        if(count($leadUsers) > 0)
-        {
+        if (count($leadUsers) > 0) {
             // Create the csv file
-            Excel::create($feedTitle, function($excel) use ($leadUsers){
-                $excel->sheet('leads', function($sheet) use ($leadUsers){
+            Excel::create($feedTitle, function ($excel) use ($leadUsers) {
+                $excel->sheet('leads', function ($sheet) use ($leadUsers) {
                     //set up the title header row
                     $sheet->appendRow([
                         'First_Name',
@@ -64,10 +58,10 @@ class FTPLeadFeed extends Job implements SelfHandling, ShouldQueue
                         'DOB',
                         'Entry Date',
                         'Phone',
-                        'Email_Address'
+                        'Email_Address',
                     ]);
 
-                    foreach ($leadUsers as $leadUser){
+                    foreach ($leadUsers as $leadUser) {
 
                         // Format the dates
                         $dob = Carbon::parse($leadUser->birthdate);
@@ -83,7 +77,7 @@ class FTPLeadFeed extends Job implements SelfHandling, ShouldQueue
                             $formattedDOB,
                             $leadUser->created_at->format('mdY'),
                             $leadUser->phone,
-                            $leadUser->email
+                            $leadUser->email,
                         ]);
                     }
                 });

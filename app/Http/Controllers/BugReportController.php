@@ -5,14 +5,12 @@ namespace App\Http\Controllers;
 use App\BugReport;
 use App\Jobs\Jira\CreateJIRAIssueTicket;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use Mail;
-use Log;
-use App\Http\Requests\BugReportRequest;
-use Storage;
 use File;
+use Illuminate\Http\Request;
+use Log;
+use Mail;
+use Storage;
+
 // use Validator;
 
 class BugReportController extends Controller
@@ -20,14 +18,13 @@ class BugReportController extends Controller
     /**
      * Receiving of report and sending to developers
      *
-     * @param Request $request
      * @return int
      */
     public function receive(Request $request)
     {
         $this->validate($request, [
-            'bug_summary'           => 'required',
-            'bug_description'       => 'required'
+            'bug_summary' => 'required',
+            'bug_description' => 'required',
         ]);
 
         // Log::info('Hello');
@@ -42,16 +39,13 @@ class BugReportController extends Controller
         $uploadedFileNames = '';
 
         //save all evidence files
-        if(!empty($attached_files))
-        {
-            foreach($attached_files as $file)
-            {
-                if($file != null)
-                {
+        if (! empty($attached_files)) {
+            foreach ($attached_files as $file) {
+                if ($file != null) {
                     //prepend the timestamp
                     $fullFilename = $dateNow->timestamp.'_'.$file->getClientOriginalName();
                     $bugUploadsPath = storage_path('app').'/uploads/bugs/';
-                    $file->move($bugUploadsPath,$fullFilename);
+                    $file->move($bugUploadsPath, $fullFilename);
 
                     $uploadedFileNames = $fullFilename.','.$uploadedFileNames;
                 }
@@ -59,14 +53,14 @@ class BugReportController extends Controller
         }
 
         $uploadedFileNames = trim($uploadedFileNames);
-        $uploadedFileNames = trim($uploadedFileNames,',');
+        $uploadedFileNames = trim($uploadedFileNames, ',');
 
         BugReport::create([
             'reporter_name' => $sender->first_name.' '.$sender->last_name.'('.$sender->email.')',
             'reporter_email' => $sender->email,
             'bug_summary' => $summary,
             'bug_description' => $description,
-            'evidences' => $uploadedFileNames
+            'evidences' => $uploadedFileNames,
         ]);
 
         /*

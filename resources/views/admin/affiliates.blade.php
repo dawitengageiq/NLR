@@ -28,12 +28,12 @@
 <div class="modal fade" id="AffFormModal" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog modal-lg" role="document">
   	<?php
-  		$attributes = array(
+  		$attributes = [
   			'url' 					=> 'add_affiliate',
   			'class'					=> 'this_form',
   			'data-confirmation' 	=> '',
   			'data-process' 			=> 'add_affiliate'
-  		);
+  		];
   	?>
 	<div class="modal-content">
 		<div class="modal-header">

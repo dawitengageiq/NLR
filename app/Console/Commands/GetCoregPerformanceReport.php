@@ -31,7 +31,6 @@ class GetCoregPerformanceReport extends Command
 
     /**
      * Create a new command instance.
-     *
      */
     public function __construct()
     {
@@ -45,7 +44,7 @@ class GetCoregPerformanceReport extends Command
      */
     public function handle()
     {
-        $this->info("Generating Coreg Performance Report...");
+        $this->info('Generating Coreg Performance Report...');
 
         $job = (new \App\Jobs\Reports\GetCoregPerformanceReport())->delay(3);
         dispatch($job);
@@ -65,7 +64,7 @@ class GetCoregPerformanceReport extends Command
         $revAffiliates = AffiliateRevenueTracker::lists('affiliate_id','revenue_tracker_id')->toArray();
 
         //Get Campaign default and affiliate-specific received and payout for OLR leads
-        $payouts = DB::select('SELECT campaigns.id, campaign_payouts.affiliate_id, campaigns.default_payout, campaigns.default_received, 
+        $payouts = DB::select('SELECT campaigns.id, campaign_payouts.affiliate_id, campaigns.default_payout, campaigns.default_received,
             campaign_payouts.received, campaign_payouts.payout FROM campaign_payouts RIGHT JOIN campaigns ON campaign_payouts.campaign_id = campaigns.id');
         $lead_payouts = [];
         foreach($payouts as $payout) { //Save them in a easy access array
@@ -81,12 +80,12 @@ class GetCoregPerformanceReport extends Command
 
         //NLR
         $this->info('Retrieving from NLR');
-        $time1 = microtime(true); 
+        $time1 = microtime(true);
         //ACTUAL QUERY
         $nlr = Lead::where(DB::RAW('date(created_at)'),$date_yesterday)->select('id','campaign_id','affiliate_id','lead_status','received','payout')->get();
         //TESTING
         // $nlr = DB::connection('nlr')->select('SELECT id, campaign_id, affiliate_id, lead_status, received, payout FROM leads WHERE date(created_at) = "'.$date_yesterday.'"');
-        
+
         $time2 = microtime(true);
         $runtime = $time2 - $time1;
         $this->info('Done retrieving from NLR');
@@ -97,7 +96,7 @@ class GetCoregPerformanceReport extends Command
             $campaign_id = $lead->campaign_id;
             $affiliate_id = $lead->affiliate_id;
 
-            if(! isset($report['n'][$campaign_id][$lead->affiliate_id])) { 
+            if(! isset($report['n'][$campaign_id][$lead->affiliate_id])) {
                 //Initialize if Campaign & Affiliate not exists in report
                 // Log::info('NLR: '.$campaign_id.' - '.$lead->affiliate_id);
                 $report['n'][$campaign_id][$affiliate_id]['lr_total'] = 0;
@@ -125,7 +124,7 @@ class GetCoregPerformanceReport extends Command
                 $report['n'][$campaign_id][$affiliate_id]['source'] = 2; //Where Source: 1 = OLR; 2 = NLR; 3 = Mixed; 4 = LF
             }
 
-            //NLR COUNTER 
+            //NLR COUNTER
 
             if($lead->lead_status == 1) { //Success
                 $report['n'][$campaign_id][$lead->affiliate_id]['lr_success'] += 1;
@@ -162,7 +161,7 @@ class GetCoregPerformanceReport extends Command
         foreach($olr as $lead) {
 
             // if(! array_key_exists($lead->campaign_id,$olr_campaigns)) $olr_campaigns[$lead->campaign_id] = $lead->LEAD_PROGRAM_NAME;
-            
+
             //Initialize Campaign and Affiliate/Rev Tracker
             $campaign_not_exists_in_lr = false; //Check if olr program id exists in NLR
             if(array_key_exists($lead->campaign_id,$coregs)) {
@@ -173,7 +172,7 @@ class GetCoregPerformanceReport extends Command
                 $campaign_not_exists_in_lr = true;
             }
             $affiliate_id = $lead->affiliate_id;
-            
+
             if(! isset($report['o'][$campaign_id][$lead->affiliate_id])) {
                 //Initialize if Campaign & Affiliate not exists in report
                 // Log::info('OLR: '.$campaign_id.' - '.$lead->affiliate_id);
@@ -188,7 +187,7 @@ class GetCoregPerformanceReport extends Command
                 $report['o'][$campaign_id][$affiliate_id]['lf_filter_drop'] = 0;
                 $report['o'][$campaign_id][$affiliate_id]['lf_admin_drop'] = 0;
                 $report['o'][$campaign_id][$affiliate_id]['lf_nlr_drop'] = 0;
-                
+
                 $report['o'][$campaign_id][$affiliate_id]['olr_total'] = 0;
                 $report['o'][$campaign_id][$affiliate_id]['olr_rejected'] = 0;
                 $report['o'][$campaign_id][$affiliate_id]['olr_failed'] = 0;
@@ -202,7 +201,7 @@ class GetCoregPerformanceReport extends Command
                     $no_payouts[] = $campaign_id; //Store in array. When program id not exists in NLR, we have no record of how much it's payout is. We need to get the payout in OLR.
                     $campaign_affiliate_no_payouts[] = ['c' => $campaign_id, 'a' => $affiliate_id];
                 }else {
-                    //Program Exists in NLR 
+                    //Program Exists in NLR
                     if(isset($lead_payouts[$campaign_id][$lead->affiliate_id])) { //has specific received/payout for affiliate
                         $report['o'][$campaign_id][$affiliate_id]['received'] = $lead_payouts[$campaign_id][$lead->affiliate_id]['received'];
                         $report['o'][$campaign_id][$affiliate_id]['payout'] = $lead_payouts[$campaign_id][$lead->affiliate_id]['payout'];
@@ -223,11 +222,11 @@ class GetCoregPerformanceReport extends Command
             //        $report[$campaign_id][$affiliate_id]['source'] = 3; //Where Source: 1 = OLR; 2 = NLR; 3 = Mixed
             //    }
             //}
-            
 
-            //OLR COUNTER 
-                
-            if($lead->lead_status == 'SUCCESS') { 
+
+            //OLR COUNTER
+
+            if($lead->lead_status == 'SUCCESS') {
                 $report['o'][$campaign_id][$lead->affiliate_id]['olr_success'] += 1;
             }else if($lead->lead_status == 'REJECTED') {
                 $report['o'][$campaign_id][$lead->affiliate_id]['olr_rejected'] += 1;
@@ -297,7 +296,7 @@ class GetCoregPerformanceReport extends Command
                 $report[$source][$campaign_id][$affiliate_id]['lf_filter_drop'] = 0;
                 $report[$source][$campaign_id][$affiliate_id]['lf_admin_drop'] = 0;
                 $report[$source][$campaign_id][$affiliate_id]['lf_nlr_drop'] = 0;
-                
+
                 $report[$source][$campaign_id][$affiliate_id]['olr_total'] = 0;
                 $report[$source][$campaign_id][$affiliate_id]['olr_rejected'] = 0;
                 $report[$source][$campaign_id][$affiliate_id]['olr_failed'] = 0;
@@ -312,10 +311,10 @@ class GetCoregPerformanceReport extends Command
                 //Set Source of Entry
                 $report[$source][$campaign_id][$affiliate_id]['source'] = 4; //Where Source: 1 = OLR; 2 = NLR; 3 = Mixed; 4 = LF
             }
-            
-            //LF COUNTER 
 
-            if($lead->status == 2 || $lead->status == 0) {  
+            //LF COUNTER
+
+            if($lead->status == 2 || $lead->status == 0) {
                 $report[$source][$campaign_id][$affiliate_id]['lf_admin_drop'] += 1;
             }else if($lead->status == 3) {
                 $report[$source][$campaign_id][$affiliate_id]['lf_filter_drop'] += 1;
@@ -345,7 +344,7 @@ class GetCoregPerformanceReport extends Command
             //     $affiliate_id = preg_replace("/[^0-9]/", "", $params['add_code'] );
             // }
             // FOR TESTING
-            $affiliate_id = $lead->affiliate_id; 
+            $affiliate_id = $lead->affiliate_id;
 
             //GET LEAD SOURCE
             if($lead->source == 1) $source = 'n';
@@ -365,7 +364,7 @@ class GetCoregPerformanceReport extends Command
                 $report[$source][$campaign_id][$affiliate_id]['lf_filter_drop'] = 0;
                 $report[$source][$campaign_id][$affiliate_id]['lf_admin_drop'] = 0;
                 $report[$source][$campaign_id][$affiliate_id]['lf_nlr_drop'] = 0;
-                
+
                 $report[$source][$campaign_id][$affiliate_id]['olr_total'] = 0;
                 $report[$source][$campaign_id][$affiliate_id]['olr_rejected'] = 0;
                 $report[$source][$campaign_id][$affiliate_id]['olr_failed'] = 0;
@@ -380,8 +379,8 @@ class GetCoregPerformanceReport extends Command
                 //Set Source of Entry
                 $report[$source][$campaign_id][$affiliate_id]['source'] = 4; //Where Source: 1 = OLR; 2 = NLR; 3 = Mixed; 4 = LF
             }
-            
-            //LFD COUNTER 
+
+            //LFD COUNTER
             $report[$source][$campaign_id][$affiliate_id]['lf_filter_drop'] += 1;
             $report[$source][$campaign_id][$affiliate_id]['lf_total'] += 1;
         }
@@ -435,7 +434,7 @@ class GetCoregPerformanceReport extends Command
                     $report['o'][$campaign_id][$affiliate_id]['lf_filter_drop'] = 0;
                     $report['o'][$campaign_id][$affiliate_id]['lf_admin_drop'] = 0;
                     $report['o'][$campaign_id][$affiliate_id]['lf_nlr_drop'] = 0;
-                    
+
                     $report['o'][$campaign_id][$affiliate_id]['olr_total'] = 0;
                     $report['o'][$campaign_id][$affiliate_id]['olr_rejected'] = 0;
                     $report['o'][$campaign_id][$affiliate_id]['olr_failed'] = 0;
@@ -488,7 +487,7 @@ class GetCoregPerformanceReport extends Command
                     //     'source' => $info['source'],
                     //     'date' => $date_yesterday
                     // ]);
-                    
+
                     $data = new CoregReport();
                     $data->campaign_id = $campaign;
                     $data->affiliate_id = $affiliate_id;
@@ -509,18 +508,18 @@ class GetCoregPerformanceReport extends Command
 
                     if(isset($info['olr_only'])) $data->olr_only = $info['olr_only'];
 
-                    $data->save(); 
+                    $data->save();
 
                     // if( (!isset($info['payout'])) || (!isset($info['received'])) ){
                     //      Log::info('No payout: '.$campaign.' - '.$affiliate);
                     // }
-                } 
+                }
             }
         }
-        
+
         $this->info('Saved to Database');
 
-        $inputs['excel'] = 1; 
+        $inputs['excel'] = 1;
         $inputs['lead_date'] = $date_yesterday;
         $reports = CoregReport::getReport($inputs,null,null,'we_get','desc')
         ->selectRaw('coreg_reports.*, revenue - cost as we_get, affiliates.company as affiliate_name,CASE WHEN campaigns.name IS NULL THEN CONCAT("OLR Campaign ID: ",campaign_id) ELSE CONCAT(campaigns.name," (",campaign_id,")") END as campaign_name')
@@ -530,7 +529,7 @@ class GetCoregPerformanceReport extends Command
             $this->info('Creating Excel');
             $date = Carbon::parse($date_yesterday)->format('m/d/Y');
             $title = 'CoregReport_'.Carbon::parse($date_yesterday)->toDateString();
-            Excel::create($title, function($excel) use($title,$reports,$inputs,$date){ 
+            Excel::create($title, function($excel) use($title,$reports,$inputs,$date){
                 $excel->sheet(Carbon::parse($date)->toDateString(),function($sheet) use ($reports,$inputs,$date){
 
                     $totalRows = count($reports) + 3;
@@ -597,7 +596,7 @@ class GetCoregPerformanceReport extends Command
                     // HEADER ROW
                     $headers = ['Rev Tracker', 'Campaign', 'Leads Received','Filter Drop Off', 'Admin Drop Off','NLR Drop Off','Cost','Leads Received','Rejected Drop Off', 'Failed Drop Off','Pending/Queued Drop Off','Cap Reached Drop Off', 'Revenue', 'We Get'];
                     //set up the title header row
-                    $sheet->appendRow($headers);                
+                    $sheet->appendRow($headers);
                     //style the headers
                     $sheet->cells('A3:N3', function($cells) {
                         // Set font
@@ -612,7 +611,7 @@ class GetCoregPerformanceReport extends Command
 
                     $row_num = 4; //first row num is 4
                     foreach($reports as $report)
-                    {                        
+                    {
                         $revCol = '';
                         if(($report->olr_only === 0 || $report->olr_only === 1) && $report->revenue_tracker_id === null) $revCol .= 'OLR: ';
                         if($report->revenue_tracker_id != '') $revCol .= $report->revenue_tracker_id.' ';
@@ -666,11 +665,11 @@ class GetCoregPerformanceReport extends Command
             $this->info('Sending Email...');
             $excelAttachment = $file_path;
 
-            Mail::send('emails.coreg_report', ['url' => config('constants.APP_BASE_URL').'/admin/coregReports','date' => $date_yesterday], 
+            Mail::send('emails.coreg_report', ['url' => config('constants.APP_BASE_URL').'/admin/coregReports','date' => $date_yesterday],
                 function ($message) use ($excelAttachment,$lr_build) {
 
                 $message->from('admin@engageiq.com', 'Automated Report by '.$lr_build);
-                
+
                 $message->to('karla@engageiq.com', 'Karla Librero')
                          ->to('ariel@engageiq.com', 'Ariel Magbanua')
                          ->to('burt@engageiq.com', 'Marwil Burton')
@@ -682,7 +681,7 @@ class GetCoregPerformanceReport extends Command
                     $message->to('delicia@engageiq.com','Delicia Wijaya')
                          ->to('jackie@engageiq.com', 'Jacquelin Beveridge')
                          ->to('johneil@engageiq.com', 'Johneil Quijano')
-                         ->to('janhavi@engageiq.com', 'Janhavi Paranjape');                         
+                         ->to('janhavi@engageiq.com', 'Janhavi Paranjape');
                 }
 
                 $message->subject('Co-Reg Report');
@@ -691,7 +690,7 @@ class GetCoregPerformanceReport extends Command
             $this->info('Email Sent!');
         }
 
-        
+
         $this->info('FINISHED!');
 
 

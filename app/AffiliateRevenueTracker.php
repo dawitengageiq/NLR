@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class AffiliateRevenueTracker extends Model
 {
     protected $connection;
+
     protected $table = 'affiliate_revenue_trackers';
 
     protected $fillable = [
@@ -52,38 +53,38 @@ class AffiliateRevenueTracker extends Model
         'rsib_s4',
     ];
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') == 'reports') {
+        if (config('app.type') == 'reports') {
             $this->connection = 'secondary';
         }
     }
 
     public function campaignTypeOrders()
     {
-        return $this->hasMany(CampaignTypeOrder::class,'revenue_tracker_id','revenue_tracker_id');
+        return $this->hasMany(CampaignTypeOrder::class, 'revenue_tracker_id', 'revenue_tracker_id');
     }
 
     public function mixedCoregCampaignOrder()
     {
-        return $this->hasone(MixedCoregCampaignOrder::class,'revenue_tracker_id','revenue_tracker_id');
+        return $this->hasone(MixedCoregCampaignOrder::class, 'revenue_tracker_id', 'revenue_tracker_id');
     }
 
-	public function affiliate()
+    public function affiliate()
     {
-		return $this->belongsTo(Affiliate::class);
-	}
+        return $this->belongsTo(Affiliate::class);
+    }
 
-	public function campaignViewReports()
+    public function campaignViewReports()
     {
-		return $this->hasMany(CampaignViewReport::class, 'revenue_tracker_id', 'revenue_tracker_id');
-	}
+        return $this->hasMany(CampaignViewReport::class, 'revenue_tracker_id', 'revenue_tracker_id');
+    }
 
-	public function affiliateCampaign()
+    public function affiliateCampaign()
     {
-		return $this->hasMany(AffiliateCampaign::class, 'affiliate_id', 'revenue_tracker_id');
-	}
+        return $this->hasMany(AffiliateCampaign::class, 'affiliate_id', 'revenue_tracker_id');
+    }
 
     public function affiliateReport()
     {
@@ -120,113 +121,111 @@ class AffiliateRevenueTracker extends Model
         return $this->hasOne(CakeRevenue::class, 'revenue_tracker_id', 'revenue_tracker_id');
     }
 
-    public function scopeCakePublisher($query,$revenueTrackerID)
+    public function scopeCakePublisher($query, $revenueTrackerID)
     {
-        return $query->where('revenue_tracker_id','=',$revenueTrackerID)
-                     ->orderBy('id','ASC');
+        return $query->where('revenue_tracker_id', '=', $revenueTrackerID)
+            ->orderBy('id', 'ASC');
     }
 
-    public function scopeWithAffiliates($query,$params)
+    public function scopeWithAffiliates($query, $params)
     {
-        $query->select('website','revenue_tracker_id','affiliate_id','affiliates.company AS affiliate_name', 'campaign_id')
-              ->join('affiliates','affiliate_revenue_trackers.affiliate_id','=','affiliates.id');
+        $query->select('website', 'revenue_tracker_id', 'affiliate_id', 'affiliates.company AS affiliate_name', 'campaign_id')
+            ->join('affiliates', 'affiliate_revenue_trackers.affiliate_id', '=', 'affiliates.id');
 
-        if(isset($params['type']))
-        {
-            $query->where('affiliates.type','=', $params['type']);
+        if (isset($params['type'])) {
+            $query->where('affiliates.type', '=', $params['type']);
         }
 
         return $query;
     }
 
-    public function scopeSearchRevenueTrackers($query,$search,$start,$length,$order_col,$order_dir)
+    public function scopeSearchRevenueTrackers($query, $search, $start, $length, $order_col, $order_dir)
     {
-        $query->join('affiliates','affiliate_revenue_trackers.affiliate_id','=','affiliates.id');
-        $query->join('affiliates as revTracker','affiliate_revenue_trackers.revenue_tracker_id','=','revTracker.id');
+        $query->join('affiliates', 'affiliate_revenue_trackers.affiliate_id', '=', 'affiliates.id');
+        $query->join('affiliates as revTracker', 'affiliate_revenue_trackers.revenue_tracker_id', '=', 'revTracker.id');
 
-        if(!empty($search)) {
+        if (! empty($search)) {
 
-            $query->where('website','LIKE','%'.$search.'%');
-            $query->orWhere('affiliates.company','LIKE','%'.$search.'%');
-            $query->orWhere('s1','LIKE','%'.$search.'%');
-            $query->orWhere('s2','LIKE','%'.$search.'%');
-            $query->orWhere('s3','LIKE','%'.$search.'%');
-            $query->orWhere('s4','LIKE','%'.$search.'%');
-            $query->orWhere('s5','LIKE','%'.$search.'%');
+            $query->where('website', 'LIKE', '%'.$search.'%');
+            $query->orWhere('affiliates.company', 'LIKE', '%'.$search.'%');
+            $query->orWhere('s1', 'LIKE', '%'.$search.'%');
+            $query->orWhere('s2', 'LIKE', '%'.$search.'%');
+            $query->orWhere('s3', 'LIKE', '%'.$search.'%');
+            $query->orWhere('s4', 'LIKE', '%'.$search.'%');
+            $query->orWhere('s5', 'LIKE', '%'.$search.'%');
 
-            if(is_numeric($search) && floor($search) == $search)
-            {
-                $query->orWhere('revenue_tracker_id',$search);
-                $query->orWhere('offer_id',$search);
-                $query->orWhere('campaign_id',$search);
-                $query->orWhere('affiliate_id',$search);
+            if (is_numeric($search) && floor($search) == $search) {
+                $query->orWhere('revenue_tracker_id', $search);
+                $query->orWhere('offer_id', $search);
+                $query->orWhere('campaign_id', $search);
+                $query->orWhere('affiliate_id', $search);
             }
 
-            if(strtolower($search) == 'enabled') {
+            if (strtolower($search) == 'enabled') {
                 $query->orWhere('subid_breakdown', 1);
             }
 
-            if(strtolower($search) == 'disabled') {
+            if (strtolower($search) == 'disabled') {
                 $query->orWhere('subid_breakdown', 0);
             }
         }
 
-        if($order_col != null && $order_dir != null) {
-            if($order_col > -1) {
-                $query->orderBy($order_col,$order_dir);
+        if ($order_col != null && $order_dir != null) {
+            if ($order_col > -1) {
+                $query->orderBy($order_col, $order_dir);
             }
         }
 
-        if($start != null) {
+        if ($start != null) {
             $query->skip($start);
         }
 
-        if($length != null) {
+        if ($length != null) {
             $query->take($length);
         }
 
         return $query;
     }
 
-    public function scopeGetRevenueTrackersWithExitPage($query, $params, $justForCount=true) {
+    public function scopeGetRevenueTrackersWithExitPage($query, $params, $justForCount = true)
+    {
 
-        if(!$justForCount) {
-            $query->join('affiliates','affiliate_revenue_trackers.affiliate_id','=','affiliates.id');
+        if (! $justForCount) {
+            $query->join('affiliates', 'affiliate_revenue_trackers.affiliate_id', '=', 'affiliates.id');
         }
 
-        if($params['exit_page_id'] == '') {
+        if ($params['exit_page_id'] == '') {
             $query->whereNull('exit_page_id');
-        }else {
+        } else {
             $query->where('exit_page_id', $params['exit_page_id']);
         }
 
-        if($params['search']['value'] != '') {
+        if ($params['search']['value'] != '') {
             $search = $params['search']['value'];
 
-            if(is_numeric($search) && floor($search) == $search)
-            {
-                $query->where(function($queryz) use($search) {
-                    $queryz->where('revenue_tracker_id',$search)
+            if (is_numeric($search) && floor($search) == $search) {
+                $query->where(function ($queryz) use ($search) {
+                    $queryz->where('revenue_tracker_id', $search)
                         ->orWhere('affiliate_id', $search);
                 });
             }
         }
 
-        if(!$justForCount) {
+        if (! $justForCount) {
 
             $order_col = isset($params['order_col']) ? $params['order_col'] : null;
             $order_dir = isset($params['order_dir']) ? $params['order_dir'] : null;
-            if($order_col != null && $order_dir != null) {
-                if($order_col > -1) {
-                    $query->orderBy($order_col,$order_dir);
+            if ($order_col != null && $order_dir != null) {
+                if ($order_col > -1) {
+                    $query->orderBy($order_col, $order_dir);
                 }
             }
 
-            if($params['start'] != null) {
+            if ($params['start'] != null) {
                 $query->skip($params['start']);
             }
 
-            if($params['length'] != null) {
+            if ($params['length'] != null) {
                 $query->take($params['length']);
             }
         }
@@ -234,22 +233,23 @@ class AffiliateRevenueTracker extends Model
         return $query;
     }
 
-    public function scopeGetAvailableRevTrackersForExitPage($query, $exit_page, $search, $disregard) {
+    public function scopeGetAvailableRevTrackersForExitPage($query, $exit_page, $search, $disregard)
+    {
         $query->select('id', 'revenue_tracker_id');
         $query->where('revenue_tracker_id', 'LIKE', '%'.$search.'%');
 
-        if($disregard != null) {
+        if ($disregard != null) {
             $query->whereNotIn('id', $disregard);
         }
 
-        if($exit_page == null) {
+        if ($exit_page == null) {
             $query->whereNotNull('exit_page_id');
-        }else{
-            $query->where(function($queryz) use($exit_page) {
+        } else {
+            $query->where(function ($queryz) use ($exit_page) {
                 $queryz->whereNull('exit_page_id')
                     ->orWhere('exit_page_id', '!=', $exit_page);
             });
         }
-        $query->orderBy('revenue_tracker_id','asc');
+        $query->orderBy('revenue_tracker_id', 'asc');
     }
 }

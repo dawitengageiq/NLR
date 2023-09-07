@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Services\Campaigns\Utils\Lists;
 
 use Bus;
@@ -15,13 +16,14 @@ final class Creatives
     /**
      * Set creatives
      *
-     * @param array $creatives
-     * @var array $creatives
+     * @param  array  $creatives
+     *
+     * @var array
      */
-    public function set ($creatives, $campaignID)
+    public function set($creatives, $campaignID)
     {
-        if($creatives && sizeof($creatives) > 0)  {
-            if($creativeID = Bus::dispatch(new RandomProbability(collect($creatives)->lists('weight','id')))) {
+        if ($creatives && count($creatives) > 0) {
+            if ($creativeID = Bus::dispatch(new RandomProbability(collect($creatives)->pluck('weight', 'id')))) {
                 $this->creatives[$campaignID] = $creativeID; //Save creative id of campaign
             }
         }
@@ -32,7 +34,7 @@ final class Creatives
      *
      * @return array
      */
-    public function get ()
+    public function get()
     {
         return $this->creatives;
     }

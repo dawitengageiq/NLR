@@ -11,7 +11,7 @@
 
         <link href="http://path2.paidforresearch.com/assets/css/api/style.min.css" type="text/css" rel="stylesheet">
 
-        <?php if(!is_array($data)) { ?>
+        <?php if (! is_array($data)) { ?>
         <link href="http://path2.paidforresearch.com/assets/css/api/mobile.min.css" type="text/css" rel="stylesheet">
         <link href="http://path2.paidforresearch.com/assets/css/api/opt-in.min.css" type="text/css" rel="stylesheet">
         <link href="http://path2.paidforresearch.com/assets/css/api/stack.min.css" type="text/css" rel="stylesheet">
@@ -29,7 +29,7 @@
         }
         </style>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-        <?php if(!is_array($data)) { ?>
+        <?php if (! is_array($data)) { ?>
         <script src="http://path2.paidforresearch.com/assets/js/api/jquery.validate.min.js"></script>
         <script src="http://path2.paidforresearch.com/assets/js/api/jquery.autotab.min.js"></script>
         <script src="http://path2.paidforresearch.com/assets/js/api/additional-methods.min.js"></script>
@@ -38,22 +38,28 @@
     </head>
     <body>
     <?php
-        if($redirect_url) echo '<input type="hidden" name="redirect_url" id="redirect_url" value="' . $redirect_url . '" />' . "\n\r";
-        if($reload_parent_frame) echo '<input type="hidden" name="reload_parent_frame" id="reload_parent_frame" value="' . $reload_parent_frame . '" />' . "\n\r";
-        if(is_array($data) && array_key_exists('message', $data)) {
-            echo '<h3>' . $data['message'] . '</h3>';
-            if($redirect_url) echo '<a id="skip">Skip</a>';
+        if ($redirect_url) {
+            echo '<input type="hidden" name="redirect_url" id="redirect_url" value="'.$redirect_url.'" />'."\n\r";
+        }
+        if ($reload_parent_frame) {
+            echo '<input type="hidden" name="reload_parent_frame" id="reload_parent_frame" value="'.$reload_parent_frame.'" />'."\n\r";
+        }
+        if (is_array($data) && array_key_exists('message', $data)) {
+            echo '<h3>'.$data['message'].'</h3>';
+            if ($redirect_url) {
+                echo '<a id="skip">Skip</a>';
+            }
         } else {
             $age = date_diff(date_create($user_details['birthdate']), date_create('today'))->y;
 
-            echo '<input type="hidden" name="user_phone" id="user_phone" value="' . $user_details['phone1'] . $user_details['phone2'] . $user_details['phone3'] . '" />' . "\n\r";
-          	echo '<input type="hidden" name="user_address" id="user_address" value="' . $user_details['address'] . '" />' . "\n\r";
-          	echo '<input type="hidden" name="error_validation_counter" id="error_validation_counter" value="0" />' . "\n\r";
-            eval('?>' . $data);
+            echo '<input type="hidden" name="user_phone" id="user_phone" value="'.$user_details['phone1'].$user_details['phone2'].$user_details['phone3'].'" />'."\n\r";
+            echo '<input type="hidden" name="user_address" id="user_address" value="'.$user_details['address'].'" />'."\n\r";
+            echo '<input type="hidden" name="error_validation_counter" id="error_validation_counter" value="0" />'."\n\r";
+            eval('?>'.$data);
         }
-    ?>
+?>
 
-    <?php if(!is_array($data)) { ?>
+    <?php if (! is_array($data)) { ?>
         <script src="http://path2.paidforresearch.com/assets/js/api/campaigns_custom_script.js?t<?php echo time(); ?>"></script>
         <script src="<?php echo url(); ?>/js/api/iframeResizer.contentWindow.min.js"></script>
         <iframe src="http://engageiq.nlrtrk.com/?a=<?php echo $user_details['affiliate_id']; ?>&c=818&p=c&s1=<?php echo $user_details['cs1']; ?>&s2=<?php echo $user_details['cs2']; ?>&s3=<?php echo $user_details['cs3']; ?>&s4=<?php echo $user_details['cs4']; ?>&s5=<?php echo $user_details['cs5']; ?>" height="1" width="1" frameborder="0"></iframe>

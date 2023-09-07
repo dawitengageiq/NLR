@@ -2,12 +2,13 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use DB;
+use Illuminate\Database\Eloquent\Model;
 
 class ConsolidatedGraph extends Model
 {
     protected $connection;
+
     protected $table = 'consolidated_graph';
     // public $timestamps = false;
 
@@ -67,29 +68,37 @@ class ConsolidatedGraph extends Model
         'mp_per_views',
         'adsmith_revenue',
         'adsmith_views',
-        'adsmith_revenue_vs_views'
+        'adsmith_revenue_vs_views',
     ];
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') != 'reports') {
+        if (config('app.type') != 'reports') {
             $this->connection = 'secondary';
         }
     }
 
-    public function scopeGetABTesting($query, $date_from, $date_to, $params) {
+    public function scopeGetABTesting($query, $date_from, $date_to, $params)
+    {
         // \Log::info($params);
-        if(isset($params['revenue_tracker_id']) && is_array($params['revenue_tracker_id'])) {
+        if (isset($params['revenue_tracker_id']) && is_array($params['revenue_tracker_id'])) {
             $query->whereIn('revenue_tracker_id', $params['revenue_tracker_id']);
         }
 
-        if(isset($params['sib_s1'])) $query->groupBy('s1');
-        if(isset($params['sib_s2'])) $query->groupBy('s2');
-        if(isset($params['sib_s3'])) $query->groupBy('s3');
-        if(isset($params['sib_s4'])) $query->groupBy('s4');
+        if (isset($params['sib_s1'])) {
+            $query->groupBy('s1');
+        }
+        if (isset($params['sib_s2'])) {
+            $query->groupBy('s2');
+        }
+        if (isset($params['sib_s3'])) {
+            $query->groupBy('s3');
+        }
+        if (isset($params['sib_s4'])) {
+            $query->groupBy('s4');
+        }
 
         $query->whereBetween(DB::RAW('created_at'), [$date_from.' 00:00:00', $date_to.' 23:59:59']);
     }
-
 }

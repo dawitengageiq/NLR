@@ -42,13 +42,13 @@ Advertisers
 
 		    	<?php
 
-		  		$attributes = array(
+		  		$attributes = [
 		                  'url' 		=> url('admin/advertiser/store'),
 		                  'class'			=> 'this_form',
 		                  'data-confirmation' => '',
 		                  'data-process' 	=> 'add_advertiser',
 		                  'id' =>	'adv_form'
-		              );
+		              ];
 
 		    	?>
 		    	{!! Form::open($attributes) !!}

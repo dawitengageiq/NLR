@@ -1,12 +1,12 @@
 <?php
+
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-
+use App\Http\Services\Campaigns\Providers\Facades;
+use App\Http\Services\Campaigns\Providers\Interfaces;
 use App\Http\Services\Campaigns\Providers\Lists;
 use App\Http\Services\Campaigns\Providers\ListsApi;
-use \App\Http\Services\Campaigns\Providers\Facades;
-use App\Http\Services\Campaigns\Providers\Interfaces;
+use Illuminate\Support\ServiceProvider;
 
 class CampaignListServiceProvider extends ServiceProvider
 {

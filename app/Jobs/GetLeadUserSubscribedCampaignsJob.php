@@ -2,17 +2,15 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Job;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use App\LeadUserRequest;
-use DB;
 use Carbon\Carbon;
+use DB;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Log;
 
-class GetLeadUserSubscribedCampaignsJob extends Job implements SelfHandling, ShouldQueue
+class GetLeadUserSubscribedCampaignsJob extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
@@ -40,20 +38,20 @@ class GetLeadUserSubscribedCampaignsJob extends Job implements SelfHandling, Sho
         //$start_date = '2018-01-01 00:00:00';
         $start_date = Carbon::now()->subYear(1)->startOfYear();
         $end_date = Carbon::now()->endOfDay();
-        $users = LeadUserRequest::whereNull('subscribed_campaigns')->where('request_type', 'like', '%Delet%')->distinct('email')->lists('email')->toArray();
+        $users = LeadUserRequest::whereNull('subscribed_campaigns')->where('request_type', 'like', '%Delet%')->distinct('email')->pluck('email')->toArray();
 
-        if(count($users) == 0) {
+        if (count($users) == 0) {
             Log::info('No new opt out users');
+
             return;
         }
 
         // \Log::info($users);
-        $user_emails = array_map(function($data){
+        $user_emails = array_map(function ($data) {
             return "'".$data."'";
         }, $users);
         $email_str = implode(',', $user_emails);
 
-        
         $get_campaigns = DB::connection($connection)->select("SELECT lead_email, GROUP_CONCAT(DISTINCT campaign_id ORDER BY campaign_id ASC SEPARATOR ',') as campaigns FROM (
         SELECT lead_email, campaign_id FROM leads_archive 
         WHERE lead_email IN ($email_str) 
@@ -61,17 +59,17 @@ class GetLeadUserSubscribedCampaignsJob extends Job implements SelfHandling, Sho
         UNION 
         SELECT lead_email, campaign_id FROM leads WHERE lead_email IN ($email_str) 
         AND lead_status = 1) as a GROUP BY lead_email");
-        
+
         $campaigns = [];
-        foreach($get_campaigns as $c) {
+        foreach ($get_campaigns as $c) {
             $campaigns[$c->lead_email] = $c->campaigns;
         }
 
         $no_campaigns = [];
-        foreach($users as $user) {
-            if(!array_key_exists($user, $campaigns)) {
+        foreach ($users as $user) {
+            if (! array_key_exists($user, $campaigns)) {
                 $no_campaigns[] = $user;
-            }else {
+            } else {
                 LeadUserRequest::where('email', $user)->whereNull('subscribed_campaigns')->update(['subscribed_campaigns' => $campaigns[$user]]);
                 // $req = LeadUserRequest::where('email', $user)->first();
                 // $req->subscribed_campaigns = $campaigns[$user];
@@ -79,9 +77,9 @@ class GetLeadUserSubscribedCampaignsJob extends Job implements SelfHandling, Sho
             }
         }
 
-        if(count($no_campaigns) > 0) {
+        if (count($no_campaigns) > 0) {
             LeadUserRequest::whereIn('email', $no_campaigns)->update([
-                'subscribed_campaigns' => 0
+                'subscribed_campaigns' => 0,
             ]);
         }
 

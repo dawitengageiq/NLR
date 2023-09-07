@@ -12,8 +12,8 @@ class CampaignIpSeeder extends Seeder
     public function run()
     {
         App\CampaignIp::firstOrCreate([
-			'campaign_id'	=>	1,
-			'ip'			=>	'192.168.1.8'
-		]);
+            'campaign_id' => 1,
+            'ip' => '192.168.1.8',
+        ]);
     }
 }

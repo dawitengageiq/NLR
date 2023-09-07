@@ -21,7 +21,7 @@ class Action extends Model
     protected $fillable = [
         'name',
         'description',
-        'code'
+        'code',
     ];
 
     public function roles()

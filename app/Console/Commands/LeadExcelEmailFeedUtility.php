@@ -2,15 +2,15 @@
 
 namespace App\Console\Commands;
 
-use Carbon\Carbon;
-use Illuminate\Console\Command;
-use DateTime;
-use Validator;
+use App\Campaign;
 use App\Jobs\SendLeadExcelEmailFeed;
 use App\Lead;
-use App\Campaign;
-use Mail;
+use Carbon\Carbon;
+use DateTime;
+use Illuminate\Console\Command;
 use Maatwebsite\Excel\Facades\Excel;
+use Mail;
+use Validator;
 
 class LeadExcelEmailFeedUtility extends Command
 {
@@ -35,7 +35,6 @@ class LeadExcelEmailFeedUtility extends Command
 
     /**
      * Create a new command instance.
-     *
      */
     public function __construct()
     {
@@ -49,7 +48,7 @@ class LeadExcelEmailFeedUtility extends Command
      */
     public function handle()
     {
-        $this->info("Initiating lead csv data excel feed tasks...");
+        $this->info('Initiating lead csv data excel feed tasks...');
 
         $campaignID = $this->option('campaign');
         $fromDate = $this->option('from');
@@ -57,32 +56,21 @@ class LeadExcelEmailFeedUtility extends Command
         $recipient = $this->option('email');
         $recipientName = $this->option('name');
 
-        if(empty($campaignID))
-        {
+        if (empty($campaignID)) {
             $this->info('Please provide the campaign ID!');
-        }
-        else if(empty($fromDate) || empty($toDate))
-        {
+        } elseif (empty($fromDate) || empty($toDate)) {
             $this->info('Please provide the date range!');
-        }
-        else if((!$this->validateDate($fromDate) || !$this->validateDate($toDate)) || !$this->isRangeValid($fromDate,$toDate))
-        {
+        } elseif ((! $this->validateDate($fromDate) || ! $this->validateDate($toDate)) || ! $this->isRangeValid($fromDate, $toDate)) {
             $this->info('Invalid date range!');
-        }
-        else if(empty($recipient))
-        {
+        } elseif (empty($recipient)) {
             $this->info('Please provide the recipient email!');
-        }
-        else if(!$this->isEmailValid($recipient))
-        {
+        } elseif (! $this->isEmailValid($recipient)) {
             $this->info('Invalid recipient email!');
-        }
-        else
-        {
+        } else {
             $this->info("Processing email feed for $recipient.");
 
             //execute the queue for sending the excel feed with 5 seconds delay before execution
-            $job = (new SendLeadExcelEmailFeed($campaignID,$fromDate,$toDate,$recipient,$recipientName))->delay(3);
+            $job = (new SendLeadExcelEmailFeed($campaignID, $fromDate, $toDate, $recipient, $recipientName))->delay(3);
             dispatch($job);
 
             //temporarily put the processing here since no decision yet when to use queues.
@@ -91,6 +79,7 @@ class LeadExcelEmailFeedUtility extends Command
             $this->info("Excel Email Feed is processed and will be sent later via email to $recipient");
         }
     }
+
     /*
     private function sendLeadExcelEmailFeed($campaignID,$fromDate,$toDate,$recipient,$recipientName)
     {
@@ -211,18 +200,18 @@ class LeadExcelEmailFeedUtility extends Command
     private function validateDate($date)
     {
         $d = DateTime::createFromFormat('Y-m-d', $date);
+
         return $d && $d->format('Y-m-d') === $date;
     }
 
-    private function isRangeValid($fromDate,$toDate)
+    private function isRangeValid($fromDate, $toDate)
     {
         $from = Carbon::parse($fromDate);
         $to = Carbon::parse($toDate);
 
         $days = $from->diffInDays($to, false);
 
-        if($days<0)
-        {
+        if ($days < 0) {
             return false;
         }
 
@@ -232,7 +221,7 @@ class LeadExcelEmailFeedUtility extends Command
     private function isEmailValid($email)
     {
         $inputs = [
-            'recipient_email' => $email
+            'recipient_email' => $email,
         ];
 
         $validator = Validator::make($inputs, [

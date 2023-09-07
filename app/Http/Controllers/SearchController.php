@@ -3,26 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Affiliate;
-use Illuminate\Http\Request;
-use DB;
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use App\AffiliateCampaign;
 use App\AffiliateRevenueTracker;
+use DB;
+use Illuminate\Http\Request;
 use Log;
 
 /**
  * This Controller is primarily used as ajax remote data provider for Select2 select drop downs.
  *
  * Class SearchController
- * @package App\Http\Controllers
  */
 class SearchController extends Controller
 {
     /**
      * Display a listing of the searched resource (revenue trackers).
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function activeRevenueTrackers(Request $request)
@@ -31,29 +26,28 @@ class SearchController extends Controller
 
         $term = isset($inputs['term']) ? $inputs['term'] : '';
 
-        $revenueTrackers = Affiliate::select('id',DB::raw('CONCAT(company," (",id,") ") AS name'))
-                                    ->where('status',1)
-                                    ->where('type',1)
-                                    ->where(function($query) use ($term){
+        $revenueTrackers = Affiliate::select('id', DB::raw('CONCAT(company," (",id,") ") AS name'))
+            ->where('status', 1)
+            ->where('type', 1)
+            ->where(function ($query) use ($term) {
 
-                                        $query->where('company','LIKE',"%$term%")
-                                              ->orWhere('id', '=', $term);
+                $query->where('company', 'LIKE', "%$term%")
+                    ->orWhere('id', '=', $term);
 
-                                    })
-                                    ->orderBy('company')
-                                    ->get();
+            })
+            ->orderBy('company')
+            ->get();
 
         $responseData = [
-            'items' => $revenueTrackers
+            'items' => $revenueTrackers,
         ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
     /**
      * Display a listing of the searched resource (active affiliates).
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function activeAffiliates(Request $request)
@@ -61,26 +55,25 @@ class SearchController extends Controller
         $inputs = $request->all();
         $term = isset($inputs['term']) ? $inputs['term'] : '';
 
-        $activeAffiliates = Affiliate::select('id',DB::raw('CONCAT(company," (",id,") ") AS name'))
-                                      ->where('status',1)
-                                      ->where(function($query) use ($term){
-                                          $query->where('company','LIKE',"%$term%")
-                                                ->orWhere('id', '=', $term);
-                                      })
-                                      ->orderBy('name','asc')
-                                      ->get();
+        $activeAffiliates = Affiliate::select('id', DB::raw('CONCAT(company," (",id,") ") AS name'))
+            ->where('status', 1)
+            ->where(function ($query) use ($term) {
+                $query->where('company', 'LIKE', "%$term%")
+                    ->orWhere('id', '=', $term);
+            })
+            ->orderBy('name', 'asc')
+            ->get();
 
         $responseData = [
-            'items' => $activeAffiliates
+            'items' => $activeAffiliates,
         ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
     /**
      * Display a listing of the searched resource (active affiliates).
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function activeAffiliatesIDName(Request $request)
@@ -88,20 +81,20 @@ class SearchController extends Controller
         $inputs = $request->all();
         $term = isset($inputs['term']) ? $inputs['term'] : '';
 
-        $activeAffiliates = Affiliate::select('id',DB::raw('CONCAT(id, " - ", company) AS name'))
-            ->where('status',1)
-            ->where(function($query) use ($term){
-                $query->where('company','LIKE',"%$term%")
+        $activeAffiliates = Affiliate::select('id', DB::raw('CONCAT(id, " - ", company) AS name'))
+            ->where('status', 1)
+            ->where(function ($query) use ($term) {
+                $query->where('company', 'LIKE', "%$term%")
                     ->orWhere('id', '=', $term);
             })
-            ->orderBy('name','asc')
+            ->orderBy('name', 'asc')
             ->get();
 
         $responseData = [
-            'items' => $activeAffiliates
+            'items' => $activeAffiliates,
         ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
     public function activeAffiliate($id)
@@ -114,67 +107,70 @@ class SearchController extends Controller
         */
     }
 
-    public function campaignAffiliate(Request $request) {
-      $inputs = $request->all();
-      $term = isset($inputs['term']) ? $inputs['term'] : '';
-      $campaign = $inputs['campaign'];
+    public function campaignAffiliate(Request $request)
+    {
+        $inputs = $request->all();
+        $term = isset($inputs['term']) ? $inputs['term'] : '';
+        $campaign = $inputs['campaign'];
 
-      // DB::enableQueryLog();
-      $availableAffiliates = 
-        Affiliate::leftJoin('affiliate_campaign', function ($join) use ($campaign) {
-          $join->on('affiliates.id', '=', 'affiliate_campaign.affiliate_id')
-              ->where('affiliate_campaign.campaign_id','=', $campaign);
-        })->whereNull('affiliate_campaign.id')
-        ->where(function($query) use ($term){
-          $query->where('company','LIKE',"%$term%")
-            ->orWhere('affiliates.id', '=', $term);
-        })
-        ->select('affiliates.id', DB::raw('CONCAT(affiliates.id, " - ",company) AS name'))
-        ->get()->toArray();
+        // DB::enableQueryLog();
+        $availableAffiliates =
+          Affiliate::leftJoin('affiliate_campaign', function ($join) use ($campaign) {
+              $join->on('affiliates.id', '=', 'affiliate_campaign.affiliate_id')
+                  ->where('affiliate_campaign.campaign_id', '=', $campaign);
+          })->whereNull('affiliate_campaign.id')
+              ->where(function ($query) use ($term) {
+                  $query->where('company', 'LIKE', "%$term%")
+                      ->orWhere('affiliates.id', '=', $term);
+              })
+              ->select('affiliates.id', DB::raw('CONCAT(affiliates.id, " - ",company) AS name'))
+              ->get()->toArray();
 
-      if(strtolower($term) == 'all') {
-        array_unshift($availableAffiliates, ['id' => 'ALL', 'name' => 'ALL AVAILABLE AFFILIATES']);
-      }
-      // Log::info(DB::getQueryLog());
-      // Log::info($availableAffiliates);
+        if (strtolower($term) == 'all') {
+            array_unshift($availableAffiliates, ['id' => 'ALL', 'name' => 'ALL AVAILABLE AFFILIATES']);
+        }
+        // Log::info(DB::getQueryLog());
+        // Log::info($availableAffiliates);
 
-      $responseData = [
-          'items' => $availableAffiliates
-      ];
+        $responseData = [
+            'items' => $availableAffiliates,
+        ];
 
-      return response()->json($responseData,200);
-    }
-    
-    public function getRevenueTrackers(Request $request) {
-      $inputs = $request->all();
-      $term = isset($inputs['term']) ? $inputs['term'] : '';
-
-      $actives = AffiliateRevenueTracker::select('id', 'revenue_tracker_id')
-        ->where('revenue_tracker_id', 'LIKE', '%'.$term.'%')
-        ->orderBy('revenue_tracker_id','asc')
-        ->get();
-
-      $responseData = [
-        'items' => $actives
-      ];
-
-      return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
-    public function getAvailableRevenueTrackersForExitPage(Request $request) {
-      $inputs = $request->all();
-      // Log::info($inputs);
-      $term = isset($inputs['term']) ? $inputs['term'] : '';
-      $exit_page = $inputs['exit_page_id'] == '' ? null : $inputs['exit_page_id'];
-      $selected = isset($inputs['selected']) ? $inputs['selected'] : null;
-      // DB::enableQueryLog();
-      $actives = AffiliateRevenueTracker::getAvailableRevTrackersForExitPage($exit_page, $term, $selected)
-        ->get();
-      // Log::info(DB::getQueryLog());  
-      $responseData = [
-        'items' => $actives
-      ];
+    public function getRevenueTrackers(Request $request)
+    {
+        $inputs = $request->all();
+        $term = isset($inputs['term']) ? $inputs['term'] : '';
 
-      return response()->json($responseData,200);
+        $actives = AffiliateRevenueTracker::select('id', 'revenue_tracker_id')
+            ->where('revenue_tracker_id', 'LIKE', '%'.$term.'%')
+            ->orderBy('revenue_tracker_id', 'asc')
+            ->get();
+
+        $responseData = [
+            'items' => $actives,
+        ];
+
+        return response()->json($responseData, 200);
+    }
+
+    public function getAvailableRevenueTrackersForExitPage(Request $request)
+    {
+        $inputs = $request->all();
+        // Log::info($inputs);
+        $term = isset($inputs['term']) ? $inputs['term'] : '';
+        $exit_page = $inputs['exit_page_id'] == '' ? null : $inputs['exit_page_id'];
+        $selected = isset($inputs['selected']) ? $inputs['selected'] : null;
+        // DB::enableQueryLog();
+        $actives = AffiliateRevenueTracker::getAvailableRevTrackersForExitPage($exit_page, $term, $selected)
+            ->get();
+        // Log::info(DB::getQueryLog());
+        $responseData = [
+            'items' => $actives,
+        ];
+
+        return response()->json($responseData, 200);
     }
 }

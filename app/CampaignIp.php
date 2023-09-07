@@ -9,11 +9,12 @@ class CampaignIp extends Model
     protected $table = 'campaign_ips';
 
     protected $fillable = [
-    'campaign_id', 
-    'ip',
+        'campaign_id',
+        'ip',
     ];
 
-    public function campaign(){
-		return $this->belongsTo('App\Campaign');
-	}
+    public function campaign()
+    {
+        return $this->belongsTo(\App\Campaign::class);
+    }
 }

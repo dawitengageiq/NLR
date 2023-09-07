@@ -17,12 +17,12 @@
 <div class="modal fade" id="websiteModal" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <?php
-        $attributes = array(
+        $attributes = [
             'url'                   => 'affiliate/update_website',
             'class'                 => 'this_form',
             'data-confirmation'     => '',
             'data-process'          => 'update_affiliat_website'
-        );
+        ];
     ?>
     {!! Form::open($attributes) !!}
         <div class="modal-content">

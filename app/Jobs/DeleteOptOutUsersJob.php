@@ -2,33 +2,27 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Job;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use ErrorException;
-use Illuminate\Database\QueryException;
-use Carbon\Carbon;
-use Log;
-
 use App\Lead;
 use App\LeadArchive;
+use App\LeadDataAdv;
+use App\LeadDataAdvArchive;
+use App\LeadDataCsv;
+use App\LeadDataCsvArchive;
+use App\LeadMessage;
+use App\LeadMessageArchive;
+use App\LeadSentResult;
+use App\LeadSentResultArchive;
 use App\LeadUser;
 use App\LeadUserRequest;
+use Carbon\Carbon;
+use ErrorException;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\QueryException;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Log;
 
-use App\LeadDataAdv;
-use App\LeadDataCsv;
-use App\LeadMessage;
-use App\LeadSentResult;
-
-use App\LeadDataAdvArchive;
-use App\LeadDataCsvArchive;
-use App\LeadDuplicateArchive;
-use App\LeadMessageArchive;
-use App\LeadSentResultArchive;
-
-class DeleteOptOutUsersJob extends Job implements SelfHandling, ShouldQueue
+class DeleteOptOutUsersJob extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
@@ -52,10 +46,11 @@ class DeleteOptOutUsersJob extends Job implements SelfHandling, ShouldQueue
         Log::info('Deleting Opt out users');
         $status = 1;
         $end_date = Carbon::now()->endOfDay();
-        $users = LeadUserRequest::where('is_sent','=', 1)->where('is_deleted','=',0)->where('request_type', 'like', '%Delet%')->lists('email', 'id')->toArray();
+        $users = LeadUserRequest::where('is_sent', '=', 1)->where('is_deleted', '=', 0)->where('request_type', 'like', '%Delet%')->pluck('email', 'id')->toArray();
 
-        if(count($users) == 0) {
+        if (count($users) == 0) {
             Log::info('No new users');
+
             return;
         }
 
@@ -65,9 +60,9 @@ class DeleteOptOutUsersJob extends Job implements SelfHandling, ShouldQueue
         // \Log::info($emails);
         // \Log::info($ids);
         Log::info('Deleting Leads');
-        try{
+        try {
             //Lead
-            $leads = Lead::whereIn('lead_email', $emails)->whereBetween('created_at', ['2018-01-01 00:00:00', $end_date])->lists('id')->toArray();
+            $leads = Lead::whereIn('lead_email', $emails)->whereBetween('created_at', ['2018-01-01 00:00:00', $end_date])->pluck('id')->toArray();
             LeadDataAdv::destroy($leads);
             LeadDataCsv::destroy($leads);
             LeadMessage::destroy($leads);
@@ -76,7 +71,7 @@ class DeleteOptOutUsersJob extends Job implements SelfHandling, ShouldQueue
 
             Log::info('Deleting Archived Leads');
             //LeadArchive
-            $archived = LeadArchive::whereIn('lead_email', $emails)->whereBetween('created_at', ['2018-01-01 00:00:00', $end_date])->lists('id')->toArray();
+            $archived = LeadArchive::whereIn('lead_email', $emails)->whereBetween('created_at', ['2018-01-01 00:00:00', $end_date])->pluck('id')->toArray();
             LeadDataAdvArchive::destroy($archived);
             LeadDataCsvArchive::destroy($archived);
             LeadMessageArchive::destroy($archived);
@@ -86,22 +81,18 @@ class DeleteOptOutUsersJob extends Job implements SelfHandling, ShouldQueue
             Log::info('Deleting Survey Takers');
             //Lead User
             LeadUser::whereIn('email', $emails)->whereBetween('created_at', ['2018-01-01 00:00:00', $end_date])->delete();
-        }
-        catch(ErrorException $e)
-        {
+        } catch (ErrorException $e) {
             Log::info('Error encounterd');
             Log::info($e->getMessage());
             Log::info($e->getCode());
             $status = 0;
-        }
-        catch(QueryException $e)
-        {
+        } catch (QueryException $e) {
             Log::info('Error encountered');
             Log::info($e->getMessage());
             Log::info($e->getCode());
             $status = 0;
         }
-            
+
         Log::info('Updating Request');
         //Update Status
         LeadUserRequest::whereIn('id', $ids)->update(['is_removed' => 2, 'is_deleted' => $status]);

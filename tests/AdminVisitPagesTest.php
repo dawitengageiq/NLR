@@ -1,8 +1,5 @@
 <?php
 
-use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\User;
 
 class AdminVisitPagesTest extends TestCase
@@ -10,24 +7,24 @@ class AdminVisitPagesTest extends TestCase
     public function testAdminLogin()
     {
         $this->visit('/auth/login')
-             ->type('ariel@engageiq.com','email')
-             ->type('12345','password')
-             ->press('Login')
-             ->seePageIs('/admin/dashboard');
+            ->type('ariel@engageiq.com', 'email')
+            ->type('12345', 'password')
+            ->press('Login')
+            ->seePageIs('/admin/dashboard');
     }
 
     public function testVisitPages()
     {
         //get the admin user depends on your record
         $user = User::firstOrCreate([
-            'email' => 'ariel@engageiq.com'
+            'email' => 'ariel@engageiq.com',
         ]);
 
         $this->actingAs($user)
-             ->visit('/admin/home')
-             ->see('User: '.$user->first_name);
+            ->visit('/admin/home')
+            ->see('User: '.$user->first_name);
 
         $this->visit('/admin')
-             ->see('User: '.$user->first_name);
+            ->see('User: '.$user->first_name);
     }
 }

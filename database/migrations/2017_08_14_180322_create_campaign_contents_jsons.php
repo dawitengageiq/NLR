@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateCampaignContentsJsons extends Migration
 {
@@ -32,7 +32,7 @@ class CreateCampaignContentsJsons extends Migration
     public function down()
     {
         Schema::table('campaign_contents', function (Blueprint $table) {
-            $table->dropColumn(['name','deal','description','fields','additional_fields','rules','sticker','cpa_creative_id']);
+            $table->dropColumn(['name', 'deal', 'description', 'fields', 'additional_fields', 'rules', 'sticker', 'cpa_creative_id']);
         });
     }
 }

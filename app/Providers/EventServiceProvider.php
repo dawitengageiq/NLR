@@ -6,7 +6,6 @@ use App\Events\UserActionEvent;
 use App\User;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Log;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -16,15 +15,14 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'App\Events\UserActionEvent' => [
-            'App\Listeners\UserActionListener'
-        ]
+        \App\Events\UserActionEvent::class => [
+            \App\Listeners\UserActionListener::class,
+        ],
     ];
 
     /**
      * Register any other events for your application.
      *
-     * @param  \Illuminate\Contracts\Events\Dispatcher  $events
      * @return void
      */
     public function boot(DispatcherContract $events)
@@ -45,12 +43,12 @@ class EventServiceProvider extends ServiceProvider
                 'change_severity' => 1,
                 'summary' => "$user->first_name attempted to login with $email.",
                 'old_value' => null,
-                'new_value' => null
+                'new_value' => null,
             ]));
         });
 
         // Fired on successful logins...
-        $events->listen('auth.login', function ($user, $remember) {
+        $events->listen(\Illuminate\Auth\Events\Login::class, function ($user, $remember) {
             event(new UserActionEvent([
                 'section_id' => null,
                 'sub_section_id' => null,
@@ -58,12 +56,12 @@ class EventServiceProvider extends ServiceProvider
                 'change_severity' => 1,
                 'summary' => "$user->first_name logged in with $user->email.",
                 'old_value' => null,
-                'new_value' => null
+                'new_value' => null,
             ]));
         });
 
         // Fired on logouts...
-        $events->listen('auth.logout', function ($user) {
+        $events->listen(\Illuminate\Auth\Events\Logout::class, function ($user) {
             event(new UserActionEvent([
                 'section_id' => null,
                 'sub_section_id' => null,
@@ -71,7 +69,7 @@ class EventServiceProvider extends ServiceProvider
                 'change_severity' => 1,
                 'summary' => $user->first_name.' logged out',
                 'old_value' => null,
-                'new_value' => null
+                'new_value' => null,
             ]));
         });
     }

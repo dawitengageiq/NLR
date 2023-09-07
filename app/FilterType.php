@@ -11,6 +11,6 @@ class FilterType extends Model
     protected $fillable = [
         'type',
         'name',
-        'status'
+        'status',
     ];
 }

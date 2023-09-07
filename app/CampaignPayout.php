@@ -7,34 +7,37 @@ use Illuminate\Database\Eloquent\Model;
 class CampaignPayout extends Model
 {
     protected $connection;
+
     protected $table = 'campaign_payouts';
 
     protected $fillable = [
         'campaign_id',
         'affiliate_id',
         'received',
-        'payout'
+        'payout',
     ];
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') == 'reports') {
+        if (config('app.type') == 'reports') {
             $this->connection = 'secondary';
         }
     }
 
-    public function campaign(){
-		return $this->belongsTo(Campaign::class);
-	}
-
-	public function affiliate(){
-		return $this->belongsTo(Affiliate::class);
-	}
-
-    public function scopeGetCampaignAffiliatePayout($query,$campaignID,$affiliateID)
+    public function campaign()
     {
-        return $query->where('campaign_id','=',$campaignID)
-                     ->where('affiliate_id','=',$affiliateID);
+        return $this->belongsTo(Campaign::class);
+    }
+
+    public function affiliate()
+    {
+        return $this->belongsTo(Affiliate::class);
+    }
+
+    public function scopeGetCampaignAffiliatePayout($query, $campaignID, $affiliateID)
+    {
+        return $query->where('campaign_id', '=', $campaignID)
+            ->where('affiliate_id', '=', $affiliateID);
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AlterClicksVsRegistrationRemoveSubidsUniqueIndex extends Migration
 {
@@ -16,8 +16,8 @@ class AlterClicksVsRegistrationRemoveSubidsUniqueIndex extends Migration
 
             $sm = Schema::getConnection()->getDoctrineSchemaManager();
             $indexesFound = $sm->listTableIndexes('clicks_vs_registration_statistics');
-            if(array_key_exists("subids_index", $indexesFound)) {
-                $table->dropUnique("subids_index");
+            if (array_key_exists('subids_index', $indexesFound)) {
+                $table->dropUnique('subids_index');
             }
         });
     }

@@ -45,109 +45,23 @@ return [
 
         'local' => [
             'driver' => 'local',
-            'root'   => storage_path('app'),
+            'root' => storage_path('app'),
         ],
 
-        'ftp' => [
-            'driver'   => 'ftp',
-            'host'     => 'ftp.example.com',
-            'username' => 'your-username',
-            'password' => 'your-password',
-
-            // Optional FTP Settings...
-            // 'port'     => 21,
-            // 'root'     => '',
-            // 'passive'  => true,
-            // 'ssl'      => true,
-            // 'timeout'  => 30,
-        ],
-
-        // touch mark corp ftp
-        'touch_mark_corp_ftp' => [
-            'driver'   => 'ftp',
-            'host' => env('TOUCHMARK_FTP_HOST', 'sftp.touchmarkcorp.com'),
-            'username' => env('TOUCHMARK_FTP_USERNAME', 'engageiq_iq'),
-            'password' => env('TOUCHMARK_FTP_PASSWORD', '7SE3=Fb+'),
-            'passive'  => false,
-            'root' => '/'
-        ],
-
-        'ftp_test' => [
-            'driver'   => 'ftp',
-            'host'     => 'paidforresearch.com',
-            'username' => 'ftpusertest',
-            'password' => 'mr@kwa38479',
-            'passive'  => false,
-            'root' => '/'
-            // Optional FTP Settings...
-            // 'port'     => 21,
-            // 'root'     => '',
-            // 'ssl'      => true,
-            // 'timeout'  => 30,
-        ],
-
-        'ftp_feeds' => [
+        'public' => [
             'driver' => 'local',
-            'root'   => storage_path('ftp_feeds'),
+            'root' => storage_path('app/public'),
+            'visibility' => 'public',
         ],
 
         's3' => [
             'driver' => 's3',
-            'key'    => 'your-key',
+            'key' => 'your-key',
             'secret' => 'your-secret',
             'region' => 'your-region',
             'bucket' => 'your-bucket',
         ],
 
-        'rackspace' => [
-            'driver'    => 'rackspace',
-            'username'  => 'your-username',
-            'key'       => 'your-key',
-            'container' => 'your-container',
-            'endpoint'  => 'https://identity.api.rackspacecloud.com/v2.0/',
-            'region'    => 'IAD',
-            'url_type'  => 'publicURL',
-        ],
-
-        'public' => [
-            'driver' => 'local',
-            'root'   => public_path(),
-        ],
-
-        'downloads' => [
-            'driver' => 'local',
-            'root'   => storage_path('downloads'),
-        ],
-
-        'reports' => [
-            'driver'   => 'sftp',
-            'host' => env('REPORTS_FTP_HOST', 'nlr.engageiq.com'),
-            'username' => env('REPORTS_FTP_USERNAME', 'USERNAME'),
-            'password' => env('REPORTS_FTP_PASSWORD', 'PASSWORD'),
-            'port' => env('REPORTS_FTP_PORT', '21'),
-            'passive'  => false,
-            'root' => env('REPORTS_FTP_DIR', '/var/www/html/tlr.engageiq.com/storage/downloads')
-        ],
-
-        'main' => [
-            'driver'   => 'sftp',
-            'host' => env('MAIN_FTP_HOST', 'nlr.engageiq.com'),
-            'username' => env('MAIN_FTP_USERNAME', 'USERNAME'),
-            'password' => env('MAIN_FTP_PASSWORD', 'PASSWORD'),
-            'port' => env('MAIN_FTP_PORT', '21'),
-            'passive'  => false,
-            'root' => env('MAIN_FTP_DIR', '/var/www/html/devleadreactor.engageiq.com/storage/downloads')
-        ],
-
-        'main_slave' => [
-            'driver'   => 'sftp',
-            'host' => env('MAIN_SLAVE_FTP_HOST', 'nlr.engageiq.com'),
-            'username' => env('MAIN_SLAVE_FTP_USERNAME', 'USERNAME'),
-            'password' => env('MAIN_SLAVE_FTP_PASSWORD', 'PASSWORD'),
-            'port' => env('MAIN_SLAVE_FTP_PORT', '21'),
-            'passive'  => false,
-            'root' => env('MAIN_SLAVE_FTP_DIR', '/var/www/html/devleadreactor.engageiq.com/storage/downloads')
-        ],
     ],
 
 ];

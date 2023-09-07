@@ -10,7 +10,7 @@ class LeadDataAdvArchive extends Model
 
     protected $fillable = [
         'id',
-        'value'
+        'value',
     ];
 
     public function lead()

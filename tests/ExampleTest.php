@@ -1,9 +1,5 @@
 <?php
 
-use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
-
 class ExampleTest extends TestCase
 {
     /**
@@ -14,9 +10,9 @@ class ExampleTest extends TestCase
     public function testBasicExample()
     {
         $this->visit('auth/login')
-             ->type('ariel@engageiq.com','email')
-             ->type('12345','password')
-             ->press('Login')
-             ->seePageIs('admin/dashboard');
+            ->type('ariel@engageiq.com', 'email')
+            ->type('12345', 'password')
+            ->press('Login')
+            ->seePageIs('admin/dashboard');
     }
 }

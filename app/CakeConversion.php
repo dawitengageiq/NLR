@@ -1,10 +1,11 @@
 <?php
 
 namespace App;
-use Illuminate\Database\Eloquent\Model;
-use DB;
-use DateTime;
+
 use Carbon\Carbon;
+use DateTime;
+use DB;
+use Illuminate\Database\Eloquent\Model;
 
 class CakeConversion extends Model
 {
@@ -35,12 +36,13 @@ class CakeConversion extends Model
         'click_ip_address',
         'received_amount',
         'test',
-        'transaction_id'
+        'transaction_id',
     ];
 
-    public function scopeWithDaysOld($query,$numberOfDays)
+    public function scopeWithDaysOld($query, $numberOfDays)
     {
         $dateNow = Carbon::now()->toDateString();
+
         return $query->whereRaw("DATEDIFF(DATE('$dateNow'),DATE(conversion_date)) > $numberOfDays");
     }
 
@@ -48,34 +50,29 @@ class CakeConversion extends Model
     {
         //$query->whereRaw("offer_id=$offerID AND sub_id_5='".$email."'");
 
-        if(isset($inputs['offer_id']) && $inputs['offer_id']!='')
-        {
-            $query->where('offer_id','=',$inputs['offer_id']);
+        if (isset($inputs['offer_id']) && $inputs['offer_id'] != '') {
+            $query->where('offer_id', '=', $inputs['offer_id']);
         }
 
-        if(isset($inputs['email']) && $inputs['email']!='')
-        {
-            $query->where('sub_id_5','=',$inputs['email']);
+        if (isset($inputs['email']) && $inputs['email'] != '') {
+            $query->where('sub_id_5', '=', $inputs['email']);
         }
 
         return $query;
     }
 
-    public function scopeFindConversionsAffiliateOfferS4($query,$inputs)
+    public function scopeFindConversionsAffiliateOfferS4($query, $inputs)
     {
-        if(isset($inputs['affiliate_id']) && $inputs['affiliate_id']!='')
-        {
-            $query->where('affiliate_id','=',$inputs['affiliate_id']);
+        if (isset($inputs['affiliate_id']) && $inputs['affiliate_id'] != '') {
+            $query->where('affiliate_id', '=', $inputs['affiliate_id']);
         }
 
-        if(isset($inputs['offer_id']) && $inputs['offer_id']!='')
-        {
-            $query->where('offer_id','=',$inputs['offer_id']);
+        if (isset($inputs['offer_id']) && $inputs['offer_id'] != '') {
+            $query->where('offer_id', '=', $inputs['offer_id']);
         }
 
-        if(isset($inputs['sub_id_4']) && $inputs['sub_id_4']!='')
-        {
-            $query->where('sub_id_4','=',$inputs['sub_id_4']);
+        if (isset($inputs['sub_id_4']) && $inputs['sub_id_4'] != '') {
+            $query->where('sub_id_4', '=', $inputs['sub_id_4']);
         }
 
         /*
@@ -97,7 +94,7 @@ class CakeConversion extends Model
         return $query;
     }
 
-    public function scopeSearchCakeConversions($query,$inputs)
+    public function scopeSearchCakeConversions($query, $inputs)
     {
         $param = $inputs['search']['value'];
 
@@ -108,32 +105,29 @@ class CakeConversion extends Model
             2 => 'offer_name',
             3 => 'campaign_id',
             4 => 'sub_id_5',
-            5 => 'conversion_date'
+            5 => 'conversion_date',
         ];
 
-        if(!empty($param) || $param!='')
-        {
-            $query->where('offer_name','LIKE',"%$param%")
-                ->orWhere('offer_name','LIKE',"%$param%")
-                ->orWhere('sub_id_5','LIKE',"%$param%");
+        if (! empty($param) || $param != '') {
+            $query->where('offer_name', 'LIKE', "%$param%")
+                ->orWhere('offer_name', 'LIKE', "%$param%")
+                ->orWhere('sub_id_5', 'LIKE', "%$param%");
 
-            if(is_numeric($param))
-            {
+            if (is_numeric($param)) {
                 $paramInt = intval($param);
-                $query->orWhere('id','=',$paramInt)
-                    ->orWhere('offer_id','=',$paramInt)
-                    ->orWhere('campaign_id','=',$paramInt);
+                $query->orWhere('id', '=', $paramInt)
+                    ->orWhere('offer_id', '=', $paramInt)
+                    ->orWhere('campaign_id', '=', $paramInt);
             }
 
             //for conversion_date
-            if($this->validateDate($param))
-            {
-                $query->orWhere(DB::raw('DATE(conversion_date)'),'=',DB::raw("DATE('$param')"));
+            if ($this->validateDate($param)) {
+                $query->orWhere(DB::raw('DATE(conversion_date)'), '=', DB::raw("DATE('$param')"));
             }
 
         }
 
-        $query->orderBy($columns[$inputs['order'][0]['column']],$inputs['order'][0]['dir']);
+        $query->orderBy($columns[$inputs['order'][0]['column']], $inputs['order'][0]['dir']);
 
         return $query;
     }
@@ -141,12 +135,12 @@ class CakeConversion extends Model
     /**
      * Date validation
      *
-     * @param $date
      * @return bool
      */
     protected function validateDate($date)
     {
         $d = DateTime::createFromFormat('Y-m-d', $date);
+
         return $d && $d->format('Y-m-d') == $date;
     }
 }

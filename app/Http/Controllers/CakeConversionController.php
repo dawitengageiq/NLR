@@ -2,18 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use App\CakeConversion;
-use Log;
+use Illuminate\Http\Request;
 
 class CakeConversionController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
      * @return array
      */
     public function index(Request $request)
@@ -23,7 +19,6 @@ class CakeConversionController extends Controller
         $start = $inputs['start'];
         $length = $inputs['length'];
 
-
         $conversions = CakeConversion::all();
         $totalFiltered = $conversions->count();
         $conversionsData = [];
@@ -31,78 +26,75 @@ class CakeConversionController extends Controller
         $cakeConversions = CakeConversion::searchCakeConversions($inputs);
         $cakeConversionsWithLimit = $cakeConversions;
 
-        if($length>1)
-        {
+        if ($length > 1) {
             $cakeConversionsWithLimit = $cakeConversionsWithLimit->take($length)->skip($start);
         }
 
         $cakeConversionsWithLimit = $cakeConversionsWithLimit->get();
 
-        foreach($cakeConversionsWithLimit as $conversion)
-        {
+        foreach ($cakeConversionsWithLimit as $conversion) {
             $data = [];
 
             //create the id HTML
             $idHTML = '<span id="cnv-'.$conversion->id.'-id">'.$conversion->id.'</span>';
-            array_push($data,$idHTML);
+            array_push($data, $idHTML);
 
             //create the offer id HTML
             $offerIDHTML = '<span id="cnv-'.$conversion->id.'-offer_id">'.$conversion->offer_id.'</span>';
-            array_push($data,$offerIDHTML);
+            array_push($data, $offerIDHTML);
 
             //create the offer name HTML
             $offerNameHTML = '<span id="cnv-'.$conversion->id.'-offer_name">'.$conversion->offer_name.'</span>';
-            array_push($data,$offerNameHTML);
+            array_push($data, $offerNameHTML);
 
             //create the campaign id HTML
             $campaignIDHTML = '<span id="cnv-'.$conversion->id.'-campaign_id">'.$conversion->campaign_id.'</span>';
-            array_push($data,$campaignIDHTML);
+            array_push($data, $campaignIDHTML);
 
             //create the sub id 5
             $subID = '<span id="cnv-'.$conversion->id.'-sub_id_5" class=".fix-width-cell">'.$conversion->sub_id_5.'</span>';
-            array_push($data,$subID);
+            array_push($data, $subID);
 
             //create the conversion date HTML
             $conversionDate = '<span id="cnv-'.$conversion->id.'-conversion_date">'.$conversion->conversion_date.'</span>';
-            array_push($data,$conversionDate);
+            array_push($data, $conversionDate);
 
             //create action button HTML
             $allDetails = htmlspecialchars(json_encode($conversion));
             $viewAllDetails = '<button class="btn btn-primary glyphicon glyphicon-info-sign all-details-button" data-details="'.$allDetails.'" title="View all the details"></button><br>';
-            array_push($data,$viewAllDetails);
+            array_push($data, $viewAllDetails);
 
-            array_push($conversionsData,$data);
+            array_push($conversionsData, $data);
         }
 
-        if(!empty($param) || $param!='')
-        {
+        if (! empty($param) || $param != '') {
             $totalFiltered = $cakeConversions->count();
         }
 
-        $responseData = array(
-            "draw"            => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
-            "recordsTotal"    => $conversions->count(),  // total number of records
-            "recordsFiltered" => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
-            "data"            => $conversionsData   // total data array
-        );
+        $responseData = [
+            'draw' => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
+            'recordsTotal' => $conversions->count(),  // total number of records
+            'recordsFiltered' => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
+            'data' => $conversionsData,   // total data array
+        ];
 
         return $responseData;
     }
 
     /**
-     * @param Request $request
      * @return mixed
      */
     public function getConversionsEmailOfferID(Request $request)
     {
         $inputs = $request->all();
+
         return CakeConversion::findConversionsEmailOfferID($inputs)->get();
     }
-
 
     public function getConversionsByAffiliateOfferS4(Request $request)
     {
         $inputs = $request->all();
+
         return CakeConversion::findConversionsAffiliateOfferS4($inputs)->get();
     }
 
@@ -119,7 +111,6 @@ class CakeConversionController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -152,7 +143,6 @@ class CakeConversionController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */

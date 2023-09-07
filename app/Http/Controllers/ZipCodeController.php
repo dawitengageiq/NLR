@@ -2,29 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use App\ZipCode;
-use Log;
-use DB;
 use Cache;
+use DB;
+use Illuminate\Http\Request;
+use Log;
 
 class ZipCodeController extends Controller
 {
     /**
      * DataTable server side get/post function
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
         $inputs = $request->all();
         // Log::info($inputs);
-        $recordsTotal = Cache::remember('zipListCount', 60*24, function()
-        {
+        $recordsTotal = Cache::remember('zipListCount', 60 * 24, function () {
             return ZipCode::count();
         });
 
@@ -41,23 +36,21 @@ class ZipCodeController extends Controller
             2 => 'state',
         ];
 
-        $selectSQL = "SELECT zip, city, state FROM zip_codes ";
-        $whereSQL = "";
+        $selectSQL = 'SELECT zip, city, state FROM zip_codes ';
+        $whereSQL = '';
 
         //where
-        if(!empty($param))
-        {
+        if (! empty($param)) {
             $whereSQL = $whereSQL."WHERE zip LIKE '%".$param."%'";
             $whereSQL = $whereSQL." OR city LIKE '%".$param."%'";
             $whereSQL = $whereSQL." OR state LIKE '%".$param."%'";
         }
 
-        $orderSQL = " ORDER BY ".$columns[$inputs['order'][0]['column']]." ".$inputs['order'][0]['dir'];
+        $orderSQL = ' ORDER BY '.$columns[$inputs['order'][0]['column']].' '.$inputs['order'][0]['dir'];
 
         $limitSQL = '';
-        if($length>1)
-        {
-            $limitSQL = " LIMIT ".$start.",".$length;
+        if ($length > 1) {
+            $limitSQL = ' LIMIT '.$start.','.$length;
         }
 
         $sqlWithLimit = $selectSQL.$whereSQL.$orderSQL.$limitSQL;
@@ -68,38 +61,36 @@ class ZipCodeController extends Controller
 
         $zips = DB::select($sqlWithLimit);
 
-        foreach($zips as $zip)
-        {
+        foreach ($zips as $zip) {
             $data = [];
 
             //create the zip html
             $zipHTML = '<span id="zip-'.$zip->zip.'-code">'.$zip->zip.'</span>';
-            array_push($data,$zipHTML);
+            array_push($data, $zipHTML);
 
             //create the zip html
             $cityHTML = '<span id="zip-'.$zip->zip.'-city">'.$zip->city.'</span>';
-            array_push($data,$cityHTML);
+            array_push($data, $cityHTML);
 
             //create the state html
             $stateHTML = '<span id="zip-'.$zip->zip.'-state">'.$zip->state.'</span>';
-            array_push($data,$stateHTML);
+            array_push($data, $stateHTML);
 
-            array_push($zipMasterData,$data);
+            array_push($zipMasterData, $data);
         }
 
-        if(!empty($param) || $param!='')
-        {
+        if (! empty($param) || $param != '') {
             //$totalFiltered = count($affiliatesData);
             $totalFiltered = count(DB::select($sqlWithoutLimit));
         }
 
-        $responseData = array(
-            "draw"            => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
-            "recordsTotal"    => $recordsTotal,  // total number of records
-            "recordsFiltered" => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
-            "data"            => $zipMasterData   // total data array
-        );
+        $responseData = [
+            'draw' => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
+            'recordsTotal' => $recordsTotal,  // total number of records
+            'recordsFiltered' => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
+            'data' => $zipMasterData,   // total data array
+        ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 }

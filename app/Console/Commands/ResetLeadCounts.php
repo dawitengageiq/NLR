@@ -1,15 +1,16 @@
 <?php
 
 namespace App\Console\Commands;
+
+use App\AffiliateCampaign;
+use App\Campaign;
 use App\Helpers\Repositories\LeadCounts;
 use App\LeadCount;
-use Illuminate\Console\Command;
 use Carbon\Carbon;
-use App\Campaign;
-use App\AffiliateCampaign;
-use Log;
 use DB;
+use Illuminate\Console\Command;
 use Illuminate\Database\QueryException;
+use Log;
 
 class ResetLeadCounts extends Command
 {
@@ -29,7 +30,6 @@ class ResetLeadCounts extends Command
 
     /**
      * Create a new command instance.
-     *
      */
     public function __construct()
     {
@@ -38,8 +38,6 @@ class ResetLeadCounts extends Command
 
     /**
      * Execute the console command.
-     *
-     * @param LeadCounts $leadCountsHelper
      */
     public function handle(LeadCounts $leadCountsHelper)
     {
@@ -51,21 +49,23 @@ class ResetLeadCounts extends Command
         $affids = [];
         $leadCounts = LeadCount::all();
         // \Log::info($leadCounts);
-        foreach($leadCounts as $lc) {
-            if(!in_array($lc->campaign_id, $cids)) $cids[] = $lc->campaign_id;
+        foreach ($leadCounts as $lc) {
+            if (! in_array($lc->campaign_id, $cids)) {
+                $cids[] = $lc->campaign_id;
+            }
             // if(!in_array($lc->affiliate_id, $affids) && $lc->affiliate_id != '') $affids[] = $lc->affiliate_id;
             // $aff_cmp[$lc->campaign_id][$lc->affiliate_id] = $lc;
         }
 
         $campaigns = [];
-        $cmps = Campaign::whereIn('id', $cids)->select('id','lead_cap_type','lead_cap_value')->get();
-        foreach($cmps as $cmp) {
+        $cmps = Campaign::whereIn('id', $cids)->select('id', 'lead_cap_type', 'lead_cap_value')->get();
+        foreach ($cmps as $cmp) {
             $campaigns[$cmp->id] = $cmp;
         }
 
         $affiliate_campaigns = [];
         $affscmps = AffiliateCampaign::whereIn('campaign_id', $cids)->get();
-        foreach($affscmps as $affcmp) {
+        foreach ($affscmps as $affcmp) {
             $affiliate_campaigns[$affcmp->campaign_id][$affcmp->affiliate_id] = $affcmp;
         }
         //\Log::info($affiliate_campaigns);
@@ -73,18 +73,18 @@ class ResetLeadCounts extends Command
         $updates = [];
         $deletes = [];
         $leadCapTypes = config('constants.LEAD_CAP_TYPES');
-        $timeZone = config('app.timezone','America/Los_Angeles');
+        $timeZone = config('app.timezone', 'America/Los_Angeles');
 
-        foreach($leadCounts as $count) {
+        foreach ($leadCounts as $count) {
             //Get Campaign Cap
             $campaignCapDetails = $campaigns[$count->campaign_id];
             $campaignCapType = $leadCapTypes[$campaignCapDetails->lead_cap_type];
 
             //Get Affiliate Cap
-            if(isset($affiliate_campaigns[$count->campaign_id][$count->affiliate_id])) { //get the cap type for affiliate campaign
+            if (isset($affiliate_campaigns[$count->campaign_id][$count->affiliate_id])) { //get the cap type for affiliate campaign
                 $affiliateCampaignCapDetails = $affiliate_campaigns[$count->campaign_id][$count->affiliate_id];
                 $affiliateCampaignCapType = $leadCapTypes[$affiliateCampaignCapDetails->lead_cap_type];
-            }else {
+            } else {
                 $affiliateCampaignCapType = $leadCapTypes[0]; //no existing affiliate campaign record therefore it is considered unlimited
             }
 
@@ -92,22 +92,20 @@ class ResetLeadCounts extends Command
             // \Log::info($campaignCapType);
             // \Log::info($affiliateCampaignCapType);
 
-            if($count->affiliate_id==null) //Campaign Level
-            {
-                if($campaignCapType == 'Unlimited') { //Unlimited
+            if ($count->affiliate_id == null) { //Campaign Level
+                if ($campaignCapType == 'Unlimited') { //Unlimited
                     $deletes[] = $count->id;
-                }else {
+                } else {
                     $lcount = $leadCountsHelper->executeReset($count, $count->campaign_id, $count->affiliate_id, $campaignCapType, $timeZone, false);
                     $updates[] = $lcount->toArray();
                 }
-            }else //Affiliate
-            {
-                if($affiliateCampaignCapType == 'Unlimited') { //Unlimited
+            } else { //Affiliate
+                if ($affiliateCampaignCapType == 'Unlimited') { //Unlimited
                     $deletes[] = $count->id;
-                }else {
+                } else {
                     $lcount = $leadCountsHelper->executeReset($count, $count->campaign_id, $count->affiliate_id, $affiliateCampaignCapType, $timeZone, false);
                     $updates[] = $lcount->toArray();
-                } 
+                }
             }
             // \Log::info('---------');
         }
@@ -118,24 +116,23 @@ class ResetLeadCounts extends Command
         // \Log::info($deletes);
 
         $connection = config('app.type') == 'reports' ? 'secondary' : 'mysql';
-        if(count($updates) > 0) {
+        if (count($updates) > 0) {
             Log::info('Delete Existing');
             DB::connection($connection)->table('lead_counts')->delete();
             Log::info('Add updated');
             $chunks = array_chunk($updates, 1000);
-            foreach($chunks as $chunk) {
-                try{
+            foreach ($chunks as $chunk) {
+                try {
                     DB::connection($connection)->table('lead_counts')->insert($chunk);
                     //Log::info('Pre Pop Stats Chunks total: ' . count($chunk));
-                }catch(QueryException $e)
-                {
-                    Log::info("Lead Count Error!");
+                } catch (QueryException $e) {
+                    Log::info('Lead Count Error!');
                     Log::info($e->getMessage());
                 }
             }
-        }else {
+        } else {
             Log::info('No new updates');
-            if(count($deletes) > 0) {
+            if (count($deletes) > 0) {
                 Log::info('Delete unlimited');
                 DB::connection($connection)->table('lead_counts')->whereIn('id', $deletes)->delete();
             }
@@ -162,10 +159,9 @@ class ResetLeadCounts extends Command
         //         $affiliateCampaignCapType = $leadCapTypes[0];
         //     }
 
-
         //     //get the timezone this new repository methods requires timezone. This functions came from the special branch for testing purposes. This is applied here for the improvements.
         //     $timeZone = config('app.timezone','America/Los_Angeles');
-            
+
         //     if($count->affiliate_id==null)
         //     {
         //         $leadCountsHelper->executeReset($count, $count->campaign_id, $count->affiliate_id, $campaignCapType, $timeZone);

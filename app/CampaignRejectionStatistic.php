@@ -6,8 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class CampaignRejectionStatistic extends Model
 {
-    protected $connection; 
+    protected $connection;
+
     public $timestamps = false;
+
     protected $fillable = [
         'campaign_id',
         'total_count',
@@ -17,13 +19,13 @@ class CampaignRejectionStatistic extends Model
         'prepop_count',
         'other_count',
         'created_at',
-        'acceptable_reject_count'
+        'acceptable_reject_count',
     ];
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') != 'reports') {
+        if (config('app.type') != 'reports') {
             $this->connection = 'secondary';
         }
     }

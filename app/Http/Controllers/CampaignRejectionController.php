@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use App\Helpers\GetDateByRangeHelper;
-use App\CampaignRejectionStatistic;
-use App\CampaignFullRejectionStatistics;
-use App\Setting;
 use App\Campaign;
+use App\CampaignFullRejectionStatistics;
+use App\CampaignRejectionStatistic;
+use App\Helpers\GetDateByRangeHelper;
+use App\Setting;
 use DB;
+use Illuminate\Http\Request;
 use Log;
 
 class CampaignRejectionController extends Controller
@@ -39,8 +36,10 @@ class CampaignRejectionController extends Controller
         $date_from = $request->input('date_from');
         $date_to = $request->input('date_to');
         $range = $request->input('date_range');
-        if($date_from == '' && $date_to == '' && $range == '') $range = 'month';
-        if($range != '') {
+        if ($date_from == '' && $date_to == '' && $range == '') {
+            $range = 'month';
+        }
+        if ($range != '') {
             $ranger = new GetDateByRangeHelper($range);
             $date_from = $ranger->date_from();
             $date_to = $ranger->date_to();
@@ -58,58 +57,61 @@ class CampaignRejectionController extends Controller
         $categories = [];
         $cids = [];
         $actual = [];
-        foreach($data as $d) {
+        foreach ($data as $d) {
             $cids[] = $d->campaign_id;
             $reject_rate = ($d->reject_count / $d->total_count) * 100;
 
-            if($reject_rate >= $high_min && $reject_rate <= $high_max) $type = 'high';
-            else $type = 'critical';
+            if ($reject_rate >= $high_min && $reject_rate <= $high_max) {
+                $type = 'high';
+            } else {
+                $type = 'critical';
+            }
 
             $process[$type][] = $d;
         }
 
-        foreach($process as $type => $d) {
+        foreach ($process as $type => $d) {
             $count = 1;
             $current = 0;
-            foreach($d as $dd) {
+            foreach ($d as $dd) {
                 $hasData = true;
-                
-                if($count > $per_group) {
+
+                if ($count > $per_group) {
                     $count = 1;
                     $current++;
                 }
 
-                if(!isset($stats[$type][$current])) {
+                if (! isset($stats[$type][$current])) {
                     $stats[$type][$current] = [
                         [
                             'name' => 'LEADS',
                             'data' => [],
-                            'stack' => 'stack1'
+                            'stack' => 'stack1',
                         ],
                         [
                             'name' => 'ACCEPTABLE',
                             'data' => [],
-                            'stack' => 'stack2'
+                            'stack' => 'stack2',
                         ],
                         [
                             'name' => 'DUPLICATES',
                             'data' => [],
-                            'stack' => 'stack2'
+                            'stack' => 'stack2',
                         ],
                         [
                             'name' => 'FILTER ISSUE',
                             'data' => [],
-                            'stack' => 'stack2'
+                            'stack' => 'stack2',
                         ],
                         [
                             'name' => 'PRE-POP ISSUE',
                             'data' => [],
-                            'stack' => 'stack2'
+                            'stack' => 'stack2',
                         ],
                         [
                             'name' => 'OTHERS',
                             'data' => [],
-                            'stack' => 'stack2'
+                            'stack' => 'stack2',
                         ],
                     ];
                 }
@@ -129,13 +131,16 @@ class CampaignRejectionController extends Controller
 
         //$date = Carbon::parse($date)->toFormattedDateString();
         // Flag for script process
-        if($date_from != $date_to) {
+        if ($date_from != $date_to) {
             $dateDisplay = $date_from.' - '.$date_to;
-        }else $dateDisplay = $date_from;
-        $highcharts = ['date' => $dateDisplay, 'date_from'=> $date_from, 'date_to' => $date_to, 'series' => $stats, 'categories' => $categories, 'campaigns' => Campaign::whereIn('id', $cids)->lists('name', 'id'), 'has_data' => $hasData, 'actual' => $actual ];
+        } else {
+            $dateDisplay = $date_from;
+        }
+        $highcharts = ['date' => $dateDisplay, 'date_from' => $date_from, 'date_to' => $date_to, 'series' => $stats, 'categories' => $categories, 'campaigns' => Campaign::whereIn('id', $cids)->pluck('name', 'id'), 'has_data' => $hasData, 'actual' => $actual];
         $inputs = $request->all();
         $inputs['date_range'] = $range;
-        return view('admin.campaign_rejection', compact('highcharts','inputs'));
+
+        return view('admin.campaign_rejection', compact('highcharts', 'inputs'));
     }
 
     /**
@@ -155,8 +160,10 @@ class CampaignRejectionController extends Controller
         $date_from = $request->input('date_from');
         $date_to = $request->input('date_to');
         $range = $request->input('date_range');
-        if($date_from == '' && $date_to == '' && $range == '') $range = 'month';
-        if($range != '') {
+        if ($date_from == '' && $date_to == '' && $range == '') {
+            $range = 'month';
+        }
+        if ($range != '') {
             $ranger = new GetDateByRangeHelper($range);
             $date_from = $ranger->date_from();
             $date_to = $ranger->date_to();
@@ -178,59 +185,62 @@ class CampaignRejectionController extends Controller
         $categories = [];
         $cids = [];
         $actual = [];
-        foreach($data as $d) {
+        foreach ($data as $d) {
             $cids[] = $d->campaign_id;
             $reject_rate = ($d->reject_count / $d->total_count) * 100;
 
-            if($reject_rate >= $high_min && $reject_rate <= $high_max) $type = 'high';
-            else $type = 'critical';
+            if ($reject_rate >= $high_min && $reject_rate <= $high_max) {
+                $type = 'high';
+            } else {
+                $type = 'critical';
+            }
 
             $process[$type][] = $d;
         }
         // \Log::info(count($data));
 
-        foreach($process as $type => $d) {
+        foreach ($process as $type => $d) {
             $count = 1;
             $current = 0;
-            foreach($d as $dd) {
+            foreach ($d as $dd) {
                 $hasData = true;
-                
-                if($count > $per_group) {
+
+                if ($count > $per_group) {
                     $count = 1;
                     $current++;
                 }
 
-                if(!isset($stats[$type][$current])) {
+                if (! isset($stats[$type][$current])) {
                     $stats[$type][$current] = [
                         [
                             'name' => 'LEADS',
                             'data' => [],
-                            'stack' => 'stack1'
+                            'stack' => 'stack1',
                         ],
                         [
                             'name' => 'ACCEPTABLE',
                             'data' => [],
-                            'stack' => 'stack2'
+                            'stack' => 'stack2',
                         ],
                         [
                             'name' => 'DUPLICATES',
                             'data' => [],
-                            'stack' => 'stack2'
+                            'stack' => 'stack2',
                         ],
                         [
                             'name' => 'FILTER ISSUE',
                             'data' => [],
-                            'stack' => 'stack2'
+                            'stack' => 'stack2',
                         ],
                         [
                             'name' => 'PRE-POP ISSUE',
                             'data' => [],
-                            'stack' => 'stack2'
+                            'stack' => 'stack2',
                         ],
                         [
                             'name' => 'OTHERS',
                             'data' => [],
-                            'stack' => 'stack2'
+                            'stack' => 'stack2',
                         ],
                     ];
                 }
@@ -250,14 +260,16 @@ class CampaignRejectionController extends Controller
 
         //$date = Carbon::parse($date)->toFormattedDateString();
         // Flag for script process
-        if($date_from != $date_to) {
+        if ($date_from != $date_to) {
             $dateDisplay = $date_from.' - '.$date_to;
-        }else $dateDisplay = $date_from;
-        $highcharts = ['date' => $dateDisplay, 'date_from'=> $date_from, 'date_to' => $date_to, 'series' => $stats, 'categories' => $categories, 'campaigns' => Campaign::whereIn('id', $cids)->lists('name', 'id'), 'has_data' => $hasData, 'actual' => $actual ];
+        } else {
+            $dateDisplay = $date_from;
+        }
+        $highcharts = ['date' => $dateDisplay, 'date_from' => $date_from, 'date_to' => $date_to, 'series' => $stats, 'categories' => $categories, 'campaigns' => Campaign::whereIn('id', $cids)->pluck('name', 'id'), 'has_data' => $hasData, 'actual' => $actual];
         $inputs = $request->all();
         $inputs['date_range'] = $range;
 
         // return $highcharts;
-        return view('admin.full_rejection_campaign_rejection', compact('highcharts','inputs'));
+        return view('admin.full_rejection_campaign_rejection', compact('highcharts', 'inputs'));
     }
 }

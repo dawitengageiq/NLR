@@ -3,15 +3,12 @@
 namespace App\Commands;
 
 use App\Affiliate;
-use App\Commands\Command;
-use Illuminate\Contracts\Bus\SelfHandling;
 use DB;
 
-class GetInternalAffiliatesCompanyIDPair extends Command implements SelfHandling
+class GetInternalAffiliatesCompanyIDPair extends Command
 {
     /**
      * Create a new command instance.
-     *
      */
     public function __construct()
     {
@@ -25,7 +22,7 @@ class GetInternalAffiliatesCompanyIDPair extends Command implements SelfHandling
      */
     public function handle()
     {
-        $affiliates = Affiliate::select('id',DB::raw('CONCAT(company," (",id,") ") AS affiliate_name'))->where('status',1)->where('type',1)->orderBy('company')->lists('affiliate_name','id')->toArray();
+        $affiliates = Affiliate::select('id', DB::raw('CONCAT(company," (",id,") ") AS affiliate_name'))->where('status', 1)->where('type', 1)->orderBy('company')->pluck('affiliate_name', 'id')->toArray();
 
         return $affiliates;
     }

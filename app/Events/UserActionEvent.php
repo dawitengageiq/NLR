@@ -2,11 +2,7 @@
 
 namespace App\Events;
 
-use App\Events\Event;
-use Carbon\Carbon;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Log;
 
 class UserActionEvent extends Event
 {
@@ -18,7 +14,8 @@ class UserActionEvent extends Event
      * Create a new event instance.
      *
      * UserActionEvent constructor.
-     * @param array $logData
+     *
+     * @param  array  $logData
      */
     public function __construct($logData = [])
     {

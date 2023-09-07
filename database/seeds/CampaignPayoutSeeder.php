@@ -12,10 +12,10 @@ class CampaignPayoutSeeder extends Seeder
     public function run()
     {
         App\CampaignPayout::firstOrCreate([
-			'campaign_id'		=>	1,
-			'affiliate_id'		=>	1,
-			'received'			=>	2,
-            'payout'            =>  1,
-		]);
+            'campaign_id' => 1,
+            'affiliate_id' => 1,
+            'received' => 2,
+            'payout' => 1,
+        ]);
     }
 }

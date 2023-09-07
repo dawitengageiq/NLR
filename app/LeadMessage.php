@@ -10,10 +10,11 @@ class LeadMessage extends Model
 
     protected $fillable = [
         'id',
-        'value'
+        'value',
     ];
 
-    public function lead(){
+    public function lead()
+    {
         return $this->belongsTo(Lead::class);
     }
 }

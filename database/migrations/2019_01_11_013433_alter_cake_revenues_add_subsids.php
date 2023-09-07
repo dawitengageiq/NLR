@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AlterCakeRevenuesAddSubsids extends Migration
 {
@@ -21,8 +21,8 @@ class AlterCakeRevenuesAddSubsids extends Migration
 
             $sm = Schema::getConnection()->getDoctrineSchemaManager();
             $indexesFound = $sm->listTableIndexes('cake_revenues');
-            if(array_key_exists("cake_revenues_unique_index", $indexesFound)) {
-                $table->dropUnique("cake_revenues_unique_index");
+            if (array_key_exists('cake_revenues_unique_index', $indexesFound)) {
+                $table->dropUnique('cake_revenues_unique_index');
             }
         });
     }

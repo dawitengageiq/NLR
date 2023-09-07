@@ -11,15 +11,12 @@ class UnauthorizedIfNotAdministrator
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
      * @return mixed
      */
     public function handle($request, Closure $next)
     {
-        if ($request->user())
-        {
-            if(!$request->user()->isAdministrator())
-            {
+        if ($request->user()) {
+            if (! $request->user()->isAdministrator()) {
                 /*
                 if($request->ajax()) {
                     return response('Unauthorized.', 401);
@@ -27,13 +24,11 @@ class UnauthorizedIfNotAdministrator
                 */
 
                 //return response('Unauthorized.', 401);
-                return (new Response(view('errors.unauthorized'), 401));
+                return new Response(view('errors.unauthorized'), 401);
             }
-        }
-        else
-        {
+        } else {
             //return response('Unauthorized.', 401);
-            return (new Response(view('errors.unauthorized'), 401));
+            return new Response(view('errors.unauthorized'), 401);
         }
 
         return $next($request);

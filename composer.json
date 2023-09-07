@@ -1,14 +1,17 @@
 {
     "name": "laravel/laravel",
     "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "keywords": [
+        "framework",
+        "laravel"
+    ],
     "license": "MIT",
     "type": "project",
     "require": {
         "php": ">=5.5.9",
-        "laravel/framework": "5.1.*",
-        "illuminate/html": "^5.0",
-        "laravelcollective/html": "5.1.*",
+        "laravel/framework": "5.2.*",
+        "laravelcollective/html": "^5.2",
+        "laravelcollective/html": "^5.2.0",
         "barryvdh/laravel-ide-helper": "^2.1",
         "maatwebsite/excel": "^2.0",
         "curl/curl": "^1.2",
@@ -28,7 +31,9 @@
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
         "phpunit/phpunit": "~4.0",
-        "phpspec/phpspec": "~2.1"
+        "phpspec/phpspec": "~2.1",
+        "symfony/dom-crawler": "2.8.*|3.0.*",
+        "symfony/css-selector": "2.8.*|3.0.*"
     },
     "autoload": {
         "classmap": [
@@ -38,7 +43,7 @@
             "App\\": "app/"
         },
         "files": [
-          "app/Http/Services/Helpers/Global.php"
+            "app/Http/Services/Helpers/Global.php"
         ]
     },
     "autoload-dev": {
@@ -49,13 +54,11 @@
     },
     "scripts": {
         "post-install-cmd": [
-            "php artisan clear-compiled",
+            "Illuminate\\Foundation\\ComposerScripts::postInstall",
             "php artisan optimize"
         ],
-        "pre-update-cmd": [
-            "php artisan clear-compiled"
-        ],
         "post-update-cmd": [
+            "Illuminate\\Foundation\\ComposerScripts::postUpdate",
             "php artisan optimize"
         ],
         "post-root-package-install": [

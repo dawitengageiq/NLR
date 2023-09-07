@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Jobs\SendOptOutReportJob;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class SendOptOutReport extends Command
 {
@@ -47,8 +47,7 @@ class SendOptOutReport extends Command
         $date_from = $this->option('from');
         $date_to = $this->option('to');
 
-        if(empty($date_from) || empty($date_to))
-        {
+        if (empty($date_from) || empty($date_to)) {
             $date_from = Carbon::now()->subDay(30)->toDateString();
             $date_to = Carbon::now()->toDateString();
         }

@@ -2,10 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\PageView;
-use Log;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class CleanPageViewTable extends Command
 {
@@ -47,10 +46,9 @@ class CleanPageViewTable extends Command
         $date = $this->option('date');
 
         //NEW VERSION
-        if(empty($date))
-        {
+        if (empty($date)) {
             $date = Carbon::now()->subDay(3)->toDateString();
-        }else {
+        } else {
             $date = Carbon::parse($date)->toDateString();
         }
         $this->info($date);

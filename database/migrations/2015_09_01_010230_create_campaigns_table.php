@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateCampaignsTable extends Migration
 {
@@ -14,12 +14,12 @@ class CreateCampaignsTable extends Migration
     {
         Schema::create('campaigns', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name',100);
+            $table->string('name', 100);
             $table->integer('advertiser_id')->unsigned()->index();
             $table->tinyInteger('status')->unsigned();
             $table->text('description')->nullable();
             $table->text('notes')->nullable();
-            $table->string('image',255)->nullable();
+            $table->string('image', 255)->nullable();
             $table->tinyInteger('lead_cap_type')->unsigned();
             $table->integer('lead_cap_value')->unsigned()->nullable();
             $table->float('default_received')->unsigned();

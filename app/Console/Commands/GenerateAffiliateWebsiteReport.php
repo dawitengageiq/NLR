@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class GenerateAffiliateWebsiteReport extends Command
 {
@@ -43,10 +43,9 @@ class GenerateAffiliateWebsiteReport extends Command
         $date = $this->option('date');
 
         //NEW VERSION
-        if(empty($date))
-        {
+        if (empty($date)) {
             $date = Carbon::now()->subDay()->toDateString();
-        }else {
+        } else {
             $date = Carbon::parse($date)->toDateString();
         }
 

@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateZipCodesTable extends Migration
 {
@@ -14,9 +14,9 @@ class CreateZipCodesTable extends Migration
     {
         Schema::create('zip_codes', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('zip',5)->unique();
-            $table->string('city',25);
-            $table->string('state',2);
+            $table->string('zip', 5)->unique();
+            $table->string('city', 25);
+            $table->string('state', 2);
         });
     }
 

@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use App\LeadUserBanned;
+use Illuminate\Http\Request;
 
 class LeadUserBannedController extends Controller
 {
@@ -30,17 +27,16 @@ class LeadUserBannedController extends Controller
             'first_name',
             'last_name',
             'email',
-            'phone'
+            'phone',
         ];
 
-        $banned = LeadUserBanned::searchLeads($inputs,$start,$length,$columns[$inputs['order'][0]['column']],$inputs['order'][0]['dir'])
+        $banned = LeadUserBanned::searchLeads($inputs, $start, $length, $columns[$inputs['order'][0]['column']], $inputs['order'][0]['dir'])
             ->get();
         // \Log::info(\DB::connection('secondary')->getQueryLog());
-        $totalFiltered = LeadUserBanned::searchLeads($inputs,null,null,null,null)->count();
+        $totalFiltered = LeadUserBanned::searchLeads($inputs, null, null, null, null)->count();
 
         $data = [];
-        foreach($banned as $b)
-        {
+        foreach ($banned as $b) {
             $details = '<textarea id="bnd-'.$b->id.'-details" class="hidden">'.json_encode($b).'</textarea>';
             $details .= '<button class="editBanned btn-actions btn btn-primary" title="Edit" data-id="'.$b->id.'"><span class="glyphicon glyphicon-pencil"></span></button>';
             $details .= '<button class="deleteBanned btn-actions btn btn-danger" title="Delete" data-id="'.$b->id.'"><span class="glyphicon glyphicon-trash"></span></button>';
@@ -51,24 +47,23 @@ class LeadUserBannedController extends Controller
                 $b->last_name,
                 $b->email,
                 $b->phone,
-                $details
+                $details,
             ]);
         }
 
         $responseData = [
-            'draw'            => intval($inputs['draw']),   // for every request/draw by client side , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
-            'recordsTotal'    => LeadUserBanned::count(),  // total number of records
+            'draw' => intval($inputs['draw']),   // for every request/draw by client side , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
+            'recordsTotal' => LeadUserBanned::count(),  // total number of records
             'recordsFiltered' => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
-            'data'            => $data   // total data array
+            'data' => $data,   // total data array
         ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -88,16 +83,15 @@ class LeadUserBannedController extends Controller
         $lead->save();
 
         $responseData = [
-            'id'=> $lead->id,
+            'id' => $lead->id,
         ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */

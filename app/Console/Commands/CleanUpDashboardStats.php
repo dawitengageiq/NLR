@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use Carbon\Carbon;
-use Log;
 use DB;
+use Illuminate\Console\Command;
+use Log;
 
 class CleanUpDashboardStats extends Command
 {
@@ -46,10 +46,10 @@ class CleanUpDashboardStats extends Command
         DB::connection($offer_con)->table('offer_goes_downs')->where('date', '<=', $date)->delete();
 
         $path_speed_con = config('app.type') != 'reports' ? 'secondary' : '';
-        DB::connection($path_speed_con)->table('path_speeds')->where('created_at', '<=', $date)->delete(); 
+        DB::connection($path_speed_con)->table('path_speeds')->where('created_at', '<=', $date)->delete();
 
         $path_speed_con = config('app.type') != 'reports' ? 'secondary' : '';
-        DB::connection($path_speed_con)->table('campaign_revenue_breakdowns')->where('created_at', '<=', $date)->delete(); 
+        DB::connection($path_speed_con)->table('campaign_revenue_breakdowns')->where('created_at', '<=', $date)->delete();
         //Log::info(DB::getQueryLog());
     }
 }

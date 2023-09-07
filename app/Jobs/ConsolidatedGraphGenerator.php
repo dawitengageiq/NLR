@@ -2,27 +2,23 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Job;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
-use Illuminate\Contracts\Queue\ShouldQueue;
-
-use Mail;
-use Log;
-use Carbon\Carbon;
-use App\Setting;
+use App\AffiliateReport;
 use App\AffiliateRevenueTracker;
+use App\CakeRevenue;
 use App\Campaign;
 use App\ClicksVsRegistrationStatistics;
-use App\RevenueTrackerCakeStatistic;
-use App\AffiliateReport;
 use App\PageViewStatistics;
-use App\CakeRevenue;
-use App\ConsolidatedGraph;
+use App\RevenueTrackerCakeStatistic;
+use App\Setting;
+use Carbon\Carbon;
 use DB;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Log;
+use Mail;
 
-class ConsolidatedGraphGenerator extends Job implements SelfHandling, ShouldQueue
+class ConsolidatedGraphGenerator extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
@@ -68,13 +64,13 @@ class ConsolidatedGraphGenerator extends Job implements SelfHandling, ShouldQueu
         //get campaign type benchmarks
         //get default exit page campaign id
         //get admin email
-        $settings = Setting::whereIn('code',['campaign_type_benchmarks','default_admin_email'])
-            ->select('code','description','string_value')->get();
-        foreach($settings as $setting){
-            if($setting->code == 'campaign_type_benchmarks') {
+        $settings = Setting::whereIn('code', ['campaign_type_benchmarks', 'default_admin_email'])
+            ->select('code', 'description', 'string_value')->get();
+        foreach ($settings as $setting) {
+            if ($setting->code == 'campaign_type_benchmarks') {
                 $benchmark = json_decode($setting->description, true);
                 $default_exit_page = $benchmark[6];
-            }else {
+            } else {
                 $default_admin_email = $setting->string_value;
             }
         }
@@ -82,21 +78,21 @@ class ConsolidatedGraphGenerator extends Job implements SelfHandling, ShouldQueu
 
         //Campaigns
         //get campaign type
-        // $campaigns_type = Campaign::lists('campaign_type','id')->toArray();
+        // $campaigns_type = Campaign::pluck('campaign_type','id')->toArray();
         $campaigns_type = [];
         $campaigns_oid = [];
-        $campaigns = Campaign::select('id','campaign_type', 'linkout_offer_id')->get();
-        foreach($campaigns as $cmp) {
+        $campaigns = Campaign::select('id', 'campaign_type', 'linkout_offer_id')->get();
+        foreach ($campaigns as $cmp) {
             $campaigns_type[$cmp->id] = $cmp->campaign_type;
             $campaigns_oid[$cmp->id] = $cmp->linkout_offer_id;
         }
 
         //Affiliate Revenue Trackers Exit Page
         $has_rev_tracker_exit = AffiliateRevenueTracker::whereNotNull('exit_page_id')
-            ->lists('exit_page_id','revenue_tracker_id')->toArray();
+            ->pluck('exit_page_id', 'revenue_tracker_id')->toArray();
 
         //get default exit page's offer_id
-        $def_exit_oid = $campaigns_oid[$default_exit_page]; 
+        $def_exit_oid = $campaigns_oid[$default_exit_page];
 
         //get offer ids of exit page campaigns
         $hrte_qry = $has_rev_tracker_exit;
@@ -104,78 +100,78 @@ class ConsolidatedGraphGenerator extends Job implements SelfHandling, ShouldQueu
         $hrte_qry = array_unique($hrte_qry);
         $exit_oids = [];
 
-        foreach($hrte_qry as $cid) {
-            if(! is_null($campaigns_oid[$cid]) && $campaigns_oid[$cid] != '') {
+        foreach ($hrte_qry as $cid) {
+            if (! is_null($campaigns_oid[$cid]) && $campaigns_oid[$cid] != '') {
                 $exit_oids[] = $campaigns_oid[$cid];
             }
         }
 
-        $exit_page_linkout_ids = Campaign::where('campaign_type', 6)->where('linkout_offer_id','>', 0)->lists('linkout_offer_id');
+        $exit_page_linkout_ids = Campaign::where('campaign_type', 6)->where('linkout_offer_id', '>', 0)->pluck('linkout_offer_id');
         $crevs = CakeRevenue::whereIn('offer_id', $exit_page_linkout_ids)->where('created_at', $date)
-            ->select(DB::RAW('revenue_tracker_id, s1, s2, s3, s4, s5, SUM(revenue) as revenue'))->groupBy('revenue_tracker_id','s1','s2','s3','s4','s5')->get();
+            ->select(DB::RAW('revenue_tracker_id, s1, s2, s3, s4, s5, SUM(revenue) as revenue'))->groupBy('revenue_tracker_id', 's1', 's2', 's3', 's4', 's5')->get();
         $exit_page_revenues = [];
-        foreach($crevs as $rev) {
+        foreach ($crevs as $rev) {
             $exit_page_revenues[$rev->revenue_tracker_id][$rev->s1][$rev->s2][$rev->s3][$rev->s4][$rev->s5] = $rev->revenue;
         }
 
         //Affiliate Report
-        $aff_rep = AffiliateReport::where('created_at',$date)
-            ->select('revenue_tracker_id','campaign_id','revenue','s1','s2','s3','s4','s5')->get();
+        $aff_rep = AffiliateReport::where('created_at', $date)
+            ->select('revenue_tracker_id', 'campaign_id', 'revenue', 's1', 's2', 's3', 's4', 's5')->get();
 
         $total_revenues = [];
         $coreg_revenues = [];
         $mid_revenues = [];
         $cpa_revenues = [];
-        foreach($aff_rep as $ar) {
+        foreach ($aff_rep as $ar) {
             $rev_tracker = $ar->revenue_tracker_id;
             $ctype = $campaigns_type[$ar->campaign_id];
 
             //get total revenue per revenue tracker
-            if(!isset($total_revenues[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5])) {
+            if (! isset($total_revenues[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5])) {
                 $total_revenues[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5] = 0;
             }
-            $total_revenues[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5] += $ar->revenue; 
+            $total_revenues[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5] += $ar->revenue;
 
             //get All Inbox
-            if($ar->campaign_id == $all_inbox_offer_id) {
-                if(!isset($data[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5]['all_inbox_revenue'])) {
+            if ($ar->campaign_id == $all_inbox_offer_id) {
+                if (! isset($data[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5]['all_inbox_revenue'])) {
                     $data[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5]['all_inbox_revenue'] = 0;
                 }
                 $data[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5]['all_inbox_revenue'] += $ar->revenue;
             }
 
             //get Push Revenue
-            else if($ar->campaign_id == $push_crew_id) {
-                if(!isset($data[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5]['push_revenue'])){
+            elseif ($ar->campaign_id == $push_crew_id) {
+                if (! isset($data[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5]['push_revenue'])) {
                     $data[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5]['push_revenue'] = 0;
                 }
                 $data[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5]['push_revenue'] += $ar->revenue;
             }
 
             //get CPAWall Revenue
-            else if($ar->campaign_id == $cpawall_id) {
-                if(!isset($cpa_revenues[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5])) {
+            elseif ($ar->campaign_id == $cpawall_id) {
+                if (! isset($cpa_revenues[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5])) {
                     $cpa_revenues[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5] = 0;
                 }
                 $cpa_revenues[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5] += $ar->revenue;
             }
 
             //get all midpath & separte revenue
-            else if(in_array($ar->campaign_id, $external_ids)) {
-                if(!isset($mid_revenues[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5])) {
+            elseif (in_array($ar->campaign_id, $external_ids)) {
+                if (! isset($mid_revenues[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5])) {
                     $mid_revenues[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5] = [
                         'total' => 0,
-                        'pd'    => 0,
-                        'tbr'   => 0,
-                        'iff'   => 0,
-                        'rex'   => 0,
+                        'pd' => 0,
+                        'tbr' => 0,
+                        'iff' => 0,
+                        'rex' => 0,
                         //'ads'   => 0,
                     ];
                 }
 
                 $mid_revenues[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5]['total'] += $ar->revenue;
 
-                switch($ar->campaign_id) {
+                switch ($ar->campaign_id) {
                     case $pd_external_id:
                         $mid_revenues[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5]['pd'] += $ar->revenue;
                         break;
@@ -188,26 +184,26 @@ class ConsolidatedGraphGenerator extends Job implements SelfHandling, ShouldQueu
                     case $rex_external_id:
                         $mid_revenues[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5]['rex'] += $ar->revenue;
                         break;
-                    // case $ads_external_id:
-                    //     $mid_revenues[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5]['ads'] += $ar->revenue;
-                    //     break;
+                        // case $ads_external_id:
+                        //     $mid_revenues[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5]['ads'] += $ar->revenue;
+                        //     break;
                 }
             }
 
             //get all coreg revenue & coreg p1 to p4 revenue
-            else if(in_array($ctype, $coreg_campaign_types)){
-                if(!isset($coreg_revenues[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5])) {
+            elseif (in_array($ctype, $coreg_campaign_types)) {
+                if (! isset($coreg_revenues[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5])) {
                     $coreg_revenues[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5] = [
                         'total' => 0,
-                        'mo1'    => 0,
-                        'mo2'    => 0,
-                        'mo3'    => 0,
-                        'mo4'    => 0
+                        'mo1' => 0,
+                        'mo2' => 0,
+                        'mo3' => 0,
+                        'mo4' => 0,
                     ];
                 }
                 $coreg_revenues[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5]['total'] += $ar->revenue;
 
-                switch($ctype) {
+                switch ($ctype) {
                     case 1:
                         $coreg_revenues[$rev_tracker][$ar->s1][$ar->s2][$ar->s3][$ar->s4][$ar->s5]['mo1'] += $ar->revenue;
                         break;
@@ -227,23 +223,23 @@ class ConsolidatedGraphGenerator extends Job implements SelfHandling, ShouldQueu
         //Page View Statistics
         $view_stats = PageViewStatistics::where('created_at', $date)->get();
         $page_views = [];
-        foreach($view_stats as $views) {
+        foreach ($view_stats as $views) {
             $rev_tracker = $views->revenue_tracker_id;
-            if(!isset($page_views[$rev_tracker][$views->s1][$views->s2][$views->s3][$views->s4][$views->s5])) {
+            if (! isset($page_views[$rev_tracker][$views->s1][$views->s2][$views->s3][$views->s4][$views->s5])) {
                 $page_views[$rev_tracker][$views->s1][$views->s2][$views->s3][$views->s4][$views->s5] = [
                     'all_coreg' => 0,
-                    'mo1'       => 0,
-                    'mo2'       => 0,
-                    'mo3'       => 0,
-                    'mo4'       => 0,
-                    'all_mid'   => 0,
-                    'pd'        => 0,
-                    'tbr'       => 0,
-                    'iff'       => 0,
-                    'rex'       => 0,
+                    'mo1' => 0,
+                    'mo2' => 0,
+                    'mo3' => 0,
+                    'mo4' => 0,
+                    'all_mid' => 0,
+                    'pd' => 0,
+                    'tbr' => 0,
+                    'iff' => 0,
+                    'rex' => 0,
                     //'ads'       => 0,
-                    'cpa'       => 0,
-                    'exit'      => 0,
+                    'cpa' => 0,
+                    'exit' => 0,
                 ];
             }
             $page_views[$rev_tracker][$views->s1][$views->s2][$views->s3][$views->s4][$views->s5]['all_coreg'] += $views->to1 + $views->to2 + $views->mo1 + $views->mo2 + $views->mo3 + $views->mo4 + $views->lfc1 + $views->lfc2;
@@ -256,7 +252,7 @@ class ConsolidatedGraphGenerator extends Job implements SelfHandling, ShouldQueu
             $page_views[$rev_tracker][$views->s1][$views->s2][$views->s3][$views->s4][$views->s5]['tbr'] += $views->tbr1 + $views->tbr2;
             $page_views[$rev_tracker][$views->s1][$views->s2][$views->s3][$views->s4][$views->s5]['iff'] += $views->iff;
             $page_views[$rev_tracker][$views->s1][$views->s2][$views->s3][$views->s4][$views->s5]['rex'] += $views->rex;
-           // $page_views[$rev_tracker][$views->s1][$views->s2][$views->s3][$views->s4][$views->s5]['ads'] += $views->ads;
+            // $page_views[$rev_tracker][$views->s1][$views->s2][$views->s3][$views->s4][$views->s5]['ads'] += $views->ads;
             $page_views[$rev_tracker][$views->s1][$views->s2][$views->s3][$views->s4][$views->s5]['cpa'] += $views->cpawall;
             $page_views[$rev_tracker][$views->s1][$views->s2][$views->s3][$views->s4][$views->s5]['exit'] += $views->exitpage;
         }
@@ -266,8 +262,8 @@ class ConsolidatedGraphGenerator extends Job implements SelfHandling, ShouldQueu
 
         //CLicks vs Registration
         $cvrs = ClicksVsRegistrationStatistics::where('created_at', $date)
-            ->select('revenue_tracker_id','clicks','registration_count','s1','s2','s3','s4','s5')->get();
-        foreach($cvrs as $cvr){
+            ->select('revenue_tracker_id', 'clicks', 'registration_count', 's1', 's2', 's3', 's4', 's5')->get();
+        foreach ($cvrs as $cvr) {
             $rev_tracker = $cvr->revenue_tracker_id;
 
             //get All Clicks - clicks
@@ -290,9 +286,9 @@ class ConsolidatedGraphGenerator extends Job implements SelfHandling, ShouldQueu
 
         //Revenue Tracker Cake Statistics
         $rtcks = RevenueTrackerCakeStatistic::where('created_at', $date)
-            ->select('revenue_tracker_id',DB::RAW('SUM(payout) as payout'),'s1','s2','s3','s4','s5')
-            ->groupBy('revenue_tracker_id','s1','s2','s3', 's4', 's5')->get();
-        foreach($rtcks as $rtck) {
+            ->select('revenue_tracker_id', DB::RAW('SUM(payout) as payout'), 's1', 's2', 's3', 's4', 's5')
+            ->groupBy('revenue_tracker_id', 's1', 's2', 's3', 's4', 's5')->get();
+        foreach ($rtcks as $rtck) {
             $rev_tracker = $rtck->revenue_tracker_id;
 
             //get Cost - payout
@@ -302,13 +298,13 @@ class ConsolidatedGraphGenerator extends Job implements SelfHandling, ShouldQueu
             $all_clicks = isset($data[$rev_tracker][$rtck->s1][$rtck->s2][$rtck->s3][$rtck->s4][$rtck->s5]['all_clicks']) ? $data[$rev_tracker][$rtck->s1][$rtck->s2][$rtck->s3][$rtck->s4][$rtck->s5]['all_clicks'] : 0;
             $data[$rev_tracker][$rtck->s1][$rtck->s2][$rtck->s3][$rtck->s4][$rtck->s5]['cost_per_all_clicks'] = ($rtck->payout != 0 && $all_clicks != 0) ? $rtck->payout / $all_clicks : 0;
         }
-        
-        foreach($total_revenues as $rev_tracker => $rt_data){
-            foreach($rt_data as $s1 => $s1_data){
-                foreach($s1_data as $s2 => $s2_data){
-                    foreach($s2_data as $s3 => $s3_data){
-                        foreach($s3_data as $s4 => $s4_data){
-                            foreach($s4_data as $s5 => $revenue) {
+
+        foreach ($total_revenues as $rev_tracker => $rt_data) {
+            foreach ($rt_data as $s1 => $s1_data) {
+                foreach ($s1_data as $s2 => $s2_data) {
+                    foreach ($s2_data as $s3 => $s3_data) {
+                        foreach ($s3_data as $s4 => $s4_data) {
+                            foreach ($s4_data as $s5 => $revenue) {
                                 //get Total Revenue
                                 $data[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['source_revenue'] = $revenue;
 
@@ -330,12 +326,12 @@ class ConsolidatedGraphGenerator extends Job implements SelfHandling, ShouldQueu
             }
         }
 
-        foreach($coreg_revenues as $rev_tracker => $rt_data) {
-            foreach($rt_data as $s1 => $s1_data){
-                foreach($s1_data as $s2 => $s2_data){
-                    foreach($s2_data as $s3 => $s3_data){
-                        foreach($s3_data as $s4 => $s4_data){
-                            foreach($s4_data as $s5 => $co_rev) {
+        foreach ($coreg_revenues as $rev_tracker => $rt_data) {
+            foreach ($rt_data as $s1 => $s1_data) {
+                foreach ($s1_data as $s2 => $s2_data) {
+                    foreach ($s2_data as $s3 => $s3_data) {
+                        foreach ($s3_data as $s4 => $s4_data) {
+                            foreach ($s4_data as $s5 => $co_rev) {
                                 //get All Coreg Revenue
                                 $data[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['all_coreg_revenue'] = $co_rev['total'];
 
@@ -392,12 +388,12 @@ class ConsolidatedGraphGenerator extends Job implements SelfHandling, ShouldQueu
             }
         }
 
-        foreach($mid_revenues as $rev_tracker => $rt_data) {
-            foreach($rt_data as $s1 => $s1_data){
-                foreach($s1_data as $s2 => $s2_data){
-                    foreach($s2_data as $s3 => $s3_data){
-                        foreach($s3_data as $s4 => $s4_data){
-                            foreach($s4_data as $s5 => $mid_rev) {
+        foreach ($mid_revenues as $rev_tracker => $rt_data) {
+            foreach ($rt_data as $s1 => $s1_data) {
+                foreach ($s1_data as $s2 => $s2_data) {
+                    foreach ($s2_data as $s3 => $s3_data) {
+                        foreach ($s3_data as $s4 => $s4_data) {
+                            foreach ($s4_data as $s5 => $mid_rev) {
                                 //get All Mid Paths Revenue
                                 $data[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['all_mp_revenue'] = $mid_rev['total'];
 
@@ -407,7 +403,7 @@ class ConsolidatedGraphGenerator extends Job implements SelfHandling, ShouldQueu
 
                                 //get All Mid Path Revenue / Views
                                 $data[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['mp_per_views'] = ($mid_rev['total'] != 0 && $all_mid_views != 0) ? $mid_rev['total'] / $all_mid_views : 0;
-                                
+
                                 //get Permission Data Revenue
                                 $data[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['pd_revenue'] = $mid_rev['pd'];
 
@@ -461,15 +457,15 @@ class ConsolidatedGraphGenerator extends Job implements SelfHandling, ShouldQueu
                         }
                     }
                 }
-            }           
+            }
         }
 
-        foreach($exit_page_revenues as $rev_tracker => $rt_data) {
-            foreach($rt_data as $s1 => $s1_data){
-                foreach($s1_data as $s2 => $s2_data){
-                    foreach($s2_data as $s3 => $s3_data){
-                        foreach($s3_data as $s4 => $s4_data){
-                            foreach($s4_data as $s5 => $revenue) {
+        foreach ($exit_page_revenues as $rev_tracker => $rt_data) {
+            foreach ($rt_data as $s1 => $s1_data) {
+                foreach ($s1_data as $s2 => $s2_data) {
+                    foreach ($s2_data as $s3 => $s3_data) {
+                        foreach ($s3_data as $s4 => $s4_data) {
+                            foreach ($s4_data as $s5 => $revenue) {
                                 //get Last Page Revenue
                                 $data[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['lsp_revenue'] = $revenue;
 
@@ -485,12 +481,12 @@ class ConsolidatedGraphGenerator extends Job implements SelfHandling, ShouldQueu
             }
         }
 
-        foreach($cpa_revenues as $rev_tracker => $rt_data) {
-            foreach($rt_data as $s1 => $s1_data){
-                foreach($s1_data as $s2 => $s2_data){
-                    foreach($s2_data as $s3 => $s3_data){
-                        foreach($s3_data as $s4 => $s4_data){
-                            foreach($s4_data as $s5 => $cpa_revenue) {
+        foreach ($cpa_revenues as $rev_tracker => $rt_data) {
+            foreach ($rt_data as $s1 => $s1_data) {
+                foreach ($s1_data as $s2 => $s2_data) {
+                    foreach ($s2_data as $s3 => $s3_data) {
+                        foreach ($s3_data as $s4 => $s4_data) {
+                            foreach ($s4_data as $s5 => $cpa_revenue) {
                                 $last_page_revenue = isset($data[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['lsp_revenue']) ? $data[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['lsp_revenue'] : 0;
                                 $last_page_views = isset($data[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['lsp_views']) ? $data[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['lsp_views'] : 0;
                                 $last_page_rev_view = isset($data[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['lsp_revenue_vs_views']) ? $data[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['lsp_revenue_vs_views'] : 0;
@@ -520,57 +516,78 @@ class ConsolidatedGraphGenerator extends Job implements SelfHandling, ShouldQueu
         $updated_at = Carbon::now()->toDateTimeString();
         $counter = 0;
         //Save to Consolidated Graph
-        foreach($data as $rev_tracker => $rt_data) {
-            foreach($rt_data as $s1 => $s1_data){
-                foreach($s1_data as $s2 => $s2_data){
-                    foreach($s2_data as $s3 => $s3_data){
-                        foreach($s3_data as $s4 => $s4_data){
-                            foreach($s4_data as $s5 => $rev_data) {
+        foreach ($data as $rev_tracker => $rt_data) {
+            foreach ($rt_data as $s1 => $s1_data) {
+                foreach ($s1_data as $s2 => $s2_data) {
+                    foreach ($s2_data as $s3 => $s3_data) {
+                        foreach ($s3_data as $s4 => $s4_data) {
+                            foreach ($s4_data as $s5 => $rev_data) {
                                 $counter++;
 
                                 $all_mp_views = 0;
-                                if(isset($rev_data['all_mp_views'])) $all_mp_views = $rev_data['all_mp_views'];
-                                else if(isset($page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['all_mid'])) $all_mp_views = $page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['all_mid'];
+                                if (isset($rev_data['all_mp_views'])) {
+                                    $all_mp_views = $rev_data['all_mp_views'];
+                                } elseif (isset($page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['all_mid'])) {
+                                    $all_mp_views = $page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['all_mid'];
+                                }
 
                                 $pd_views = 0;
-                                if(isset($rev_data['pd_views'])) $pd_views = $rev_data['pd_views'];
-                                else if(isset($page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['pd'])) $pd_views = $page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['pd'];
+                                if (isset($rev_data['pd_views'])) {
+                                    $pd_views = $rev_data['pd_views'];
+                                } elseif (isset($page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['pd'])) {
+                                    $pd_views = $page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['pd'];
+                                }
 
                                 $tb_views = 0;
-                                if(isset($rev_data['tb_views'])) $tb_views = $rev_data['tb_views'];
-                                else if(isset($page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['tbr'])) $tb_views = $page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['tbr'];
+                                if (isset($rev_data['tb_views'])) {
+                                    $tb_views = $rev_data['tb_views'];
+                                } elseif (isset($page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['tbr'])) {
+                                    $tb_views = $page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['tbr'];
+                                }
 
                                 $iff_views = 0;
-                                if(isset($rev_data['iff_views'])) $iff_views = $rev_data['iff_views'];
-                                else if(isset($page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['iff'])) $iff_views = $page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['iff'];
+                                if (isset($rev_data['iff_views'])) {
+                                    $iff_views = $rev_data['iff_views'];
+                                } elseif (isset($page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['iff'])) {
+                                    $iff_views = $page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['iff'];
+                                }
 
                                 $rexadz_views = 0;
-                                if(isset($rev_data['rexadz_views'])) $rexadz_views = $rev_data['rexadz_views'];
-                                else if(isset($page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['rex'])) $rexadz_views = $page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['rex'];  
+                                if (isset($rev_data['rexadz_views'])) {
+                                    $rexadz_views = $rev_data['rexadz_views'];
+                                } elseif (isset($page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['rex'])) {
+                                    $rexadz_views = $page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['rex'];
+                                }
 
                                 // $adsmith_views = 0;
                                 // if(isset($rev_data['adsmith_views'])) $adsmith_views = $rev_data['adsmith_views'];
-                                // else if(isset($page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['ads'])) $adsmith_views = $page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['ads']; 
+                                // else if(isset($page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['ads'])) $adsmith_views = $page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['ads'];
 
                                 $cpa_views = 0;
-                                if(isset($rev_data['cpa_views'])) $cpa_views = $rev_data['cpa_views'];
-                                else if(isset($page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['cpa'])) $cpa_views = $page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['cpa'];
+                                if (isset($rev_data['cpa_views'])) {
+                                    $cpa_views = $rev_data['cpa_views'];
+                                } elseif (isset($page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['cpa'])) {
+                                    $cpa_views = $page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['cpa'];
+                                }
 
                                 $lsp_views = 0;
-                                if(isset($rev_data['lsp_views'])) $lsp_views = $rev_data['lsp_views'];
-                                else if(isset($page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['exit'])) $lsp_views = $page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['exit'];
+                                if (isset($rev_data['lsp_views'])) {
+                                    $lsp_views = $rev_data['lsp_views'];
+                                } elseif (isset($page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['exit'])) {
+                                    $lsp_views = $page_views[$rev_tracker][$s1][$s2][$s3][$s4][$s5]['exit'];
+                                }
 
                                 $inserts[] = [
-                                    'revenue_tracker_id'    => $rev_tracker,
-                                    's1'                    => $s1,
-                                    's2'                    => $s2,
-                                    's3'                    => $s3,
-                                    's4'                    => $s4,
-                                    's5'                    => $s5,
-                                    'created_at'            => $created_at,
-                                    'updated_at'            => $updated_at,
-                                    'survey_takers'         => isset($rev_data['survey_takers']) ? $rev_data['survey_takers'] : 0,
-                                    'source_revenue'        => isset($rev_data['source_revenue']) ? $rev_data['source_revenue'] : 0,
+                                    'revenue_tracker_id' => $rev_tracker,
+                                    's1' => $s1,
+                                    's2' => $s2,
+                                    's3' => $s3,
+                                    's4' => $s4,
+                                    's5' => $s5,
+                                    'created_at' => $created_at,
+                                    'updated_at' => $updated_at,
+                                    'survey_takers' => isset($rev_data['survey_takers']) ? $rev_data['survey_takers'] : 0,
+                                    'source_revenue' => isset($rev_data['source_revenue']) ? $rev_data['source_revenue'] : 0,
                                     'source_revenue_per_survey_takers' => isset($rev_data['source_revenue_per_survey_takers']) ? $rev_data['source_revenue_per_survey_takers'] : 0,
                                     'all_clicks' => isset($rev_data['all_clicks']) ? $rev_data['all_clicks'] : 0,
                                     'source_revenue_per_all_clicks' => isset($rev_data['source_revenue_per_all_clicks']) ? $rev_data['source_revenue_per_all_clicks'] : 0,
@@ -593,9 +610,9 @@ class ConsolidatedGraphGenerator extends Job implements SelfHandling, ShouldQueu
                                     'rexadz_revenue' => isset($rev_data['rexadz_revenue']) ? $rev_data['rexadz_revenue'] : 0,
                                     'rexadz_views' => $rexadz_views,
                                     'rexadz_revenue_vs_views' => isset($rev_data['rexadz_revenue_vs_views']) ? $rev_data['rexadz_revenue_vs_views'] : 0,
-                                    'adsmith_revenue' => 0,//isset($rev_data['adsmith_revenue']) ? $rev_data['adsmith_revenue'] : 0,
-                                    'adsmith_views' => 0,//$adsmith_views,
-                                    'adsmith_revenue_vs_views' => 0,//isset($rev_data['adsmith_revenue_vs_views']) ? $rev_data['adsmith_revenue_vs_views'] : 0,
+                                    'adsmith_revenue' => 0, //isset($rev_data['adsmith_revenue']) ? $rev_data['adsmith_revenue'] : 0,
+                                    'adsmith_views' => 0, //$adsmith_views,
+                                    'adsmith_revenue_vs_views' => 0, //isset($rev_data['adsmith_revenue_vs_views']) ? $rev_data['adsmith_revenue_vs_views'] : 0,
                                     'all_inbox_revenue' => isset($rev_data['all_inbox_revenue']) ? $rev_data['all_inbox_revenue'] : 0,
                                     'coreg_p1_revenue' => isset($rev_data['coreg_p1_revenue']) ? $rev_data['coreg_p1_revenue'] : 0,
                                     'coreg_p1_views' => isset($rev_data['coreg_p1_views']) ? $rev_data['coreg_p1_views'] : 0,
@@ -627,41 +644,41 @@ class ConsolidatedGraphGenerator extends Job implements SelfHandling, ShouldQueu
                         }
                     }
                 }
-            }           
+            }
         }
 
         $insert_chunk = array_chunk($inserts, 1000);
 
         //DELETE Existing Consolidated Data
-        Log::info('Deleting Existing Consolidated Graph Data for '. $date);
-        DB::table('consolidated_graph')->where(DB::RAW('created_at'), $date)->delete(); 
+        Log::info('Deleting Existing Consolidated Graph Data for '.$date);
+        DB::table('consolidated_graph')->where(DB::RAW('created_at'), $date)->delete();
 
         //INSERT New Consolidated Data
-        Log::info('Inserting New Consolidated Graph Data for '. $date);
+        Log::info('Inserting New Consolidated Graph Data for '.$date);
         Log::info('Attempting to insert '.$counter.' number of data.');
-        foreach($insert_chunk as $chunk) {
+        foreach ($insert_chunk as $chunk) {
             DB::table('consolidated_graph')->insert($chunk);
-            Log::info('Inserted total: ' . count($chunk));
+            Log::info('Inserted total: '.count($chunk));
         }
         Log::info('Insert Done.');
         $endTime = Carbon::now();
 
-        if($counter > 0) {
+        if ($counter > 0) {
             //Send Email
             Mail::send(
                 'emails.consolidated_graph',
                 [
                     'revTrackerIDs' => array_keys($data),
                     'dateExecuted' => $date,
-                    'executionDuration' => $startTime->diffInSeconds($endTime).' seconds'
+                    'executionDuration' => $startTime->diffInSeconds($endTime).' seconds',
                 ],
-                function ($mail) use($default_admin_email){
+                function ($mail) use ($default_admin_email) {
                     $mail->from('noreply@engageiq.com')
-                         ->to($default_admin_email)
-                         ->subject('Job: Consolidated Graph Data');
+                        ->to($default_admin_email)
+                        ->subject('Job: Consolidated Graph Data');
                 }
             );
-        } 
+        }
 
         Log::info('Consolidated Graph End for '.$date);
     }

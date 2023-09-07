@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Services\Charts\Utils;
 
 use File;
@@ -8,23 +9,23 @@ trait JSonData
     /**
      * Process on generating json data.
      *
-     * @var String $reject_rate
+     * @var string
      */
     protected function generateJSon($reject_rate)
     {
         // create json file
-        $json = "";
-        $start_fake_json = "{
-            series: " . json_encode($this->series[$reject_rate]);
+        $json = '';
+        $start_fake_json = '{
+            series: '.json_encode($this->series[$reject_rate]);
 
         $json .= $start_fake_json;
 
         $end_fake_json = "
                 ,chart: {
-                    type: '" . $this->type . "',
+                    type: '".$this->type."',
                     events: {
                         load: function () {
-                            var label = this.renderer.label(\"STATUS: " . strtoupper($reject_rate) . "\")
+                            var label = this.renderer.label(\"STATUS: ".strtoupper($reject_rate)."\")
                             .css({
                                 width: '400px',
                                 fontSize: '12px',
@@ -45,7 +46,7 @@ trait JSonData
                     text: 'Lead Reactor Leads Graph'
                 }
                 ,xAxis:{
-                    categories: " . json_encode($this->categories[$reject_rate]) . ",
+                    categories: ".json_encode($this->categories[$reject_rate]).",
                     labels: {
                         rotation: -45,
                         style: {
@@ -80,7 +81,7 @@ trait JSonData
                 ,plotOptions: {
                     column: {
                         stacking: 'normal',
-                        groupPadding: " . $this->group_padding[$reject_rate] . ",
+                        groupPadding: ".$this->group_padding[$reject_rate].',
                         borderWidth: 0,
                         maxPointWidth: 3
                     },
@@ -97,7 +98,7 @@ trait JSonData
                 },credits: {
                     enabled: false
                 }
-            }";
+            }';
 
         $json .= $end_fake_json;
         $this->json = $json;
@@ -105,11 +106,10 @@ trait JSonData
 
     /**
      * Process on saving json data as file.
-     *
      */
     protected function saveJSon()
     {
-        if (!empty ($this->json)) {
+        if (! empty($this->json)) {
             File::put($this->config['infile'], $this->json);
         }
     }

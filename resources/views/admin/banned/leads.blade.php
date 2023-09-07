@@ -20,12 +20,12 @@
 <div id="banned_form_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <?php
-            $attributes = array(
+            $attributes = [
                 'url' 				=> url('add_banned_lead'),
                 'class'				=> 'this_form',
                 'data-confirmation' => '',
                 'data-process' 		=> 'add_banned_lead'
-            );
+            ];
         ?>
         {!! Form::open($attributes) !!}
             <div class="modal-content">

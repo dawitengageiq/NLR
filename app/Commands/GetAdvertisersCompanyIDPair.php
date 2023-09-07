@@ -2,15 +2,12 @@
 
 namespace App\Commands;
 
-use App\Commands\Command;
 use App\Advertiser;
-use Illuminate\Contracts\Bus\SelfHandling;
 
-class GetAdvertisersCompanyIDPair extends Command implements SelfHandling
+class GetAdvertisersCompanyIDPair extends Command
 {
     /**
      * Create a new command instance.
-     *
      */
     public function __construct()
     {
@@ -27,10 +24,9 @@ class GetAdvertisersCompanyIDPair extends Command implements SelfHandling
         //return Advertiser::orderBy('company')->lists('company','id');
 
         $advertisersList = [];
-        $advertisers = Advertiser::select('id','company')->where('status',1)->orderBy('company')->get();
+        $advertisers = Advertiser::select('id', 'company')->where('status', 1)->orderBy('company')->get();
 
-        foreach($advertisers as $advertiser)
-        {
+        foreach ($advertisers as $advertiser) {
             $advertisersList[$advertiser->id] = $advertiser->company.' ('.$advertiser->id.')';
         }
 

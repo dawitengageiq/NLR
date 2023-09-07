@@ -2,17 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\AffiliateReport;
-use App\AffiliateRevenueTracker;
-use App\Jobs\Reports\AffiliateReports;
 use App\Jobs\Reports\AffiliateReportsV3;
 use App\Jobs\Reports\AffiliateReportsV4;
-use App\Lead;
 use Carbon\Carbon;
-use Curl\Curl;
 use Illuminate\Console\Command;
-use Log;
-use Sabre\Xml\Reader;
 
 class GenerateAffiliateReports extends Command
 {
@@ -42,7 +35,6 @@ class GenerateAffiliateReports extends Command
 
     /**
      * Create a new command instance.
-     *
      */
     public function __construct()
     {
@@ -65,18 +57,17 @@ class GenerateAffiliateReports extends Command
         $affiliate = $this->option('affiliate');
 
         //NEW VERSION
-        if(empty($date))
-        {
+        if (empty($date)) {
             $from = Carbon::now()->subDay()->toDateString();
             $to = Carbon::now()->toDateString();
-        }else {
+        } else {
             $from = Carbon::parse($date)->toDateString();
             $to = Carbon::parse($date)->addDay()->toDateString();
         }
 
-        $job = (new AffiliateReportsV4($from,$to,$restriction,$affiliate,$rev_tracker))->delay(5);
+        $job = (new AffiliateReportsV4($from, $to, $restriction, $affiliate, $rev_tracker))->delay(5);
         dispatch($job);
-        
+
         //OLD VERSION
         // if(empty($dateYesterdayStr) || empty($dateNowStr))
         // {

@@ -14,12 +14,12 @@
 
 	<!-- Add PAYOUT FORM Start -->
 	<?php
-  		$attributes = array(
+  		$attributes = [
   			'url' 					=> 'add_campaign_payout',
   			'class'					=> 'this_form',
   			'data-confirmation' 	=> '',
   			'data-process' 			=> 'add_campaign_payout'
-  		);
+  		];
   	?>
 	{!! Form::open($attributes) !!}
 	<div class="collapse" id="campaignPayoutForm" style="margin: 10px 0px;">
@@ -76,12 +76,12 @@
 	</div>
 	<!-- Edit PAYOUT FORM Start -->
 	<?php
-  		$attributes = array(
+  		$attributes = [
   			'url' 					=> 'edit_campaign_payout',
   			'class'					=> 'this_form',
   			'data-confirmation' 	=> 'Are you sure you want to edit this?',
   			'data-process' 			=> 'edit_campaign_payout'
-  		);
+  		];
   	?>
 	{!! Form::open($attributes) !!}
 	<div id="selectedPayoutDiv" class="hidden"></div>

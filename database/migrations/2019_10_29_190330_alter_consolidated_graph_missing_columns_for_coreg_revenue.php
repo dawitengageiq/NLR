@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AlterConsolidatedGraphMissingColumnsForCoregRevenue extends Migration
 {
@@ -26,7 +26,7 @@ class AlterConsolidatedGraphMissingColumnsForCoregRevenue extends Migration
             $table->integer('coreg_p2_views')->unsigned()->default(0)->after('coreg_p2_revenue');
             $table->integer('coreg_p3_views')->unsigned()->default(0)->after('coreg_p3_revenue');
             $table->integer('coreg_p4_views')->unsigned()->default(0)->after('coreg_p4_revenue');
-            
+
             $table->integer('all_coreg_views')->unsigned()->default(0)->after('all_coreg_revenue');
             $table->integer('all_mp_views')->unsigned()->default(0)->after('all_mp_revenue');
         });

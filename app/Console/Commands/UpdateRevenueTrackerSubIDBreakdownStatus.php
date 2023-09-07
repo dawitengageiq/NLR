@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\AffiliateRevenueTracker;
+use Illuminate\Console\Command;
 
 class UpdateRevenueTrackerSubIDBreakdownStatus extends Command
 {
@@ -39,7 +39,7 @@ class UpdateRevenueTrackerSubIDBreakdownStatus extends Command
     public function handle()
     {
         $rev_trackers = AffiliateRevenueTracker::whereNotNull('new_subid_breakdown_status')->get();
-        foreach($rev_trackers as $rt) {
+        foreach ($rev_trackers as $rt) {
             $rt->subid_breakdown = $rt->new_subid_breakdown_status;
             $rt->new_subid_breakdown_status = null;
 

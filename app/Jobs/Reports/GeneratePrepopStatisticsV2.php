@@ -2,20 +2,17 @@
 
 namespace App\Jobs\Reports;
 
+use App\AffiliateReport;
 use App\Jobs\Job;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Log;
-use Exception;
-use DB;
-use App\AffiliateRevenueTracker;
 use App\PrepopStatistic;
 use App\RevenueTrackerCakeStatistic;
-use App\AffiliateReport;
+use DB;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Log;
 
-class GeneratePrepopStatisticsV2 extends Job implements SelfHandling, ShouldQueue
+class GeneratePrepopStatisticsV2 extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
@@ -41,40 +38,39 @@ class GeneratePrepopStatisticsV2 extends Job implements SelfHandling, ShouldQueu
      */
     public function handle()
     {
-        if ($this->attempts() > 1)
-        {
+        if ($this->attempts() > 1) {
             return;
         }
 
         // Log::info("Prepop Group Starting...");
         // DB::enableQueryLog();
         $revenue_reports = AffiliateReport::where('created_at', $this->date)
-        ->selectRAW('revenue_tracker_id, affiliate_id, s1, s2, s3, s4, s5, SUM(revenue) as revenue')
-        ->groupBy(['revenue_tracker_id', 'affiliate_id', 's1', 's2', 's3', 's4', 's5'])
-        ->get();
+            ->selectRAW('revenue_tracker_id, affiliate_id, s1, s2, s3, s4, s5, SUM(revenue) as revenue')
+            ->groupBy(['revenue_tracker_id', 'affiliate_id', 's1', 's2', 's3', 's4', 's5'])
+            ->get();
 
         $revenues = [];
-        foreach($revenue_reports as $report) {
+        foreach ($revenue_reports as $report) {
             $revenues[$report->affiliate_id][$report->revenue_tracker_id][$report->s1][$report->s2][$report->s3][$report->s4][$report->s5] = $report->revenue;
         }
 
-        $payout_reports = RevenueTrackerCakeStatistic::where('revenue_tracker_cake_statistics.created_at', $this->date)->leftJoin('affiliate_revenue_trackers', function($sq) {
-                $sq->on('revenue_tracker_cake_statistics.affiliate_id','=', 'affiliate_revenue_trackers.affiliate_id')
-                    ->where('revenue_tracker_cake_statistics.revenue_tracker_id','=','affiliate_revenue_trackers.revenue_tracker_id')
-                    ->where('revenue_tracker_cake_statistics.cake_campaign_id','=','affiliate_revenue_trackers.campaign_id');
-            })
+        $payout_reports = RevenueTrackerCakeStatistic::where('revenue_tracker_cake_statistics.created_at', $this->date)->leftJoin('affiliate_revenue_trackers', function ($sq) {
+            $sq->on('revenue_tracker_cake_statistics.affiliate_id', '=', 'affiliate_revenue_trackers.affiliate_id')
+                ->where('revenue_tracker_cake_statistics.revenue_tracker_id', '=', 'affiliate_revenue_trackers.revenue_tracker_id')
+                ->where('revenue_tracker_cake_statistics.cake_campaign_id', '=', 'affiliate_revenue_trackers.campaign_id');
+        })
             ->selectRAW('revenue_tracker_cake_statistics.*')
             ->get();
 
         $payouts = [];
-        foreach($payout_reports as $report) {
+        foreach ($payout_reports as $report) {
             $payouts[$report->affiliate_id][$report->revenue_tracker_id][$report->s1][$report->s2][$report->s3][$report->s4][$report->s5] = $report->payout;
         }
 
         $prepops = PrepopStatistic::where('created_at', $this->date)
-        ->get();
+            ->get();
 
-        foreach($prepops as $prepop) {
+        foreach ($prepops as $prepop) {
             $margin = 0;
             $aff = $prepop->affiliate_id;
             $rt = $prepop->revenue_tracker_id;
@@ -86,11 +82,11 @@ class GeneratePrepopStatisticsV2 extends Job implements SelfHandling, ShouldQueu
 
             $revenue = isset($revenues[$aff][$rt][$s1][$s2][$s3][$s4][$s5]) ? $revenues[$aff][$rt][$s1][$s2][$s3][$s4][$s5] : 0;
             $payout = isset($payouts[$aff][$rt][$s1][$s2][$s3][$s4][$s5]) ? $payouts[$aff][$rt][$s1][$s2][$s3][$s4][$s5] : 0;
-            $numerator = doubleval($revenue) - doubleval($payout);
-            if($numerator > 0 && $revenue > 0) {
-                $margin = ($numerator / doubleval($revenue));
+            $numerator = floatval($revenue) - floatval($payout);
+            if ($numerator > 0 && $revenue > 0) {
+                $margin = ($numerator / floatval($revenue));
 
-                if($margin != 0) {
+                if ($margin != 0) {
                     $prepop->profit_margin = $margin;
                     $prepop->save();
                 }

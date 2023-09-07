@@ -1,15 +1,11 @@
 <?php
+
 namespace App\Http\Services\Campaigns\Factories;
 
-use Config;
-use RevenueTracker;
-use CampaignSettings;
-
-use App\Lead;
-use App\FilterType;
 use App\CakeConversion;
-use App\CampaignNoTracker;
-use App\CampaignTypeOrder;
+use App\FilterType;
+use App\Lead;
+use RevenueTracker;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,23 +39,30 @@ abstract class ListsFactory
      *
      */
     protected $userDetails;
+
     protected $cakeClicks;
+
     protected $filterTypes;
+
     protected $leadCampaigns;
+
     protected $campaignTypeOrder;
+
     protected $filterStatusSettings;
 
     protected $noLimitSettings;
 
     protected $campaigns = [];
+
     protected $typeOrdering = [];
+
     protected $passedCampaigns = [];
 
     /**
      * Function required to be provide on extended class
-     *
      */
     abstract public function setTypeOrdering($typeOrdering);
+
     abstract public function getCampaigns($affiliateID);
 
     /**
@@ -67,7 +70,7 @@ abstract class ListsFactory
      *
      * @return array
      */
-    public function all ()
+    public function all()
     {
         return $this->campaigns->toArray();
     }
@@ -75,10 +78,11 @@ abstract class ListsFactory
     /**
      * Set user details
      *
-     * @param array $userDetails
-     * @var array $userDetails
+     * @param  array  $userDetails
+     *
+     * @var array
      */
-    public function setUserDetails ($userDetails)
+    public function setUserDetails($userDetails)
     {
         $this->userDetails = $userDetails;
     }
@@ -86,7 +90,7 @@ abstract class ListsFactory
     /**
      * Set settings.
      *
-     * @param array $settings
+     * @param  array  $settings
      */
     public function setCampaignNoLimitSettings($noLimitSettings)
     {
@@ -101,13 +105,14 @@ abstract class ListsFactory
     /**
      * Get the  Qualified Campaigns
      *
-     * @param bolean $filter
-     * @param integer $pathType
-     * @param integer $revenueTrackerID
-     * @var array $stacking
-     * @var array $creatives
+     * @param  bolean  $filter
+     * @param  int  $pathType
+     * @param  int  $revenueTrackerID
+     *
+     * @var array
+     * @var array
      */
-    public function filterCampaigns (
+    public function filterCampaigns(
         $filter,
         $pathType,
         $revenueTrackerID)
@@ -116,14 +121,16 @@ abstract class ListsFactory
         $this->filters();
 
         /* GO THROUGH EACH CAMPAIGN TO CHECK IF THEY QUALIFY */
-        foreach($this->campaigns as $campaign) {
-            if(($filter && $filter != 'false') || $filter == 'true') {
-                if($this->filterPassed($campaign, $revenueTrackerID) == false) continue;
+        foreach ($this->campaigns as $campaign) {
+            if (($filter && $filter != 'false') || $filter == 'true') {
+                if ($this->filterPassed($campaign, $revenueTrackerID) == false) {
+                    continue;
+                }
             }
 
             /* STACK CAMPAIGN AND CREATIVES AND ORDER BY CAMPAIGN TYPE ORDERING */
             //$this->stackCampaign( $campaign, $pathType );
-            $this->stacking->stackCampaign( $campaign, $pathType );
+            $this->stacking->stackCampaign($campaign, $pathType);
 
             // Creatives
             $this->creatives->set($campaign->creatives, $campaign->id);
@@ -133,65 +140,77 @@ abstract class ListsFactory
     /**
      * Get the data needed for filtering
      *
-     * @var array $filterTypes
-     * @var array $leadCampaigns
-     * @var array $cakeClicks
+     * @var array
+     * @var array
+     * @var array
      */
     protected function filters()
     {
         /* FILTER TYPE */
-        $this->filterTypes = FilterType::select('id','type','name')
-                                ->get()
-                                ->keyBy('id');
+        $this->filterTypes = FilterType::select('id', 'type', 'name')
+            ->get()
+            ->keyBy('id');
 
         /* GET ALL LEADS ANSWERED BY EMAIL */
         $this->leadCampaigns = Lead::where('lead_email', $this->userDetails['email'])
-                                ->whereIn('lead_status', [1, 3, 4])
-                                ->lists('campaign_id')
-                                ->toArray();
+            ->whereIn('lead_status', [1, 3, 4])
+            ->pluck('campaign_id')
+            ->toArray();
 
         /* GET CAKE CONVERSIONS CLICKED BY EMAIL */
         $this->cakeClicks = CakeConversion::where('sub_id_5', $this->userDetails['email'])
-                                ->lists('offer_id')
-                                ->toArray();
+            ->pluck('offer_id')
+            ->toArray();
     }
 
     /**
      * Check campaign passed the filtering
      *
      * @param eloquent collection $campaign
-     * @return boolean
+     * @return bool
      */
-    protected function filterPassed ($campaign, $revenueTrackerID)
+    protected function filterPassed($campaign, $revenueTrackerID)
     {
         /* CHECK IF USER ALREADY ANSWERED CAMPAIGN */
-        if(in_array($campaign->id, $this->leadCampaigns)) return false; //If already answered, skip campaign
+        if (in_array($campaign->id, $this->leadCampaigns)) {
+            return false;
+        } //If already answered, skip campaign
 
         /* CHECK IF CAMPAIGN EXCEEDS NO Click LIMIT */
         // if($this->noTracker->passed($campaign, $this->noLimitSettings) == false)  return false;
 
         /* CHECK EACH CAMPAIGN CAP IF REACHED */
-         //If default campaign cap failed, skip campaign
-        if($this->uniCap->passed($campaign) == false)  return false;
+        //If default campaign cap failed, skip campaign
+        if ($this->uniCap->passed($campaign) == false) {
+            return false;
+        }
 
         /* CHECK AFFILIATE CAMPAIGN CAP */
         //If affiliate campaign cap failed, skip campaign
 
-        if($this->affCap->passed($campaign, $revenueTrackerID) == false)  return false;
+        if ($this->affCap->passed($campaign, $revenueTrackerID) == false) {
+            return false;
+        }
 
         /* PROCESS CAMPAIGN FILTER */
         //If didn't passed the filter, skip campaign
-        if($this->filter->passed($campaign, $this->userDetails, $this->filterStatusSettings, $this->filterTypes) == false) return false;
+        if ($this->filter->passed($campaign, $this->userDetails, $this->filterStatusSettings, $this->filterTypes) == false) {
+            return false;
+        }
 
         /* PROCESS LINKOUTS CLICK, IFUSER ALREADY ANSWERED CAMPAIGN */
-        if($campaign->campaign_type == 5 && in_array($campaign->linkout_offer_id,  $this->cakeClicks)) return false;
+        if ($campaign->campaign_type == 5 && in_array($campaign->linkout_offer_id, $this->cakeClicks)) {
+            return false;
+        }
 
         /* PROCESS CAMPAIGN LIMIT PER REVENUETRACKER */
         // First Level Limit.
         //  Affiliate revenue tracker have limt per campaign type.
         //  Exclude mix coreg for first level limit
         //  @source App\Http\Services\Campaigns\Utils\Lists\Limit\FirstLevel\ByRevenueTracker::class
-        if($this->firstLevelLimitIsPassed($campaign->campaign_type) == false) return false;
+        if ($this->firstLevelLimitIsPassed($campaign->campaign_type) == false) {
+            return false;
+        }
 
         return true;
     }
@@ -200,14 +219,19 @@ abstract class ListsFactory
      * Bypass campaign type coreg for it will be process later
      * Check limitaion for other campaign type
      *
-     * @param integer $campaignType
-     * @return boolean
+     * @param  int  $campaignType
+     * @return bool
      */
     public function firstLevelLimitIsPassed($campaignType)
     {
-        if(in_array($campaignType, array_keys(config('constants.MIXED_COREG_TYPE_FOR_ORDERING')))) return true;
+        if (in_array($campaignType, array_keys(config('constants.MIXED_COREG_TYPE_FOR_ORDERING')))) {
+            return true;
+        }
 
-        if($this->revenueTrackerLimit->exceed($campaignType)) return false;
+        if ($this->revenueTrackerLimit->exceed($campaignType)) {
+            return false;
+        }
+
         return true;
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AlterPrepopStatisticsTableRevenueTrackerId extends Migration
 {
@@ -34,7 +34,7 @@ class AlterPrepopStatisticsTableRevenueTrackerId extends Migration
             $table->dropForeign('mixed_coreg_campaign_orders_revenue_tracker_id_foreign');
             $table->foreign('revenue_tracker_id')->references('revenue_tracker_id')->on('affiliate_revenue_trackers')->onDelete('cascade');
         });
-        
+
         Schema::table('prepop_statistics', function (Blueprint $table) {
             $table->dropForeign('prepop_statistics_revenue_tracker_id_foreign');
             $table->foreign('revenue_tracker_id')->references('revenue_tracker_id')->on('affiliate_revenue_trackers')->onDelete('cascade');

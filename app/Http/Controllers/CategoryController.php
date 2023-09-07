@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use App\Category;
+use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
@@ -42,14 +40,12 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(
         Request $request,
         \App\Http\Services\UserActionLogger $userAction
-        )
-    {
+    ) {
         $category = new Category;
         $category->name = $request->input('name');
         $category->description = $request->input('description');
@@ -87,14 +83,12 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
      * @return array|string
      */
     public function update(
         Request $request,
         \App\Http\Services\UserActionLogger $userAction
-        )
-    {
+    ) {
         $id = $request->input('id');
         $category = Category::find($id);
 
@@ -113,14 +107,11 @@ class CategoryController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param Request $request
      */
     public function destroy(
         Request $request,
         \App\Http\Services\UserActionLogger $userAction
-        )
-    {
+    ) {
         $id = $request->input('id');
         $category = Category::find($id);
         $category->delete();
@@ -132,7 +123,6 @@ class CategoryController extends Controller
     /**
      * This will determine if certain advertiser is active.
      *
-     * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function status($id)
@@ -141,14 +131,13 @@ class CategoryController extends Controller
 
         $response = [];
 
-        if($category->exists())
-        {
+        if ($category->exists()) {
             $response['category_id'] = $category->id;
             $response['name'] = $category->name;
             $response['active'] = $category->status == 1;
         }
 
-        return response()->json($response,200);
+        return response()->json($response, 200);
     }
 
     /**
@@ -158,7 +147,6 @@ class CategoryController extends Controller
      */
     public function getCategories()
     {
-        return Category::where('status','=',1)->select('name','id')->orderBy('name','asc')->get()->toArray();
+        return Category::where('status', '=', 1)->select('name', 'id')->orderBy('name', 'asc')->get()->toArray();
     }
-
 }

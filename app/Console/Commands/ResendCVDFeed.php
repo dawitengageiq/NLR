@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use Curl\Curl;
-use Carbon\Carbon;
 use App\LeadUser;
+use Carbon\Carbon;
+use Curl\Curl;
+use Illuminate\Console\Command;
 
 class ResendCVDFeed extends Command
 {
@@ -42,27 +42,27 @@ class ResendCVDFeed extends Command
     {
         $this->info('Executing.....');
         $users = LeadUser::where('status', 1)->where('response', 'like', '%| CVD:%')
-        ->where('response', 'not like', '%| CVDR:%')->get();
-        foreach($users as $user) {
+            ->where('response', 'not like', '%| CVDR:%')->get();
+        foreach ($users as $user) {
             $cvd_curl = new Curl();
             $fields = http_build_query([
-                'pid'   => 7,
+                'pid' => 7,
                 'sid' => 36,
                 'cid' => 646,
-                'ip'    =>  $user->ip,
+                'ip' => $user->ip,
                 'subid1' => 'CD'.$user->revenue_tracker_id,
                 'subid2' => $user->revenue_tracker_id,
                 'externalid' => 1,
-                'First'    =>  $user->first_name,
-                'Last'     =>  $user->last_name,
-                'Email' =>  $user->email,
+                'First' => $user->first_name,
+                'Last' => $user->last_name,
+                'Email' => $user->email,
                 'Address1' => $user->address1,
                 'Address2' => $user->address2,
-                'City'  =>  $user->city,
-                'State' =>  $user->state,
-                'Zip'   =>  $user->zip,
-                'Phone' =>  $user->phone,
-                'dob'   =>  Carbon::parse($user->birthdate)->format('m/d/Y'),
+                'City' => $user->city,
+                'State' => $user->state,
+                'Zip' => $user->zip,
+                'Phone' => $user->phone,
+                'dob' => Carbon::parse($user->birthdate)->format('m/d/Y'),
             ]);
             $url = 'https://sbg.api.twyne.io/lead/submit?'.$fields;
             $cvd_curl->get($url);

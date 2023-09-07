@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AddAffiliateIdAsForeignKey extends Migration
 {
@@ -18,7 +18,7 @@ class AddAffiliateIdAsForeignKey extends Migration
             $table->foreign('affiliate_id')->references('id')->on('affiliates')->onDelete('set null');
             $table->foreign('revenue_tracker_id')->references('id')->on('affiliates')->onDelete('set null');
 
-            $table->index(['revenue_tracker_id','affiliate_id'],'affiliate_revenue_trackers_revenue_tracker_id_affiliate_id_index');
+            $table->index(['revenue_tracker_id', 'affiliate_id'], 'affiliate_revenue_trackers_revenue_tracker_id_affiliate_id_index');
         });
     }
 

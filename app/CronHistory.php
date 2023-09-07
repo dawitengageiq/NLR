@@ -14,7 +14,7 @@ class CronHistory extends Model
         'time_started',
         'time_ended',
         'status',
-        'lead_ids'
+        'lead_ids',
     ];
 
     public $timestamps = false;

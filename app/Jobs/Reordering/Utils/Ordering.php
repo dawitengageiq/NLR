@@ -1,20 +1,20 @@
 <?php
+
 namespace App\Jobs\Reordering\Utils;
 
 class Ordering
 {
     /**
      * Default variables
-     *
      */
     protected $orders = [];
 
     /**
      * Set campaign order from calculate::class
      *
-     * @param  array $orders
+     * @param  array  $orders
      */
-    public function setOrders ($orders)
+    public function setOrders($orders)
     {
         $this->orders = $orders;
     }
@@ -24,7 +24,7 @@ class Ordering
      *
      * @return array
      */
-    public function getOrders ()
+    public function getOrders()
     {
         return $this->orders;
     }
@@ -32,23 +32,25 @@ class Ordering
     /**
      * Determine the type of reordering then reorder
      *
-     * @param  integer $orderBy
+     * @param  int  $orderBy
      * @return void
      */
-    public function reorderBy ($orderBy)
+    public function reorderBy($orderBy)
     {
-        if (count($this->orders) <= 0) return;
+        if (count($this->orders) <= 0) {
+            return;
+        }
 
         switch ($orderBy) {
             //Order campaign ascending
             case 1:
                 asort($this->orders);
                 break;
-            //Order campaign descending
+                //Order campaign descending
             case 2:
                 arsort($this->orders);
                 break;
-            //Randomize campaign order
+                //Randomize campaign order
             case 3:
                 $this->orders = $this->shuffleAssoc($this->orders);
                 break;
@@ -58,13 +60,13 @@ class Ordering
     /**
      * Random reordering
      *
-     * @param array $array
+     * @param  array  $array
      * @return array
      */
     protected function shuffleAssoc($array)
     {
         //Initialize
-        $new = array();
+        $new = [];
         //Get array's keys and shuffle them.
         $keys = array_keys($array);
         shuffle($keys);

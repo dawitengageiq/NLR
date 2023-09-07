@@ -4,19 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
-use App\Lead;
-use App\CampaignView;
-
 class CreativeController extends Controller
 {
     protected $user;
+
     protected $creative;
+
     /**
      * Load the  needed configuration
-     *
      */
     public function __construct(\App\Http\Services\Creative $creative)
     {
@@ -39,8 +34,6 @@ class CreativeController extends Controller
 
     /**
      *Get statistics.
-     *
-     * @return
      */
     public function statistics(Request $request)
     {
@@ -49,14 +42,9 @@ class CreativeController extends Controller
 
     /**
      *Get statistics.
-     *
-     * @return
      */
     public function report(Request $request)
     {
         return $this->creative->getReport($request);
     }
-
-
-
 }

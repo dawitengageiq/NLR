@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use Carbon\Carbon;
-use Illuminate\Console\Command;
 use App\Lead;
+use Carbon\Carbon;
 use DB;
+use Illuminate\Console\Command;
 
 class RemoveLeadDuplicates extends Command
 {
@@ -25,7 +25,6 @@ class RemoveLeadDuplicates extends Command
 
     /**
      * Create a new command instance.
-     *
      */
     public function __construct()
     {
@@ -46,13 +45,12 @@ class RemoveLeadDuplicates extends Command
 
     public function removeDuplicateLeads()
     {
-        $duplicatedCampaignEmailSQL = "SELECT campaign_id, lead_email, count(id) AS count FROM leads GROUP BY campaign_id, lead_email HAVING count(id) > 1 ORDER BY campaign_id";
+        $duplicatedCampaignEmailSQL = 'SELECT campaign_id, lead_email, count(id) AS count FROM leads GROUP BY campaign_id, lead_email HAVING count(id) > 1 ORDER BY campaign_id';
         $duplicates = DB::select($duplicatedCampaignEmailSQL);
 
         $numberOfDeleted = 0;
 
-        foreach($duplicates as $duplicate)
-        {
+        foreach ($duplicates as $duplicate) {
             $campaignID = $duplicate->campaign_id;
             $leadEmail = $duplicate->lead_email;
 
@@ -64,33 +62,26 @@ class RemoveLeadDuplicates extends Command
             $firstRejected = Lead::campaignEmailLeads(['campaign_id' => $campaignID, 'lead_email' => $leadEmail, 'lead_status' => 2])->first();
             $firstFail = Lead::campaignEmailLeads(['campaign_id' => $campaignID, 'lead_email' => $leadEmail, 'lead_status' => 0])->first();
 
-            if($firstSuccess)
-            {
+            if ($firstSuccess) {
                 $this->info('The lead will remain is: ');
                 $this->info('id = '.$firstSuccess->id.' campaign_id: '.$firstSuccess->campaign_id.' lead_email: '.$firstSuccess->lead_email);
                 $this->info('Deleting the rest of leads...');
-                $numberOfDeleted = $numberOfDeleted + $this->removeExceptOne($firstSuccess,$campaignEmailLeads);
-            }
-            else if($firstPending)
-            {
+                $numberOfDeleted = $numberOfDeleted + $this->removeExceptOne($firstSuccess, $campaignEmailLeads);
+            } elseif ($firstPending) {
                 $this->info('The lead will remain is: ');
                 $this->info('id = '.$firstPending->id.' campaign_id: '.$firstPending->campaign_id.' lead_email: '.$firstPending->lead_email);
                 $this->info('Deleting the rest of leads...');
-                $numberOfDeleted = $numberOfDeleted + $this->removeExceptOne($firstPending,$campaignEmailLeads);
-            }
-            else if($firstRejected)
-            {
+                $numberOfDeleted = $numberOfDeleted + $this->removeExceptOne($firstPending, $campaignEmailLeads);
+            } elseif ($firstRejected) {
                 $this->info('The lead will remain is: ');
                 $this->info('id = '.$firstRejected->id.' campaign_id: '.$firstRejected->campaign_id.' lead_email: '.$firstRejected->lead_email);
                 $this->info('Deleting the rest of leads...');
-                $numberOfDeleted = $numberOfDeleted + $this->removeExceptOne($firstRejected,$campaignEmailLeads);
-            }
-            else if($firstFail)
-            {
+                $numberOfDeleted = $numberOfDeleted + $this->removeExceptOne($firstRejected, $campaignEmailLeads);
+            } elseif ($firstFail) {
                 $this->info('The lead will remain is: ');
                 $this->info('id = '.$firstFail->id.' campaign_id: '.$firstFail->campaign_id.' lead_email: '.$firstFail->lead_email);
                 $this->info('Deleting the rest of leads...');
-                $numberOfDeleted = $numberOfDeleted + $this->removeExceptOne($firstFail,$campaignEmailLeads);
+                $numberOfDeleted = $numberOfDeleted + $this->removeExceptOne($firstFail, $campaignEmailLeads);
             }
 
         }
@@ -99,14 +90,12 @@ class RemoveLeadDuplicates extends Command
         //return ['delete_count' => $numberOfDeleted];
     }
 
-    public function removeExceptOne($leadRemain,$leads)
+    public function removeExceptOne($leadRemain, $leads)
     {
         $count = 0;
 
-        foreach($leads as $lead)
-        {
-            if($lead->id != $leadRemain->id)
-            {
+        foreach ($leads as $lead) {
+            if ($lead->id != $leadRemain->id) {
                 $lead->delete();
                 $count++;
             }

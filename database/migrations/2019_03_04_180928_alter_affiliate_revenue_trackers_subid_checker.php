@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AlterAffiliateRevenueTrackersSubidChecker extends Migration
 {
@@ -13,7 +13,7 @@ class AlterAffiliateRevenueTrackersSubidChecker extends Migration
     public function up()
     {
         Schema::table('affiliate_revenue_trackers', function (Blueprint $table) {
-            $table->boolean("subid_breakdown")->default(0);
+            $table->boolean('subid_breakdown')->default(0);
         });
     }
 
@@ -25,7 +25,7 @@ class AlterAffiliateRevenueTrackersSubidChecker extends Migration
     public function down()
     {
         Schema::table('affiliate_revenue_trackers', function (Blueprint $table) {
-            $table->dropColumn("subid_breakdown");
+            $table->dropColumn('subid_breakdown');
         });
     }
 }

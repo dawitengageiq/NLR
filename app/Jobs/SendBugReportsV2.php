@@ -4,14 +4,13 @@ namespace App\Jobs;
 
 use App\BugReport;
 use App\Helpers\Repositories\Settings;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Log;
 use Mail;
 
-class SendBugReportsV2 extends Job implements SelfHandling, ShouldQueue
+class SendBugReportsV2 extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
@@ -28,13 +27,11 @@ class SendBugReportsV2 extends Job implements SelfHandling, ShouldQueue
     /**
      * Execute the job.
      *
-     * @param Settings $settings
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function handle(Settings $settings)
     {
-        if ($this->attempts() > 1)
-        {
+        if ($this->attempts() > 1) {
             return;
         }
 
@@ -42,33 +39,32 @@ class SendBugReportsV2 extends Job implements SelfHandling, ShouldQueue
         $qa_recipients = [];
         $setting = $settings->getValue('qa_recipient');
 
-        if(isset($setting)){
+        if (isset($setting)) {
             $rec_emails = explode(';', $setting->description);
-            foreach($rec_emails as $re) {
+            foreach ($rec_emails as $re) {
                 $re = trim($re);
-                if(filter_var($re, FILTER_VALIDATE_EMAIL)) {
+                if (filter_var($re, FILTER_VALIDATE_EMAIL)) {
                     $qa_recipients[] = $re;
                 }
             }
         }
 
-        if(count($qa_recipients) == 0) {
+        if (count($qa_recipients) == 0) {
             $qa_recipients[] = env('REPORTS_EMAIL_NOTIFICATION_RECIPIENT', 'marwilburton@hotmail.com');
         }
 
-        $projectKey = env('JIRA_PROJECT_KEY','NLR');
+        $projectKey = env('JIRA_PROJECT_KEY', 'NLR');
         $issueTypeName = 'Bug';
-        $assigneeUsername = env('JIRA_ISSUE_ASSIGNEE_USERNAME','Ariel'); //default is Ariel
-        $jiraUserName = env('JIRA_USERNAME','monty');
-        $jiraUserPassword = env('JIRA_USER_PASSWORD','magbanua2016');
+        $assigneeUsername = env('JIRA_ISSUE_ASSIGNEE_USERNAME', 'Ariel'); //default is Ariel
+        $jiraUserName = env('JIRA_USERNAME', 'monty');
+        $jiraUserPassword = env('JIRA_USER_PASSWORD', 'magbanua2016');
 
         //this will return the engageiq atlassian base url if it is not specified in env
-        $baseURI = env('JIRA_API_BASE_URL','https://engageiq.atlassian.net');
+        $baseURI = env('JIRA_API_BASE_URL', 'https://engageiq.atlassian.net');
 
         $inputs = [];
 
-        foreach($this->bugReports as $report)
-        {
+        foreach ($this->bugReports as $report) {
             $jiraDescriptionTicket = '';
             $inputs['bug_summary'] = $report->bug_summary;
             $inputs['bug_description'] = $report->bug_description;
@@ -78,7 +74,7 @@ class SendBugReportsV2 extends Job implements SelfHandling, ShouldQueue
             $senderEmail = $report->reporter_email;
 
             //attach all attachments
-            $attachments = explode(',',$report->evidences);
+            $attachments = explode(',', $report->evidences);
 
             /*
             //create JIRA ticket via API
@@ -222,29 +218,24 @@ class SendBugReportsV2 extends Job implements SelfHandling, ShouldQueue
             Log::info("senderNameWithEmail: $senderNameWithEmail");
             */
 
-            if(count($inputs)>0 && (isset($senderEmail) && isset($senderNameWithEmail)))
-            {
+            if (count($inputs) > 0 && (isset($senderEmail) && isset($senderNameWithEmail))) {
                 $evidences = $report->evidences;
 
                 Mail::send('emails.bug_report',
-                    ['inputs' => $inputs,'sender' => $report->reporter_name],
-                    function ($mail) use ($inputs, $senderEmail, $senderNameWithEmail, $evidences, $attachments, $qa_recipients) {
+                    ['inputs' => $inputs, 'sender' => $report->reporter_name],
+                    function ($mail) use ($senderEmail, $senderNameWithEmail, $evidences, $attachments, $qa_recipients) {
 
                         $mail->from($senderEmail, $senderNameWithEmail);
-
 
                         $mail->to($qa_recipients);
 
                         $mail->subject('Engage IQ: Admin Bug Report ');
 
-                        if(!empty($evidences))
-                        {
-                            foreach($attachments as $attachment)
-                            {
+                        if (! empty($evidences)) {
+                            foreach ($attachments as $attachment) {
                                 $attachmentPath = storage_path('app').'/uploads/bugs/'.$attachment;
 
-                                if(file_exists($attachmentPath))
-                                {
+                                if (file_exists($attachmentPath)) {
                                     $mail->attach($attachmentPath);
                                 }
                             }

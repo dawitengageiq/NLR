@@ -8,7 +8,7 @@
 
 namespace App\Helpers\Repositories;
 
-
-interface LeadCountsInterface {
+interface LeadCountsInterface
+{
     public function executeReset($campaignCounts, $campaignID, $affiliateID = null, $capType = 'Unlimited', $timezone = null);
 }

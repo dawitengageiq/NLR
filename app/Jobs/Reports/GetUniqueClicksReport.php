@@ -2,25 +2,25 @@
 
 namespace App\Jobs\Reports;
 
-use App\Jobs\Job;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Curl\Curl;
-use Log;
-use Exception;
-use DB;
+use App\AffiliateReport;
 use App\AffiliateRevenueTracker;
+use App\Jobs\Job;
 use App\PrepopStatistic;
 use App\RevenueTrackerCakeStatistic;
-use App\AffiliateReport;
+use Curl\Curl;
+use DB;
+use Exception;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Log;
 
-class GetUniqueClicksReport extends Job implements SelfHandling, ShouldQueue
+class GetUniqueClicksReport extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
     protected $dateFromStr;
+
     protected $dateToStr;
 
     /**
@@ -41,30 +41,27 @@ class GetUniqueClicksReport extends Job implements SelfHandling, ShouldQueue
      */
     public function handle()
     {
-        if ($this->attempts() > 1)
-        {
+        if ($this->attempts() > 1) {
             return;
         }
 
-        Log::info("Generating Unique Click Reports...");
+        Log::info('Generating Unique Click Reports...');
 
         $cakeBaseClicksURL = config('constants.CAKE_CLICKS_REPORTS_API_V12_UNIQUE');
         $requiredParameters = config('constants.PREPOP_PARAMETERS');
-        
 
         $revenue_trackers = AffiliateRevenueTracker::where('offer_id', '!=', 0)
-            ->orWhere(function($q){
+            ->orWhere(function ($q) {
                 $q->where('campaign_id', 1)
                     ->where('offer_id', 1)
                     ->where('revenue_tracker_id', 1);
             })
-            ->select('affiliate_id','campaign_id','revenue_tracker_id', 'offer_id')
-            ->groupBy('affiliate_id','revenue_tracker_id')->get();
+            ->select('affiliate_id', 'campaign_id', 'revenue_tracker_id', 'offer_id')
+            ->groupBy('affiliate_id', 'revenue_tracker_id')->get();
 
         // $revenue_trackers = AffiliateRevenueTracker::where('revenue_tracker_id',7612)->get();
 
-        foreach($revenue_trackers as $rt)
-        {
+        foreach ($revenue_trackers as $rt) {
             $rt_data = [];
             $affiliate_id = $rt->affiliate_id;
             $campaign_id = $rt->campaign_id;
@@ -73,40 +70,35 @@ class GetUniqueClicksReport extends Job implements SelfHandling, ShouldQueue
             $rowStart = 0;
             $rowLimit = 2500;
 
-            while(true)
-            {
+            while (true) {
                 // if($rowStart == $rowLimit) break; //forchecking only
 
                 Log::info("START ROW: $rowStart");
                 $cakeurl = $cakeBaseClicksURL;
                 $cakeurl = str_replace('offer_id=0', "offer_id=$offer_id", $cakeurl);
-                $cakeurl = str_replace('start_at_row=0', "start_at_row=". $rowStart, $cakeurl);
+                $cakeurl = str_replace('start_at_row=0', 'start_at_row='.$rowStart, $cakeurl);
                 $cakeurl = str_replace('row_limit=0', "row_limit=$rowLimit", $cakeurl);
 
-                $response = $this->getCakeXML($cakeurl ,$affiliate_id, $campaign_id, $revenue_tracker_id);
+                $response = $this->getCakeXML($cakeurl, $affiliate_id, $campaign_id, $revenue_tracker_id);
 
-                if(! isset($response['clicks']['click']))
-                {
+                if (! isset($response['clicks']['click'])) {
                     break;
-                }
-                else
-                {
+                } else {
                     $clicks = $response['clicks']['click'];
-                    foreach ($clicks as $click)
-                    {
-                        $s1 = !is_array($click['sub_id_1']) ? $click['sub_id_1'] : '';
-                        $s2 = !is_array($click['sub_id_2']) ? $click['sub_id_2'] : '';
-                        $s3 = !is_array($click['sub_id_3']) ? $click['sub_id_3'] : '';
-                        $s4 = !is_array($click['sub_id_4']) ? $click['sub_id_4'] : '';
-                        $s5 = !is_array($click['sub_id_5']) ? $click['sub_id_5'] : '';
+                    foreach ($clicks as $click) {
+                        $s1 = ! is_array($click['sub_id_1']) ? $click['sub_id_1'] : '';
+                        $s2 = ! is_array($click['sub_id_2']) ? $click['sub_id_2'] : '';
+                        $s3 = ! is_array($click['sub_id_3']) ? $click['sub_id_3'] : '';
+                        $s4 = ! is_array($click['sub_id_4']) ? $click['sub_id_4'] : '';
+                        $s5 = ! is_array($click['sub_id_5']) ? $click['sub_id_5'] : '';
 
-                        if(!isset($rt_data[$s1][$s2][$s3][$s4][$s5])) {
+                        if (! isset($rt_data[$s1][$s2][$s3][$s4][$s5])) {
                             $rt_data[$s1][$s2][$s3][$s4][$s5] = [
                                 'click' => 0,
                                 'payout' => 0,
                                 'no_prepop_count' => 0,
                                 'prepop_count' => 0,
-                                'prepop_werrors_count' => 0
+                                'prepop_werrors_count' => 0,
                             ];
                         }
 
@@ -120,44 +112,39 @@ class GetUniqueClicksReport extends Job implements SelfHandling, ShouldQueue
                         $queryParams = [];
                         parse_str($parts, $queryParams);
 
-                        if(count($queryParams)==0)
-                        {
+                        if (count($queryParams) == 0) {
                             $rt_data[$s1][$s2][$s3][$s4][$s5]['no_prepop_count'] += 1;
+
                             continue;
                         }
 
                         $missingParamCount = 0;
 
-                        foreach($requiredParameters as $param => $value)
-                        {
-                            if(!isset($queryParams[$param]))
-                            {
-                                ++$missingParamCount;
+                        foreach ($requiredParameters as $param => $value) {
+                            if (! isset($queryParams[$param])) {
+                                $missingParamCount++;
                             }
                         }
 
-                        if($missingParamCount == count($requiredParameters))
-                        {
+                        if ($missingParamCount == count($requiredParameters)) {
                             //this means all required parameter are not present
                             $rt_data[$s1][$s2][$s3][$s4][$s5]['no_prepop_count'] += 1;
+
                             continue;
                         }
 
                         $noMissingParam = true;
 
                         //determine if all required prepop parameters and present
-                        foreach($requiredParameters as $param => $value)
-                        {
-                            if(isset($queryParams[$param]) && empty($queryParams[$param]))
-                            {
+                        foreach ($requiredParameters as $param => $value) {
+                            if (isset($queryParams[$param]) && empty($queryParams[$param])) {
                                 $noMissingParam = false;
                                 $rt_data[$s1][$s2][$s3][$s4][$s5]['prepop_werrors_count'] += 1;
                                 break;
                             }
                         }
 
-                        if($noMissingParam)
-                        {
+                        if ($noMissingParam) {
                             $rt_data[$s1][$s2][$s3][$s4][$s5]['prepop_count'] += 1;
                         }
                     }
@@ -166,11 +153,11 @@ class GetUniqueClicksReport extends Job implements SelfHandling, ShouldQueue
                 $rowStart += $rowLimit;
             }
 
-            foreach($rt_data as $s1 => $s1d) {
-                foreach($s1d as $s2 => $s2d) {
-                    foreach($s2d as $s3 => $s3d) {
-                        foreach($s3d as $s4 => $s4d) {
-                            foreach($s4d as $s5 => $data) {
+            foreach ($rt_data as $s1 => $s1d) {
+                foreach ($s1d as $s2 => $s2d) {
+                    foreach ($s2d as $s3 => $s3d) {
+                        foreach ($s3d as $s4 => $s4d) {
+                            foreach ($s4d as $s5 => $data) {
                                 //SAVE REV CAKE Statistics
                                 $cake_stats = RevenueTrackerCakeStatistic::firstOrNew([
                                     'affiliate_id' => $affiliate_id,
@@ -189,7 +176,7 @@ class GetUniqueClicksReport extends Job implements SelfHandling, ShouldQueue
                                 $cake_stats->save();
 
                                 // Get Revenue from Affiliate Report
-                                $aff_report = AffiliateReport::where('affiliate_id',$affiliate_id)
+                                $aff_report = AffiliateReport::where('affiliate_id', $affiliate_id)
                                     ->where('revenue_tracker_id', $revenue_tracker_id)
                                     ->where('s1', $s1)
                                     ->where('s2', $s2)
@@ -216,14 +203,14 @@ class GetUniqueClicksReport extends Job implements SelfHandling, ShouldQueue
                                 $prepop->prepop_count = $data['prepop_count'];
                                 $prepop->no_prepop_count = $data['no_prepop_count'];
                                 $prepop->prepop_with_errors_count = $data['prepop_werrors_count'];
-                                $prepop->no_prepop_percentage = (doubleval($data['no_prepop_count']) / doubleval($data['click']));
-                                $prepop->prepop_with_errors_percentage = (doubleval($data['prepop_werrors_count']) / doubleval($data['click']));
-                                
+                                $prepop->no_prepop_percentage = (floatval($data['no_prepop_count']) / floatval($data['click']));
+                                $prepop->prepop_with_errors_percentage = (floatval($data['prepop_werrors_count']) / floatval($data['click']));
+
                                 $margin = 0;
                                 $revenue = isset($aff_report->revenue) ? $aff_report->revenue : 0;
-                                $numerator = doubleval($revenue) - doubleval($data['payout']);
-                                if($numerator > 0 && $revenue > 0) {
-                                    $margin = ($numerator / doubleval($revenue));
+                                $numerator = floatval($revenue) - floatval($data['payout']);
+                                if ($numerator > 0 && $revenue > 0) {
+                                    $margin = ($numerator / floatval($revenue));
                                 }
                                 $prepop->profit_margin = $margin;
                                 $prepop->save();
@@ -235,10 +222,10 @@ class GetUniqueClicksReport extends Job implements SelfHandling, ShouldQueue
         }
     }
 
-    public function getCakeXML($cakeBaseClicksURL ,$affiliateID, $campaignID, $revenueTracker)
+    public function getCakeXML($cakeBaseClicksURL, $affiliateID, $campaignID, $revenueTracker)
     {
         $cakeClickURL = $cakeBaseClicksURL."&affiliate_id=$affiliateID&campaign_id=$campaignID&start_date=$this->dateFromStr&end_date=$this->dateToStr";
-        Log::info("Get Unique Clicks Report");
+        Log::info('Get Unique Clicks Report');
         Log::info("affiliate_id: $affiliateID");
         Log::info("revenue_tracker_id: $revenueTracker");
         Log::info("campaign_id: $campaignID");
@@ -247,34 +234,27 @@ class GetUniqueClicksReport extends Job implements SelfHandling, ShouldQueue
         $callCounter = 0;
         $response = null;
 
-        do
-        {
+        do {
             $curl = new Curl();
             $curl->get($cakeClickURL);
 
-            if($curl->error)
-            {
-                Log::info("getCakeClicks API Error!");
+            if ($curl->error) {
+                Log::info('getCakeClicks API Error!');
                 Log::info($curl->error_message);
-                ++$callCounter;
-            }
-            else
-            {
-                try{
+                $callCounter++;
+            } else {
+                try {
 
                     $xml = simplexml_load_string($curl->response);
                     $json = json_encode($xml);
-                    $response = json_decode($json,TRUE);
-                }
-                catch(Exception $e)
-                {
+                    $response = json_decode($json, true);
+                } catch (Exception $e) {
                     Log::info($e->getCode());
                     Log::info($e->getMessage());
-                    ++$callCounter;
+                    $callCounter++;
 
                     //stop the process when budget breached
-                    if($callCounter==10)
-                    {
+                    if ($callCounter == 10) {
                         Log::info('getCakeClicks API call limit reached!');
                         break;
                     }
@@ -284,13 +264,12 @@ class GetUniqueClicksReport extends Job implements SelfHandling, ShouldQueue
             }
 
             //stop the process when budget breached
-            if($callCounter==10)
-            {
+            if ($callCounter == 10) {
                 Log::info('getCakeClicks API call limit reached!');
                 break;
             }
 
-        } while($curl->error);
+        } while ($curl->error);
 
         return $response;
     }

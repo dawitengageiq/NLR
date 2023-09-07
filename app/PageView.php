@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class PageView extends Model
 {
     protected $connection;
+
     protected $table = 'page_views';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -19,13 +21,13 @@ class PageView extends Model
         's3',
         's4',
         's5',
-        'created_at'
+        'created_at',
     ];
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') != 'reports') {
+        if (config('app.type') != 'reports') {
             $this->connection = 'secondary';
         }
     }

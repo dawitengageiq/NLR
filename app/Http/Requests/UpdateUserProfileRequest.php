@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Requests;
+
 use App\User;
-use App\Http\Requests\Request;
 
 class UpdateUserProfileRequest extends Request
 {
@@ -28,8 +28,7 @@ class UpdateUserProfileRequest extends Request
         $inputs = $this->all();
         $user = User::find($inputs['id']);
 
-        if($user->email!=$inputs['email'])
-        {
+        if ($user->email != $inputs['email']) {
             $validationEmailRule = 'required|email|unique:users';
         }
 
@@ -47,7 +46,7 @@ class UpdateUserProfileRequest extends Request
     public function messages()
     {
         return [
-            'email.unique'     =>  'Email is already taken as a user or as a affiliate/advertiser contact.',
+            'email.unique' => 'Email is already taken as a user or as a affiliate/advertiser contact.',
         ];
     }
 }

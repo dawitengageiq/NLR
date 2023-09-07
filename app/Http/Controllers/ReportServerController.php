@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use App\Campaign;
-use Excel;
 use App\Lead;
 use App\LeadArchive;
-use DB;
 use Carbon\Carbon;
+use DB;
+use Excel;
+use Illuminate\Http\Request;
 
 class ReportServerController extends Controller
 {
@@ -24,31 +21,27 @@ class ReportServerController extends Controller
         $campaign = Campaign::find($inputs['campaign_id']);
         $leadStatus = config('constants.LEAD_STATUS');
 
-        if(count($inputs)>0)
-        {
-            if((isset($inputs['table']) && $inputs['table']=='leads'))
-            {
+        if (count($inputs) > 0) {
+            if ((isset($inputs['table']) && $inputs['table'] == 'leads')) {
                 // $leads = Lead::searchLeads($inputs)->with('leadMessage','leadDataADV','leadDataCSV','leadSentResult')->get();
 
                 $leads = Lead::searchLeads($inputs)
                     // ->join('campaigns','leads.campaign_id','=','campaigns.id')
-                    ->leftJoin('lead_data_advs','leads.id','=','lead_data_advs.id')
+                    ->leftJoin('lead_data_advs', 'leads.id', '=', 'lead_data_advs.id')
                     // ->leftJoin('lead_data_csvs','leads.id','=','lead_data_csvs.id')
                     // ->leftJoin('lead_messages','leads.id','=','lead_messages.id')
                     // ->leftJoin('lead_sent_results','leads.id','=','lead_sent_results.id')
                     // ->select(DB::RAW("leads.*, campaigns.name, TIMEDIFF(leads.updated_at,leads.created_at) as time_interval, lead_data_advs.value as advs_val, lead_data_csvs.value as csvs_val, lead_messages.value as msg_val, lead_sent_results.value as sntr_val"))
-                    ->select(DB::RAW("leads.*, lead_data_advs.value as advs_val"))
+                    ->select(DB::RAW('leads.*, lead_data_advs.value as advs_val'))
                     ->get();
 
-            }
-            else
-            {
+            } else {
                 // $leads = LeadArchive::searchLeads($inputs)->with('leadMessage','leadDataADV','leadDataCSV','leadSentResult')->get();
 
                 $leads = LeadArchive::searchLeads($inputs)
                     // ->join('campaigns','leads_archive.campaign_id','=','campaigns.id')
-                    ->leftJoin('lead_data_advs_archive','leads_archive.id','=','lead_data_advs_archive.id')
-                    ->select(DB::RAW("leads_archive.*, lead_data_advs_archive.value as advs_val"))
+                    ->leftJoin('lead_data_advs_archive', 'leads_archive.id', '=', 'lead_data_advs_archive.id')
+                    ->select(DB::RAW('leads_archive.*, lead_data_advs_archive.value as advs_val'))
                     // ->leftJoin('lead_data_csvs_archive','leads_archive.id','=','lead_data_csvs_archive.id')
                     // ->leftJoin('lead_messages_archive','leads_archive.id','=','lead_messages_archive.id')
                     // ->leftJoin('lead_sent_results_archive','leads_archive.id','=','lead_sent_results_archive.id')
@@ -61,25 +54,24 @@ class ReportServerController extends Controller
 
         $data = [];
         $params = [];
-        foreach($leads as $lead) {
+        foreach ($leads as $lead) {
 
-            if($lead->advs_val != ''){
+            if ($lead->advs_val != '') {
                 $parts = parse_url($lead->advs_val);
                 $query = [];
 
-                if(isset($parts['query']))
-                {
+                if (isset($parts['query'])) {
                     parse_str($parts['query'], $query);
                 }
 
-                if(count($query) > 0) {
-                    foreach($query as $key => $val) {
-                        if(!in_array($key, $params)) {
+                if (count($query) > 0) {
+                    foreach ($query as $key => $val) {
+                        if (! in_array($key, $params)) {
                             $params[] = $key;
                         }
                     }
 
-                    $data[] = array_merge(['LEADID' => $lead->id, 'LEADSTATUS' => $leadStatus[$lead->lead_status], 'LEADDATE' => $lead->created_at,], $query);
+                    $data[] = array_merge(['LEADID' => $lead->id, 'LEADSTATUS' => $leadStatus[$lead->lead_status], 'LEADDATE' => $lead->created_at], $query);
                 }
 
                 // \Log::info($query);
@@ -94,14 +86,14 @@ class ReportServerController extends Controller
 
         // return $leads;
 
-        Excel::create($title, function($excel) use($title,$params, $data, $campaign){
+        Excel::create($title, function ($excel) use ($params, $data, $campaign) {
             $header = $campaign->name;
 
-            if(strlen($header) > 31) {
+            if (strlen($header) > 31) {
                 $header = substr($header, 0, 28);
                 $header .= '...';
             }
-            $excel->sheet($header,function($sheet) use ($params,$data){
+            $excel->sheet($header, function ($sheet) use ($params, $data) {
 
                 // Set auto size for sheet
                 $sheet->setAutoSize(true);
@@ -111,13 +103,13 @@ class ReportServerController extends Controller
                 //set up the title header row
                 $sheet->appendRow($headers);
 
-                $sheet->row(1, function($row) {
+                $sheet->row(1, function ($row) {
 
                     // Set font
-                    $row->setFont(array(
-                        'size'       => '12',
-                        'bold'       =>  true
-                    ));
+                    $row->setFont([
+                        'size' => '12',
+                        'bold' => true,
+                    ]);
 
                     $row->setAlignment('center');
                     $row->setValignment('center');
@@ -137,28 +129,24 @@ class ReportServerController extends Controller
                 //     $cells->setValignment('center');
                 // });
 
-                foreach($data as $d)
-                {
+                foreach ($data as $d) {
                     $row = [$d['LEADID'], $d['LEADSTATUS'], $d['LEADDATE']];
-                    foreach($params as $p) {
+                    foreach ($params as $p) {
                         $row[] = isset($d[$p]) ? $d[$p] : '';
                     }
 
                     $sheet->appendRow($row);
                 }
             });
-        })->store('xls',storage_path('downloads'));
+        })->store('xls', storage_path('downloads'));
 
         $file_path = storage_path('downloads').'/'.$title.'.xls';
 
-        if(file_exists($file_path))
-        {
-            return response()->download($file_path,$title.'.xls',[
-                'Content-Length: '.filesize($file_path)
+        if (file_exists($file_path)) {
+            return response()->download($file_path, $title.'.xls', [
+                'Content-Length: '.filesize($file_path),
             ]);
-        }
-        else
-        {
+        } else {
             exit('Requested file does not exist on our server!');
         }
     }

@@ -1,39 +1,49 @@
 <?php
 
 namespace App\Helpers;
+
 use App\Affiliate;
 use App\AffiliateReport;
-use App\RevenueTrackerCakeStatistic;
 use App\AffiliateRevenueTracker;
-use App\Campaign;
 use App\AffiliateWebsite;
-use Carbon\Carbon;
+use App\Campaign;
+use App\RevenueTrackerCakeStatistic;
 use DB;
+use File;
 use Log;
 use Maatwebsite\Excel\Facades\Excel;
-use PHPExcel_Style_NumberFormat;
 use PHPExcel_Cell_DataType;
 use Storage;
-use File;
-use Cache;
-use ErrorException;
 
-class AffiliateReportExcelGeneratorHelper {
-	protected $date_from;
-	protected $date_to;
-	protected $type;
-	protected $title;
+class AffiliateReportExcelGeneratorHelper
+{
+    protected $date_from;
+
+    protected $date_to;
+
+    protected $type;
+
+    protected $title;
+
     protected $nsb_title;
+
     protected $ext;
+
     protected $status;
+
     protected $hasSubIDBreakdown;
+
     protected $campaigns;
+
     protected $affiliates;
+
     protected $disk;
+
     protected $jsRevTrackers;
+
     protected $revWebsites;
 
-	public function __construct($dateFrom, $dateTo, $type)
+    public function __construct($dateFrom, $dateTo, $type)
     {
         $this->date_from = $dateFrom;
         $this->date_to = $dateTo;
@@ -41,11 +51,11 @@ class AffiliateReportExcelGeneratorHelper {
         $this->ext = 'xlsx';
         $this->disk = 'downloads';
 
-        if($this->type == 1) {
-        	$this->title = 'internal_affiliate_reports('.$dateFrom.' to '.$dateTo.')';
+        if ($this->type == 1) {
+            $this->title = 'internal_affiliate_reports('.$dateFrom.' to '.$dateTo.')';
             $this->nsb_title = 'nsb_internal_affiliate_reports('.$dateFrom.' to '.$dateTo.')';
-        }else {
-        	$this->title = 'handp_affiliate_reports('.$dateFrom.' to '.$dateTo.')';
+        } else {
+            $this->title = 'handp_affiliate_reports('.$dateFrom.' to '.$dateTo.')';
             $this->nsb_title = 'nsb_handp_affiliate_reports('.$dateFrom.' to '.$dateTo.')';
         }
 
@@ -53,40 +63,42 @@ class AffiliateReportExcelGeneratorHelper {
 
         //Subid Breakdown Checker
         $sidb = AffiliateReport::whereBetween('created_at', [$this->date_from, $this->date_to])
-            ->where(function($query){
+            ->where(function ($query) {
                 $query->where('s1', '=', '')->orWhere('s2', '!=', '')->orWhere('s3', '!=', '')->orWhere('s4', '!=', '')->orWhere('s5', '!=', '');
             })->limit(1)->first();
         $this->hasSubIDBreakdown = $sidb ? true : false;
 
         //Get Campaigns
-        $this->campaigns = Campaign::lists('name', 'id');
+        $this->campaigns = Campaign::pluck('name', 'id');
 
         //Get JS PATH Rev Trackers
-        $this->jsRevTrackers = AffiliateRevenueTracker::where('offer_id', 1)->where('revenue_tracker_id', '!=', 1)->lists('revenue_tracker_id')->toArray();
+        $this->jsRevTrackers = AffiliateRevenueTracker::where('offer_id', 1)->where('revenue_tracker_id', '!=', 1)->pluck('revenue_tracker_id')->toArray();
 
         //Revenue Tracker Website Names
-        $this->revWebsites = AffiliateWebsite::where('revenue_tracker_id', '!=', '')->lists('website_name', 'revenue_tracker_id')->toArray();
+        $this->revWebsites = AffiliateWebsite::where('revenue_tracker_id', '!=', '')->pluck('website_name', 'revenue_tracker_id')->toArray();
         // Log::info($this->revWebsites);
     }
 
     /**
      * Generating of reports
      *
-     * @param Request $request
+     * @param  Request  $request
      * @param $affiliate_type
      * @param $snapshot_period
      * @return \Illuminate\Http\JsonResponse
      */
-    public function  generate()
+    public function generate()
     {
         DB::enableQueryLog();
-        if(!$this->noSimilarRunningJob()) return;
+        if (! $this->noSimilarRunningJob()) {
+            return;
+        }
         $title = $this->title;
-        $sheetTitle = $this->date_from.' to '. $this->date_to;
+        $sheetTitle = $this->date_from.' to '.$this->date_to;
         $params = [];
-        $params['affiliate_type'] =  $this->type;
+        $params['affiliate_type'] = $this->type;
         $params['start_date'] = $this->date_from;
-        $params['end_date'] =  $this->date_to;
+        $params['end_date'] = $this->date_to;
         $key = "$params[start_date]$params[end_date]:$params[affiliate_type]";
 
         //$disk = config('app.type') == 'reports' ? 'downloads' : 'reports';
@@ -97,19 +109,19 @@ class AffiliateReportExcelGeneratorHelper {
         $this->subIDBreakdown();
         Log::info('Affiliate Report File Created: '.$this->getFullFileName());
 
-        if($this->hasSubIDBreakdown) {
+        if ($this->hasSubIDBreakdown) {
             Log::info('Attempt Affiliate Report Excel Generation with Rev Tracker Breakdown: '.$this->getFullFileName());
             $this->revTrackerBreakdown();
             Log::info('Affiliate Report File Created: '.$this->getNSBFullFileName());
         }
-        
+
         Storage::disk($disk)->delete($this->getTempFileName()); //delete templ file
 
         $responseData = [
             'status' => 'generate_successful',
             'message' => 'Reports Sheet is generated successfully and you can download it now!',
             'key' => $key,
-            'file' => $this->getFullFileName()
+            'file' => $this->getFullFileName(),
         ];
 
         $this->status = true;
@@ -117,17 +129,18 @@ class AffiliateReportExcelGeneratorHelper {
         Log::info('LOG QRY');
         Log::info(DB::getQueryLog());
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
-    protected function revTrackerBreakdown() {
+    protected function revTrackerBreakdown()
+    {
         $title = $this->nsb_title;
-        $sheetTitle = $this->date_from.' to '. $this->date_to;
+        $sheetTitle = $this->date_from.' to '.$this->date_to;
         // DB::enableQueryLog();
         $params = [];
-        $params['affiliate_type'] =  $this->type;
+        $params['affiliate_type'] = $this->type;
         $params['start_date'] = $this->date_from;
-        $params['end_date'] =  $this->date_to;
+        $params['end_date'] = $this->date_to;
         $key = "$params[start_date]$params[end_date]:$params[affiliate_type]";
 
         Log::info('Master');
@@ -135,24 +148,26 @@ class AffiliateReportExcelGeneratorHelper {
         $revenueTrackerStatistics = RevenueTrackerCakeStatistic::revTrackerBreakdown($params)->get();
         //Get Affiliate Report Rev Tracker Campaign revenue breakdown
         $affiliateReportsRevenueTrackers = AffiliateReport::getRevTrackerPerCampaignTotalRevenueNoSubIDBreakdown($params)
-        ->where(function($q) {
-            $q->where('lead_count','!=', 0)
-             ->orWhere('revenue', '!=', 0);
-        })
-        ->get();
+            ->where(function ($q) {
+                $q->where('lead_count', '!=', 0)
+                    ->orWhere('revenue', '!=', 0);
+            })
+            ->get();
         Log::info('DB::END');
         $affiliates = $this->affiliates;
         // Log::info(DB::getQueryLog());
-        if(Storage::disk('downloads')->has($this->getNSBFullFileName())) Storage::disk('downloads')->delete($this->getNSBFullFileName()); //delete existing file
+        if (Storage::disk('downloads')->has($this->getNSBFullFileName())) {
+            Storage::disk('downloads')->delete($this->getNSBFullFileName());
+        } //delete existing file
 
-        Excel::create($title,function($excel) use($title,$sheetTitle,$affiliateReportsRevenueTrackers, $revenueTrackerStatistics, $affiliates) {
-            $excel->sheet($sheetTitle,function($sheet) use($title,$affiliateReportsRevenueTrackers, $revenueTrackerStatistics, $affiliates) {
+        Excel::create($title, function ($excel) use ($title, $sheetTitle, $affiliateReportsRevenueTrackers, $revenueTrackerStatistics, $affiliates) {
+            $excel->sheet($sheetTitle, function ($sheet) use ($title, $affiliateReportsRevenueTrackers, $revenueTrackerStatistics, $affiliates) {
                 $rowNumber = 1;
                 $firstDataRowNumber = 1;
 
                 $publishersRevenueCells = [];
                 $curPubSubIds = '';
-                $begin= 1;
+                $begin = 1;
                 $c = 0;
                 $prev_tracker = false;
 
@@ -169,56 +184,56 @@ class AffiliateReportExcelGeneratorHelper {
 
                 $cdOneCells = [];
 
-                foreach($affChunks as $chunk) {
-                    Log::info('Chunk: ' . ++$chunk_counter);
+                foreach ($affChunks as $chunk) {
+                    Log::info('Chunk: '.++$chunk_counter);
                     $rows = [];
 
-                    foreach($chunk as $tracker) {
+                    foreach ($chunk as $tracker) {
 
                         $curTrackerCode = "$tracker->affiliate_id:$tracker->revenue_tracker_id";
-                        if($curPubSubIds != $curTrackerCode) {
+                        if ($curPubSubIds != $curTrackerCode) {
 
                             ///////Total Row of Previous Rev Tracker
-                            if($curPubSubIds != '') {
+                            if ($curPubSubIds != '') {
 
-                                if($prev_tracker->revenue_tracker_id == 1) {
+                                if ($prev_tracker->revenue_tracker_id == 1) {
                                     Log::info('Rev Tracker 1');
                                 }
                                 // Log::info('Total Grp');
                                 $end = $rowNumber - 1;
                                 //append total row for total revenue
-                                $totalRevenueFormula = '=SUM(D'.$begin.':D'.($rowNumber-1).')';
-                                $totalLeadsFormula = '=SUM(C'.$begin.':C'.($rowNumber-1).')';
-                                $rows[] = array(
-                                   '', 'total', $totalLeadsFormula, $totalRevenueFormula
-                                );
+                                $totalRevenueFormula = '=SUM(D'.$begin.':D'.($rowNumber - 1).')';
+                                $totalLeadsFormula = '=SUM(C'.$begin.':C'.($rowNumber - 1).')';
+                                $rows[] = [
+                                    '', 'total', $totalLeadsFormula, $totalRevenueFormula,
+                                ];
 
                                 //Row for Basing Payout
                                 $publishersRevenueCells[$prev_tracker->affiliate_id][$prev_tracker->revenue_tracker_id] = [
                                     'revenue_formula' => '=$D$'.$rowNumber,
-                                    'leads_formula' => '=$C$'.$rowNumber
+                                    'leads_formula' => '=$C$'.$rowNumber,
                                 ];
 
                                 $style_total[] = $rowNumber;
 
-                                ++$rowNumber;
+                                $rowNumber++;
 
-                                $rows[] = array(
-                                 '', '', '',''
-                                );
+                                $rows[] = [
+                                    '', '', '', '',
+                                ];
 
-                                ++$rowNumber;
+                                $rowNumber++;
 
                                 $style_total_rev[] = [
                                     $begin,
-                                    $end
+                                    $end,
                                 ];
                             }
 
                             ///////Name Row
                             $curPubSubIds = $curTrackerCode;
                             $rows[] = [
-                                'Publisher', 'Campaign', 'Leads', 'Revenue'
+                                'Publisher', 'Campaign', 'Leads', 'Revenue',
                             ];
                             $style_header[] = $rowNumber;
                             $rowNumber++;
@@ -226,14 +241,14 @@ class AffiliateReportExcelGeneratorHelper {
                         }
 
                         $rows[] = [
-                            $tracker->revenue_tracker_id, 
-                            $this->campaigns[$tracker->campaign_id], 
-                            $tracker->lead_count, 
-                            $tracker->revenue
+                            $tracker->revenue_tracker_id,
+                            $this->campaigns[$tracker->campaign_id],
+                            $tracker->lead_count,
+                            $tracker->revenue,
                         ];
 
                         $rowNumber++;
-                        
+
                         $c++;
 
                         $prev_tracker = $tracker;
@@ -242,67 +257,65 @@ class AffiliateReportExcelGeneratorHelper {
                     $sheet->rows($rows);
                 }
 
-                //LAST Row 
-                if($curPubSubIds != '') {
+                //LAST Row
+                if ($curPubSubIds != '') {
                     // Log::info('Total Grp');
                     $end = $rowNumber - 1;
                     //append total row for total revenue
-                    $totalRevenueFormula = '=SUM(D'.$begin.':D'.($rowNumber-1).')';
-                    $totalLeadsFormula = '=SUM(C'.$begin.':C'.($rowNumber-1).')';
+                    $totalRevenueFormula = '=SUM(D'.$begin.':D'.($rowNumber - 1).')';
+                    $totalLeadsFormula = '=SUM(C'.$begin.':C'.($rowNumber - 1).')';
 
-                    $sheet->appendRow( array(
-                       '', 'total', $totalLeadsFormula, $totalRevenueFormula
-                    ));
+                    $sheet->appendRow([
+                        '', 'total', $totalLeadsFormula, $totalRevenueFormula,
+                    ]);
 
                     //Row for Basing Payout
                     $publishersRevenueCells[$prev_tracker->affiliate_id][$prev_tracker->revenue_tracker_id] = [
                         'revenue_formula' => '=$D$'.$rowNumber,
-                        'leads_formula' => '=$C$'.$rowNumber
+                        'leads_formula' => '=$C$'.$rowNumber,
                     ];
 
                     $style_total[] = $rowNumber;
 
-                    ++$rowNumber;
+                    $rowNumber++;
 
-                    $sheet->appendRow( array(
-                     '', '', '',''
-                    ));
+                    $sheet->appendRow([
+                        '', '', '', '',
+                    ]);
 
-                    ++$rowNumber;
+                    $rowNumber++;
 
                     $style_total_rev[] = [
                         $begin,
-                        $end
+                        $end,
                     ];
                 }
 
                 //Revenue/Cost Title
-                $sheet->appendRow( array(
-                    'REVENUE/COST', '', '', '', '', '',''
-                ));
+                $sheet->appendRow([
+                    'REVENUE/COST', '', '', '', '', '', '',
+                ]);
                 $sheet->mergeCells("A$rowNumber:G$rowNumber");
-                $sheet->cells("A$rowNumber:G$rowNumber", function($cells)
-                {
+                $sheet->cells("A$rowNumber:G$rowNumber", function ($cells) {
                     $cells->setFont([
-                        'size'       => '12',
-                        'bold'       =>  true
+                        'size' => '12',
+                        'bold' => true,
                     ]);
                     $cells->setAlignment('center');
                     $cells->setValignment('center');
                     $cells->setBackground('#0000FF');
                 });
 
-                ++$rowNumber;
+                $rowNumber++;
 
                 //Publisher Title
                 $sheet->appendRow([
-                    'Publisher','Publisher Name', 'Leads', 'Revenue', 'Clicks/Views', 'We Pay', '% Margin'
+                    'Publisher', 'Publisher Name', 'Leads', 'Revenue', 'Clicks/Views', 'We Pay', '% Margin',
                 ]);
-                $sheet->cells("A$rowNumber:G$rowNumber", function($cells)
-                {
+                $sheet->cells("A$rowNumber:G$rowNumber", function ($cells) {
                     $cells->setFont([
-                        'size'       => '12',
-                        'bold'       =>  true
+                        'size' => '12',
+                        'bold' => true,
                     ]);
                     $cells->setAlignment('center');
                     $cells->setValignment('center');
@@ -310,8 +323,8 @@ class AffiliateReportExcelGeneratorHelper {
                 });
 
                 $payoutFormatStart = $rowNumber;
-               
-                ++$rowNumber;
+
+                $rowNumber++;
 
                 $d = 0;
                 $begin = 0;
@@ -325,25 +338,24 @@ class AffiliateReportExcelGeneratorHelper {
                 Log::info('Excel Report Affiliate Payout Breakdown');
                 $revChunks = $revenueTrackerStatistics->chunk(1000);
                 $chunk_counter = 0;
-                foreach($revChunks as $chunk) {
-                    Log::info('Chunk: ' . ++$chunk_counter);
-                    foreach($chunk as $tracker) {
+                foreach ($revChunks as $chunk) {
+                    Log::info('Chunk: '.++$chunk_counter);
+                    foreach ($chunk as $tracker) {
                         //Publisher Title
-                        if($curAffID != $tracker->affiliate_id) {
+                        if ($curAffID != $tracker->affiliate_id) {
                             $curAffID = $tracker->affiliate_id;
                             $curAffRow = $rowNumber;
 
                             $sheet->appendRow([
-                                $tracker->affiliate_id,$affiliates[$tracker->affiliate_id], '', '', '', '', ''
+                                $tracker->affiliate_id, $affiliates[$tracker->affiliate_id], '', '', '', '', '',
                             ]);
 
                             //style the header below the REVENUE/COST header
-                            $sheet->cells("A$rowNumber:G$rowNumber", function($cells)
-                            {
+                            $sheet->cells("A$rowNumber:G$rowNumber", function ($cells) {
                                 // Set font
                                 $cells->setFont([
-                                    'size'       => '12',
-                                    'bold'       =>  true
+                                    'size' => '12',
+                                    'bold' => true,
                                 ]);
 
                                 $cells->setAlignment('center');
@@ -353,66 +365,66 @@ class AffiliateReportExcelGeneratorHelper {
 
                             $affRow[$tracker->affiliate_id] = $rowNumber;
 
-                            ++$rowNumber;
+                            $rowNumber++;
                         }
 
                         //Rev Tracker Title
                         $curAffRevCode = "$tracker->affiliate_id:$tracker->revenue_tracker_id";
-                        if($curAffRevID != $curAffRevCode) {
+                        if ($curAffRevID != $curAffRevCode) {
                             $curAffRevID = $curAffRevCode;
                             $affRevRow[$tracker->affiliate_id][$tracker->revenue_tracker_id] = $rowNumber;
                             $begin = $rowNumber;
                         }
 
                         //SubID Breakdown
-                        $aff_data = isset($publishersRevenueCells[$tracker->affiliate_id][$tracker->revenue_tracker_id]) ? $publishersRevenueCells[$tracker->affiliate_id][$tracker->revenue_tracker_id] : NULL;
-                        
+                        $aff_data = isset($publishersRevenueCells[$tracker->affiliate_id][$tracker->revenue_tracker_id]) ? $publishersRevenueCells[$tracker->affiliate_id][$tracker->revenue_tracker_id] : null;
+
                         $lead_cell = $aff_data != null ? $aff_data['leads_formula'] : 0;
                         $revenue_cell = $aff_data != null ? $aff_data['revenue_formula'] : 0;
 
                         $title = $affiliates[$tracker->affiliate_id];
-                        if(in_array($tracker->revenue_tracker_id, $this->jsRevTrackers)) {
+                        if (in_array($tracker->revenue_tracker_id, $this->jsRevTrackers)) {
                             $website_name = isset($this->revWebsites[$tracker->revenue_tracker_id]) ? $this->revWebsites[$tracker->revenue_tracker_id] : $tracker->affiliate_id;
-                            $title = 'Revenue from JS Midpath for '. $website_name;
+                            $title = 'Revenue from JS Midpath for '.$website_name;
                         }
 
                         $sheet->appendRow([
-                            $tracker->affiliate_id.'/'.$tracker->revenue_tracker_id, 
-                            $title, 
-                            $lead_cell, 
-                            $revenue_cell, 
+                            $tracker->affiliate_id.'/'.$tracker->revenue_tracker_id,
+                            $title,
+                            $lead_cell,
+                            $revenue_cell,
                             $tracker->clicks,
                             $tracker->payout,
-                            "=(D$rowNumber - F$rowNumber)/ D$rowNumber"
+                            "=(D$rowNumber - F$rowNumber)/ D$rowNumber",
                         ]);
 
                         $rowNumber++;
                         //Next Tracker
-                        $nextTracker = isset($revenueTrackerStatistics[$d+1]) ? $revenueTrackerStatistics[$d+1] : NULL;
-                        $nextTrackerCode = $nextTracker == NULL ? '' : "$nextTracker->affiliate_id:$nextTracker->revenue_tracker_id";
+                        $nextTracker = isset($revenueTrackerStatistics[$d + 1]) ? $revenueTrackerStatistics[$d + 1] : null;
+                        $nextTrackerCode = $nextTracker == null ? '' : "$nextTracker->affiliate_id:$nextTracker->revenue_tracker_id";
                         $curTrackerCode = "$tracker->affiliate_id:$tracker->revenue_tracker_id";
-                        if($curTrackerCode != $nextTrackerCode) {
+                        if ($curTrackerCode != $nextTrackerCode) {
                             $end = $rowNumber - 1;
                         }
 
-                        $d++;        
+                        $d++;
                     }
                 }
 
                 Log::info('Finalizing Payout Reports');
                 $affiliate_rows = [];
-                foreach($affRow as $aff_id => $aRow) {
+                foreach ($affRow as $aff_id => $aRow) {
                     $aff_rows = [];
-                    foreach($affRevRow[$aff_id] as $rev_id => $rRow) {
+                    foreach ($affRevRow[$aff_id] as $rev_id => $rRow) {
                         $aff_rows[] = '{KK}'.$rRow;
                     }
 
-                    if(count($aff_rows) > 0) {
+                    if (count($aff_rows) > 0) {
                         $aff_str = implode('+', $aff_rows);
-                        $leads = str_replace('{KK}','C',$aff_str);
-                        $revenues = str_replace('{KK}','D',$aff_str);
-                        $clicks = str_replace('{KK}','E',$aff_str);
-                        $wePays = str_replace('{KK}','F',$aff_str);
+                        $leads = str_replace('{KK}', 'C', $aff_str);
+                        $revenues = str_replace('{KK}', 'D', $aff_str);
+                        $clicks = str_replace('{KK}', 'E', $aff_str);
+                        $wePays = str_replace('{KK}', 'F', $aff_str);
                         $sheet->setCellValue("C$aRow", "=$leads");
                         $sheet->setCellValue("D$aRow", "=$revenues");
                         $sheet->setCellValue("E$aRow", "=$clicks");
@@ -423,10 +435,10 @@ class AffiliateReportExcelGeneratorHelper {
                     $affiliate_rows[] = '{KK}'.$aRow;
                 }
                 $affiliate_row_strings = implode('+', $affiliate_rows);
-                $total_lead_cell = str_replace('{KK}','C',$affiliate_row_strings);
-                $total_revenue_cell = str_replace('{KK}','D',$affiliate_row_strings);
-                $total_clicks_cell = str_replace('{KK}','E',$affiliate_row_strings);
-                $total_payout_cell = str_replace('{KK}','F',$affiliate_row_strings);
+                $total_lead_cell = str_replace('{KK}', 'C', $affiliate_row_strings);
+                $total_revenue_cell = str_replace('{KK}', 'D', $affiliate_row_strings);
+                $total_clicks_cell = str_replace('{KK}', 'E', $affiliate_row_strings);
+                $total_payout_cell = str_replace('{KK}', 'F', $affiliate_row_strings);
 
                 //Space
                 $sheet->appendRow(['', '', '', '', '', '', '']);
@@ -434,19 +446,18 @@ class AffiliateReportExcelGeneratorHelper {
 
                 //TOTAL ROW
                 $sheet->appendRow([
-                    'Total', 
-                    '', 
-                    '='.$total_lead_cell, 
-                    '='.$total_revenue_cell, 
+                    'Total',
+                    '',
+                    '='.$total_lead_cell,
+                    '='.$total_revenue_cell,
                     '='.$total_clicks_cell,
                     '='.$total_payout_cell,
-                    "=(D$rowNumber - F$rowNumber)/ D$rowNumber"
+                    "=(D$rowNumber - F$rowNumber)/ D$rowNumber",
                 ]);
-                $sheet->cells("A$rowNumber:G$rowNumber", function($cells)
-                {
+                $sheet->cells("A$rowNumber:G$rowNumber", function ($cells) {
                     $cells->setFont([
-                        'size'       => '12',
-                        'bold'       =>  true
+                        'size' => '12',
+                        'bold' => true,
                     ]);
                     // $cells->setAlignment('center');
                     $cells->setValignment('center');
@@ -455,9 +466,9 @@ class AffiliateReportExcelGeneratorHelper {
                 $totalRow = $rowNumber;
 
                 //3 decimal
-                $sheet->setColumnFormat(array(
-                    "F$payoutFormatStart:F$rowNumber" => '0.000'
-                ));
+                $sheet->setColumnFormat([
+                    "F$payoutFormatStart:F$rowNumber" => '0.000',
+                ]);
 
                 //Space
                 $sheet->appendRow(['', '', '', '', '', '', '']);
@@ -467,15 +478,14 @@ class AffiliateReportExcelGeneratorHelper {
                 $sheet->appendRow(['Profit']);
                 $rowNumber++;
                 $profitRowStart = $rowNumber;
-                
+
                 $sheet->appendRow(['=D'.$totalRow.' - F'.$totalRow]);
                 $rowNumber++;
                 $profitRowEnd = $rowNumber;
-                $sheet->cells("A$profitRowStart:A$profitRowEnd", function($cells)
-                {
+                $sheet->cells("A$profitRowStart:A$profitRowEnd", function ($cells) {
                     $cells->setFont([
-                        'size'       => '12',
-                        'bold'       =>  true
+                        'size' => '12',
+                        'bold' => true,
                     ]);
                     $cells->setAlignment('center');
                     $cells->setValignment('center');
@@ -484,18 +494,17 @@ class AffiliateReportExcelGeneratorHelper {
 
                 //formatting of margin percentage
                 $sheet->setColumnFormat([
-                    "G1:G$rowNumber" => '00.00%'
+                    "G1:G$rowNumber" => '00.00%',
                 ]);
 
                 Log::info('Styling Revenue Reports');
-                foreach($style_total as $st) {
+                foreach ($style_total as $st) {
                     //style the total field
-                    $sheet->cells("B$st:B$st", function($cells)
-                    {
+                    $sheet->cells("B$st:B$st", function ($cells) {
                         // Set font
                         $cells->setFont([
-                            'size'       => '12',
-                            'bold'       =>  true
+                            'size' => '12',
+                            'bold' => true,
                         ]);
 
                         $cells->setAlignment('right');
@@ -503,35 +512,33 @@ class AffiliateReportExcelGeneratorHelper {
                     });
 
                     //style the total value field
-                    $sheet->cells("C$st:D$st", function($cells)
-                    {
+                    $sheet->cells("C$st:D$st", function ($cells) {
                         $cells->setAlignment('right');
                         $cells->setValignment('center');
                         $cells->setBackground('#00FF00');
                     });
                 }
 
-                foreach($style_total_rev as $str) {
+                foreach ($style_total_rev as $str) {
                     $begin = $str[0];
                     $end = $str[1];
                     //merge the cells in publisher column
                     $sheet->mergeCells("A$begin:A$end");
 
                     //set the alignment to middle
-                    $sheet->cell('A'.$begin, function($cell) {
+                    $sheet->cell('A'.$begin, function ($cell) {
                         $cell->setAlignment('center');
                         $cell->setValignment('top');
                     });
                 }
 
-                foreach($style_header as $sh) {
+                foreach ($style_header as $sh) {
                     //style the headers
-                    $sheet->cells("A$sh:D$sh", function($cells)
-                    {
+                    $sheet->cells("A$sh:D$sh", function ($cells) {
                         // Set font
                         $cells->setFont([
-                            'size'       => '12',
-                            'bold'       =>  true
+                            'size' => '12',
+                            'bold' => true,
                         ]);
 
                         $cells->setAlignment('center');
@@ -543,7 +550,7 @@ class AffiliateReportExcelGeneratorHelper {
             });
 
         })->store($this->ext, storage_path('downloads'));
-        
+
         // $contents = Storage::disk('downloads')->get($this->getNSBFullFileName());
         // if(config('app.type') == 'reports') {
         //     if(Storage::disk('main')->has($this->getNSBFullFileName())) Storage::disk('main')->delete($this->getNSBFullFileName()); //delete existing file
@@ -562,14 +569,15 @@ class AffiliateReportExcelGeneratorHelper {
         // }
     }
 
-    protected function subIDBreakdown() {
+    protected function subIDBreakdown()
+    {
         $title = $this->title;
-        $sheetTitle = $this->date_from.' to '. $this->date_to;
+        $sheetTitle = $this->date_from.' to '.$this->date_to;
         // DB::enableQueryLog();
         $params = [];
-        $params['affiliate_type'] =  $this->type;
+        $params['affiliate_type'] = $this->type;
         $params['start_date'] = $this->date_from;
-        $params['end_date'] =  $this->date_to;
+        $params['end_date'] = $this->date_to;
         $key = "$params[start_date]$params[end_date]:$params[affiliate_type]";
 
         Log::info('Master');
@@ -577,46 +585,48 @@ class AffiliateReportExcelGeneratorHelper {
         $revenueTrackerStatistics = RevenueTrackerCakeStatistic::subIDBreakdown($params)->get();
         //Get Affiliate Report Rev Tracker Campaign revenue breakdown
         $affiliateReportsRevenueTrackers = AffiliateReport::getRevTrackerPerCampaignTotalRevenue($params)
-        ->where(function($q) {
-            $q->where('lead_count','!=', 0)
-             ->orWhere('revenue', '!=', 0);
-        })
-        ->get();
-        $affs = $revenueTrackerStatistics->map(function($st) {
+            ->where(function ($q) {
+                $q->where('lead_count', '!=', 0)
+                    ->orWhere('revenue', '!=', 0);
+            })
+            ->get();
+        $affs = $revenueTrackerStatistics->map(function ($st) {
             return $st->affiliate_id;
         })->toArray();
 
-        $affs2 = $affiliateReportsRevenueTrackers->map(function($st) {
+        $affs2 = $affiliateReportsRevenueTrackers->map(function ($st) {
             return $st->affiliate_id;
         })->toArray();
         $affiliate_ids = collect(array_merge($affs, $affs2))->unique();
         //Log::info($affiliate_ids);
-        $this->affiliates = Affiliate::whereIn('id', $affiliate_ids)->lists('company', 'id');
+        $this->affiliates = Affiliate::whereIn('id', $affiliate_ids)->pluck('company', 'id');
         $affiliates = $this->affiliates;
         Log::info('DB::END');
         // Log::info(DB::getQueryLog());
         // Log::info($revenueTrackerStatistics);
 
-        if(Storage::disk('downloads')->has($this->getFullFileName())) Storage::disk('downloads')->delete($this->getFullFileName()); //delete existing file
+        if (Storage::disk('downloads')->has($this->getFullFileName())) {
+            Storage::disk('downloads')->delete($this->getFullFileName());
+        } //delete existing file
 
-        Excel::create($title,function($excel) use($title,$sheetTitle,$affiliateReportsRevenueTrackers, $revenueTrackerStatistics, $affiliates) {
-            $excel->sheet($sheetTitle,function($sheet) use($title,$affiliateReportsRevenueTrackers, $revenueTrackerStatistics, $affiliates) {
+        Excel::create($title, function ($excel) use ($title, $sheetTitle, $affiliateReportsRevenueTrackers, $revenueTrackerStatistics, $affiliates) {
+            $excel->sheet($sheetTitle, function ($sheet) use ($title, $affiliateReportsRevenueTrackers, $revenueTrackerStatistics, $affiliates) {
                 $rowNumber = 1;
                 $firstDataRowNumber = 1;
 
                 $publishersRevenueCells = [];
                 $curPubSubIds = '';
-                $begin= 1;
+                $begin = 1;
                 $c = 0;
                 $prev_tracker = false;
 
-                $sheet->setWidth(array(
-                    'B' =>  20,
-                    'C' =>  20,
-                    'D' =>  20,
-                    'E' =>  20,
-                    'F' => 20
-                ));
+                $sheet->setWidth([
+                    'B' => 20,
+                    'C' => 20,
+                    'D' => 20,
+                    'E' => 20,
+                    'F' => 20,
+                ]);
 
                 //Set auto size for sheet
                 $sheet->setAutoSize(true);
@@ -631,14 +641,14 @@ class AffiliateReportExcelGeneratorHelper {
 
                 $cdOneCells = [];
 
-                foreach($affChunks as $chunk) {
-                    Log::info('Chunk: ' . ++$chunk_counter);
+                foreach ($affChunks as $chunk) {
+                    Log::info('Chunk: '.++$chunk_counter);
                     $rows = [];
 
-                    foreach($chunk as $tracker) {
+                    foreach ($chunk as $tracker) {
 
                         $curTrackerCode = "$tracker->affiliate_id:$tracker->revenue_tracker_id:$tracker->s1:$tracker->s2:$tracker->s3:$tracker->s4;$tracker->s5";
-                        if($curPubSubIds != $curTrackerCode) {
+                        if ($curPubSubIds != $curTrackerCode) {
 
                             // //SPECIAL CASE FOR 1
                             // if($curPubSubIds != '' && $tracker->revenue_tracker_id == 1) {
@@ -651,46 +661,46 @@ class AffiliateReportExcelGeneratorHelper {
                             // }
 
                             ///////Total Row of Previous Rev Tracker
-                            if($curPubSubIds != '') {
+                            if ($curPubSubIds != '') {
 
-                                if($prev_tracker->revenue_tracker_id == 1) {
+                                if ($prev_tracker->revenue_tracker_id == 1) {
                                     Log::info('Rev Tracker 1');
                                 }
                                 // Log::info('Total Grp');
                                 $end = $rowNumber - 1;
                                 //append total row for total revenue
-                                $totalRevenueFormula = '=SUM(I'.$begin.':I'.($rowNumber-1).')';
-                                $totalLeadsFormula = '=SUM(H'.$begin.':H'.($rowNumber-1).')';
-                                $rows[] = array(
-                                   '','','','','','', 'total', $totalLeadsFormula, $totalRevenueFormula
-                                );
+                                $totalRevenueFormula = '=SUM(I'.$begin.':I'.($rowNumber - 1).')';
+                                $totalLeadsFormula = '=SUM(H'.$begin.':H'.($rowNumber - 1).')';
+                                $rows[] = [
+                                    '', '', '', '', '', '', 'total', $totalLeadsFormula, $totalRevenueFormula,
+                                ];
 
                                 //Row for Basing Payout
                                 $publishersRevenueCells[$prev_tracker->affiliate_id][$prev_tracker->revenue_tracker_id][$prev_tracker->s1][$prev_tracker->s2][$prev_tracker->s3][$prev_tracker->s4][$prev_tracker->s5] = [
                                     'revenue_formula' => '=$I$'.$rowNumber,
-                                    'leads_formula' => '=$H$'.$rowNumber
+                                    'leads_formula' => '=$H$'.$rowNumber,
                                 ];
 
                                 $style_total[] = $rowNumber;
 
-                                ++$rowNumber;
+                                $rowNumber++;
 
-                                $rows[] = array(
-                                    '', '', '', '','', '', '', '',''
-                                );
+                                $rows[] = [
+                                    '', '', '', '', '', '', '', '', '',
+                                ];
 
-                                ++$rowNumber;
+                                $rowNumber++;
 
                                 $style_total_rev[] = [
                                     $begin,
-                                    $end
+                                    $end,
                                 ];
                             }
 
                             ///////Name Row
                             $curPubSubIds = $curTrackerCode;
                             $rows[] = [
-                                'Publisher','S1','S2','S3','S4','S5', 'Campaign', 'Leads', 'Revenue'
+                                'Publisher', 'S1', 'S2', 'S3', 'S4', 'S5', 'Campaign', 'Leads', 'Revenue',
                             ];
                             $style_header[] = $rowNumber;
                             $rowNumber++;
@@ -698,19 +708,19 @@ class AffiliateReportExcelGeneratorHelper {
                         }
 
                         $rows[] = [
-                            $tracker->revenue_tracker_id, 
+                            $tracker->revenue_tracker_id,
                             $tracker->s1,
                             $tracker->s2,
                             $tracker->s3,
                             $tracker->s4,
                             $tracker->s5,
-                            $this->campaigns[$tracker->campaign_id], 
-                            $tracker->lead_count, 
-                            $tracker->revenue
+                            $this->campaigns[$tracker->campaign_id],
+                            $tracker->lead_count,
+                            $tracker->revenue,
                         ];
 
                         $rowNumber++;
-                        
+
                         $c++;
 
                         $prev_tracker = $tracker;
@@ -720,70 +730,68 @@ class AffiliateReportExcelGeneratorHelper {
                 }
 
                 ///////Total Row of Previous Rev Tracker
-                if($curPubSubIds != '') {
+                if ($curPubSubIds != '') {
 
-                    if($prev_tracker->revenue_tracker_id == 1) {
+                    if ($prev_tracker->revenue_tracker_id == 1) {
                         Log::info('Rev Tracker 1');
                     }
                     // Log::info('Total Grp');
                     $end = $rowNumber - 1;
                     //append total row for total revenue
-                    $totalRevenueFormula = '=SUM(I'.$begin.':I'.($rowNumber-1).')';
-                    $totalLeadsFormula = '=SUM(H'.$begin.':H'.($rowNumber-1).')';
+                    $totalRevenueFormula = '=SUM(I'.$begin.':I'.($rowNumber - 1).')';
+                    $totalLeadsFormula = '=SUM(H'.$begin.':H'.($rowNumber - 1).')';
 
-                    $sheet->appendRow( array(
-                       '','','','','','', 'total', $totalLeadsFormula, $totalRevenueFormula
-                    ));
+                    $sheet->appendRow([
+                        '', '', '', '', '', '', 'total', $totalLeadsFormula, $totalRevenueFormula,
+                    ]);
 
                     //Row for Basing Payout
                     $publishersRevenueCells[$prev_tracker->affiliate_id][$prev_tracker->revenue_tracker_id][$prev_tracker->s1][$prev_tracker->s2][$prev_tracker->s3][$prev_tracker->s4][$prev_tracker->s5] = [
                         'revenue_formula' => '=$I$'.$rowNumber,
-                        'leads_formula' => '=$H$'.$rowNumber
+                        'leads_formula' => '=$H$'.$rowNumber,
                     ];
 
                     $style_total[] = $rowNumber;
 
-                    ++$rowNumber;
+                    $rowNumber++;
 
-                    $sheet->appendRow(array(
-                        '', '', '', '','', '', '', '',''
-                    ));
+                    $sheet->appendRow([
+                        '', '', '', '', '', '', '', '', '',
+                    ]);
 
-                    ++$rowNumber;
+                    $rowNumber++;
 
                     $style_total_rev[] = [
                         $begin,
-                        $end
+                        $end,
                     ];
                 }
 
                 //Revenue/Cost Title
-                $sheet->appendRow( array(
-                    'REVENUE/COST', '', '', '', '', '','', '', '', '', '',''
-                ));
+                $sheet->appendRow([
+                    'REVENUE/COST', '', '', '', '', '', '', '', '', '', '', '',
+                ]);
                 $sheet->mergeCells("A$rowNumber:L$rowNumber");
-                $sheet->cells("A$rowNumber:L$rowNumber", function($cells)
-                {
+                $sheet->cells("A$rowNumber:L$rowNumber", function ($cells) {
                     $cells->setFont([
-                        'size'       => '12',
-                        'bold'       =>  true
+                        'size' => '12',
+                        'bold' => true,
                     ]);
                     $cells->setAlignment('center');
                     $cells->setValignment('center');
                     $cells->setBackground('#0000FF');
                 });
 
-                ++$rowNumber;
+                $rowNumber++;
 
                 //Publisher Title
                 $sheet->appendRow([
-                    'Publisher','S1','S2','S3','S4','S5','Publisher Name', 'Leads', 'Revenue', 'Clicks/Views', 'We Pay', '% Margin'
+                    'Publisher', 'S1', 'S2', 'S3', 'S4', 'S5', 'Publisher Name', 'Leads', 'Revenue', 'Clicks/Views', 'We Pay', '% Margin',
                 ]);
-                $sheet->cells("A$rowNumber:L$rowNumber", function($cells)
-                {
+                $sheet->cells("A$rowNumber:L$rowNumber", function ($cells) {
                     $cells->setFont([
-                        'size'       => '12',
-                        'bold'       =>  true
+                        'size' => '12',
+                        'bold' => true,
                     ]);
                     $cells->setAlignment('center');
                     $cells->setValignment('center');
@@ -792,7 +800,7 @@ class AffiliateReportExcelGeneratorHelper {
 
                 $payoutFormatStart = $rowNumber;
 
-                ++$rowNumber;
+                $rowNumber++;
 
                 $d = 0;
                 $begin = 0;
@@ -810,29 +818,27 @@ class AffiliateReportExcelGeneratorHelper {
                 Log::info('Excel Report Affiliate Payout Breakdown');
                 $revChunks = $revenueTrackerStatistics->chunk(1000);
                 $chunk_counter = 0;
-                foreach($revChunks as $chunk) {
-                    Log::info('Chunk: ' . ++$chunk_counter);
-                    foreach($chunk as $tracker) {
+                foreach ($revChunks as $chunk) {
+                    Log::info('Chunk: '.++$chunk_counter);
+                    foreach ($chunk as $tracker) {
 
                         //Publisher Title
-                        if($curAffID != $tracker->affiliate_id) {
+                        if ($curAffID != $tracker->affiliate_id) {
                             $curAffID = $tracker->affiliate_id;
                             $curAffRow = $rowNumber;
 
                             $title = $affiliates[$tracker->affiliate_id];
 
                             $sheet->appendRow([
-                                $tracker->affiliate_id,'','','','','',$title, '', '', '', '', ''
+                                $tracker->affiliate_id, '', '', '', '', '', $title, '', '', '', '', '',
                             ]);
 
-
                             //style the header below the REVENUE/COST header
-                            $sheet->cells("A$rowNumber:L$rowNumber", function($cells)
-                            {
+                            $sheet->cells("A$rowNumber:L$rowNumber", function ($cells) {
                                 // Set font
                                 $cells->setFont([
-                                    'size'       => '12',
-                                    'bold'       =>  true
+                                    'size' => '12',
+                                    'bold' => true,
                                 ]);
 
                                 $cells->setAlignment('center');
@@ -842,12 +848,12 @@ class AffiliateReportExcelGeneratorHelper {
 
                             $affRow[$tracker->affiliate_id] = $rowNumber;
 
-                            ++$rowNumber;
+                            $rowNumber++;
                         }
 
                         //Rev Tracker Title
                         $curAffRevCode = "$tracker->affiliate_id:$tracker->revenue_tracker_id";
-                        if($curAffRevID != $curAffRevCode) {
+                        if ($curAffRevID != $curAffRevCode) {
                             $curAffRevID = $curAffRevCode;
                             //set up the title header row
 
@@ -869,11 +875,10 @@ class AffiliateReportExcelGeneratorHelper {
                             ]);
 
                             //style the headers
-                            $sheet->cells("A$rowNumber:L$rowNumber", function($cells)
-                            {
+                            $sheet->cells("A$rowNumber:L$rowNumber", function ($cells) {
                                 $cells->setFont([
-                                    'size'       => '12',
-                                    'bold'       =>  true
+                                    'size' => '12',
+                                    'bold' => true,
                                 ]);
                                 $cells->setAlignment('center');
                                 $cells->setValignment('center');
@@ -887,7 +892,7 @@ class AffiliateReportExcelGeneratorHelper {
                         }
 
                         //SubID Breakdown
-                        $aff_data = isset($publishersRevenueCells[$tracker->affiliate_id][$tracker->revenue_tracker_id][$tracker->s1][$tracker->s2][$tracker->s3][$tracker->s4][$tracker->s5]) ? $publishersRevenueCells[$tracker->affiliate_id][$tracker->revenue_tracker_id][$tracker->s1][$tracker->s2][$tracker->s3][$tracker->s4][$tracker->s5] : NULL;
+                        $aff_data = isset($publishersRevenueCells[$tracker->affiliate_id][$tracker->revenue_tracker_id][$tracker->s1][$tracker->s2][$tracker->s3][$tracker->s4][$tracker->s5]) ? $publishersRevenueCells[$tracker->affiliate_id][$tracker->revenue_tracker_id][$tracker->s1][$tracker->s2][$tracker->s3][$tracker->s4][$tracker->s5] : null;
                         $lead_cell = $aff_data != null ? $aff_data['leads_formula'] : 0;
                         $revenue_cell = $aff_data != null ? $aff_data['revenue_formula'] : 0;
 
@@ -902,32 +907,32 @@ class AffiliateReportExcelGeneratorHelper {
                         // Log::info($tracker->affiliate_id.' - '.$tracker->revenue_tracker_id.' - '. $lead_cell.' - '. $revenue_cell);
 
                         // $sheet->appendRow([
-                        //     $tracker->affiliate_id.'/'.$tracker->revenue_tracker_id, 
+                        //     $tracker->affiliate_id.'/'.$tracker->revenue_tracker_id,
                         //     $tracker->s1,
                         //     $tracker->s2,
                         //     $tracker->s3,
                         //     $tracker->s4,
                         //     $tracker->s5,
-                        //     $affiliates[$tracker->affiliate_id], 
-                        //     $lead_cell, 
-                        //     $revenue_cell, 
+                        //     $affiliates[$tracker->affiliate_id],
+                        //     $lead_cell,
+                        //     $revenue_cell,
                         //     $tracker->clicks,
                         //     $tracker->payout,
                         //     "=(I$rowNumber - K$rowNumber)/ I$rowNumber"
                         // ]);
 
                         $title = $affiliates[$tracker->affiliate_id];
-                        if(in_array($tracker->revenue_tracker_id, $this->jsRevTrackers)) {
+                        if (in_array($tracker->revenue_tracker_id, $this->jsRevTrackers)) {
                             $website_name = isset($this->revWebsites[$tracker->revenue_tracker_id]) ? $this->revWebsites[$tracker->revenue_tracker_id] : $tracker->affiliate_id;
-                            $title = 'Revenue from JS Midpath for '. $website_name;
+                            $title = 'Revenue from JS Midpath for '.$website_name;
                         }
 
-                        $sheet->setCellValueExplicit("A$rowNumber", $tracker->affiliate_id.'/'.$tracker->revenue_tracker_id,PHPExcel_Cell_DataType::TYPE_STRING);
-                        $sheet->setCellValueExplicit("B$rowNumber", $tracker->s1,PHPExcel_Cell_DataType::TYPE_STRING);
-                        $sheet->setCellValueExplicit("C$rowNumber", $tracker->s2,PHPExcel_Cell_DataType::TYPE_STRING);
-                        $sheet->setCellValueExplicit("D$rowNumber", $tracker->s3,PHPExcel_Cell_DataType::TYPE_STRING);
-                        $sheet->setCellValueExplicit("E$rowNumber", $tracker->s4,PHPExcel_Cell_DataType::TYPE_STRING);
-                        $sheet->setCellValueExplicit("F$rowNumber", $tracker->s5,PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->setCellValueExplicit("A$rowNumber", $tracker->affiliate_id.'/'.$tracker->revenue_tracker_id, PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->setCellValueExplicit("B$rowNumber", $tracker->s1, PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->setCellValueExplicit("C$rowNumber", $tracker->s2, PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->setCellValueExplicit("D$rowNumber", $tracker->s3, PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->setCellValueExplicit("E$rowNumber", $tracker->s4, PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->setCellValueExplicit("F$rowNumber", $tracker->s5, PHPExcel_Cell_DataType::TYPE_STRING);
                         $sheet->setCellValue("G$rowNumber", $title);
                         $sheet->setCellValue("H$rowNumber", $lead_cell);
                         $sheet->setCellValue("I$rowNumber", $revenue_cell);
@@ -938,10 +943,10 @@ class AffiliateReportExcelGeneratorHelper {
                         $rowNumber++;
 
                         //Next Tracker
-                        $nextTracker = isset($revenueTrackerStatistics[$d+1]) ? $revenueTrackerStatistics[$d+1] : NULL;
-                        $nextTrackerCode = $nextTracker == NULL ? '' : "$nextTracker->affiliate_id:$nextTracker->revenue_tracker_id:$nextTracker->s1:$nextTracker->s2:$nextTracker->s3:$nextTracker->s4;$nextTracker->s5";
+                        $nextTracker = isset($revenueTrackerStatistics[$d + 1]) ? $revenueTrackerStatistics[$d + 1] : null;
+                        $nextTrackerCode = $nextTracker == null ? '' : "$nextTracker->affiliate_id:$nextTracker->revenue_tracker_id:$nextTracker->s1:$nextTracker->s2:$nextTracker->s3:$nextTracker->s4;$nextTracker->s5";
                         $curTrackerCode = "$tracker->affiliate_id:$tracker->revenue_tracker_id:$tracker->s1:$tracker->s2:$tracker->s3:$tracker->s4;$tracker->s5";
-                        if($curTrackerCode != $nextTrackerCode) {
+                        if ($curTrackerCode != $nextTrackerCode) {
                             $end = $rowNumber - 1;
                             $aff_rev_row = $affRevRow[$tracker->affiliate_id][$tracker->revenue_tracker_id];
 
@@ -955,24 +960,24 @@ class AffiliateReportExcelGeneratorHelper {
                             $sheet->setCellValue("L$aff_rev_row", "=(I$aff_rev_row-K$aff_rev_row)/I$aff_rev_row");
                         }
 
-                        $d++;        
+                        $d++;
                     }
                 }
 
                 Log::info('Finalizing Payout Reports');
                 $affiliate_rows = [];
-                foreach($affRow as $aff_id => $aRow) {
+                foreach ($affRow as $aff_id => $aRow) {
                     $aff_rows = [];
-                    foreach($affRevRow[$aff_id] as $rev_id => $rRow) {
+                    foreach ($affRevRow[$aff_id] as $rev_id => $rRow) {
                         $aff_rows[] = '{KK}'.$rRow;
                     }
 
-                    if(count($aff_rows) > 0) {
+                    if (count($aff_rows) > 0) {
                         $aff_str = implode('+', $aff_rows);
-                        $leads = str_replace('{KK}','H',$aff_str);
-                        $revenues = str_replace('{KK}','I',$aff_str);
-                        $clicks = str_replace('{KK}','J',$aff_str);
-                        $wePays = str_replace('{KK}','K',$aff_str);
+                        $leads = str_replace('{KK}', 'H', $aff_str);
+                        $revenues = str_replace('{KK}', 'I', $aff_str);
+                        $clicks = str_replace('{KK}', 'J', $aff_str);
+                        $wePays = str_replace('{KK}', 'K', $aff_str);
                         $sheet->setCellValue("H$aRow", "=$leads");
                         $sheet->setCellValue("I$aRow", "=$revenues");
                         $sheet->setCellValue("J$aRow", "=$clicks");
@@ -983,10 +988,10 @@ class AffiliateReportExcelGeneratorHelper {
                     $affiliate_rows[] = '{KK}'.$aRow;
                 }
                 $affiliate_row_strings = implode('+', $affiliate_rows);
-                $total_lead_cell = str_replace('{KK}','H',$affiliate_row_strings);
-                $total_revenue_cell = str_replace('{KK}','I',$affiliate_row_strings);
-                $total_clicks_cell = str_replace('{KK}','J',$affiliate_row_strings);
-                $total_payout_cell = str_replace('{KK}','K',$affiliate_row_strings);
+                $total_lead_cell = str_replace('{KK}', 'H', $affiliate_row_strings);
+                $total_revenue_cell = str_replace('{KK}', 'I', $affiliate_row_strings);
+                $total_clicks_cell = str_replace('{KK}', 'J', $affiliate_row_strings);
+                $total_payout_cell = str_replace('{KK}', 'K', $affiliate_row_strings);
 
                 //Space
                 $sheet->appendRow(['', '', '', '', '', '', '', '', '', '', '', '']);
@@ -994,24 +999,23 @@ class AffiliateReportExcelGeneratorHelper {
 
                 //TOTAL ROW
                 $sheet->appendRow([
-                    'Total', 
+                    'Total',
                     '',
                     '',
                     '',
                     '',
                     '',
-                    '', 
-                    '='.$total_lead_cell, 
-                    '='.$total_revenue_cell, 
+                    '',
+                    '='.$total_lead_cell,
+                    '='.$total_revenue_cell,
                     '='.$total_clicks_cell,
                     '='.$total_payout_cell,
-                    "=(I$rowNumber - K$rowNumber)/ I$rowNumber"
+                    "=(I$rowNumber - K$rowNumber)/ I$rowNumber",
                 ]);
-                $sheet->cells("A$rowNumber:L$rowNumber", function($cells)
-                {
+                $sheet->cells("A$rowNumber:L$rowNumber", function ($cells) {
                     $cells->setFont([
-                        'size'       => '12',
-                        'bold'       =>  true
+                        'size' => '12',
+                        'bold' => true,
                     ]);
                     // $cells->setAlignment('center');
                     $cells->setValignment('center');
@@ -1020,9 +1024,9 @@ class AffiliateReportExcelGeneratorHelper {
                 $totalRow = $rowNumber;
 
                 //3 decimal
-                $sheet->setColumnFormat(array(
-                    "F$payoutFormatStart:F$rowNumber" => '0.000'
-                ));
+                $sheet->setColumnFormat([
+                    "F$payoutFormatStart:F$rowNumber" => '0.000',
+                ]);
 
                 //Space
                 $sheet->appendRow(['', '', '', '', '', '', '', '', '', '', '', '']);
@@ -1032,15 +1036,14 @@ class AffiliateReportExcelGeneratorHelper {
                 $sheet->appendRow(['Profit']);
                 $rowNumber++;
                 $profitRowStart = $rowNumber;
-                
+
                 $sheet->appendRow(['=I'.$totalRow.' - K'.$totalRow]);
                 $rowNumber++;
                 $profitRowEnd = $rowNumber;
-                $sheet->cells("A$profitRowStart:A$profitRowEnd", function($cells)
-                {
+                $sheet->cells("A$profitRowStart:A$profitRowEnd", function ($cells) {
                     $cells->setFont([
-                        'size'       => '12',
-                        'bold'       =>  true
+                        'size' => '12',
+                        'bold' => true,
                     ]);
                     $cells->setAlignment('center');
                     $cells->setValignment('center');
@@ -1049,18 +1052,17 @@ class AffiliateReportExcelGeneratorHelper {
 
                 //formatting of margin percentage
                 $sheet->setColumnFormat([
-                    "L1:L$rowNumber" => '00.00%'
+                    "L1:L$rowNumber" => '00.00%',
                 ]);
 
                 Log::info('Styling Revenue Reports');
-                foreach($style_total as $st) {
+                foreach ($style_total as $st) {
                     //style the total field
-                    $sheet->cells("G$st:G$st", function($cells)
-                    {
+                    $sheet->cells("G$st:G$st", function ($cells) {
                         // Set font
                         $cells->setFont([
-                            'size'       => '12',
-                            'bold'       =>  true
+                            'size' => '12',
+                            'bold' => true,
                         ]);
 
                         $cells->setAlignment('right');
@@ -1068,15 +1070,14 @@ class AffiliateReportExcelGeneratorHelper {
                     });
 
                     //style the total value field
-                    $sheet->cells("H$st:I$st", function($cells)
-                    {
+                    $sheet->cells("H$st:I$st", function ($cells) {
                         $cells->setAlignment('right');
                         $cells->setValignment('center');
                         $cells->setBackground('#00FF00');
                     });
                 }
 
-                foreach($style_total_rev as $str) {
+                foreach ($style_total_rev as $str) {
                     $begin = $str[0];
                     $end = $str[1];
                     //merge the cells in publisher column
@@ -1088,40 +1089,39 @@ class AffiliateReportExcelGeneratorHelper {
                     $sheet->mergeCells("F$begin:F$end");
 
                     //set the alignment to middle
-                    $sheet->cell('A'.$begin, function($cell) {
+                    $sheet->cell('A'.$begin, function ($cell) {
                         $cell->setAlignment('center');
                         $cell->setValignment('top');
                     });
-                    $sheet->cell('B'.$begin, function($cell) {
+                    $sheet->cell('B'.$begin, function ($cell) {
                         $cell->setAlignment('center');
                         $cell->setValignment('top');
                     });
-                    $sheet->cell('C'.$begin, function($cell) {
+                    $sheet->cell('C'.$begin, function ($cell) {
                         $cell->setAlignment('center');
                         $cell->setValignment('top');
                     });
-                    $sheet->cell('D'.$begin, function($cell) {
+                    $sheet->cell('D'.$begin, function ($cell) {
                         $cell->setAlignment('center');
                         $cell->setValignment('top');
                     });
-                    $sheet->cell('E'.$begin, function($cell) {
+                    $sheet->cell('E'.$begin, function ($cell) {
                         $cell->setAlignment('center');
                         $cell->setValignment('top');
                     });
-                    $sheet->cell('F'.$begin, function($cell) {
+                    $sheet->cell('F'.$begin, function ($cell) {
                         $cell->setAlignment('center');
                         $cell->setValignment('top');
                     });
                 }
 
-                foreach($style_header as $sh) {
+                foreach ($style_header as $sh) {
                     //style the headers
-                    $sheet->cells("A$sh:I$sh", function($cells)
-                    {
+                    $sheet->cells("A$sh:I$sh", function ($cells) {
                         // Set font
                         $cells->setFont([
-                            'size'       => '12',
-                            'bold'       =>  true
+                            'size' => '12',
+                            'bold' => true,
                         ]);
 
                         $cells->setAlignment('center');
@@ -1133,7 +1133,7 @@ class AffiliateReportExcelGeneratorHelper {
             });
 
         })->store($this->ext, storage_path('downloads'));
-        
+
         // $contents = Storage::disk('downloads')->get($this->getFullFileName());
         // if(config('app.type') == 'reports') {
         //     if(Storage::disk('main')->has($this->getFullFileName())) Storage::disk('main')->delete($this->getFullFileName()); //delete existing file
@@ -1155,7 +1155,7 @@ class AffiliateReportExcelGeneratorHelper {
     /**
      * Downloading of generated file.
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     public function download()
@@ -1163,66 +1163,72 @@ class AffiliateReportExcelGeneratorHelper {
         $fileNameToDownload = $this->getFullFileName();
         $filePathToDownload = storage_path('downloads')."/$fileNameToDownload";
 
-        if(file_exists($filePathToDownload))
-        {
-            return response()->download($filePathToDownload, $fileNameToDownload,[
-                'Content-Length: '.filesize($filePathToDownload)
+        if (file_exists($filePathToDownload)) {
+            return response()->download($filePathToDownload, $fileNameToDownload, [
+                'Content-Length: '.filesize($filePathToDownload),
             ]);
-        }
-        else
-        {
+        } else {
             $this->generate();
 
             $fileNameToDownload = $this->getFullFileName();
-        	$filePathToDownload = storage_path('downloads')."/$fileNameToDownload";
-            return response()->download($filePathToDownload, $fileNameToDownload,[
-                'Content-Length: '.filesize($filePathToDownload)
+            $filePathToDownload = storage_path('downloads')."/$fileNameToDownload";
+
+            return response()->download($filePathToDownload, $fileNameToDownload, [
+                'Content-Length: '.filesize($filePathToDownload),
             ]);
         }
     }
 
-    public function getFileName() {
-    	return $this->title;
+    public function getFileName()
+    {
+        return $this->title;
     }
 
-    public function getFullFileName() {
+    public function getFullFileName()
+    {
         return $this->title.'.'.$this->ext;
     }
 
-    public function getTempFileName() {
+    public function getTempFileName()
+    {
         return $this->title.'.prc';
     }
 
-    public function getPathToFile() {
+    public function getPathToFile()
+    {
         return storage_path('downloads').'/'.$this->getFullFileName();
     }
 
-    public function getStatus() {
+    public function getStatus()
+    {
         return $this->status;
     }
 
-    public function noSimilarRunningJob() {
+    public function noSimilarRunningJob()
+    {
         $tempFile = $this->getTempFileName();
-        if(! file_exists(storage_path('downloads')."/$tempFile")) {
+        if (! file_exists(storage_path('downloads')."/$tempFile")) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }
 
-    public function getNSBFullFileName() {
+    public function getNSBFullFileName()
+    {
         return $this->nsb_title.'.'.$this->ext;
     }
 
-    public function getNSBTempFileName() {
+    public function getNSBTempFileName()
+    {
         return $this->nsb_title.'.prc';
     }
 
-    public function deleteTempFile() {
+    public function deleteTempFile()
+    {
         $disk = $this->disk;
-        if(!$this->noSimilarRunningJob()) {
+        if (! $this->noSimilarRunningJob()) {
             Storage::disk($disk)->delete($this->getTempFileName()); //delete templ file
         }
     }
 }
-?>

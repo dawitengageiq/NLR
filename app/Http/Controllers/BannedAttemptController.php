@@ -2,17 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use DB;
-use Log;
 use App\BannedAttempt;
-use Session;
-use Curl\Curl;
 use Carbon\Carbon;
 use Excel;
+use Illuminate\Http\Request;
 
 class BannedAttemptController extends Controller
 {
@@ -20,15 +13,15 @@ class BannedAttemptController extends Controller
     {
         $inputs = $request->all();
         // \Log::info($inputs);
-        session()->put('banned_attempt_input',$inputs);
-        $totalFiltered = BannedAttempt::searchUsers($inputs)->lists('id')->count();
+        session()->put('banned_attempt_input', $inputs);
+        $totalFiltered = BannedAttempt::searchUsers($inputs)->pluck('id')->count();
         $leadUsersData = [];
 
         $start = $inputs['start'];
         $length = $inputs['length'];
 
         $ethnic_groups = config('constants.ETHNIC_GROUPS');
-        
+
         $columns = [
             0 => 'id',
             1 => 'affiliate_id',
@@ -47,25 +40,24 @@ class BannedAttemptController extends Controller
             14 => 'created_at',
         ];
         $leadUsers = BannedAttempt::searchUsers($inputs)
-            ->orderBy($columns[$inputs['order'][0]['column']],$inputs['order'][0]['dir'])
+            ->orderBy($columns[$inputs['order'][0]['column']], $inputs['order'][0]['dir'])
             ->offset($start)->limit($length)
             ->get();
 
-        foreach($leadUsers as $user)
-        {
+        foreach ($leadUsers as $user) {
             $data = [];
 
             //for id html
             $idHTML = '<span id="lead_user-'.$user->id.'-id">'.$user->id.'</span>';
-            array_push($data,$idHTML);
+            array_push($data, $idHTML);
 
             //for affiliate id html
             $affiliateIDHTML = '<span id="lead_user-'.$user->id.'-affiliate_id">'.$user->affiliate_id.'</span>';
-            array_push($data,$affiliateIDHTML);
+            array_push($data, $affiliateIDHTML);
 
             //for revenue tracker id html
             $revenueTrackerIDHTML = '<span id="lead_user-'.$user->id.'-revenue_tracker_id">'.$user->revenue_tracker_id.'</span>';
-            array_push($data,$revenueTrackerIDHTML);
+            array_push($data, $revenueTrackerIDHTML);
 
             $s1HTML = '<span id="lead_user-'.$user->id.'-s1">'.$user->s1.'</span>';
             array_push($data, $s1HTML);
@@ -84,31 +76,31 @@ class BannedAttemptController extends Controller
 
             //for first name html
             $firstNameHTML = '<span id="lead_user-'.$user->id.'-first_name">'.$user->first_name.'</span>';
-            array_push($data,$firstNameHTML);
+            array_push($data, $firstNameHTML);
 
             //for last name HTML
             $lastNameHTML = '<span id="lead_user-'.$user->id.'-last_name">'.$user->last_name.'</span>';
-            array_push($data,$lastNameHTML);
+            array_push($data, $lastNameHTML);
 
             //for email HTML
             $emailHTML = '<span id="lead_user-'.$user->id.'-email">'.$user->email.'</span>';
-            array_push($data,$emailHTML);
+            array_push($data, $emailHTML);
 
             //for zip HTML
             $zipHTML = '<span id="lead_user-'.$user->id.'-zip">'.$user->zip.'</span>';
-            array_push($data,$zipHTML);
+            array_push($data, $zipHTML);
 
             //for state HTML
             $stateHTML = '<span id="lead_user-'.$user->id.'-state">'.$user->state.'</span>';
-            array_push($data,$stateHTML);
+            array_push($data, $stateHTML);
 
             //for source url HTML
             $sourceURLHTML = '<div style="word-wrap: break-word; width: 190px"><span id="lead_user-'.$user->id.'-source_url">'.$user->source_url.'</span></div>';
-            array_push($data,$sourceURLHTML);
+            array_push($data, $sourceURLHTML);
 
             //for created at HTML
             $createdAtHTML = '<span id="lead_user-'.$user->id.'-created_at">'.$user->created_at.'</span>';
-            array_push($data,$createdAtHTML);
+            array_push($data, $createdAtHTML);
 
             //for the additional details
             // $dataBirthDate = 'data-birthdate="'.$user->birthdate.'"';
@@ -134,22 +126,22 @@ class BannedAttemptController extends Controller
 
             $moreDetailHTML = '<button data-id="'.$user->id.'" class="more-details btn btn-primary"><span class="glyphicon glyphicon-list-alt"></span></button>';
             $moreDetailHTML .= '<textarea id="st-'.$user->id.'-md" class="hide">'.json_encode($user).'</textarea>';
-            array_push($data,$moreDetailHTML);
+            array_push($data, $moreDetailHTML);
 
-            array_push($leadUsersData,$data);
+            array_push($leadUsersData, $data);
         }
 
-        $responseData = array(
-            "draw"            => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
-            "recordsTotal"    => BannedAttempt::count(),  // total number of records
-            "recordsFiltered" => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
-            "data"            => $leadUsersData   // total data array,
-        );
+        $responseData = [
+            'draw' => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
+            'recordsTotal' => BannedAttempt::count(),  // total number of records
+            'recordsFiltered' => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
+            'data' => $leadUsersData,   // total data array,
+        ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
-    public function download() 
+    public function download()
     {
         $inputs = session()->get('banned_attempt_input');
 
@@ -174,28 +166,28 @@ class BannedAttemptController extends Controller
         $title = 'BannedAttempt_'.Carbon::now()->toDateString();
 
         $leadUsers = BannedAttempt::searchUsers($inputs)
-            ->orderBy($columns[$inputs['order'][0]['column']],$inputs['order'][0]['dir'])
+            ->orderBy($columns[$inputs['order'][0]['column']], $inputs['order'][0]['dir'])
             ->get();
 
-        Excel::create($title, function($excel) use($title,$leadUsers,$inputs){
-            $excel->sheet($title,function($sheet) use ($title,$leadUsers,$inputs){
+        Excel::create($title, function ($excel) use ($title, $leadUsers) {
+            $excel->sheet($title, function ($sheet) use ($leadUsers) {
 
                 // Set auto size for sheet
                 $sheet->setAutoSize(true);
 
-                $headers = ['ID','Affiliate ID','Revenue Tracker ID','S1','S2','S3','S4','S5','First Name','Last Name','Email','Birthdate','Gender','State','City','Zip','Address1','Address2', 'Phone', 'IP Address', 'Ethnicity','Is Mobile', 'All Inbox Status', 'Response', 'Created At', 'Updated At'];
+                $headers = ['ID', 'Affiliate ID', 'Revenue Tracker ID', 'S1', 'S2', 'S3', 'S4', 'S5', 'First Name', 'Last Name', 'Email', 'Birthdate', 'Gender', 'State', 'City', 'Zip', 'Address1', 'Address2', 'Phone', 'IP Address', 'Ethnicity', 'Is Mobile', 'All Inbox Status', 'Response', 'Created At', 'Updated At'];
 
                 //set up the title header row
                 $sheet->appendRow($headers);
 
                 //style the headers
-                $sheet->cells('A1:Z1', function($cells) {
+                $sheet->cells('A1:Z1', function ($cells) {
 
                     // Set font
-                    $cells->setFont(array(
-                        'size'       => '12',
-                        'bold'       =>  true
-                    ));
+                    $cells->setFont([
+                        'size' => '12',
+                        'bold' => true,
+                    ]);
 
                     $cells->setAlignment('center');
                     $cells->setValignment('center');
@@ -203,11 +195,14 @@ class BannedAttemptController extends Controller
 
                 $ethnic_groups = config('constants.ETHNIC_GROUPS');
 
-                foreach($leadUsers as $user)
-                {
-                    if($user->status == 1) $stat = 'Sent';
-                    else if($user->status == 0) $stat = 'Pending';
-                    else $stat = 'Invalid';
+                foreach ($leadUsers as $user) {
+                    if ($user->status == 1) {
+                        $stat = 'Sent';
+                    } elseif ($user->status == 0) {
+                        $stat = 'Pending';
+                    } else {
+                        $stat = 'Invalid';
+                    }
 
                     $sheet->appendRow([
                         $user->id,
@@ -235,22 +230,19 @@ class BannedAttemptController extends Controller
                         $stat,
                         $user->response,
                         $user->created_at,
-                        $user->updated_at
+                        $user->updated_at,
                     ]);
                 }
             });
-        })->store('xls',storage_path('downloads'));
+        })->store('xls', storage_path('downloads'));
 
         $file_path = storage_path('downloads').'/'.$title.'.xls';
 
-        if(file_exists($file_path))
-        {
-            return response()->download($file_path,$title.'.xls',[
-                'Content-Length: '.filesize($file_path)
+        if (file_exists($file_path)) {
+            return response()->download($file_path, $title.'.xls', [
+                'Content-Length: '.filesize($file_path),
             ]);
-        }
-        else
-        {
+        } else {
             exit('Requested file does not exist on our server!');
         }
     }

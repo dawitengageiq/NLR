@@ -2,23 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use App\LeadArchive;
 use App\LeadDataAdvArchive;
 use App\LeadDataCsvArchive;
 use App\LeadMessageArchive;
 use App\LeadSentResultArchive;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 
 class LeadArchiveController extends Controller
 {
     /**
      * Function of getting the details
      *
-     * @param $lead_id
      * @return \Illuminate\Http\JsonResponse
      */
     public function getLeadDetails($lead_id)
@@ -29,28 +22,24 @@ class LeadArchiveController extends Controller
         $data['leadMessage'] = null;
         $data['leadSentResult'] = null;
 
-        $leadDataADV = LeadDataAdvArchive::select('id','value')->where('id','=',$lead_id)->first();
-        $leadDataCSV = LeadDataCsvArchive::select('id','value')->where('id','=',$lead_id)->first();
-        $leadMessage = LeadMessageArchive::select('id','value')->where('id','=',$lead_id)->first();
-        $leadSentResult = LeadSentResultArchive::select('id','value')->where('id','=',$lead_id)->first();
+        $leadDataADV = LeadDataAdvArchive::select('id', 'value')->where('id', '=', $lead_id)->first();
+        $leadDataCSV = LeadDataCsvArchive::select('id', 'value')->where('id', '=', $lead_id)->first();
+        $leadMessage = LeadMessageArchive::select('id', 'value')->where('id', '=', $lead_id)->first();
+        $leadSentResult = LeadSentResultArchive::select('id', 'value')->where('id', '=', $lead_id)->first();
 
-        if($leadDataADV!==null)
-        {
+        if ($leadDataADV !== null) {
             $data['leadDataADV'] = $leadDataADV;
         }
 
-        if($leadDataCSV!==null)
-        {
+        if ($leadDataCSV !== null) {
             $data['leadDataCSV'] = $leadDataCSV;
         }
 
-        if($leadMessage!==null)
-        {
+        if ($leadMessage !== null) {
             $data['leadMessage'] = $leadMessage;
         }
 
-        if($leadSentResult!==null)
-        {
+        if ($leadSentResult !== null) {
             $data['leadSentResult'] = $leadSentResult;
         }
 

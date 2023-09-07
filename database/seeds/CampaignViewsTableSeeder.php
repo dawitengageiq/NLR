@@ -21,25 +21,21 @@ class CampaignViewsTableSeeder extends Seeder
 
         $faker = Faker\Factory::create();
 
-        for($i = 0; $i < $numberOfDays; $i++)
-        {
+        for ($i = 0; $i < $numberOfDays; $i++) {
             $date = $startDate->addDay();
 
-            foreach ($revTrackerIDs as $revTrackerID)
-            {
-                foreach ($campaignIDs as $campaignID)
-                {
+            foreach ($revTrackerIDs as $revTrackerID) {
+                foreach ($campaignIDs as $campaignID) {
                     $views = $faker->numberBetween(1, 150);
 
-                    for($i = 0; $i < $views; $i++)
-                    {
+                    for ($i = 0; $i < $views; $i++) {
                         $dateTime = $date->addHour($faker->numberBetween(0, 20))->addMinute($faker->numberBetween(0, 45))->toDateTimeString();
 
-                        try{
+                        try {
                             $campaignView = CampaignView::firstOrNew([
                                 'campaign_id' => $campaignID,
                                 // 'affiliate_id' => $revTrackerID,
-                                'session' => 'auto-generated-'.$faker->word.$faker->word.$faker->word.$faker->word
+                                'session' => 'auto-generated-'.$faker->word.$faker->word.$faker->word.$faker->word,
                                 // 'created_at' => $dateTime
                             ]);
 
@@ -47,7 +43,7 @@ class CampaignViewsTableSeeder extends Seeder
                             $campaignView->created_at = $dateTime;
 
                             $campaignView->save();
-                        } catch (Exception $e){
+                        } catch (Exception $e) {
                             Log::info($e);
                         }
                     }

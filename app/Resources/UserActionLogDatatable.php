@@ -2,13 +2,8 @@
 
 namespace App\Resources;
 
-use \Illuminate\Http\Request;
-
-use App\Http\Services\Helpers\Reflection;
-
 class UserActionLogDatatable extends Resource
 {
-
     /**
      * Transform the resource into an array.
      *
@@ -35,7 +30,7 @@ class UserActionLogDatatable extends Resource
         return [
             'draw' => $request->get('draw'),
             'recordsTotal' => $request->get('count'),
-            'recordsFiltered' => $request->get('count')
+            'recordsFiltered' => $request->get('count'),
         ];
     }
 }

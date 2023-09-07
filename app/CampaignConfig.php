@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class CampaignConfig extends Model
 {
     protected $connection;
+
     protected $table = 'campaign_configs';
 
     protected $fillable = [
-    	'id',
+        'id',
         'post_url',
         'post_header',
         'post_data',
@@ -35,14 +36,15 @@ class CampaignConfig extends Model
         'email_body',
     ];
 
-    public function campaign(){
-        return $this->belongsTo('App\Campaign', 'id', 'id');
+    public function campaign()
+    {
+        return $this->belongsTo(\App\Campaign::class, 'id', 'id');
     }
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') == 'reports') {
+        if (config('app.type') == 'reports') {
             $this->connection = 'secondary';
         }
     }

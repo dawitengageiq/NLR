@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Console\Commands;
+
 use App\Jobs\Reports\HandPReports;
-use Illuminate\Console\Command;
 use Carbon\Carbon;
-use Log;
+use Illuminate\Console\Command;
 
 class GenerateHostedAndPostedAffiliateReports extends Command
 {
@@ -26,7 +26,6 @@ class GenerateHostedAndPostedAffiliateReports extends Command
 
     /**
      * Create a new command instance.
-     *
      */
     public function __construct()
     {
@@ -45,8 +44,7 @@ class GenerateHostedAndPostedAffiliateReports extends Command
         $dateYesterdayStr = $this->option('from');
         $dateNowStr = $this->option('to');
 
-        if(empty($dateYesterdayStr) || empty($dateNowStr))
-        {
+        if (empty($dateYesterdayStr) || empty($dateNowStr)) {
             $dateYesterdayStr = Carbon::now()->subDay()->toDateString();
             //$dateNowStr = Carbon::now()->toDateString();
             $dateNowStr = $dateYesterdayStr;
@@ -55,7 +53,7 @@ class GenerateHostedAndPostedAffiliateReports extends Command
         $this->info("$dateYesterdayStr - $dateNowStr");
 
         //execute the job here
-        $job = (new HandPReports($dateYesterdayStr,$dateNowStr))->delay(5);
+        $job = (new HandPReports($dateYesterdayStr, $dateNowStr))->delay(5);
         dispatch($job);
 
         $this->info('Generate H and P Report is being processed results will be available soon!');

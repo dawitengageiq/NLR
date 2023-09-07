@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AlterCampaignViewsTableAddUnique extends Migration
 {
@@ -13,7 +13,7 @@ class AlterCampaignViewsTableAddUnique extends Migration
     public function up()
     {
         Schema::table('campaign_views', function (Blueprint $table) {
-            $table->unique(['campaign_id','session'],'campaign_views_campaign_id_session_unique_key');
+            $table->unique(['campaign_id', 'session'], 'campaign_views_campaign_id_session_unique_key');
         });
     }
 

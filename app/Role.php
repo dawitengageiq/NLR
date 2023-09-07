@@ -20,11 +20,11 @@ class Role extends Model
      */
     protected $fillable = [
         'name',
-        'description'
+        'description',
     ];
 
     public function actions()
     {
-        return $this->belongsToMany(Action::class)->withPivot('id','role_id','action_id','permitted');
+        return $this->belongsToMany(Action::class)->withPivot('id', 'role_id', 'action_id', 'permitted');
     }
 }

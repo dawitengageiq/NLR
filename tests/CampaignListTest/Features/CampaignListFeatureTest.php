@@ -1,15 +1,13 @@
 <?php
+
 namespace tests\CampaignListFeatureTest\Features;
 
-use Illuminate\Support\Facades\Queue;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Jobs\SaveLeadUser;
 
 class CampaignListFeatureTest extends TestCase
 {
     use SendLeadsTrait;
+
     /**
      * @test
      */
@@ -17,6 +15,7 @@ class CampaignListFeatureTest extends TestCase
     {
         $this->assertTrue(class_exists('\\App\\Http\\Controllers\\Test\\CampaignListTestController'));
     }
+
     /**
      * @test
      */
@@ -26,6 +25,7 @@ class CampaignListFeatureTest extends TestCase
         $this->expectsJobs(SaveLeadUser::class);
         dispatch(new SaveLeadUser($this->results));
     }
+
     /**
      * @test
      */
@@ -33,16 +33,17 @@ class CampaignListFeatureTest extends TestCase
     {
         $response = new stdClass;
         $campaign = $this->getMockBuilder(CampaignListTestController::class)
-                ->disableOriginalConstructor()
-                ->setMethods(array('registerUserAndGetCampaigns'))
-                ->getMock();
+            ->disableOriginalConstructor()
+            ->setMethods(['registerUserAndGetCampaigns'])
+            ->getMock();
         $campaign->expects($this->once())
-                        ->method('registerUserAndGetCampaigns')
-                        ->will($this->returnValue($response));
+            ->method('registerUserAndGetCampaigns')
+            ->will($this->returnValue($response));
         $campaign->registerUserAndGetCampaigns();
         $revenueTracker = RevenueTracker::pathType();
         $this->assertSame(2, $revenueTracker);
     }
+
     /**
      * @test
      */
@@ -51,12 +52,12 @@ class CampaignListFeatureTest extends TestCase
         $response = new stdClass();
         $this->getLeadsForValidator();
         $campaign = $this->getMockBuilder(CampaignListTestController::class)
-                ->disableOriginalConstructor()
-                ->setMethods(array('filterCampaigns'))
-                ->getMock();
+            ->disableOriginalConstructor()
+            ->setMethods(['filterCampaigns'])
+            ->getMock();
         $campaign->expects($this->once())
-                    ->method('filterCampaigns')
-                    ->will($this->returnValue($response));
+            ->method('filterCampaigns')
+            ->will($this->returnValue($response));
         $campaign->filterCampaigns($this->results);
     }
 }

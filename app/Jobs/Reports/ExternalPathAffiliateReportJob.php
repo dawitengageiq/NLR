@@ -2,28 +2,30 @@
 
 namespace App\Jobs\Reports;
 
-use App\Jobs\Job;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use App\ExternalPathAffiliateReport;
-use App\Lead;
-use Carbon\Carbon;
-use Log;
-use DB;
-use Illuminate\Support\Facades\Mail;
-use App\LeadUser;
-use Curl\Curl;
 use App\Campaign;
+use App\ExternalPathAffiliateReport;
+use App\Jobs\Job;
+use App\Lead;
+use App\LeadUser;
+use Carbon\Carbon;
+use Curl\Curl;
+use DB;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Mail;
+use Log;
 
-class ExternalPathAffiliateReportJob extends Job implements SelfHandling, ShouldQueue
+class ExternalPathAffiliateReportJob extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
     protected $dateFromStr;
+
     protected $dateToStr;
+
     protected $affiliates;
+
     protected $campaigns;
 
     /**
@@ -44,15 +46,14 @@ class ExternalPathAffiliateReportJob extends Job implements SelfHandling, Should
      */
     public function handle()
     {
-        if ($this->attempts() > 1)
-        {
+        if ($this->attempts() > 1) {
             return;
         }
 
         $startLog = Carbon::now();
         // Log::info(config('app.type'));
         Log::info('Generating External Path Affiliate Reports...');
-        Log::info('Date: ' . $this->dateFromStr .' - ' . $this->dateToStr);
+        Log::info('Date: '.$this->dateFromStr.' - '.$this->dateToStr);
         //2 = internal type
         $params['type'] = 2;
 
@@ -62,23 +63,23 @@ class ExternalPathAffiliateReportJob extends Job implements SelfHandling, Should
         //get the leads revenue per affiliate
         \DB::enableQueryLog();
         \DB::connection('secondary')->enableQueryLog();
-        $handpRevenues = Lead::select('leads.affiliate_id', 'leads.campaign_id', 's1','s2','s3','s4','s5', DB::raw('COUNT(leads.id) as lead_count'), DB::raw('SUM(leads.received) as total_received'), DB::raw('SUM(leads.payout) as total_payout'), DB::raw('DATE(leads.created_at) as created_at'))
-            ->join('affiliates','leads.affiliate_id','=','affiliates.id')
+        $handpRevenues = Lead::select('leads.affiliate_id', 'leads.campaign_id', 's1', 's2', 's3', 's4', 's5', DB::raw('COUNT(leads.id) as lead_count'), DB::raw('SUM(leads.received) as total_received'), DB::raw('SUM(leads.payout) as total_payout'), DB::raw('DATE(leads.created_at) as created_at'))
+            ->join('affiliates', 'leads.affiliate_id', '=', 'affiliates.id')
             ->where('leads.lead_status', '=', 1)
             ->where('leads.s5', '=', 'EXTPATH')
-            ->where('affiliates.type','=',2)
-            ->where(function($query) use ($dateFromStr, $dateToStr){
+            ->where('affiliates.type', '=', 2)
+            ->where(function ($query) use ($dateFromStr, $dateToStr) {
                 $query->whereRaw('DATE(leads.created_at) >= DATE(?) and DATE(leads.created_at) <= DATE(?)',
                     [
                         $dateFromStr,
-                        $dateToStr
+                        $dateToStr,
                     ]);
             })
             ->groupBy('leads.affiliate_id', 'leads.campaign_id', 'leads.s1', 'leads.s2', 'leads.s3', 'leads.s3', 'leads.s4', 'leads.s5', DB::raw('DATE(leads.created_at)'))->get();
 
         //Get Affiliate IDs that run the external path
-        $this->affiliates = LeadUser::where('affiliate_id','>', 0)->where('s5', 'EXTPATH')->whereBetween('created_at', [$this->dateFromStr.' 00:00:00', $this->dateToStr.' 23:59:59'])->groupBy('affiliate_id')->lists('affiliate_id')->toArray();
-        $this->campaigns = Campaign::where('linkout_offer_id', '>', 0)->lists('id', 'linkout_offer_id')->toArray();
+        $this->affiliates = LeadUser::where('affiliate_id', '>', 0)->where('s5', 'EXTPATH')->whereBetween('created_at', [$this->dateFromStr.' 00:00:00', $this->dateToStr.' 23:59:59'])->groupBy('affiliate_id')->pluck('affiliate_id')->toArray();
+        $this->campaigns = Campaign::where('linkout_offer_id', '>', 0)->pluck('id', 'linkout_offer_id')->toArray();
 
         Log::info('Main');
         Log::info(DB::getQueryLog());
@@ -86,8 +87,7 @@ class ExternalPathAffiliateReportJob extends Job implements SelfHandling, Should
         Log::info(DB::connection('secondary')->getQueryLog());
 
         // Log::info($handpRevenues);
-        foreach($handpRevenues as $handpRevenue)
-        {
+        foreach ($handpRevenues as $handpRevenue) {
             // Log::info($handpRevenue);
             $report = ExternalPathAffiliateReport::firstOrNew([
                 'affiliate_id' => $handpRevenue->affiliate_id,
@@ -97,7 +97,7 @@ class ExternalPathAffiliateReportJob extends Job implements SelfHandling, Should
                 's3' => $handpRevenue->s3,
                 's4' => $handpRevenue->s4,
                 's5' => $handpRevenue->s5,
-                'created_at' => Carbon::parse($handpRevenue->created_at)->toDateString()
+                'created_at' => Carbon::parse($handpRevenue->created_at)->toDateString(),
             ]);
 
             $report->lead_count = $handpRevenue->lead_count;
@@ -117,16 +117,17 @@ class ExternalPathAffiliateReportJob extends Job implements SelfHandling, Should
         //send email to Burt to notify that Internal Iframe Affiliate Report Queue was successfully finished
         Mail::send('emails.affiliate_report_execution_email',
             ['startDate' => $this->dateFromStr, 'endDate' => $this->dateToStr, 'executionDuration' => $diffInHours],
-            function ($m) use($emailNotificationRecipient){
-            $m->from('ariel@engageiq.com', 'Ariel Magbanua');
-            $m->to($emailNotificationRecipient, 'Marwil Burton')->subject('External Path Affiliate Reports Job Queue Successfully Executed!');
-        });
+            function ($m) use ($emailNotificationRecipient) {
+                $m->from('ariel@engageiq.com', 'Ariel Magbanua');
+                $m->to($emailNotificationRecipient, 'Marwil Burton')->subject('External Path Affiliate Reports Job Queue Successfully Executed!');
+            });
         Log::info('Generating External Path Affiliate Reports DONE');
     }
 
-    public function getLinkOutRevenue() {
+    public function getLinkOutRevenue()
+    {
         // $this->affiliates = [18732];
-        foreach($this->affiliates as $affiliate_id) {
+        foreach ($this->affiliates as $affiliate_id) {
             $cakeBaseClicksURL = config('constants.CAKE_CLICKS_REPORTS_API_V12_UNIQUE');
             $cakeBaseConversionsURL = config('constants.CAKE_CONVERSIONS_API_V15');
             $cr_data = [];
@@ -134,34 +135,29 @@ class ExternalPathAffiliateReportJob extends Job implements SelfHandling, Should
             $rowLimit = 2500;
             $totalRows = 0;
             //Clicks
-            while(true)
-            {
+            while (true) {
                 // if($rowStart == $rowLimit) break; //forchecking only
 
                 $cakeurl = $cakeBaseClicksURL;
-                $cakeurl = str_replace('start_at_row=0', "start_at_row=". $rowStart, $cakeurl);
+                $cakeurl = str_replace('start_at_row=0', 'start_at_row='.$rowStart, $cakeurl);
                 $cakeurl = str_replace('row_limit=0', "row_limit=$rowLimit", $cakeurl);
 
-                $response = $this->getCakeXML($cakeurl,$affiliate_id);
+                $response = $this->getCakeXML($cakeurl, $affiliate_id);
 
                 $totalRows = $response['row_count'];
-                if($totalRows == 0)
-                {
+                if ($totalRows == 0) {
                     Log::info('No Click Data');
                     break;
-                }
-                else
-                {
+                } else {
                     $x = $rowStart - 1;
                     $currentRows = $totalRows - $x;
-                    if($currentRows <= 1) {
+                    if ($currentRows <= 1) {
                         $clicks[] = $response['clicks']['click'];
-                    }else {
+                    } else {
                         $clicks = $response['clicks']['click'];
                     }
 
-                    foreach ($clicks as $click)
-                    {
+                    foreach ($clicks as $click) {
                         $s1 = is_array($click['sub_id_1']) ? '' : $click['sub_id_1'];
                         $s2 = is_array($click['sub_id_2']) ? '' : $click['sub_id_2'];
                         $s3 = is_array($click['sub_id_3']) ? '' : $click['sub_id_3'];
@@ -169,10 +165,10 @@ class ExternalPathAffiliateReportJob extends Job implements SelfHandling, Should
                         $s5 = is_array($click['sub_id_5']) ? '' : $click['sub_id_5'];
 
                         $offer_id = $click['site_offer']['site_offer_id'];
-                        if(!isset($cr_data[$s1][$s2][$s3][$s4][$s5][$offer_id])) {
+                        if (! isset($cr_data[$s1][$s2][$s3][$s4][$s5][$offer_id])) {
                             $cr_data[$s1][$s2][$s3][$s4][$s5][$offer_id] = [
                                 'r' => 0,
-                                'p' => 0
+                                'p' => 0,
                             ];
                         }
                         $cr_data[$s1][$s2][$s3][$s4][$s5][$offer_id]['r'] += isset($click['received']['amount']) ? $click['received']['amount'] : 0;
@@ -182,7 +178,9 @@ class ExternalPathAffiliateReportJob extends Job implements SelfHandling, Should
 
                 $rowStart += $rowLimit;
 
-                if($rowStart > $totalRows) break;
+                if ($rowStart > $totalRows) {
+                    break;
+                }
             }
 
             //Conversions
@@ -191,29 +189,24 @@ class ExternalPathAffiliateReportJob extends Job implements SelfHandling, Should
             $totalRows = 0;
             $nextDay = Carbon::parse($this->dateFromStr)->addDay()->toDateString();
 
-            while(true)
-            {
+            while (true) {
                 $cakeurl = $cakeBaseConversionsURL;
-                $cakeurl = str_replace('start_at_row=0', "start_at_row=". $rowStart, $cakeurl);
+                $cakeurl = str_replace('start_at_row=0', 'start_at_row='.$rowStart, $cakeurl);
                 $cakeurl = str_replace('row_limit=0', "row_limit=$rowLimit", $cakeurl);
                 $cakeurl .= "&source_affiliate_id=$affiliate_id&start_date=$this->dateFromStr&end_date=$nextDay";
 
                 $response = $this->getCurlResponse($cakeurl);
                 $totalRows = $response['row_count'];
-                if($totalRows == 0)
-                {
+                if ($totalRows == 0) {
                     Log::info('No Conversion Data');
                     break;
-                }
-                else
-                {
-                    if($totalRows <= 1) {
+                } else {
+                    if ($totalRows <= 1) {
                         $conversions[] = $response['event_conversions']['event_conversion'];
-                    }else {
+                    } else {
                         $conversions = $response['event_conversions']['event_conversion'];
                     }
-                    foreach ($conversions as $conv)
-                    {
+                    foreach ($conversions as $conv) {
                         $s1 = is_array($conv['sub_id_1']) ? '' : $conv['sub_id_1'];
                         $s2 = is_array($conv['sub_id_2']) ? '' : $conv['sub_id_2'];
                         $s3 = is_array($conv['sub_id_3']) ? '' : $conv['sub_id_3'];
@@ -221,10 +214,10 @@ class ExternalPathAffiliateReportJob extends Job implements SelfHandling, Should
                         $s5 = is_array($conv['sub_id_5']) ? '' : $conv['sub_id_5'];
 
                         $offer_id = $conv['site_offer']['site_offer_id'];
-                        if(!isset($cr_data[$s1][$s2][$s3][$s4][$s5][$offer_id])) {
+                        if (! isset($cr_data[$s1][$s2][$s3][$s4][$s5][$offer_id])) {
                             $cr_data[$s1][$s2][$s3][$s4][$s5][$offer_id] = [
                                 'r' => 0,
-                                'p' => 0
+                                'p' => 0,
                             ];
                         }
                         $cr_data[$s1][$s2][$s3][$s4][$s5][$offer_id]['r'] += isset($conv['received']['amount']) ? $conv['received']['amount'] : 0;
@@ -234,19 +227,21 @@ class ExternalPathAffiliateReportJob extends Job implements SelfHandling, Should
 
                 $rowStart += $rowLimit;
 
-                if($rowStart > $totalRows) break;
+                if ($rowStart > $totalRows) {
+                    break;
+                }
             }
 
             $rows = [];
 
-            foreach($cr_data as $s1 => $s1d) {
-                foreach($s1d as $s2 => $s2d) {
-                    foreach($s2d as $s3 => $s3d) {
-                        foreach($s3d as $s4 => $s4d) {
-                            foreach($s4d as $s5 => $s5d) {
+            foreach ($cr_data as $s1 => $s1d) {
+                foreach ($s1d as $s2 => $s2d) {
+                    foreach ($s2d as $s3 => $s3d) {
+                        foreach ($s3d as $s4 => $s4d) {
+                            foreach ($s4d as $s5 => $s5d) {
                                 //Cake Revenue
-                                foreach($s5d as $offer_id => $data) {
-                                    
+                                foreach ($s5d as $offer_id => $data) {
+
                                     $report = ExternalPathAffiliateReport::firstOrNew([
                                         'affiliate_id' => $affiliate_id,
                                         'campaign_id' => isset($this->campaigns[$offer_id]) ? $this->campaigns[$offer_id] : 0,
@@ -255,7 +250,7 @@ class ExternalPathAffiliateReportJob extends Job implements SelfHandling, Should
                                         's3' => $s3,
                                         's4' => $s4,
                                         's5' => $s5,
-                                        'created_at' => $this->dateFromStr
+                                        'created_at' => $this->dateFromStr,
                                     ]);
 
                                     $report->lead_count = 0;
@@ -272,7 +267,7 @@ class ExternalPathAffiliateReportJob extends Job implements SelfHandling, Should
     }
 
     /*Helpers*/
-    public function getCakeXML($cakeBaseClicksURL ,$revenueTracker)
+    public function getCakeXML($cakeBaseClicksURL, $revenueTracker)
     {
         $nextDay = Carbon::parse($this->dateFromStr)->addDay()->toDateString();
         $cakeClickURL = $cakeBaseClicksURL."&affiliate_id=$revenueTracker&campaign_id=0&start_date=$this->dateFromStr&end_date=$nextDay";
@@ -281,39 +276,32 @@ class ExternalPathAffiliateReportJob extends Job implements SelfHandling, Should
         $callCounter = 0;
         $response = null;
 
-        do
-        {
+        do {
             $curl = new Curl();
             $curl->get($cakeClickURL);
 
-            if($curl->error)
-            {
-                Log::info("getCakeClicks API Error!");
+            if ($curl->error) {
+                Log::info('getCakeClicks API Error!');
                 Log::info($curl->error_message);
-                ++$callCounter;
-            }
-            else
-            {
-                try{
+                $callCounter++;
+            } else {
+                try {
 
                     $xml = simplexml_load_string($curl->response);
                     $json = json_encode($xml);
-                    $response = json_decode($json,TRUE);
-                }
-                catch(Exception $e)
-                {
+                    $response = json_decode($json, true);
+                } catch (Exception $e) {
                     Log::info($e->getCode());
                     Log::info($e->getMessage());
-                    ++$callCounter;
+                    $callCounter++;
 
                     //stop the process when budget breached
-                    if($callCounter==10)
-                    {
+                    if ($callCounter == 10) {
                         Log::info('getCakeClicks API call limit reached!');
                         $this->errors[] = [
                             'Area' => 'CURL API call limit reached!',
                             'Info' => $cakeClickURL,
-                            'MSG' => $e->getMessage()
+                            'MSG' => $e->getMessage(),
                         ];
                         $curl->close();
                         break;
@@ -324,20 +312,20 @@ class ExternalPathAffiliateReportJob extends Job implements SelfHandling, Should
             }
 
             //stop the process when budget breached
-            if($callCounter==10)
-            {
+            if ($callCounter == 10) {
                 Log::info('getCakeClicks API call limit reached!');
                 $this->errors[] = [
                     'Area' => 'CURL API call limit reached!',
                     'Info' => $cakeClickURL,
-                    'MSG' => $curl->error()
+                    'MSG' => $curl->error(),
                 ];
                 $curl->close();
                 break;
             }
 
-        } while($curl->error);
+        } while ($curl->error);
         $curl->close();
+
         return $response;
     }
 
@@ -348,46 +336,39 @@ class ExternalPathAffiliateReportJob extends Job implements SelfHandling, Should
         $callCounter = 0;
         $response = null;
 
-        do
-        {
+        do {
             $curl = new Curl();
             $curl->get($url);
 
-            if($curl->error)
-            {
-                Log::info("getCakeClicks API Error!");
+            if ($curl->error) {
+                Log::info('getCakeClicks API Error!');
                 Log::info($curl->error_message);
-                ++$callCounter;
-            }
-            else
-            {
-                try{
+                $callCounter++;
+            } else {
+                try {
 
-                    if($response_type == 'json') {
+                    if ($response_type == 'json') {
                         $json = $curl->response;
-                    }else if($response_type == 'LIBXML_NOWARNING'){
-                        $xml = simplexml_load_string($curl->response,'SimpleXMLElement', LIBXML_NOWARNING);
+                    } elseif ($response_type == 'LIBXML_NOWARNING') {
+                        $xml = simplexml_load_string($curl->response, 'SimpleXMLElement', LIBXML_NOWARNING);
                         $json = json_encode($xml);
-                    }else{
+                    } else {
                         $xml = simplexml_load_string($curl->response);
                         $json = json_encode($xml);
                     }
-                    $response = json_decode($json,TRUE);
-                }
-                catch(Exception $e)
-                {
+                    $response = json_decode($json, true);
+                } catch (Exception $e) {
                     Log::info($e->getCode());
                     Log::info($e->getMessage());
-                    ++$callCounter;
+                    $callCounter++;
 
                     //stop the process when budget breached
-                    if($callCounter==10)
-                    {
+                    if ($callCounter == 10) {
                         Log::info('getCakeClicks API call limit reached!');
                         $this->errors[] = [
                             'Area' => 'CURL API call limit reached!',
                             'Info' => $url,
-                            'MSG' => $e->getMessage()
+                            'MSG' => $e->getMessage(),
                         ];
                         $curl->close();
                         break;
@@ -398,21 +379,21 @@ class ExternalPathAffiliateReportJob extends Job implements SelfHandling, Should
             }
 
             //stop the process when budget breached
-            if($callCounter==10)
-            {
+            if ($callCounter == 10) {
                 Log::info('getCakeClicks API call limit reached!');
                 $this->errors[] = [
                     'Area' => 'CURL API call limit reached!',
                     'Info' => $url,
-                    'MSG' => ''
+                    'MSG' => '',
                 ];
                 $curl->close();
                 break;
             }
 
-        } while($curl->error);
+        } while ($curl->error);
 
         $curl->close();
+
         return $response;
     }
 }

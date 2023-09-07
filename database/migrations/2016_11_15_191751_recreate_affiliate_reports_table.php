@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class RecreateAffiliateReportsTable extends Migration
 {
@@ -12,8 +12,7 @@ class RecreateAffiliateReportsTable extends Migration
      */
     public function up()
     {
-        if(Schema::hasTable('affiliate_reports'))
-        {
+        if (Schema::hasTable('affiliate_reports')) {
             //drop the existing table
             Schema::table('affiliate_reports', function (Blueprint $table) {
                 Schema::drop('affiliate_reports');

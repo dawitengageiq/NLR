@@ -25,11 +25,11 @@
 		  <div class="modal-dialog modal-sm">
 		    <div class="modal-content">
 		    	<?php
-			  		$attributes = array(
+			  		$attributes = [
 			  			'url' 					=> 'approve_affiliate_campaign_request',
 			  			'class'					=> 'confirmation-form',
 			  			'data-process' 			=> 'approve_affiliate_campaign_request'
-			  		);
+			  		];
 			  	?>
 				{!! Form::open($attributes) !!}
 				{!! Form::hidden('id', '',array('id' => 'affiliate_campaign_request_id','class' => 'this_field')) !!}

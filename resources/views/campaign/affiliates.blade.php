@@ -15,12 +15,12 @@
 
 		<!-- Add AFFILIATE FORM Start -->
 		<?php
-	  		$attributes = array(
+	  		$attributes = [
 	  			'url' 					=> 'add_campaign_affiliate',
 	  			'class'					=> 'this_form',
 	  			'data-confirmation' 	=> '',
 	  			'data-process' 			=> 'add_campaign_affiliate'
-	  		);
+	  		];
 	  	?>
 		{!! Form::open($attributes) !!}
 			{!! Form::hidden('this_campaign', '',array('id' => 'this_campaign','class' => 'this_field this_campaign')) !!}
@@ -65,12 +65,12 @@
 
 	<!-- Edit Campaign Affiliate FORM Start -->
 	<?php
-  		$attributes = array(
+  		$attributes = [
   			'url' 					=> 'edit_campaign_affiliate',
   			'class'					=> 'this_form',
   			'data-confirmation' 	=> 'Are you sure you want to edit this?',
   			'data-process' 			=> 'edit_campaign_affiliate'
-  		);
+  		];
   	?>
 	{!! Form::open($attributes) !!}
 		{!! Form::hidden('this_campaign', '',array('id' => 'this_campaign','class' => 'this_field this_campaign')) !!}

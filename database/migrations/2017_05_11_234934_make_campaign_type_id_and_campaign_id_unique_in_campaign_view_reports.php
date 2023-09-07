@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class MakeCampaignTypeIdAndCampaignIdUniqueInCampaignViewReports extends Migration
 {
@@ -13,7 +13,7 @@ class MakeCampaignTypeIdAndCampaignIdUniqueInCampaignViewReports extends Migrati
     public function up()
     {
         Schema::table('campaign_view_reports', function (Blueprint $table) {
-            $table->unique(['campaign_type_id','campaign_id'],'campaign_type_id_campaign_id_unique_key');
+            $table->unique(['campaign_type_id', 'campaign_id'], 'campaign_type_id_campaign_id_unique_key');
         });
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Jobs\ConsolidatedGraph\Utils\Traits;
 
 trait RevenueTrackerCakeStatistic
@@ -7,15 +8,18 @@ trait RevenueTrackerCakeStatistic
      * Process revenue tracker cake statistics.
      * Over all payout of specific revenue tracker.
      *
-     * @param \App\RevenueTrackerCakeStatistic|Empty $leads
+     * @param  \App\RevenueTrackerCakeStatistic|Empty  $leads
      * @return void
      */
     protected function processRevTrackerCakeStats($revTrackerCakeStats)
     {
-        if(!$revTrackerCakeStats instanceof \App\RevenueTrackerCakeStatistic) return;
+        if (! $revTrackerCakeStats instanceof \App\RevenueTrackerCakeStatistic) {
+            return;
+        }
 
-        if($revTrackerCakeStats->payout) $this->clicksRegStats['payout'] = $revTrackerCakeStats->payout;
+        if ($revTrackerCakeStats->payout) {
+            $this->clicksRegStats['payout'] = $revTrackerCakeStats->payout;
+        }
 
-        return;
     }
 }

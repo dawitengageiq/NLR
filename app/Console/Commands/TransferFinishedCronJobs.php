@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Console\Commands;
+
 use Carbon\Carbon;
-use Illuminate\Console\Command;
 use Curl\Curl;
-use Log;
+use Illuminate\Console\Command;
 
 class TransferFinishedCronJobs extends Command
 {
@@ -24,7 +24,6 @@ class TransferFinishedCronJobs extends Command
 
     /**
      * Create a new command instance.
-     *
      */
     public function __construct()
     {

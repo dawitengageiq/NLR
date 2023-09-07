@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AddRateToCampaignsTable extends Migration
 {
@@ -12,7 +12,7 @@ class AddRateToCampaignsTable extends Migration
      */
     public function up()
     {
-         Schema::table('campaigns', function (Blueprint $table) {
+        Schema::table('campaigns', function (Blueprint $table) {
             $table->string('rate', 100)->nullable();
         });
 

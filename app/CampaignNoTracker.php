@@ -2,8 +2,8 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 
 class CampaignNoTracker extends Model
 {
@@ -13,12 +13,13 @@ class CampaignNoTracker extends Model
         'campaign_id',
         'email',
         'count',
-        'last_session'
+        'last_session',
     ];
 
-    public function scopeWithDaysOld($query,$numberOfDays)
+    public function scopeWithDaysOld($query, $numberOfDays)
     {
         $dateNow = Carbon::now()->toDateString();
+
         return $query->whereRaw("DATEDIFF(DATE('$dateNow'),DATE(updated_at)) > $numberOfDays");
     }
 }

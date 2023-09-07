@@ -2,40 +2,41 @@
 
 namespace App\Http\Services\Contracts;
 
-Interface CampaignListContract
+interface CampaignListContract
 {
     /**
      * Set user details
      *
-     * @param array $userDetails
+     * @param  array  $userDetails
+     *
      * @var array $userDetails
      */
-    public function setUserDetails ($userDetails);
+    public function setUserDetails($userDetails);
 
     /**
      * Set the campaign type order, will be used in campaign query
      *
-     * @param array $campaign_type
+     * @param  array  $campaign_type
+     *
      * @var array $campaign_type
      */
     public function setTypeOrdering($typeOrdering);
 
     /**
      * Query campaigns with relationship
-     *
      */
-    public function getCampaigns ($affiliateID);
+    public function getCampaigns($affiliateID);
 
     /**
      * Get the  Qualified Campaigns
      *
-     * @param bolean $filter
-     * @param integer $path_type
-     * @param integer $revenue_tracker_id
+     * @param  bolean  $filter
+     * @param  int  $path_type
+     * @param  int  $revenue_tracker_id
      * @return array
      */
-    public function filterCampaigns (
+    public function filterCampaigns(
         $filter,
-        $pathType ,
+        $pathType,
         $revenueRrackerID);
 }

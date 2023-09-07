@@ -2,12 +2,13 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use DB;
+use Illuminate\Database\Eloquent\Model;
 
 class RevenueTrackerWebsiteViewStatistic extends Model
 {
     protected $connection;
+
     /**
      * The database table used by the model.
      *
@@ -26,15 +27,15 @@ class RevenueTrackerWebsiteViewStatistic extends Model
         'website_campaign_id',
         'passovers',
         'payout',
-        'created_at'
+        'created_at',
     ];
 
     public $timestamps = false;
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') != 'reports') {
+        if (config('app.type') != 'reports') {
             $this->connection = 'secondary';
         }
     }
@@ -48,30 +49,23 @@ class RevenueTrackerWebsiteViewStatistic extends Model
             'leads',
             'revenue',
             'we_get',
-            'margin'
+            'margin',
         ];
 
         $date = [];
 
-        if(isset($params['period']))
-        {
-            if($params['period']=='none' && (!empty($params['start_date']) && !empty($params['end_date'])))
-            {
+        if (isset($params['period'])) {
+            if ($params['period'] == 'none' && (! empty($params['start_date']) && ! empty($params['end_date']))) {
                 //use the date range
                 $date['from'] = $params['start_date'];
                 $date['to'] = $params['end_date'];
-            }
-            else
-            {
+            } else {
                 $date = AffiliateReport::getSnapShotPeriodRange($params['period']);
             }
-        }
-        else
-        {
+        } else {
             $date = AffiliateReport::getSnapShotPeriodRange('none');
 
-            if(!empty($params['start_date']) && !empty($params['end_date']))
-            {
+            if (! empty($params['start_date']) && ! empty($params['end_date'])) {
                 $date['from'] = $params['start_date'];
                 $date['to'] = $params['end_date'];
             }
@@ -84,18 +78,17 @@ class RevenueTrackerWebsiteViewStatistic extends Model
         $revenueSubQuery = "(SELECT SUM(revenue) FROM iframe_affiliate_reports WHERE EXISTS(SELECT 1 FROM affiliate_revenue_trackers WHERE affiliate_revenue_trackers.affiliate_id = iframe_affiliate_reports.affiliate_id AND affiliate_revenue_trackers.revenue_tracker_id = iframe_affiliate_reports.revenue_tracker_id) AND iframe_affiliate_reports.affiliate_id = revenue_tracker_webview_statistics.affiliate_id AND (iframe_affiliate_reports.created_at>='$dateFrom' AND iframe_affiliate_reports.created_at<='$dateTo'))";
 
         $query->select(
-                'revenue_tracker_webview_statistics.affiliate_id',
-                'revenue_tracker_webview_statistics.revenue_tracker_id',
-                'affiliates.company',
-                DB::raw('SUM(revenue_tracker_webview_statistics.passovers) AS passovers'),
-                DB::raw("$payoutSubquery AS payout"),
-                DB::raw("(SELECT SUM(lead_count) FROM iframe_affiliate_reports WHERE EXISTS(SELECT 1 FROM affiliate_revenue_trackers WHERE affiliate_revenue_trackers.affiliate_id = iframe_affiliate_reports.affiliate_id AND affiliate_revenue_trackers.revenue_tracker_id = iframe_affiliate_reports.revenue_tracker_id) AND iframe_affiliate_reports.affiliate_id = revenue_tracker_webview_statistics.affiliate_id AND (iframe_affiliate_reports.created_at>='$dateFrom' AND iframe_affiliate_reports.created_at<='$dateTo')) AS leads"),
-                DB::raw("$revenueSubQuery AS revenue"),
-                DB::raw("($revenueSubQuery - $payoutSubquery) AS we_get"))
-                ->join('affiliates', 'revenue_tracker_webview_statistics.affiliate_id', '=', 'affiliates.id');
+            'revenue_tracker_webview_statistics.affiliate_id',
+            'revenue_tracker_webview_statistics.revenue_tracker_id',
+            'affiliates.company',
+            DB::raw('SUM(revenue_tracker_webview_statistics.passovers) AS passovers'),
+            DB::raw("$payoutSubquery AS payout"),
+            DB::raw("(SELECT SUM(lead_count) FROM iframe_affiliate_reports WHERE EXISTS(SELECT 1 FROM affiliate_revenue_trackers WHERE affiliate_revenue_trackers.affiliate_id = iframe_affiliate_reports.affiliate_id AND affiliate_revenue_trackers.revenue_tracker_id = iframe_affiliate_reports.revenue_tracker_id) AND iframe_affiliate_reports.affiliate_id = revenue_tracker_webview_statistics.affiliate_id AND (iframe_affiliate_reports.created_at>='$dateFrom' AND iframe_affiliate_reports.created_at<='$dateTo')) AS leads"),
+            DB::raw("$revenueSubQuery AS revenue"),
+            DB::raw("($revenueSubQuery - $payoutSubquery) AS we_get"))
+            ->join('affiliates', 'revenue_tracker_webview_statistics.affiliate_id', '=', 'affiliates.id');
 
-        $query->whereExists(function ($exists)
-        {
+        $query->whereExists(function ($exists) {
             $exists->select(DB::raw(1))
                 ->from('affiliate_revenue_trackers')
                 ->whereRaw('affiliate_revenue_trackers.affiliate_id = revenue_tracker_webview_statistics.affiliate_id AND affiliate_revenue_trackers.revenue_tracker_id = revenue_tracker_webview_statistics.revenue_tracker_id');
@@ -103,9 +96,8 @@ class RevenueTrackerWebsiteViewStatistic extends Model
 
         $query->whereRaw('DATE(revenue_tracker_webview_statistics.created_at) >= DATE(?) AND DATE(revenue_tracker_webview_statistics.created_at) <= DATE(?)', [$dateFrom, $dateTo]);
 
-        if (isset($params['search']['value']) && $params['search']['value'] != '')
-        {
-            $query->where('affiliates.company', 'LIKE', '%' . $params['search']['value'] . '%');
+        if (isset($params['search']['value']) && $params['search']['value'] != '') {
+            $query->where('affiliates.company', 'LIKE', '%'.$params['search']['value'].'%');
         }
 
         $query->groupBy('revenue_tracker_webview_statistics.affiliate_id');
@@ -128,30 +120,23 @@ class RevenueTrackerWebsiteViewStatistic extends Model
             'leads',
             'revenue',
             'we_get',
-            'margin'
+            'margin',
         ];
 
         $date = [];
 
-        if(isset($params['period']))
-        {
-            if($params['period']=='none' && (!empty($params['start_date']) && !empty($params['end_date'])))
-            {
+        if (isset($params['period'])) {
+            if ($params['period'] == 'none' && (! empty($params['start_date']) && ! empty($params['end_date']))) {
                 //use the date range
                 $date['from'] = $params['start_date'];
                 $date['to'] = $params['end_date'];
-            }
-            else
-            {
+            } else {
                 $date = AffiliateReport::getSnapShotPeriodRange($params['period']);
             }
-        }
-        else
-        {
+        } else {
             $date = AffiliateReport::getSnapShotPeriodRange('none');
 
-            if(!empty($params['start_date']) && !empty($params['end_date']))
-            {
+            if (! empty($params['start_date']) && ! empty($params['end_date'])) {
                 $date['from'] = $params['start_date'];
                 $date['to'] = $params['end_date'];
             }
@@ -180,31 +165,26 @@ class RevenueTrackerWebsiteViewStatistic extends Model
                 ->on('affiliate_revenue_trackers.revenue_tracker_id', '=', 'revenue_tracker_webview_statistics.revenue_tracker_id');
         });
 
-        $query->where(function($groupQuery) use($dateFrom,$dateTo)
-        {
+        $query->where(function ($groupQuery) use ($dateFrom, $dateTo) {
             $groupQuery->whereRaw("DATE(revenue_tracker_webview_statistics.created_at) >= DATE('$dateFrom') AND DATE(revenue_tracker_webview_statistics.created_at) <= DATE('$dateTo')");
         });
 
-        if (isset($params['affiliate_id']))
-        {
+        if (isset($params['affiliate_id'])) {
             $query->where('revenue_tracker_webview_statistics.affiliate_id', '=', $params['affiliate_id']);
         }
 
-        if (isset($params['revenue_tracker_id']))
-        {
+        if (isset($params['revenue_tracker_id'])) {
             $query->where('revenue_tracker_webview_statistics.revenue_tracker_id', '=', $params['revenue_tracker_id']);
         }
 
-        if (isset($params['search']['value']))
-        {
+        if (isset($params['search']['value'])) {
 
-            $query->where('affiliate_revenue_trackers.website', 'LIKE', '%' . $params['search']['value'] . '%');
+            $query->where('affiliate_revenue_trackers.website', 'LIKE', '%'.$params['search']['value'].'%');
         }
 
         $query->groupBy('revenue_tracker_webview_statistics.affiliate_id', 'revenue_tracker_webview_statistics.revenue_tracker_id');
 
-        if (isset($params['order']))
-        {
+        if (isset($params['order'])) {
             $order_col = $columns[$params['order'][0]['column']];
             $order_dir = $params['order'][0]['dir'];
             $query->orderBy($order_col, $order_dir);

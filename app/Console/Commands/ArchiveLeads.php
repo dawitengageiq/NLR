@@ -42,8 +42,6 @@ class ArchiveLeads extends Command
 
     /**
      * Execute the console command.
-     *
-     * @param Settings $settings
      */
     public function handle(Settings $settings)
     {
@@ -51,7 +49,7 @@ class ArchiveLeads extends Command
 
         //get the settings
         $days = $settings->getValue('leads_archiving_age_in_days');
-        $counter=0;
+        $counter = 0;
 
         Log::info("Fetching $days days old leads...");
 
@@ -59,27 +57,22 @@ class ArchiveLeads extends Command
         $lastLeadID = 0;
         $leadsToArchive = 0;
 
-        while(true)
-        {
+        while (true) {
             $leads = Lead::withDaysOld($days)->with('leadMessage', 'leadDataADV', 'leadDataCSV', 'leadSentResult')->take(1000)->get();
             $leadIDsToDelete = [];
 
-            if($leads->count() == 0)
-            {
+            if ($leads->count() == 0) {
                 break;
             }
 
-            foreach($leads as $lead)
-            {
-                if($firstLeadID == 0)
-                {
+            foreach ($leads as $lead) {
+                if ($firstLeadID == 0) {
                     $firstLeadID = $lead->id;
                 }
 
                 $leadArchive = new LeadArchive;
 
-                try
-                {
+                try {
                     $leadArchive->id = $lead->id;
                     $leadArchive->campaign_id = $lead->campaign_id;
                     $leadArchive->affiliate_id = $lead->affiliate_id;
@@ -100,8 +93,7 @@ class ArchiveLeads extends Command
                     $leadArchive->updated_at = $lead->updated_at;
                     $leadArchive->save();
 
-                    if($lead->leadDataADV!=null)
-                    {
+                    if ($lead->leadDataADV != null) {
                         $leadDataAdvArchive = new LeadDataAdvArchive;
                         $leadDataAdvArchive->id = $lead->id;
                         $leadDataAdvArchive->value = $lead->leadDataADV->value;
@@ -110,8 +102,7 @@ class ArchiveLeads extends Command
                         $leadArchive->leadDataADV()->save($leadDataAdvArchive);
                     }
 
-                    if($lead->leadDataCSV!=null)
-                    {
+                    if ($lead->leadDataCSV != null) {
                         $leadDataCsvArchive = new LeadDataCsvArchive;
                         $leadDataCsvArchive->id = $lead->id;
                         $leadDataCsvArchive->value = $lead->leadDataCSV->value;
@@ -120,8 +111,7 @@ class ArchiveLeads extends Command
                         $leadArchive->leadDataCSV()->save($leadDataCsvArchive);
                     }
 
-                    if($lead->leadMessage!=null)
-                    {
+                    if ($lead->leadMessage != null) {
                         $leadMessageArchive = new LeadMessageArchive;
                         $leadMessageArchive->id = $lead->id;
                         $leadMessageArchive->value = $lead->leadMessage->value;
@@ -130,8 +120,7 @@ class ArchiveLeads extends Command
                         $leadArchive->leadMessage()->save($leadMessageArchive);
                     }
 
-                    if($lead->leadSentResult!=null)
-                    {
+                    if ($lead->leadSentResult != null) {
                         $leadSentResultArchive = new LeadSentResultArchive;
                         $leadSentResultArchive->id = $lead->id;
                         $leadSentResultArchive->value = $lead->leadSentResult->value;
@@ -141,21 +130,18 @@ class ArchiveLeads extends Command
                     }
 
                     array_push($leadIDsToDelete, $lead->id);
-                }
-                catch(QueryException $e)
-                {
+                } catch (QueryException $e) {
                     Log::info($e->getMessage());
                     Log::info($e->getCode());
 
-                    if($e->getCode()==23000)
-                    {
+                    if ($e->getCode() == 23000) {
                         //remove the lead
                         array_push($leadIDsToDelete, $lead->id);
                     }
                 }
 
                 $lastLeadID = $lead->id;
-                ++$leadsToArchive;
+                $leadsToArchive++;
             }
 
             // remove the archived leads
@@ -296,7 +282,7 @@ class ArchiveLeads extends Command
         //send email to Burt to notify that Atchive Leads Queue was successfully finished
         Mail::send('emails.archive_leads',
             ['days' => $days, 'leadsToArchive' => $leadsToArchive, 'firstLeadID' => $firstLeadID, 'lastLeadID' => $lastLeadID],
-            function ($m) use ($emailNotificationRecipient){
+            function ($m) use ($emailNotificationRecipient) {
                 $m->from('ariel@engageiq.com', 'Ariel Magbanua');
                 $m->to($emailNotificationRecipient, 'Marwil Burton');
                 // $m->cc('ariel@engageiq.com', 'Ariel Magbanua');

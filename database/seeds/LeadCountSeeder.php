@@ -11,27 +11,27 @@ class LeadCountSeeder extends Seeder
      */
     public function run()
     {
-        $campaigns = App\Campaign::lists('id')->toArray();
+        $campaigns = App\Campaign::pluck('id')->toArray();
 
         $date_now = Carbon\Carbon::now()->toDateString();
-        foreach($campaigns as $campaign) {
-        	
-        	App\LeadCount::firstOrCreate([
-				'campaign_id' => $campaign,
-				'affiliate_id' => null,
-				'count' => 0,
-				'reference_date' => $date_now
-			]);
+        foreach ($campaigns as $campaign) {
 
-			$affiliates = App\AffiliateCampaign::where('campaign_id',$campaign)->lists('affiliate_id')->toArray();
-			foreach($affiliates as $affiliate) {
-				App\LeadCount::firstOrCreate([
-					'campaign_id' => $campaign,
-					'affiliate_id' => $affiliate,
-					'count' => 0,
-					'reference_date' => $date_now
-				]);
-			}
+            App\LeadCount::firstOrCreate([
+                'campaign_id' => $campaign,
+                'affiliate_id' => null,
+                'count' => 0,
+                'reference_date' => $date_now,
+            ]);
+
+            $affiliates = App\AffiliateCampaign::where('campaign_id', $campaign)->pluck('affiliate_id')->toArray();
+            foreach ($affiliates as $affiliate) {
+                App\LeadCount::firstOrCreate([
+                    'campaign_id' => $campaign,
+                    'affiliate_id' => $affiliate,
+                    'count' => 0,
+                    'reference_date' => $date_now,
+                ]);
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Services\Campaigns\Providers;
 
 use Illuminate\Foundation\AliasLoader;
@@ -7,7 +8,6 @@ class Aliases extends AliasLoader
 {
     /**
      * alias list container where facade is required.
-     *
      */
     protected $aliases = [];
 
@@ -18,7 +18,6 @@ class Aliases extends AliasLoader
 
     /**
      * Instantiate.
-     *
      */
     public function __construct()
     {
@@ -30,25 +29,28 @@ class Aliases extends AliasLoader
     /**
      * Set aliases.
      *
-     * @param array $aliases
+     * @param  array  $aliases
      */
-    public function set ($aliases)
+    public function set($aliases)
     {
-        if(count($this->aliases) == 0) $this->aliases = array_merge($this->aliases, $aliases);
+        if (count($this->aliases) == 0) {
+            $this->aliases = array_merge($this->aliases, $aliases);
+        }
     }
 
     /**
      * Create aliases for the dependency.
      *
-     * @param Illuminate\Foundation\Application $app
+     * @param  Illuminate\Foundation\Application  $app
      */
     public function registers(
         // \Illuminate\Foundation\Application $app
-        )
-    {
-        if(count($this->aliases) == 0) return;
+    ) {
+        if (count($this->aliases) == 0) {
+            return;
+        }
 
-        collect($this->aliases)->each(function($facade, $alias) {
+        collect($this->aliases)->each(function ($facade, $alias) {
             $this->loader->alias($alias, $facade);
         });
     }
@@ -56,8 +58,8 @@ class Aliases extends AliasLoader
     /**
      * Create aliases for the dependency.
      *
-     * @param array $alias
-     * @param array $facade
+     * @param  array  $alias
+     * @param  array  $facade
      */
     public function registerAlias($alias, $facade)
     {

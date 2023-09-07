@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AlterPageViewStatisticsRemoveForeign extends Migration
 {
@@ -15,12 +15,12 @@ class AlterPageViewStatisticsRemoveForeign extends Migration
         Schema::table('page_view_statistics', function (Blueprint $table) {
             $sm = Schema::getConnection()->getDoctrineSchemaManager();
             $foreigns = $sm->listTableForeignKeys('page_view_statistics');
-            foreach($foreigns as $fk) {
-                if($fk->getName() == 'page_view_statistics_affiliate_id_foreign') {
-                    $table->dropForeign("page_view_statistics_affiliate_id_foreign");
+            foreach ($foreigns as $fk) {
+                if ($fk->getName() == 'page_view_statistics_affiliate_id_foreign') {
+                    $table->dropForeign('page_view_statistics_affiliate_id_foreign');
                 }
-                if($fk->getName() == 'page_view_statistics_revenue_tracker_id_foreign') {
-                    $table->dropForeign("page_view_statistics_revenue_tracker_id_foreign");
+                if ($fk->getName() == 'page_view_statistics_revenue_tracker_id_foreign') {
+                    $table->dropForeign('page_view_statistics_revenue_tracker_id_foreign');
                 }
             }
         });

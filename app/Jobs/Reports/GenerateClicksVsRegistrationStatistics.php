@@ -7,25 +7,22 @@ use App\ClicksVsRegistrationStatistics;
 use App\Helpers\Repositories\AffiliateReportCurl;
 use App\Jobs\Job;
 use App\LeadUser;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Log;
 
-class GenerateClicksVsRegistrationStatistics extends Job implements SelfHandling, ShouldQueue
+class GenerateClicksVsRegistrationStatistics extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
     public $dateFromStr;
+
     public $dateToStr;
 
     /**
      * Create a new job instance.
-     *
-     * @param $dateFromStr
-     * @param $dateToStr
      */
     public function __construct($dateFromStr, $dateToStr)
     {
@@ -35,15 +32,12 @@ class GenerateClicksVsRegistrationStatistics extends Job implements SelfHandling
 
     /**
      * Execute the job.
-     *
-     * @param AffiliateReportCurl $affiliateReportCurl
      */
     public function handle(AffiliateReportCurl $affiliateReportCurl)
     {
         $revenueTrackers = AffiliateRevenueTracker::where('offer_id', '!=', 1)->get();
 
-        foreach($revenueTrackers as $tracker)
-        {
+        foreach ($revenueTrackers as $tracker) {
             $cakeBaseClicksURL = config('constants.CAKE_CLICKS_REPORTS_API_V12');
             $cakeBaseClicksURL = str_replace('offer_id=0', "offer_id=$tracker->offer_id", $cakeBaseClicksURL);
 
@@ -61,45 +55,40 @@ class GenerateClicksVsRegistrationStatistics extends Job implements SelfHandling
 
             //get the registered users. Use the same date since this assumes we are generating for a particular date.
             $registeredUsers = LeadUser::where('revenue_tracker_id', '=', $tracker->revenue_tracker_id)
-                                        ->where('affiliate_id', '=', $tracker->affiliate_id)
-                                        ->whereRaw("DATE(created_at) = DATE('$dateFromStr')")
-                                        ->count();
+                ->where('affiliate_id', '=', $tracker->affiliate_id)
+                ->whereRaw("DATE(created_at) = DATE('$dateFromStr')")
+                ->count();
 
             $clicksRegistrationStats = ClicksVsRegistrationStatistics::firstOrNew([
                 'affiliate_id' => $tracker->affiliate_id,
                 'revenue_tracker_id' => $tracker->revenue_tracker_id,
-                'created_at' => $dateFromStr
+                'created_at' => $dateFromStr,
             ]);
 
             // sub ids
-//            $s1 = $click['value'][$prefix.'sub_id_1'];
-//            $s2 = $click['value'][$prefix.'sub_id_2'];
-//            $s3 = $click['value'][$prefix.'sub_id_3'];
-//            $s4 = $click['value'][$prefix.'sub_id_4'];
-//            $s5 = $click['value'][$prefix.'sub_id_5'];
+            //            $s1 = $click['value'][$prefix.'sub_id_1'];
+            //            $s2 = $click['value'][$prefix.'sub_id_2'];
+            //            $s3 = $click['value'][$prefix.'sub_id_3'];
+            //            $s4 = $click['value'][$prefix.'sub_id_4'];
+            //            $s5 = $click['value'][$prefix.'sub_id_5'];
 
             $clicksRegistrationStats->registration_count = $registeredUsers;
             $clicksRegistrationStats->clicks = $allClicks;
 
             $percentage = 0.00;
 
-            if($registeredUsers>0 && $allClicks>0)
-            {
-                $percentage = doubleval($registeredUsers/$allClicks);
+            if ($registeredUsers > 0 && $allClicks > 0) {
+                $percentage = floatval($registeredUsers / $allClicks);
             }
 
             $clicksRegistrationStats->percentage = $percentage;
 
-            if($clicksRegistrationStats->registration_count == 0 && $clicksRegistrationStats->clicks == 0)
-            {
+            if ($clicksRegistrationStats->registration_count == 0 && $clicksRegistrationStats->clicks == 0) {
                 //delete if exist
-                if(isset($clicksRegistrationStats->id))
-                {
+                if (isset($clicksRegistrationStats->id)) {
                     $clicksRegistrationStats->delete();
                 }
-            }
-            else
-            {
+            } else {
                 //save or update the record
                 $clicksRegistrationStats->save();
             }
@@ -113,18 +102,17 @@ class GenerateClicksVsRegistrationStatistics extends Job implements SelfHandling
         //send email to Burt to notify that Affiliate Report Queue was successfully finished
         Mail::send('emails.clicks_vs_registrations',
             ['startDate' => $this->dateFromStr, 'endDate' => $this->dateToStr],
-            function ($m) use ($emailNotificationRecipient){
-            $m->from('ariel@engageiq.com', 'Ariel Magbanua');
-            $m->to($emailNotificationRecipient, 'Marwil Burton')->subject('Clicks Vs Registrations Job Queue Successfully Executed!');
-        });
+            function ($m) use ($emailNotificationRecipient) {
+                $m->from('ariel@engageiq.com', 'Ariel Magbanua');
+                $m->to($emailNotificationRecipient, 'Marwil Burton')->subject('Clicks Vs Registrations Job Queue Successfully Executed!');
+            });
 
         Log::info('Clicks Vs Registrations Job Queue Successfully Executed!');
     }
 
     public function touch()
     {
-        if (method_exists($this->job, 'getPheanstalk'))
-        {
+        if (method_exists($this->job, 'getPheanstalk')) {
             $this->job->getPheanstalk()->touch($this->job->getPheanstalkJob());
 
             Log::info('Current job timer refresh!');

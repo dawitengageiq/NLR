@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Jobs\SendRegPathRevenueEmailReportJob;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class SendRegPathRevenueEmailReport extends Command
 {
@@ -42,16 +42,16 @@ class SendRegPathRevenueEmailReport extends Command
         $this->info('Send affiliate reg path revenue report.....');
 
         $date = $this->option('date');
-        if($date != '') {
+        if ($date != '') {
             $date = $date.'-01';
             $from = Carbon::parse($date)->startOfMonth()->toDateString();
             $to = Carbon::parse($date)->endOfMonth()->toDateString();
-        }else {
+        } else {
             $from = Carbon::yesterday()->startOfMonth()->toDateString();
-            $to =  Carbon::yesterday()->toDateString();
+            $to = Carbon::yesterday()->toDateString();
         }
 
-        $this->info('Processing: '.$from.' to '. $to);
+        $this->info('Processing: '.$from.' to '.$to);
 
         $job = (new SendRegPathRevenueEmailReportJob($from, $to));
         dispatch($job);

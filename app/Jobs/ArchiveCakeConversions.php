@@ -5,23 +5,20 @@ namespace App\Jobs;
 use App\CakeConversion;
 use App\CakeConversionArchive;
 use App\Helpers\Repositories\Settings;
-use App\Jobs\Job;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use ErrorException;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\QueryException;
-use Log;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
+use Log;
 
-class ArchiveCakeConversions extends Job implements SelfHandling, ShouldQueue
+class ArchiveCakeConversions extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
     /**
      * Create a new job instance.
-     *
      */
     public function __construct()
     {
@@ -30,18 +27,15 @@ class ArchiveCakeConversions extends Job implements SelfHandling, ShouldQueue
 
     /**
      * Execute the job.
-     *
-     * @param Settings $settings
      */
     public function handle(Settings $settings)
     {
-        if ($this->attempts() > 1)
-        {
+        if ($this->attempts() > 1) {
             return;
         }
 
         $days = $settings->getValue('cake_conversions_archiving_age_in_days');
-        $counter=0;
+        $counter = 0;
 
         //Log::info("cake_conversions_archiving_age_in_days: $days");
         //Log::info(CakeConversion::withDaysOld($days)->toSql());
@@ -54,21 +48,18 @@ class ArchiveCakeConversions extends Job implements SelfHandling, ShouldQueue
         //first lead id
         $firstConversion = CakeConversion::withDaysOld($days)->first();
 
-        if(isset($firstConversion))
-        {
+        if (isset($firstConversion)) {
             $firstConversionID = $firstConversion->id;
         }
 
         $conversionsToArchive = count($cakeConversions);
 
-        foreach($cakeConversions as $conversion)
-        {
+        foreach ($cakeConversions as $conversion) {
             //Log::info("Archiving lead with lead_id = $lead->id");
 
             $cakeConversionArchive = new CakeConversionArchive;
 
-            try
-            {
+            try {
                 $cakeConversionArchive->id = $conversion->id;
                 $cakeConversionArchive->visitor_id = $conversion->visitor_id;
                 $cakeConversionArchive->click_request_session_id = $conversion->click_request_session_id;
@@ -98,26 +89,21 @@ class ArchiveCakeConversions extends Job implements SelfHandling, ShouldQueue
 
                 //remove the conversion
                 $conversion->delete();
-            }
-            catch(ErrorException $e)
-            {
+            } catch (ErrorException $e) {
                 Log::info($e->getMessage());
                 Log::info($e->getCode());
-            }
-            catch(QueryException $e)
-            {
+            } catch (QueryException $e) {
                 Log::info($e->getMessage());
                 Log::info($e->getCode());
 
-                if($e->getCode()==23000)
-                {
+                if ($e->getCode() == 23000) {
                     //remove the conversion
                     $conversion->delete();
                 }
             }
 
             $lastConversionID = $conversion->id;
-            ++$counter;
+            $counter++;
         }
 
         $emailNotificationRecipient = env('REPORTS_EMAIL_NOTIFICATION_RECIPIENT', 'marwilburton@hotmail.com');
@@ -125,12 +111,12 @@ class ArchiveCakeConversions extends Job implements SelfHandling, ShouldQueue
         //send email to Burt to notify that Atchive Leads Queue was successfully finished
         Mail::send('emails.archive_cake_conversions',
             ['days' => $days, 'conversionsToArchive' => $conversionsToArchive, 'firstConversionID' => $firstConversionID, 'lastConversionID' => $lastConversionID],
-            function ($m) use ($emailNotificationRecipient){
-            $m->from('ariel@engageiq.com', 'Ariel Magbanua');
-            $m->to($emailNotificationRecipient, 'Marwil Burton');
-            // $m->cc('ariel@engageiq.com', 'Ariel Magbanua');
-            $m->subject('Archive Cake Conversions Job Queue Successfully Executed!');
-        });
+            function ($m) use ($emailNotificationRecipient) {
+                $m->from('ariel@engageiq.com', 'Ariel Magbanua');
+                $m->to($emailNotificationRecipient, 'Marwil Burton');
+                // $m->cc('ariel@engageiq.com', 'Ariel Magbanua');
+                $m->subject('Archive Cake Conversions Job Queue Successfully Executed!');
+            });
 
         Log::info("There are $counter cake conversions are archived!");
     }

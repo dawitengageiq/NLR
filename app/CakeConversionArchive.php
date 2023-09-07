@@ -33,7 +33,6 @@ class CakeConversionArchive extends Model
         'click_ip_address',
         'received_amount',
         'test',
-        'transaction_id'
+        'transaction_id',
     ];
-
 }

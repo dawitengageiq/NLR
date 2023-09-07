@@ -10,6 +10,6 @@ class Path extends Model
 
     protected $fillable = [
         'name',
-        'url'
+        'url',
     ];
 }

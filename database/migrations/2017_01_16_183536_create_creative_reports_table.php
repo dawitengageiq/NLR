@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateCreativeReportsTable extends Migration
 {
@@ -20,7 +20,7 @@ class CreateCreativeReportsTable extends Migration
             $table->integer('views')->default(0);
             $table->integer('lead_count')->default(0);
             $table->float('revenue')->default(0.0);
-            $table->date('date')->nullable();       
+            $table->date('date')->nullable();
 
             $table->foreign('path_id')->references('id')->on('paths')->onDelete('set null');
             $table->foreign('campaign_id')->references('id')->on('campaigns')->onDelete('set null');

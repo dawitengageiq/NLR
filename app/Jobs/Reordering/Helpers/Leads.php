@@ -1,26 +1,26 @@
 <?php
+
 namespace App\Jobs\Reordering\Helpers;
 
-use DB;
 use App\Lead;
+use DB;
 
 class Leads
 {
     /**
      * [protected description]
      *
-     * @var iIlluminate\Database\Eloquent\Builder $query
+     * @var iIlluminate\Database\Eloquent\Builder
      */
     protected $query;
 
     /**
      * Instantiate
      * Initial query
-     *
      */
-    public function __construct ()
+    public function __construct()
     {
-        $this->query = Lead::select(DB::raw('COUNT(*) AS leads'),  DB::raw('SUM(received) AS revenue'), 'leads.campaign_id', 'leads.affiliate_id')
+        $this->query = Lead::select(DB::raw('COUNT(*) AS leads'), DB::raw('SUM(received) AS revenue'), 'leads.campaign_id', 'leads.affiliate_id')
             ->where('leads.lead_status', '=', 1);
     }
 
@@ -29,7 +29,7 @@ class Leads
      *
      * @param  string|timestamp  $now
      */
-    public function setCurrentDate ($now)
+    public function setCurrentDate($now)
     {
         $this->now = $now;
     }
@@ -39,7 +39,7 @@ class Leads
      *
      * @param  array  $campaignOrder
      */
-    public function setCampaignOrder ($campaignOrder)
+    public function setCampaignOrder($campaignOrder)
     {
         $this->query->whereIn('leads.campaign_id', $campaignOrder);
     }
@@ -47,9 +47,9 @@ class Leads
     /**
      * Set revenue tracker id to be used on specific query
      *
-     * @param integer  $revenueRrackerID
+     * @param  int  $revenueRrackerID
      */
-    public function setRevenueTRrackerID ($revenueRrackerID)
+    public function setRevenueTRrackerID($revenueRrackerID)
     {
         $this->revenueRrackerID = $revenueRrackerID;
         $this->query->where('leads.affiliate_id', '=', $this->revenueRrackerID);
@@ -60,11 +60,11 @@ class Leads
      *
      * @param  string|timestamp  $referenceDate
      */
-    public function setReferenceDAte ($referenceDate)
+    public function setReferenceDAte($referenceDate)
     {
         $this->query->whereBetween('leads.created_at', [
             $referenceDate,
-            $this->now
+            $this->now,
         ]);
     }
 
@@ -75,7 +75,10 @@ class Leads
      */
     public function notExists()
     {
-        if(count($this->leads) <= 0) return true;
+        if (count($this->leads) <= 0) {
+            return true;
+        }
+
         return false;
     }
 
@@ -84,7 +87,7 @@ class Leads
      *
      * @return array
      */
-    public function get ()
+    public function get()
     {
         return $this->leads;
     }
@@ -92,20 +95,19 @@ class Leads
     /**
      * Query the leads
      *
-     * @var eloquentCollection $leads
+     * @var eloquentCollection
      */
-    public function query ()
+    public function query()
     {
         $this->leads = $this->query
-            ->join('campaigns','leads.campaign_id','=','campaigns.id')
-            ->where(function($query)
-            {
-                $query->where('campaigns.status','=', 1);
-                $query->orWhere('campaigns.status','=', 2);
+            ->join('campaigns', 'leads.campaign_id', '=', 'campaigns.id')
+            ->where(function ($query) {
+                $query->where('campaigns.status', '=', 1);
+                $query->orWhere('campaigns.status', '=', 2);
             })
-            ->with(['campaignViewReport' => function($query) {
+            ->with(['campaignViewReport' => function ($query) {
                 return $query->select('revenue_tracker_id', 'campaign_id', 'current_view_count')
-                ->where('revenue_tracker_id', '=', $this->revenueRrackerID);
+                    ->where('revenue_tracker_id', '=', $this->revenueRrackerID);
             }])
             ->groupBy('leads.campaign_id', 'leads.affiliate_id')
             ->get()

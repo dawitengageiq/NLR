@@ -6,18 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class ClickLogRevTrackers extends Model
 {
-    protected $connection; 
+    protected $connection;
+
     protected $table = 'click_log_rev_trackers';
 
     protected $fillable = [
         'affiliate_id',
-        'revenue_tracker_id'
+        'revenue_tracker_id',
     ];
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') != 'reports') {
+        if (config('app.type') != 'reports') {
             $this->connection = 'secondary';
         }
     }
@@ -27,25 +28,25 @@ class ClickLogRevTrackers extends Model
         return $this->belongsTo(AffiliateRevenueTracker::class, 'revenue_tracker_id', 'revenue_tracker_id');
     }
 
-    public function scopeSearchModel($query,$search,$start,$length,$order_col,$order_dir)
+    public function scopeSearchModel($query, $search, $start, $length, $order_col, $order_dir)
     {
-        if(!empty($search)) {
+        if (! empty($search)) {
 
-            $query->where('revenue_tracker_id','LIKE','%'.$search.'%');
-            $query->orWhere('affiliate_id','LIKE','%'.$search.'%');
+            $query->where('revenue_tracker_id', 'LIKE', '%'.$search.'%');
+            $query->orWhere('affiliate_id', 'LIKE', '%'.$search.'%');
         }
 
-        if($order_col != null && $order_dir != null) {
-            if($order_col > -1) {
-                $query->orderBy($order_col,$order_dir);
+        if ($order_col != null && $order_dir != null) {
+            if ($order_col > -1) {
+                $query->orderBy($order_col, $order_dir);
             }
         }
 
-        if($start != null) {
+        if ($start != null) {
             $query->skip($start);
         }
 
-        if($length != null) {
+        if ($length != null) {
             $query->take($length);
         }
 

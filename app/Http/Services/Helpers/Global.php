@@ -7,70 +7,71 @@
 /**
  * prints nicer outputs from native print_r function
  */
-if(!function_exists('printR'))
-{
-	function printR($array, $toArray = false)
-	{
-		if($toArray) $array = $array->toArray();
+if (! function_exists('printR')) {
+    function printR($array, $toArray = false)
+    {
+        if ($toArray) {
+            $array = $array->toArray();
+        }
 
-		echo "<pre>";
-		print_r($array);
-		echo "</pre>";
-	}
+        echo '<pre>';
+        print_r($array);
+        echo '</pre>';
+    }
 }
 
 /**
  * prints Ang Ganda Mo from ang_ganda_mo (string)
  */
-if(!function_exists('kabawCase'))
-{
-	function kabawCase($string, $replaceable = '')
-	{
-		if(!$replaceable) $replaceable = '_';
+if (! function_exists('kabawCase')) {
+    function kabawCase($string, $replaceable = '')
+    {
+        if (! $replaceable) {
+            $replaceable = '_';
+        }
 
-		return ucwords(str_replace($replaceable, ' ', $string));
-	}
+        return ucwords(str_replace($replaceable, ' ', $string));
+    }
 }
 
 /**
  * prints angGandaMo from ang_ganda_mo (string)
  */
-if(!function_exists('camelCase'))
-{
-	function camelCase($string, $replaceable = '')
-	{
-		if(!$replaceable) $replaceable = '_';
+if (! function_exists('camelCase')) {
+    function camelCase($string, $replaceable = '')
+    {
+        if (! $replaceable) {
+            $replaceable = '_';
+        }
 
-	    $str = str_replace(' ', '', ucwords(str_replace($replaceable, ' ', $string)));
+        $str = str_replace(' ', '', ucwords(str_replace($replaceable, ' ', $string)));
 
         $str[0] = strtolower($str[0]);
 
-	    return $str;
-	}
+        return $str;
+    }
 }
 
 /**
  *  removes non-numeric for phone numbers
  */
-if(!function_exists('numbersOnly'))
-{
-	function numbersOnly($phone)
-	{
-		return preg_replace('/[^0-9+]/', '', $phone);
-	}
+if (! function_exists('numbersOnly')) {
+    function numbersOnly($phone)
+    {
+        return preg_replace('/[^0-9+]/', '', $phone);
+    }
 }
 
 /**
  *  removes non-numeric for phone numbers
  */
-if(!function_exists('tap'))
-{
-	function tap($value, $callback)
-	{
-	   $callback($value);
+if (! function_exists('tap')) {
+    function tap($value, $callback)
+    {
+        $callback($value);
 
-	   return $value;
-	}
+        return $value;
+    }
 }
 
 /**

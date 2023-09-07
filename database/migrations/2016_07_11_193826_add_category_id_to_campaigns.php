@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AddCategoryIdToCampaigns extends Migration
 {
@@ -25,8 +25,7 @@ class AddCategoryIdToCampaigns extends Migration
      */
     public function down()
     {
-        Schema::table('campaigns', function($table)
-        {
+        Schema::table('campaigns', function ($table) {
             $table->dropForeign('campaigns_category_id_foreign');
             $table->dropColumn('category_id');
         });

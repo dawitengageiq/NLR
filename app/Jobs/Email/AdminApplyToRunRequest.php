@@ -4,12 +4,10 @@ namespace App\Jobs\Email;
 
 use App\Jobs\Job;
 use Illuminate\Contracts\Mail\Mailer;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
 
-class AdminApplyToRunRequest extends Job implements SelfHandling, ShouldQueue
+class AdminApplyToRunRequest extends Job implements ShouldQueue
 {
     use InteractsWithQueue;
 
@@ -18,7 +16,7 @@ class AdminApplyToRunRequest extends Job implements SelfHandling, ShouldQueue
      *
      * @return void
      */
-    public function __construct(Array $email_data)
+    public function __construct(array $email_data)
     {
         $this->email_data = $email_data;
     }
@@ -30,8 +28,7 @@ class AdminApplyToRunRequest extends Job implements SelfHandling, ShouldQueue
      */
     public function handle(Mailer $mailer)
     {
-        if ($this->attempts() > 1)
-        {
+        if ($this->attempts() > 1) {
             return;
         }
 
@@ -41,10 +38,10 @@ class AdminApplyToRunRequest extends Job implements SelfHandling, ShouldQueue
             ['admin' => $admin, 'campaign' => $campaign, 'affiliate' => $affiliate],
             function ($mail) use ($admin) {
 
-            $mail->from('admin@engageiq.com', 'Engage IQ: Lead Reactor');
+                $mail->from('admin@engageiq.com', 'Engage IQ: Lead Reactor');
 
-            $mail->to($admin->email, $admin->first_name.' '.$admin->last_name)->subject('Lead Reactor: Affiliate Apply to Run Request');
-        });
+                $mail->to($admin->email, $admin->first_name.' '.$admin->last_name)->subject('Lead Reactor: Affiliate Apply to Run Request');
+            });
 
         echo 'Dispatching email: admin apply to run request.';
     }

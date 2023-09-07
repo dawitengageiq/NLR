@@ -9,12 +9,12 @@
     <br>
 
       <?php
-                  $attributes = array(
+                  $attributes = [
                   'url'                => url('affiliate/change_password_contact_info'),
                   'class'              => 'this_form form-horizontal',
                   'data-confirmation'  => '',
                   'data-process'       => 'change_password_contact_info'
-                );
+                ];
             ?>
     {!! Form::open($attributes) !!}
 

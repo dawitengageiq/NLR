@@ -1,9 +1,8 @@
 <?php
 
 namespace App\Http\Requests;
-use Input;
+
 use App\User;
-use App\Http\Requests\Request;
 use Auth;
 use Validator;
 
@@ -26,7 +25,7 @@ class ChangePasswordRequest extends Request
      */
     public function rules()
     {
-        Validator::extend('old_password_match', function($attribute, $value, $parameters) {
+        Validator::extend('old_password_match', function ($attribute, $value, $parameters) {
 
             $userEmail = Auth::user()->email;
             $oldPassword = $value;
@@ -36,14 +35,14 @@ class ChangePasswordRequest extends Request
 
         return [
             'old_password' => 'required|old_password_match',
-            'password' => 'required|confirmed|min:5'
+            'password' => 'required|confirmed|min:5',
         ];
     }
 
     public function messages()
     {
         return [
-            'old_password.old_password_match' => 'Old password that you have provided did not match to the current password.'
+            'old_password.old_password_match' => 'Old password that you have provided did not match to the current password.',
         ];
     }
 }

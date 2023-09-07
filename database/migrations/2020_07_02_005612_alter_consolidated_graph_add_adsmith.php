@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AlterConsolidatedGraphAddAdsmith extends Migration
 {
@@ -13,7 +13,7 @@ class AlterConsolidatedGraphAddAdsmith extends Migration
     public function up()
     {
         Schema::table('consolidated_graph', function (Blueprint $table) {
-            
+
             $table->decimal('adsmith_revenue_vs_views', 8, 2)->unsigned()->default(0)->after('mp_per_views');
             $table->integer('adsmith_views')->unsigned()->default(0)->after('mp_per_views');
             $table->decimal('adsmith_revenue', 8, 3)->unsigned()->default(0)->after('mp_per_views');

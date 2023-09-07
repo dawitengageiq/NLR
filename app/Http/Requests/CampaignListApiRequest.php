@@ -1,21 +1,20 @@
 <?php
+
 namespace App\Http\Requests;
 
 use View;
-use AffiliateWebsites;
-
-use App\Http\Requests\Request;
 
 class CampaignListApiRequest extends CampaignListRequest
 {
-
     /**
      * Default variables
-     *
      */
     protected $message = '';
+
     protected $redirectUrl = '';
+
     protected $reloadParentFrame = false;
+
     protected $targetUrl = 'http://leadreactor.engageiq.com/';
 
     protected $browser = [
@@ -23,14 +22,14 @@ class CampaignListApiRequest extends CampaignListRequest
         'os_version' => '',
         'browser' => '',
         'browser_version' => '',
-        'user_agent' => ''
+        'user_agent' => '',
     ];
 
     protected $device = [
         'isMobile' => '',
         'isTablet' => '',
         'isDesktop' => '',
-        'type' => ''
+        'type' => '',
     ];
 
     protected $required = [
@@ -43,7 +42,7 @@ class CampaignListApiRequest extends CampaignListRequest
         'dobmonth',
         'dobday',
         'dobyear',
-        'gender'
+        'gender',
     ];
 
     protected $incomplete = false;
@@ -109,23 +108,27 @@ class CampaignListApiRequest extends CampaignListRequest
         // Set data needed for error page if ....
         $this->setErrorPageData();
 
-        if($this->incompleteRequestData()) {
+        if ($this->incompleteRequestData()) {
             $this->message = trans('campaignList.incomplete_parameters');
+
             return false;
         }
 
-        if($this->invalidEmailFormat()) {
+        if ($this->invalidEmailFormat()) {
             $this->message = trans('campaignList.invalid_email_format');
+
             return false;
         }
 
-        if(!$this->get('affiliate_websites')['is_registered']) {
+        if (! $this->get('affiliate_websites')['is_registered']) {
             $this->message = trans('campaignList.access_denied');
+
             return false;
         }
 
-        if($this->get('affiliate_websites')['is_disabled']) {
+        if ($this->get('affiliate_websites')['is_disabled']) {
             $this->message = trans('campaignList.list_disabled');
+
             return false;
         }
 
@@ -154,9 +157,12 @@ class CampaignListApiRequest extends CampaignListRequest
      *
      * @return bolean
      */
-    protected function invalidEmailFormat ()
+    protected function invalidEmailFormat()
     {
-        if (!filter_var($this->get('email'), FILTER_VALIDATE_EMAIL)) return true;
+        if (! filter_var($this->get('email'), FILTER_VALIDATE_EMAIL)) {
+            return true;
+        }
+
         return false;
     }
 
@@ -164,26 +170,36 @@ class CampaignListApiRequest extends CampaignListRequest
      * [setErrorPageData description]
      *
      * @method setErrorPageData
+     *
      * @param  [type]
      */
     protected function setErrorPageData()
     {
         // Save to global variable
-        if($this->has('redirect_url')) $this->redirectUrl = $this->get('redirect_url');
-        if($this->has('reload_parent_frame')) $this->reloadParentFrame = $this->get('reload_parent_frame');
+        if ($this->has('redirect_url')) {
+            $this->redirectUrl = $this->get('redirect_url');
+        }
+        if ($this->has('reload_parent_frame')) {
+            $this->reloadParentFrame = $this->get('reload_parent_frame');
+        }
     }
 
     /**
      * [setProperties description]
      *
      * @method setProperties
+     *
      * @param  [type]
      */
     protected function setProperties()
     {
         // Save to global variable
-        if($this->has('target_url')) $this->targetUrl = $this->get('target_url');
-        if($this->has('filter')) $this->filter = $this->get('filter');
+        if ($this->has('target_url')) {
+            $this->targetUrl = $this->get('target_url');
+        }
+        if ($this->has('filter')) {
+            $this->filter = $this->get('filter');
+        }
         // $this->settings = $this->get('settings');
         $this->limit = $this->get('limit');
 
@@ -197,11 +213,11 @@ class CampaignListApiRequest extends CampaignListRequest
     /**
      * Update browser details with request data
      *
-     * @var array $userDetails
+     * @var array
      */
-    protected function filterBrowserdata ()
+    protected function filterBrowserdata()
     {
-        $this->browser = collect($this->browser)->map(function($detail, $key)  {
+        $this->browser = collect($this->browser)->map(function ($detail, $key) {
             return ($this->has($key)) ? $this->get($key) : $detail;
         })->toArray();
     }
@@ -209,11 +225,11 @@ class CampaignListApiRequest extends CampaignListRequest
     /**
      * Update device details with request data
      *
-     * @var array $userDetails
+     * @var array
      */
-    protected function filterDevicedata ()
+    protected function filterDevicedata()
     {
-        $this->device = collect($this->device)->map(function($detail, $key)  {
+        $this->device = collect($this->device)->map(function ($detail, $key) {
             return ($this->has($key)) ? $this->get($key) : $detail;
         })->toArray();
     }

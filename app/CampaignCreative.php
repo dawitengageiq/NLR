@@ -7,13 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class CampaignCreative extends Model
 {
     protected $connection;
+
     protected $table = 'campaign_creatives';
 
     protected $fillable = [
         'weight',
         'campaign_id',
         'image',
-        'description'
+        'description',
     ];
 
     public function campaign()
@@ -21,10 +22,10 @@ class CampaignCreative extends Model
         return $this->belongsTo(Campaign::class);
     }
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') == 'reports') {
+        if (config('app.type') == 'reports') {
             $this->connection = 'secondary';
         }
     }

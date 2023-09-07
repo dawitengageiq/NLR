@@ -21,6 +21,6 @@ class ActionRole extends Model
     protected $fillable = [
         'role_id',
         'action_id',
-        'permitted'
+        'permitted',
     ];
 }

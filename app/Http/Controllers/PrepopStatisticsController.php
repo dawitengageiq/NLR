@@ -3,13 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\PrepopStatistic;
-use Illuminate\Http\Request;
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use Cache;
-use Maatwebsite\Excel\Facades\Excel;
-use Log;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Log;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PrepopStatisticsController extends Controller
 {
@@ -51,7 +49,7 @@ class PrepopStatisticsController extends Controller
             11 => 'prepop_with_errors_count',
             12 => 'no_prepop_percentage',
             13 => 'prepop_with_errors_percentage',
-            14 => 'profit_margin'
+            14 => 'profit_margin',
         ];
 
         //$paramSearch = $inputs['search']['value'];
@@ -72,10 +70,8 @@ class PrepopStatisticsController extends Controller
         //Log::info("orderDir: $orderDir");
 
         //determine the right value for date from and date to
-        if(!empty($predefinedDate) || $predefinedDate!='')
-        {
-            switch($predefinedDate)
-            {
+        if (! empty($predefinedDate) || $predefinedDate != '') {
+            switch ($predefinedDate) {
                 case 'yesterday':
 
                     $dateFrom = Carbon::now()->subDay()->toDateString();
@@ -97,15 +93,11 @@ class PrepopStatisticsController extends Controller
 
                     break;
             }
-        }
-        else
-        {
-            if(empty($dateFrom)) {
+        } else {
+            if (empty($dateFrom)) {
 
                 $dateFrom = $dateTo;
-            }
-            else if(empty($dateTo))
-            {
+            } elseif (empty($dateTo)) {
                 $dateTo = $dateFrom;
             }
         }
@@ -144,8 +136,7 @@ class PrepopStatisticsController extends Controller
         //cache the data to be downloaded
         //Cache::put('latest_prepop_queried_stats', $prepopStatisticsWithOutLimit->get(), 300);
 
-        if($length>1)
-        {
+        if ($length > 1) {
             $prepopStatisticsWithLimit->skip($start)->take($length);
         }
 
@@ -154,9 +145,8 @@ class PrepopStatisticsController extends Controller
 
         $dateRange = $dateFrom.' - '.$dateTo;
 
-        foreach($prepopStats as $stat)
-        {
-            switch($groupBy) {
+        foreach ($prepopStats as $stat) {
+            switch ($groupBy) {
                 case 'affiliate_id':
                     $date = $dateRange;
                     $affiliate_id = $stat->affiliate_id;
@@ -252,36 +242,35 @@ class PrepopStatisticsController extends Controller
                 'prepopped' => $stat->prepop_count,
                 'not_prepopped' => $stat->no_prepop_count,
                 'prepopped_with_errors' => $stat->prepop_with_errors_count,
-                'percentage_unprepopped' => number_format($stat->no_prepop_percentage * 100.00,2).'%',
-                'percentage_prepopped_with_errors' => number_format($stat->prepop_with_errors_percentage * 100.00,2).'%',
-                'profit_margin' => number_format($stat->profit_margin * 100.00,2).'%'
+                'percentage_unprepopped' => number_format($stat->no_prepop_percentage * 100.00, 2).'%',
+                'percentage_prepopped_with_errors' => number_format($stat->prepop_with_errors_percentage * 100.00, 2).'%',
+                'profit_margin' => number_format($stat->profit_margin * 100.00, 2).'%',
             ];
 
-            array_push($prepopStatsData,$data);
+            array_push($prepopStatsData, $data);
         }
 
-        $responseData = array(
-            "draw"            => intval($inputs['draw']),   // for every request/draw by client side , they send a number as a parameter, when they receive a response/data they first check the draw number, so we are sending same number in draw.
-            "recordsTotal"    => $totalRecords,  // total number of records
-            "recordsFiltered" => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
-            "data"            => $prepopStatsData,   // total data array
+        $responseData = [
+            'draw' => intval($inputs['draw']),   // for every request/draw by client side , they send a number as a parameter, when they receive a response/data they first check the draw number, so we are sending same number in draw.
+            'recordsTotal' => $totalRecords,  // total number of records
+            'recordsFiltered' => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
+            'data' => $prepopStatsData,   // total data array
             //"grouping" => $groupBy,
             //"date_range" => urlencode($dateFrom.' - '.$dateTo)
-            "date_from" => urlencode($dateFrom),
-            "date_to" => urlencode($dateTo),
-            "predefined_date" => $predefinedDate,
-            "affiliate_id" => $affiliateID,
-            "group_by" => $groupBy,
-            "report_title" => $reportTitle
-        );
+            'date_from' => urlencode($dateFrom),
+            'date_to' => urlencode($dateTo),
+            'predefined_date' => $predefinedDate,
+            'affiliate_id' => $affiliateID,
+            'group_by' => $groupBy,
+            'report_title' => $reportTitle,
+        ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
     /**
      *  Prepop Statistics download
      *
-     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     public function downloadPrepopStatisticsReport(Request $request)
@@ -291,13 +280,11 @@ class PrepopStatisticsController extends Controller
         $grouping = '';
         $dateRange = '';
 
-        if(isset($inputs['group_by']))
-        {
+        if (isset($inputs['group_by'])) {
             $grouping = $inputs['group_by'];
         }
 
-        if(isset($inputs['date_from']) && isset($inputs['date_to']))
-        {
+        if (isset($inputs['date_from']) && isset($inputs['date_to'])) {
             $dateRange = $inputs['date_from'].' - '.$inputs['date_to'];
         }
 
@@ -314,10 +301,8 @@ class PrepopStatisticsController extends Controller
         $affiliateID = $inputs['affiliate_id'];
 
         //determine the right value for date from and date to
-        if(!empty($predefinedDate) || $predefinedDate!='')
-        {
-            switch($predefinedDate)
-            {
+        if (! empty($predefinedDate) || $predefinedDate != '') {
+            switch ($predefinedDate) {
                 case 'yesterday':
 
                     $dateFrom = Carbon::now()->subDay()->toDateString();
@@ -339,15 +324,11 @@ class PrepopStatisticsController extends Controller
 
                     break;
             }
-        }
-        else
-        {
-            if(empty($dateFrom)) {
+        } else {
+            if (empty($dateFrom)) {
 
                 $dateFrom = $dateTo;
-            }
-            else if(empty($dateTo))
-            {
+            } elseif (empty($dateTo)) {
                 $dateTo = $dateFrom;
             }
         }
@@ -371,14 +352,11 @@ class PrepopStatisticsController extends Controller
         // \DB::enableQueryLog();
         $latestPrepopQueriedStats = PrepopStatistic::getStatistics($params)->get();
         // Log::info(\DB::getQueryLog());
-        if($reportTitle && $latestPrepopQueriedStats)
-        {
+        if ($reportTitle && $latestPrepopQueriedStats) {
             $sheetTitle = $reportTitle;
 
-            Excel::create($reportTitle,function($excel) use($reportTitle,$sheetTitle,$latestPrepopQueriedStats,$grouping,$dateRange, $inputs)
-            {
-                $excel->sheet($sheetTitle,function($sheet) use($reportTitle,$latestPrepopQueriedStats,$grouping,$dateRange, $inputs)
-                {
+            Excel::create($reportTitle, function ($excel) use ($sheetTitle, $latestPrepopQueriedStats, $grouping, $dateRange, $inputs) {
+                $excel->sheet($sheetTitle, function ($sheet) use ($latestPrepopQueriedStats, $grouping, $dateRange, $inputs) {
                     $rowNumber = 1;
                     //$firstDataRowNumber = 1;
 
@@ -401,16 +379,15 @@ class PrepopStatisticsController extends Controller
                         'Prepopped With Errors',
                         'Percentage Prepoped',
                         'Percentage Not Prepopped',
-                        'Percentage: Prepopped With Errors'
+                        'Percentage: Prepopped With Errors',
                     ]);
 
                     //style the headers
-                    $sheet->cells("A$rowNumber:O$rowNumber", function($cells)
-                    {
+                    $sheet->cells("A$rowNumber:O$rowNumber", function ($cells) {
                         // Set font
                         $cells->setFont([
-                            'size'       => '12',
-                            'bold'       =>  true
+                            'size' => '12',
+                            'bold' => true,
                         ]);
 
                         $cells->setAlignment('center');
@@ -420,9 +397,8 @@ class PrepopStatisticsController extends Controller
                     });
 
                     //fill in the data
-                    foreach($latestPrepopQueriedStats as $stat)
-                    {
-                        switch($grouping) {
+                    foreach ($latestPrepopQueriedStats as $stat) {
+                        switch ($grouping) {
                             case 'affiliate_id':
                                 $date = $dateRange;
                                 $affiliate_id = $stat->affiliate_id;
@@ -523,26 +499,25 @@ class PrepopStatisticsController extends Controller
                             $stat->prepop_count,
                             $stat->no_prepop_count,
                             $stat->prepop_with_errors_count,
-                            "=(J$rowNumber/I$rowNumber)",//$prepop_percentage,
-                            "=(K$rowNumber/I$rowNumber)",//$no_prepop_percentage,
-                            "=(L$rowNumber/I$rowNumber)",//$error_percentage,
+                            "=(J$rowNumber/I$rowNumber)", //$prepop_percentage,
+                            "=(K$rowNumber/I$rowNumber)", //$no_prepop_percentage,
+                            "=(L$rowNumber/I$rowNumber)", //$error_percentage,
                             // $stat->profit_margin
                         ]);
 
-                        
                     }
 
                     //formatting of margin percentage
                     $sheet->setColumnFormat([
-                        'M2:M'.$rowNumber => '00.00%'
+                        'M2:M'.$rowNumber => '00.00%',
                     ]);
 
                     $sheet->setColumnFormat([
-                        'N2:N'.$rowNumber => '00.00%'
+                        'N2:N'.$rowNumber => '00.00%',
                     ]);
 
                     $sheet->setColumnFormat([
-                        'O2:O'.$rowNumber => '00.00%'
+                        'O2:O'.$rowNumber => '00.00%',
                     ]);
 
                     // $sheet->setColumnFormat([
@@ -553,14 +528,11 @@ class PrepopStatisticsController extends Controller
 
             $file_path = storage_path('downloads').'/'.$reportTitle.'.xls';
 
-            if(file_exists($file_path))
-            {
-                return response()->download($file_path,$reportTitle.'.xls',[
-                    'Content-Length: '.filesize($file_path)
+            if (file_exists($file_path)) {
+                return response()->download($file_path, $reportTitle.'.xls', [
+                    'Content-Length: '.filesize($file_path),
                 ]);
-            }
-            else
-            {
+            } else {
                 exit("Requested file $file_path  does not exist on our server!");
             }
         }
@@ -586,7 +558,7 @@ class PrepopStatisticsController extends Controller
             11 => 'prepop_with_errors_count',
             12 => 'no_prepop_percentage',
             13 => 'prepop_with_errors_percentage',
-            14 => 'profit_margin'
+            14 => 'profit_margin',
         ];
 
         //$paramSearch = $inputs['search']['value'];
@@ -597,10 +569,8 @@ class PrepopStatisticsController extends Controller
         $affiliateID = $inputs['affiliate_id'];
 
         //determine the right value for date from and date to
-        if(!empty($predefinedDate) || $predefinedDate!='')
-        {
-            switch($predefinedDate)
-            {
+        if (! empty($predefinedDate) || $predefinedDate != '') {
+            switch ($predefinedDate) {
                 case 'yesterday':
 
                     $dateFrom = Carbon::now()->subDay()->toDateString();
@@ -622,15 +592,11 @@ class PrepopStatisticsController extends Controller
 
                     break;
             }
-        }
-        else
-        {
-            if(empty($dateFrom)) {
+        } else {
+            if (empty($dateFrom)) {
 
                 $dateFrom = $dateTo;
-            }
-            else if(empty($dateTo))
-            {
+            } elseif (empty($dateTo)) {
                 $dateTo = $dateFrom;
             }
         }
@@ -652,19 +618,18 @@ class PrepopStatisticsController extends Controller
         ];
 
         $stats = PrepopStatistic::getStatistics($params)->get();
-        
+
         $responseData = [
             'records' => $stats,
-            'params'    => $params,
-            'report_title' => 'prepop_'.$dateFrom.'_'.$dateTo
+            'params' => $params,
+            'report_title' => 'prepop_'.$dateFrom.'_'.$dateTo,
         ];
 
-        if(isset($inputs['order']))
-        {
+        if (isset($inputs['order'])) {
             $responseData['order_column'] = $inputs['order'][0]['column'];
             $responseData['order_dir'] = $inputs['order'][0]['dir'];
         }
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 }

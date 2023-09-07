@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AffiliateApiConfigs extends Migration
 {
@@ -15,8 +15,8 @@ class AffiliateApiConfigs extends Migration
         Schema::create('affiliate_api_configs', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('affiliate_id')->unsigned()->index()->nullable();
-            $table->string('campaign_type_order',100)->default('[1, 2, 5]');
-            $table->string('excluded_campaign_id',254)->default('[]');
+            $table->string('campaign_type_order', 100)->default('[1, 2, 5]');
+            $table->string('excluded_campaign_id', 254)->default('[]');
             $table->integer('display_limit');
             $table->timestamps();
 

@@ -1,26 +1,24 @@
 <?php
 
 namespace App\Http\Controllers;
-use Log;
+
+use App\Advertiser;
+use App\Affiliate;
+use App\Campaign;
+use App\Commands\GetUserActionPermission;
+use App\FilterType;
+use App\Http\Requests\AdvertiserRequest;
+use Bus;
+use Carbon;
 use DB;
 use Illuminate\Http\Request;
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\AdvertiserRequest;
-use App\Advertiser;
-use Bus;
-use App\Commands\GetUserActionPermission;
-use App\Affiliate;
-use App\FilterType;
+use Log;
 use Session;
-use Carbon;
-use App\Campaign;
-use GetAdvertisersCompanyIDPair;
 
 class AdvertiserController extends Controller
 {
-
     protected $canEdit = false;
+
     protected $canDelete = false;
 
     public function __construct()
@@ -39,14 +37,13 @@ class AdvertiserController extends Controller
         //get the user
         $user = auth()->user();
 
-        $this->canEdit = Bus::dispatch(new GetUserActionPermission($user,'use_edit_advertiser'));
-        $this->canDelete = Bus::dispatch(new GetUserActionPermission($user,'use_delete_advertiser'));
+        $this->canEdit = Bus::dispatch(new GetUserActionPermission($user, 'use_edit_advertiser'));
+        $this->canDelete = Bus::dispatch(new GetUserActionPermission($user, 'use_delete_advertiser'));
     }
 
     /**
      * Display a listing of the resource. This is a server side processing
      *
-     * @param Request $request
      * @return mixed
      */
     public function index(Request $request)
@@ -67,26 +64,25 @@ class AdvertiserController extends Controller
             1 => 'company',
             2 => 'website_url',
             3 => 'address',
-            4 => 'status'
+            4 => 'status',
         ];
 
-        $totalFiltered = Advertiser::searchAdvertisers($param,0,null)->count();
-        $advertisers = Advertiser::searchAdvertisers($param,$start,$length)->orderBy($columns[$orderCol],$orderDir)->get();
+        $totalFiltered = Advertiser::searchAdvertisers($param, 0, null)->count();
+        $advertisers = Advertiser::searchAdvertisers($param, $start, $length)->orderBy($columns[$orderCol], $orderDir)->get();
 
-        foreach($advertisers as $advertiser)
-        {
+        foreach ($advertisers as $advertiser) {
             $data = [];
 
             //create advertise id html
-            array_push($data,$advertiser->id);
+            array_push($data, $advertiser->id);
 
             //create the company html
             $companyHTML = '<span id="adv-'.$advertiser->id.'-comp">'.$advertiser->company.'</span>';
-            array_push($data,$companyHTML);
+            array_push($data, $companyHTML);
 
             //create the website url html
             $websiteURLHTML = '<a href="'.$advertiser->website_url.'" target="_blank"><span id="adv-'.$advertiser->id.'-web">'.$advertiser->website_url.'</span></a>';
-            array_push($data,$websiteURLHTML);
+            array_push($data, $websiteURLHTML);
 
             //create contact details html
             $addressHTML = '<span class="glyphicon glyphicon-envelope"></span> <span id="adv-'.$advertiser->id.'-add">'.$advertiser->address.'</span><br>';
@@ -94,43 +90,41 @@ class AdvertiserController extends Controller
             $stateHTML = ' <span id="adv-'.$advertiser->id.'-ste">'.$advertiser->state.'</span>';
             $zipHTML = ' <span id="adv-'.$advertiser->id.'-zip">'.$advertiser->zip.'</span><br><span class="glyphicon glyphicon-phone-alt"></span>';
             $phoneHTML = '<span id="adv-'.$advertiser->id.'-phn">'.$advertiser->phone.'</span>';
-            array_push($data,$addressHTML.$cityHTML.$stateHTML.$zipHTML.$phoneHTML);
+            array_push($data, $addressHTML.$cityHTML.$stateHTML.$zipHTML.$phoneHTML);
 
             //create the status html
             $adv_stat = $advertiser->status == 1 ? 'Active' : 'Inactive';
             $statusHTML = '<span id="adv-'.$advertiser->id.'-stat" data-status="'.$advertiser->status.'">'.$adv_stat.'</span>';
-            array_push($data,$statusHTML);
+            array_push($data, $statusHTML);
 
             //construct the action buttons
             $hidden = '<input type="hidden" id="adv-'.$advertiser->id.'-desc" value="'.$advertiser->description.'"/>';
 
             //determine if current user do have edit and delete permissions for advertisers
-            $editButton='';
+            $editButton = '';
             $deleteButton = '';
 
-            if($this->canEdit)
-            {
+            if ($this->canEdit) {
                 $editButton = '<button class="editAdvertiser btn-actions btn btn-primary" title="Edit" data-id="'.$advertiser->id.'"><span class="glyphicon glyphicon-pencil"></span></button>';
             }
 
-            if($this->canDelete)
-            {
+            if ($this->canDelete) {
                 $deleteButton = '<button class="deleteAdvertiser btn-actions btn btn-danger" title="Delete" data-id="'.$advertiser->id.'"><span class="glyphicon glyphicon-trash"></span></button>';
             }
 
-            array_push($data,$hidden.$editButton.$deleteButton);
+            array_push($data, $hidden.$editButton.$deleteButton);
 
-            array_push($advertisersData,$data);
+            array_push($advertisersData, $data);
         }
 
-        $responseData = array(
-            "draw"            => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
-            "recordsTotal"    => $totalRecords,  // total number of records
-            "recordsFiltered" => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
-            "data"            => $advertisersData   // total data array
-        );
+        $responseData = [
+            'draw' => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
+            'recordsTotal' => $totalRecords,  // total number of records
+            'recordsFiltered' => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
+            'data' => $advertisersData,   // total data array
+        ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
     /**
@@ -171,6 +165,7 @@ class AdvertiserController extends Controller
 
         $states_cities = config('constants.US_STATES_CITIES');
         $cities = $states_cities[$name];
+
         return $cities;
     }
 
@@ -179,7 +174,7 @@ class AdvertiserController extends Controller
         $id = $request->input('id');
 
         return \Bus::dispatch(
-            new \GetAvailableUsers('advertisers',$id)
+            new \GetAvailableUsers('advertisers', $id)
         );
     }
 
@@ -196,27 +191,25 @@ class AdvertiserController extends Controller
     /**
      * Store a newly created advertiser resource in storage.
      *
-     * @param AdvertiserRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(
         AdvertiserRequest $request,
         \App\Http\Services\UserActionLogger $userAction
-        )
-    {
+    ) {
         $inputs = $request->all();
         $advertiser = Advertiser::create($inputs);
 
         $responseData = [
-            'id'=>$advertiser->id,
+            'id' => $advertiser->id,
             'canEdit' => $this->canEdit,
-            'canDelete' => $this->canDelete
+            'canDelete' => $this->canDelete,
         ];
 
         //Action Logger
         $userAction->logger(4, null, $advertiser->id, null, $advertiser->toArray());
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
     /**
@@ -244,16 +237,13 @@ class AdvertiserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param AdvertiserRequest $request
-     * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(
-        AdvertiserRequest  $request,
+        AdvertiserRequest $request,
         \App\Http\Services\UserActionLogger $userAction,
         $id
-        )
-    {
+    ) {
         //
 
         $inputs = $request->all();
@@ -263,16 +253,16 @@ class AdvertiserController extends Controller
 
         $current_state = $advertiser->toArray(); //For Logging
 
-        $advertiser->company     = $inputs['company'];
+        $advertiser->company = $inputs['company'];
         $advertiser->website_url = $inputs['website_url'];
         //$advertiser->user_id     = $inputs['user_id'];
-        $advertiser->phone       = $inputs['phone'];
-        $advertiser->address     = $inputs['address'];
-        $advertiser->city        = $inputs['city'];
-        $advertiser->state       = $inputs['state'];
-        $advertiser->zip         = $inputs['zip'];
+        $advertiser->phone = $inputs['phone'];
+        $advertiser->address = $inputs['address'];
+        $advertiser->city = $inputs['city'];
+        $advertiser->state = $inputs['state'];
+        $advertiser->zip = $inputs['zip'];
         $advertiser->description = $inputs['description'];
-        $advertiser->status      = $inputs['status'];
+        $advertiser->status = $inputs['status'];
         $advertiser->save();     //save updates
 
         //Action Logger
@@ -280,20 +270,18 @@ class AdvertiserController extends Controller
 
         //return  'Advertiser with ID '.$id.' has been updated';
         //response to browser jason data
-        return response()->json(['id'=>$id],200);
+        return response()->json(['id' => $id], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param Request $request
      * @return string
      */
     public function destroy(
         Request $request,
         \App\Http\Services\UserActionLogger $userAction
-        )
-    {
+    ) {
         $advertiser = Advertiser::find($request->input('id'));
 
         //Action Logger
@@ -301,7 +289,7 @@ class AdvertiserController extends Controller
 
         $advertiser->delete();
 
-        return  'Advertiser with ID '.$request->input('id').' has been deleted';
+        return 'Advertiser with ID '.$request->input('id').' has been deleted';
     }
 
     /**
@@ -321,26 +309,25 @@ class AdvertiserController extends Controller
      */
     public function campaigns()
     {
-        $advertisers = array_merge(array('0'=>''), Advertiser::lists('company','id')->toArray());
+        $advertisers = array_merge(['0' => ''], Advertiser::pluck('company', 'id')->toArray());
 
-        $affiliates = Affiliate::select('id',DB::raw('CONCAT(id, " - ",company) AS company_name'))
-            ->orderBy('id','asc')
-            ->lists('company_name','id')->toArray();
+        $affiliates = Affiliate::select('id', DB::raw('CONCAT(id, " - ",company) AS company_name'))
+            ->orderBy('id', 'asc')
+            ->pluck('company_name', 'id')->toArray();
 
         $lead_types = config('constants.LEAD_CAP_TYPES');
         $campaign_types = config('constants.CAMPAIGN_TYPES');
 
-        $filter_types = FilterType::select('id',DB::raw('CONCAT(type, " - ",name) AS filter_name'))
-            ->orderBy('filter_name','asc')
-            ->lists('filter_name','id')->toArray();
+        $filter_types = FilterType::select('id', DB::raw('CONCAT(type, " - ",name) AS filter_name'))
+            ->orderBy('filter_name', 'asc')
+            ->pluck('filter_name', 'id')->toArray();
 
-        return view('advertiser.campaigns',compact('advertisers','lead_types','totalCampaignCount','affiliates','filter_types','campaign_types'));
+        return view('advertiser.campaigns', compact('advertisers', 'lead_types', 'totalCampaignCount', 'affiliates', 'filter_types', 'campaign_types'));
     }
 
     /**
      * Search leads page
      *
-     * @param Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function searchLeads(Request $request)
@@ -351,30 +338,25 @@ class AdvertiserController extends Controller
         $inputs = $request->all();
         $leads = [];
 
-        if(count($inputs)>0)
-        {
+        if (count($inputs) > 0) {
             $leads = Lead::searchLeads($inputs)->get();
         }
 
-        session()->put('searched_leads',$leads);
+        session()->put('searched_leads', $leads);
 
-        if(count($leads)>0)
-        {
-            session()->flash('searched_searched_leads',$leads);
-        }
-        else
-        {
+        if (count($leads) > 0) {
+            session()->flash('searched_searched_leads', $leads);
+        } else {
             //remove the leads array object in the session
             session()->pull('searched_searched_leads');
         }
 
-        return view('advertiser.searchleads',compact('leads','inputs'));
+        return view('advertiser.searchleads', compact('leads', 'inputs'));
     }
 
     /**
      * for revenueStats
      *
-     * @param Request $request
      * @return \Illuminate\View\View
      */
     public function revenueStatistics(Request $request)
@@ -385,30 +367,25 @@ class AdvertiserController extends Controller
         $inputs = $request->all();
         $leads = [];
 
-        if(count($inputs)>0)
-        {
+        if (count($inputs) > 0) {
             $leads = Lead::getRevenueStats($inputs)->get();
         }
 
-        session()->put('revenue_leads',$leads);
+        session()->put('revenue_leads', $leads);
 
-        if(count($leads)>0)
-        {
-            session()->flash('searched_revenue_leads',$leads);
-        }
-        else
-        {
+        if (count($leads) > 0) {
+            session()->flash('searched_revenue_leads', $leads);
+        } else {
             //remove the leads array object in the session
             session()->pull('searched_revenue_leads');
         }
 
-        return view('advertiser.revenueStats',compact('leads','inputs'));
+        return view('advertiser.revenueStats', compact('leads', 'inputs'));
     }
 
     /**
      * Top 10 campaigns by revenue yesterday
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function topTenCampaignsByRevenueYesterday(Request $request)
@@ -416,7 +393,7 @@ class AdvertiserController extends Controller
         $yesterday = Carbon::now()->subDay()->toDateString();
         $user = $request->user();
 
-        $selectSQL = "SELECT leads.campaign_id,CONCAT(campaigns.name,'(',leads.campaign_id,')') AS campaign, (SUM(leads.received) - SUM(leads.payout)) AS profit, SUM(leads.received) AS revenue, SUM(leads.payout) AS cost, leads.created_at FROM leads INNER JOIN campaigns ON leads.campaign_id=campaigns.id WHERE leads.lead_status=1 AND DATE(leads.created_at) = DATE('".$yesterday."') AND leads.campaign_id=(SELECT campaigns.id FROM campaigns WHERE campaigns.advertiser_id=".$user->advertiser->id.") GROUP BY leads.campaign_id ORDER BY profit DESC, revenue DESC LIMIT 10";
+        $selectSQL = "SELECT leads.campaign_id,CONCAT(campaigns.name,'(',leads.campaign_id,')') AS campaign, (SUM(leads.received) - SUM(leads.payout)) AS profit, SUM(leads.received) AS revenue, SUM(leads.payout) AS cost, leads.created_at FROM leads INNER JOIN campaigns ON leads.campaign_id=campaigns.id WHERE leads.lead_status=1 AND DATE(leads.created_at) = DATE('".$yesterday."') AND leads.campaign_id=(SELECT campaigns.id FROM campaigns WHERE campaigns.advertiser_id=".$user->advertiser->id.') GROUP BY leads.campaign_id ORDER BY profit DESC, revenue DESC LIMIT 10';
         $campaigns = DB::select($selectSQL);
 
         // Log::info('(Advertiser)Top 10 Campaign Revenue per day: '.$selectSQL);
@@ -427,7 +404,6 @@ class AdvertiserController extends Controller
     /**
      * Top 10 campaigns by revenue from the current week
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function topTenCampaignsByRevenueForCurrentWeek(Request $request)
@@ -435,7 +411,7 @@ class AdvertiserController extends Controller
         $currentDate = Carbon::now()->toDateString();
         $user = $request->user();
 
-        $selectSQL = "SELECT leads.campaign_id,CONCAT(campaigns.name,'(',leads.campaign_id,')') AS campaign, (SUM(leads.received) - SUM(leads.payout)) AS profit, SUM(leads.received) AS revenue, SUM(leads.payout) AS cost, leads.created_at FROM leads INNER JOIN campaigns ON leads.campaign_id=campaigns.id WHERE leads.lead_status=1 AND YEARWEEK(DATE(leads.created_at)) = YEARWEEK(DATE('".$currentDate."')) AND leads.campaign_id=(SELECT campaigns.id FROM campaigns WHERE campaigns.advertiser_id=".$user->advertiser->id.") GROUP BY leads.campaign_id ORDER BY profit DESC, revenue DESC LIMIT 10";
+        $selectSQL = "SELECT leads.campaign_id,CONCAT(campaigns.name,'(',leads.campaign_id,')') AS campaign, (SUM(leads.received) - SUM(leads.payout)) AS profit, SUM(leads.received) AS revenue, SUM(leads.payout) AS cost, leads.created_at FROM leads INNER JOIN campaigns ON leads.campaign_id=campaigns.id WHERE leads.lead_status=1 AND YEARWEEK(DATE(leads.created_at)) = YEARWEEK(DATE('".$currentDate."')) AND leads.campaign_id=(SELECT campaigns.id FROM campaigns WHERE campaigns.advertiser_id=".$user->advertiser->id.') GROUP BY leads.campaign_id ORDER BY profit DESC, revenue DESC LIMIT 10';
         $campaigns = DB::select($selectSQL);
 
         // Log::info('(Advertiser)Top 10 Campaign Revenue per week: '.$selectSQL);
@@ -446,7 +422,6 @@ class AdvertiserController extends Controller
     /**
      * Top 10 campaigns by revenue from the current month
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function topTenCampaignsByRevenueForCurrentMonth(Request $request)
@@ -454,7 +429,7 @@ class AdvertiserController extends Controller
         $currentDate = Carbon::now()->toDateString();
         $user = $request->user();
 
-        $selectSQL = "SELECT leads.campaign_id,CONCAT(campaigns.name,'(',leads.campaign_id,')') AS campaign, (SUM(leads.received) - SUM(leads.payout)) AS profit, SUM(leads.received) AS revenue, SUM(leads.payout) AS cost, leads.created_at FROM leads INNER JOIN campaigns ON leads.campaign_id=campaigns.id WHERE leads.lead_status=1 AND MONTH(DATE(leads.created_at)) = MONTH(DATE('".$currentDate."')) AND leads.campaign_id=(SELECT campaigns.id FROM campaigns WHERE campaigns.advertiser_id=".$user->advertiser->id.") GROUP BY leads.campaign_id ORDER BY profit DESC, revenue DESC LIMIT 10";
+        $selectSQL = "SELECT leads.campaign_id,CONCAT(campaigns.name,'(',leads.campaign_id,')') AS campaign, (SUM(leads.received) - SUM(leads.payout)) AS profit, SUM(leads.received) AS revenue, SUM(leads.payout) AS cost, leads.created_at FROM leads INNER JOIN campaigns ON leads.campaign_id=campaigns.id WHERE leads.lead_status=1 AND MONTH(DATE(leads.created_at)) = MONTH(DATE('".$currentDate."')) AND leads.campaign_id=(SELECT campaigns.id FROM campaigns WHERE campaigns.advertiser_id=".$user->advertiser->id.') GROUP BY leads.campaign_id ORDER BY profit DESC, revenue DESC LIMIT 10';
         $campaigns = DB::select($selectSQL);
 
         return response()->json($campaigns);
@@ -463,25 +438,23 @@ class AdvertiserController extends Controller
     /**
      * Different lead counts
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function leadCounts(Request $request)
     {
         $user = $request->user();
 
-        $selectSQL = "SELECT (CASE WHEN lead_status=0 THEN '#failed-leads' WHEN lead_status=1 THEN '#success-leads' WHEN lead_status=2 THEN '#rejected-leads' WHEN lead_status=3 THEN '#pending-leads' ELSE '#nah' END) AS lead_type, COUNT(id) AS lead_count FROM leads WHERE campaign_id=(SELECT campaigns.id FROM campaigns WHERE campaigns.advertiser_id=".$user->advertiser->id.") GROUP BY lead_status ORDER BY lead_status";
+        $selectSQL = "SELECT (CASE WHEN lead_status=0 THEN '#failed-leads' WHEN lead_status=1 THEN '#success-leads' WHEN lead_status=2 THEN '#rejected-leads' WHEN lead_status=3 THEN '#pending-leads' ELSE '#nah' END) AS lead_type, COUNT(id) AS lead_count FROM leads WHERE campaign_id=(SELECT campaigns.id FROM campaigns WHERE campaigns.advertiser_id=".$user->advertiser->id.') GROUP BY lead_status ORDER BY lead_status';
         $counts = DB::select($selectSQL);
         $total = 0;
 
-        foreach($counts as $val)
-        {
+        foreach ($counts as $val) {
             $total += $val->lead_count;
         }
 
         $totalArray = ['lead_type' => '#total-leads', 'lead_count' => $total];
 
-        array_push($counts,$totalArray);
+        array_push($counts, $totalArray);
 
         return response()->json($counts);
     }
@@ -489,7 +462,6 @@ class AdvertiserController extends Controller
     /**
      * Will return active campaigns
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function activeCampaigns(Request $request)
@@ -498,13 +470,13 @@ class AdvertiserController extends Controller
         $param['advertiser_id'] = $user->advertiser->id;
 
         $campaigns = Campaign::activeCampaigns($param)->get();
+
         return response()->json($campaigns);
     }
 
     /**
      * This will determine if certain advertiser is active.
      *
-     * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function status($id)
@@ -513,13 +485,12 @@ class AdvertiserController extends Controller
 
         $response = [];
 
-        if($advertiser->exists())
-        {
+        if ($advertiser->exists()) {
             $response['advertiser_id'] = $advertiser->id;
             $response['name'] = $advertiser->company." ($advertiser->id)";
             $response['active'] = $advertiser->status == 1;
         }
 
-        return response()->json($response,200);
+        return response()->json($response, 200);
     }
 }

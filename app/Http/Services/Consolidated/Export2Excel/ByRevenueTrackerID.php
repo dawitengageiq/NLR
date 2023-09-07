@@ -1,7 +1,6 @@
 <?php
-namespace App\Http\Services\Consolidated\Export2Excel;
 
-use Carbon\Carbon;
+namespace App\Http\Services\Consolidated\Export2Excel;
 
 use App\ConsolidatedGraph;
 
@@ -13,10 +12,10 @@ class ByRevenueTrackerID extends \App\Http\Services\Consolidated\GraphByRevenueT
 {
     /**
      * Get the consilidated data to be use in excel file.
-     * @model ConsolidatedGraph.
      *
+     * @model ConsolidatedGraph.
      */
-    public function getConsolidatedData ()
+    public function getConsolidatedData()
     {
 
         $this->records = $this->model
@@ -58,7 +57,7 @@ class ByRevenueTrackerID extends \App\Http\Services\Consolidated\GraphByRevenueT
                 'mp_per_views'
             )
             ->whereIn('revenue_tracker_id', $this->revenueTrackerIDs)
-    		->whereDate('created_at', '=', $this->date)
-    		->get();
+            ->whereDate('created_at', '=', $this->date)
+            ->get();
     }
 }

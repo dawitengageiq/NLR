@@ -10,28 +10,29 @@ namespace App\Helpers;
 
 use App\AffiliateReport;
 use App\AffiliateRevenueTracker;
-use Illuminate\Database\QueryException;
-use Log;
 use App\Campaign;
 use Carbon\Carbon;
+use Illuminate\Database\QueryException;
+use Log;
 
-class CPAWallJobToShopHelper {
-
+class CPAWallJobToShopHelper
+{
     private $cpaWallJobToShopCampaignID;
+
     private $dateFrom;
+
     private $dateTo;
+
     private $baseURL;
+
     private $parser;
 
     /**
      * CPAWallJobToShopHelper constructor
      *
-     * @param int $cpaWallJobToShopCampaignID
-     * @param Carbon $dateFrom
-     * @param Carbon $dateTo
-     * @param JSONParser $parser
+     * @param  int  $cpaWallJobToShopCampaignID
      */
-    public function __construct($cpaWallJobToShopCampaignID,Carbon $dateFrom, Carbon $dateTo, JSONParser $parser)
+    public function __construct($cpaWallJobToShopCampaignID, Carbon $dateFrom, Carbon $dateTo, JSONParser $parser)
     {
         $this->dateFrom = $dateFrom;
         $this->dateTo = $dateTo;
@@ -47,69 +48,58 @@ class CPAWallJobToShopHelper {
     {
         $campaign = Campaign::find($this->cpaWallJobToShopCampaignID);
 
-        if($this->cpaWallJobToShopCampaignID>0 && $campaign->exists())
-        {
+        if ($this->cpaWallJobToShopCampaignID > 0 && $campaign->exists()) {
             $refDate = $this->dateFrom;
             $proceed = false;
 
-            do{
+            do {
 
                 $url = $this->baseURL.'&data_start='.$refDate->toDateString().'&data_end='.$refDate->toDateString();
                 Log::info("JobToShop URL: $url");
 
                 $response = $this->parser->getDataArrayJSON($url);
 
-                if($this->parser->getErrorCode()!=200)
-                {
+                if ($this->parser->getErrorCode() != 200) {
                     Log::info('There is problem with the server!');
+
                     continue;
                 }
 
                 //check if there is response
-                if(isset($response['response']))
-                {
+                if (isset($response['response'])) {
                     $responseArray = $response['response'];
 
                     //log the errors
-                    if( isset($responseArray['errorMessage']) &&
-                        $responseArray['errorMessage']!=null &&
-                        $responseArray['errorMessage']!='' )
-                    {
+                    if (isset($responseArray['errorMessage']) &&
+                        $responseArray['errorMessage'] != null &&
+                        $responseArray['errorMessage'] != '') {
                         Log::info($responseArray['errorMessage']);
-                    }
-                    else
-                    {
+                    } else {
                         //check if there is response data
-                        if(isset($responseArray['data']))
-                        {
+                        if (isset($responseArray['data'])) {
                             $responseData = $responseArray['data']['data'];
 
-                            foreach($responseData as $data)
-                            {
+                            foreach ($responseData as $data) {
                                 $stat = $data['Stat'];
 
-                                $revenueTrackerID = str_replace('CD','', $stat['affiliate_info1']);
-                                $tracker = AffiliateRevenueTracker::where('revenue_tracker_id','=',$revenueTrackerID)->first();
+                                $revenueTrackerID = str_replace('CD', '', $stat['affiliate_info1']);
+                                $tracker = AffiliateRevenueTracker::where('revenue_tracker_id', '=', $revenueTrackerID)->first();
 
-                                if($tracker!=null)
-                                {
+                                if ($tracker != null) {
                                     $affiliateReport = AffiliateReport::firstOrNew([
                                         'affiliate_id' => $tracker->affiliate_id,
                                         'revenue_tracker_id' => $revenueTrackerID,
                                         'campaign_id' => $campaign->id,
-                                        'created_at' => $this->dateFrom->toDateString()
+                                        'created_at' => $this->dateFrom->toDateString(),
                                     ]);
 
                                     $affiliateReport->lead_count = 0;
                                     $affiliateReport->revenue = $stat['payout'];
 
-                                    try
-                                    {
+                                    try {
                                         $affiliateReport->save();
                                         Log::info("$affiliateReport->revenue_tracker_id success!");
-                                    }
-                                    catch(QueryException $e)
-                                    {
+                                    } catch (QueryException $e) {
                                         Log::info($e->getMessage());
                                         Log::info("affiliate_id: $affiliateReport->affiliate_id");
                                         Log::info("revenue_tracker_id: $affiliateReport->revenue_tracker_id");
@@ -136,13 +126,13 @@ class CPAWallJobToShopHelper {
                 $proceed = false;
                 $refDate->addDay();
 
-                $diffIndays = $refDate->diffInDays($this->dateTo,false);
+                $diffIndays = $refDate->diffInDays($this->dateTo, false);
 
-                if($diffIndays>=0){
+                if ($diffIndays >= 0) {
                     $proceed = true;
                 }
 
-            } while($proceed);
+            } while ($proceed);
 
             Log::info('JobToShop is done processing!');
         }

@@ -28,25 +28,25 @@ return [
 
     'connections' => [
         'production' => [
-            'host'      => '',
-            'username'  => '',
-            'password'  => '',
-            'key'       => '',
-            'keytext'   => '',
+            'host' => '',
+            'username' => '',
+            'password' => '',
+            'key' => '',
+            'keytext' => '',
             'keyphrase' => '',
-            'agent'     => '',
-            'timeout'   => 10,
+            'agent' => '',
+            'timeout' => 10,
         ],
         'touchmark' => [
-            'host'      => 'sftp.torchmarkcorp.com',
-            'username'  => 'ENGAGE_IQ',
-            'password'  => 'Q$buBm8+',
-            'key'       => '',
-            'keytext'   => '',
+            'host' => 'sftp.torchmarkcorp.com',
+            'username' => 'ENGAGE_IQ',
+            'password' => 'Q$buBm8+',
+            'key' => '',
+            'keytext' => '',
             'keyphrase' => '',
-            'agent'     => '',
-            'timeout'   => 30,
-        ]
+            'agent' => '',
+            'timeout' => 30,
+        ],
     ],
 
     /*

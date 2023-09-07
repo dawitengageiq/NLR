@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Http\Requests\Request;
-
 class ChangeAffiliatePasswordRequest extends Request
 {
     /**
@@ -23,7 +21,7 @@ class ChangeAffiliatePasswordRequest extends Request
      */
     public function rules()
     {
-        Validator::extend('existing_password_match', function($attribute, $value, $parameters) {
+        Validator::extend('existing_password_match', function ($attribute, $value, $parameters) {
 
             $userEmail = Auth::user()->email;
 
@@ -32,7 +30,7 @@ class ChangeAffiliatePasswordRequest extends Request
 
         return [
             'existing_password' => 'required|old_password_match',
-            'password' => 'required|confirmed|min:5'
+            'password' => 'required|confirmed|min:5',
         ];
     }
 }

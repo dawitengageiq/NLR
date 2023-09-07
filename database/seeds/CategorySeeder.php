@@ -11,24 +11,24 @@ class CategorySeeder extends Seeder
      */
     public function run()
     {
-    	App\Category::firstOrCreate([
-            'name' 		=> 'Regular',
-            'status' 	=> 1
+        App\Category::firstOrCreate([
+            'name' => 'Regular',
+            'status' => 1,
         ]);
 
         App\Category::firstOrCreate([
-            'name' 		=> 'Market Research',
-            'status' 	=> 1
+            'name' => 'Market Research',
+            'status' => 1,
         ]);
 
         App\Category::firstOrCreate([
-            'name' 		=> 'Work At Home',
-            'status' 	=> 1
+            'name' => 'Work At Home',
+            'status' => 1,
         ]);
 
         App\Category::firstOrCreate([
-            'name' 		=> 'Sweepstakes',
-            'status' 	=> 1
-        ]);        
+            'name' => 'Sweepstakes',
+            'status' => 1,
+        ]);
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateCampaignIpsTable extends Migration
 {
@@ -15,7 +15,7 @@ class CreateCampaignIpsTable extends Migration
         Schema::create('campaign_ips', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('campaign_id')->unsigned()->index();
-            $table->string('ip',255);
+            $table->string('ip', 255);
             $table->timestamps();
 
             $table->foreign('campaign_id')->references('id')->on('campaigns')->onDelete('cascade');

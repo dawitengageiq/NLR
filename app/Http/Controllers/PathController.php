@@ -2,12 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
 use App\Path;
+use Illuminate\Http\Request;
 
 class PathController extends Controller
 {
@@ -34,7 +30,6 @@ class PathController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -60,7 +55,7 @@ class PathController extends Controller
      */
     public function show($id)
     {
-        
+
     }
 
     /**
@@ -77,7 +72,6 @@ class PathController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -90,10 +84,11 @@ class PathController extends Controller
             'url' => 'required|unique:paths,url,'.$id.'|max:255|url',
         ]);
 
-        $path = Path::find($id);       
-        $path->name = $request->input('name');     
+        $path = Path::find($id);
+        $path->name = $request->input('name');
         $path->url = $request->input('url');
         $path->save();
+
         return $id;
     }
 

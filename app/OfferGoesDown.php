@@ -6,18 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class OfferGoesDown extends Model
 {
-	protected $connection;
+    protected $connection;
+
     protected $fillable = [
         'campaign_id',
         'affiliates',
         'revenue',
-        'date'
+        'date',
     ];
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') == 'reports') {
+        if (config('app.type') == 'reports') {
             $this->connection = 'secondary';
         }
     }

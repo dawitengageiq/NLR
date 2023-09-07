@@ -76,13 +76,13 @@
 <!-- ADD Campaign Modal -->
 <div class="modal fade" id="addCmpFormModal" tabindex="-1" role="dialog" aria-labelledby="addCmpFormModal">
 <?php
-	$attributes = array(
+	$attributes = [
 		'url' 					=> 'add_campaign',
 		'class'					=> 'form_with_file',
 		'data-confirmation' 	=> '',
 		'data-process' 			=> 'add_campaign',
 		'files'					=> true
-	);
+	];
 ?>
 {!! Form::open($attributes) !!}
   <div class="modal-dialog modal-lg" role="document">

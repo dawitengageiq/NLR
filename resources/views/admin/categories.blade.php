@@ -20,12 +20,12 @@
 <div id="category_form_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <?php
-            $attributes = array(
+            $attributes = [
                 'url' 				=> url('add_category'),
                 'class'				=> 'this_form',
                 'data-confirmation' => '',
                 'data-process' 		=> 'add_category'
-            );
+            ];
 
 			$user = auth()->user();
 			$this->canEdit = Bus::dispatch(new GetUserActionPermission($user,'use_edit_category'));

@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AddWebsiteToAffiliateRevenueTrackersTable extends Migration
 {
@@ -13,7 +13,7 @@ class AddWebsiteToAffiliateRevenueTrackersTable extends Migration
     public function up()
     {
         Schema::table('affiliate_revenue_trackers', function (Blueprint $table) {
-            $table->string('website',100)->nullable();
+            $table->string('website', 100)->nullable();
         });
     }
 
@@ -24,8 +24,7 @@ class AddWebsiteToAffiliateRevenueTrackersTable extends Migration
      */
     public function down()
     {
-        Schema::table('affiliate_revenue_trackers', function($table)
-        {
+        Schema::table('affiliate_revenue_trackers', function ($table) {
             $table->dropColumn('website');
         });
     }

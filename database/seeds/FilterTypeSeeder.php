@@ -18,8 +18,8 @@ class FilterTypeSeeder extends Seeder
 
         App\FilterType::firstOrCreate([
             'type' => 'profile',
-			'name' => 'age',
-		]);
+            'name' => 'age',
+        ]);
 
         App\FilterType::firstOrCreate([
             'type' => 'profile',
@@ -66,7 +66,7 @@ class FilterTypeSeeder extends Seeder
             'name' => 'mobile_view',
         ]);
 
-         App\FilterType::firstOrCreate([
+        App\FilterType::firstOrCreate([
             'type' => 'custom',
             'name' => 'desktop_view',
         ]);

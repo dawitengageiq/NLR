@@ -2,13 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
 use App\Http\Requests\GalleryRequest;
-
+use Illuminate\Http\Request;
 use Storage;
 
 class GalleryController extends Controller
@@ -19,41 +14,43 @@ class GalleryController extends Controller
         $col_num = 4;
         $counter = 0;
         $row = 0;
-        foreach($images as $image) {
+        foreach ($images as $image) {
             $gallery[$row][] = $image;
             $counter++;
-            if($counter % $col_num == 0 && $counter != 0) $row++;
+            if ($counter % $col_num == 0 && $counter != 0) {
+                $row++;
+            }
         }
 
-        foreach($gallery as $key => $row) {
-            if(count($row) < $col_num) {
-                $n = $col_num- count($row);
-                for($x = 0; $x < $n; $x++) {
+        foreach ($gallery as $key => $row) {
+            if (count($row) < $col_num) {
+                $n = $col_num - count($row);
+                for ($x = 0; $x < $n; $x++) {
                     $gallery[$key][] = '';
                 }
             }
         }
+
         return $gallery;
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param GalleryRequest $request
      * @return mixed
      */
     public function store(GalleryRequest $request)
     {
         $destinationPath = 'images/gallery/';
 
-        if($request->hasFile('image')) {
+        if ($request->hasFile('image')) {
             $file = $request->file('image');
 
             $ext = $file->getClientOriginalExtension();
-            $filename =  $request->input('name').".$ext";
-            $uploadSuccess   = $file->move($destinationPath, $filename);
-        }else {
-            if($request->input('image') != '' || !is_null($request->input('image'))) {
+            $filename = $request->input('name').".$ext";
+            $uploadSuccess = $file->move($destinationPath, $filename);
+        } else {
+            if ($request->input('image') != '' || ! is_null($request->input('image'))) {
                 $url = $request->input('image');
                 $ext = pathinfo($url, PATHINFO_EXTENSION);
                 $filename = $request->input('name').".$ext";
@@ -61,6 +58,7 @@ class GalleryController extends Controller
                 $save = file_put_contents('images/gallery/'.$filename, $file);
             }
         }
+
         return $this->show();
         //return url($destinationPath.$filename);
     }
@@ -68,7 +66,6 @@ class GalleryController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param Request $request
      * @return mixed
      */
     public function destroy(Request $request)
@@ -77,7 +74,7 @@ class GalleryController extends Controller
         // $img_path = public_path('images\gallery\\'.$img);
         $img_path = public_path($img);
 
-        if(file_exists($img_path)) { //check if file exists
+        if (file_exists($img_path)) { //check if file exists
             unlink($img_path);
         }
 

@@ -2,16 +2,12 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Job;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Contracts\Mail\Mailer;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Log;
-use PhpParser\Error;
 
-class TestJob extends Job implements SelfHandling, ShouldQueue
+class TestJob extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
@@ -27,12 +23,10 @@ class TestJob extends Job implements SelfHandling, ShouldQueue
 
     /**
      * Execute the job.
-     *
      */
     public function handle()
     {
-        if ($this->attempts() > 1)
-        {
+        if ($this->attempts() > 1) {
             return;
         }
 
@@ -40,13 +34,10 @@ class TestJob extends Job implements SelfHandling, ShouldQueue
 
         $haller['awts'] = 'array message!';
 
-        try
-        {
+        try {
             sleep(30);
             Log::info('array message daw: '.$haller['ambot']);
-        }
-        catch(\ErrorException $e)
-        {
+        } catch (\ErrorException $e) {
             Log::info($e->getCode());
             Log::info($e->getMessage());
         }

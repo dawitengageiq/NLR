@@ -2,37 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use App\Affiliate;
+use App\AffiliateReport;
 use App\AffiliateRevenueTracker;
 use App\Campaign;
 use App\Events\UserActionEvent;
 use App\HandPAffiliateReport;
+use App\Helpers\AffiliateReportExcelGeneratorHelper;
 use App\InternalIframeAffiliateReport;
+use App\Jobs\GenerateAffiliateExcelReport;
 use App\RevenueTrackerCakeStatistic;
 use App\RevenueTrackerWebsiteViewStatistic;
-use App\Affiliate;
+use Cache;
+use Carbon\Carbon;
+use Curl\Curl;
+use DB;
+use ErrorException;
+use File;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
-use App\AffiliateReport;
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use Carbon\Carbon;
-use DB;
 use Log;
 use Maatwebsite\Excel\Facades\Excel;
-use PHPExcel_Style_NumberFormat;
 use Storage;
-use File;
-use Cache;
-use ErrorException;
-use App\Helpers\AffiliateReportExcelGeneratorHelper;
-use App\Jobs\GenerateAffiliateExcelReport;
-use Curl\Curl;
 
 class AffiliateReportController extends Controller
 {
     public function __construct()
     {
-        if(config('app.type') != 'reports') {
+        if (config('app.type') != 'reports') {
             $this->middleware('auth');
             $this->middleware('admin');
         }
@@ -47,17 +44,17 @@ class AffiliateReportController extends Controller
         $allStats = HandPAffiliateReport::handPAffiliateRevenueStats($inputs);
         $stats = $allStats->get();
 
-        $affs = $stats->map(function($st) {
+        $affs = $stats->map(function ($st) {
             return $st->affiliate_id;
         });
-        $affiliates = Affiliate::whereIn('id', $affs)->lists('company', 'id');
+        $affiliates = Affiliate::whereIn('id', $affs)->pluck('company', 'id');
 
         $responseData = [
             'records' => $stats,
             'affiliates' => $affiliates,
         ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
     public function getHandPSubIDStats(Request $request)
@@ -68,16 +65,17 @@ class AffiliateReportController extends Controller
         $allStats = HandPAffiliateReport::handPAffiliateSubIDRevenueStats($inputs);
         $stats = $allStats->get();
 
-        $affs = $stats->map(function($st) {
+        $affs = $stats->map(function ($st) {
             return $st->affiliate_id;
         });
-        $affiliates = Affiliate::whereIn('id', $affs)->lists('company', 'id');
+        $affiliates = Affiliate::whereIn('id', $affs)->pluck('company', 'id');
 
         $responseData = [
             'records' => $stats,
             'affiliates' => $affiliates,
         ];
-        return response()->json($responseData,200);
+
+        return response()->json($responseData, 200);
     }
 
     public function getSubIDStats(Request $request)
@@ -88,16 +86,17 @@ class AffiliateReportController extends Controller
         $allStats = HandPAffiliateReport::handPSubIDCampaignRevenueStats($inputs);
         $stats = $allStats->get();
 
-        $cmps = $stats->map(function($st) {
+        $cmps = $stats->map(function ($st) {
             return $st->campaign_id;
         });
-        $campaigns = Campaign::whereIn('id', $cmps)->lists('name', 'id');
+        $campaigns = Campaign::whereIn('id', $cmps)->pluck('name', 'id');
 
         $responseData = [
             'records' => $stats,
             'campaigns' => $campaigns,
         ];
-        return response()->json($responseData,200);
+
+        return response()->json($responseData, 200);
     }
 
     public function getAffiliateStats(Request $request)
@@ -112,37 +111,38 @@ class AffiliateReportController extends Controller
 
         $affiliate_type = $inputs['affiliate_type'];
 
-        $affs = $stats->map(function($st) {
+        $affs = $stats->map(function ($st) {
             return $st->affiliate_id;
         });
-        $affiliates = Affiliate::whereIn('id', $affs)->lists('company', 'id');
+        $affiliates = Affiliate::whereIn('id', $affs)->pluck('company', 'id');
 
         // \Log::info(\DB::connection('secondary')->getQueryLog());
         // \Log::info(\DB::getQueryLog());
 
-        $responseData = array(
+        $responseData = [
             'records' => $stats,
             'affiliates' => $affiliates,
-        );
+        ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
-    public function getSubIDBreakdown($params, $forDownload = false) {
+    public function getSubIDBreakdown($params, $forDownload = false)
+    {
         // \DB::connection('secondary')->enableQueryLog();
         // \DB::enableQueryLog();
         $connection = config('app.type') == 'reports' ? 'mysql' : 'secondary';
         $date = [];
-        if(isset($params['period'])){
-            if($params['period']=='none' && (!empty($params['start_date']) && !empty($params['end_date']))){
+        if (isset($params['period'])) {
+            if ($params['period'] == 'none' && (! empty($params['start_date']) && ! empty($params['end_date']))) {
                 $date['from'] = $params['start_date'];
                 $date['to'] = $params['end_date'];
-            }else{
+            } else {
                 $date = AffiliateReport::getSnapShotPeriodRange($params['period']);
             }
-        }else{
+        } else {
             $date = AffiliateReport::getSnapShotPeriodRange('none');
-            if(!empty($params['start_date']) && !empty($params['end_date'])){
+            if (! empty($params['start_date']) && ! empty($params['end_date'])) {
                 $date['from'] = $params['start_date'];
                 $date['to'] = $params['end_date'];
             }
@@ -155,26 +155,26 @@ class AffiliateReportController extends Controller
 
         $gb = [];
         $where_str = '';
-        if(!isset($params['sib_s1']) || (isset($params['sib_s1']) && $params['sib_s1'] == 'true')) {
+        if (! isset($params['sib_s1']) || (isset($params['sib_s1']) && $params['sib_s1'] == 'true')) {
             $gb[] = 's1';
             $where_str .= ' AND t1.s1=t2.s1';
         }
-        if(!isset($params['sib_s2']) || (isset($params['sib_s2']) && $params['sib_s2'] == 'true')) {
+        if (! isset($params['sib_s2']) || (isset($params['sib_s2']) && $params['sib_s2'] == 'true')) {
             $gb[] = 's2';
             $where_str .= ' AND t1.s2=t2.s2';
         }
-        if(!isset($params['sib_s3']) || (isset($params['sib_s3']) && $params['sib_s3'] == 'true')) {
+        if (! isset($params['sib_s3']) || (isset($params['sib_s3']) && $params['sib_s3'] == 'true')) {
             $gb[] = 's3';
             $where_str .= ' AND t1.s3=t2.s3';
         }
-        if(!isset($params['sib_s4']) || (isset($params['sib_s4']) && $params['sib_s4'] == 'true')) {
+        if (! isset($params['sib_s4']) || (isset($params['sib_s4']) && $params['sib_s4'] == 'true')) {
             $gb[] = 's4';
             $where_str .= ' AND t1.s4=t2.s4';
-        } 
-        $gb_str = count($gb) > 0 ? 'GROUP BY ' . implode(',',$gb) : '';
+        }
+        $gb_str = count($gb) > 0 ? 'GROUP BY '.implode(',', $gb) : '';
 
         $orderBy_str = '';
-        if($forDownload) {
+        if ($forDownload) {
             $orderBy_str = 'ORDER BY t1.s1 ASC';
         }
 
@@ -195,11 +195,11 @@ class AffiliateReportController extends Controller
 
         $stats = $this->getSubIDBreakdown($inputs);
 
-        $responseData = array(
-            'records' => $stats
-        );
+        $responseData = [
+            'records' => $stats,
+        ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
     public function downloadSubIDStats(Request $request)
@@ -207,15 +207,13 @@ class AffiliateReportController extends Controller
         $inputs = $request->all();
         $connection = config('app.type') == 'reports' ? 'mysql' : 'secondary';
         // DB::enableQueryLog();
-        
+
         $stats = $this->getSubIDBreakdown($inputs, false);
 
         $reportTitle = 'AffiliateReport_'.$inputs['revenue_tracker_id'].'_SubID_Report';
-        $sheetTitle = $inputs['period'] == 'none' ? $inputs['start_date'] .'_'.$inputs['end_date'] : $inputs['period'];
-        Excel::create($reportTitle, function($excel) use($reportTitle, $sheetTitle, $stats, $inputs)
-        {
-            $excel->sheet($sheetTitle, function($sheet) use($reportTitle, $stats, $inputs)
-            {
+        $sheetTitle = $inputs['period'] == 'none' ? $inputs['start_date'].'_'.$inputs['end_date'] : $inputs['period'];
+        Excel::create($reportTitle, function ($excel) use ($sheetTitle, $stats, $inputs) {
+            $excel->sheet($sheetTitle, function ($sheet) use ($stats, $inputs) {
                 $rowNumber = 1;
 
                 //Set auto size for sheet
@@ -223,16 +221,15 @@ class AffiliateReportController extends Controller
 
                 //set up the title header row
                 $sheet->appendRow([
-                    $inputs['affiliate_id'].'/CD'.$inputs['revenue_tracker_id']
+                    $inputs['affiliate_id'].'/CD'.$inputs['revenue_tracker_id'],
                 ]);
 
                 //style the headers
-                $sheet->cells("A$rowNumber:K$rowNumber", function($cells)
-                {
+                $sheet->cells("A$rowNumber:K$rowNumber", function ($cells) {
                     // Set font
                     $cells->setFont([
-                        'size'       => '12',
-                        'bold'       =>  true
+                        'size' => '12',
+                        'bold' => true,
                     ]);
 
                     $cells->setAlignment('left');
@@ -240,7 +237,7 @@ class AffiliateReportController extends Controller
                     $cells->setBackground('#FFFF00');
                 });
                 $sheet->mergeCells("A$rowNumber:K$rowNumber");
-                ++$rowNumber;
+                $rowNumber++;
 
                 //set up the title header row
                 $sheet->appendRow([
@@ -254,16 +251,15 @@ class AffiliateReportController extends Controller
                     'Leads',
                     'Revenue',
                     'We Get',
-                    'Margin'
+                    'Margin',
                 ]);
 
                 //style the headers
-                $sheet->cells("A$rowNumber:K$rowNumber", function($cells)
-                {
+                $sheet->cells("A$rowNumber:K$rowNumber", function ($cells) {
                     // Set font
                     $cells->setFont([
-                        'size'       => '12',
-                        'bold'       =>  true
+                        'size' => '12',
+                        'bold' => true,
                     ]);
 
                     $cells->setAlignment('center');
@@ -272,9 +268,8 @@ class AffiliateReportController extends Controller
                     $cells->setFontColor('#ffffff');
                 });
 
-                foreach($stats as $stat)
-                {
-                    ++$rowNumber;
+                foreach ($stats as $stat) {
+                    $rowNumber++;
 
                     $revenue = $stat->revenue != '' ? number_format($stat->revenue, 2, '.', '') : '0.0';
                     $clicks = $stat->clicks != '' ? $stat->clicks : '0';
@@ -282,26 +277,26 @@ class AffiliateReportController extends Controller
                     $payout = $stat->payout != '' ? number_format($stat->payout, 3, '.', '') : '0.0';
                     $leads = $stat->leads != '' ? $stat->leads : '0';
                     $weGet = number_format($revenue - $payout, 2, '.', '');
-                    $margin = ($weGet == 0 || $revenue == 0) ? 0 : number_format(($weGet/$revenue),2, '.', '');
+                    $margin = ($weGet == 0 || $revenue == 0) ? 0 : number_format(($weGet / $revenue), 2, '.', '');
                     //set up the title header row
                     $sheet->appendRow([
-                       $inputs['sib_s1'] == 'true' ? $stat->s1 : '',
-                       $inputs['sib_s2'] == 'true' ? $stat->s2 : '',
-                       $inputs['sib_s3'] == 'true' ? $stat->s3 : '',
-                       $inputs['sib_s4'] == 'true' ? $stat->s4 : '',
-                       $stat->s5,
-                       $clicks,
-                       $payout,
-                       $leads,
-                       $revenue,
-                       $weGet,
-                       $margin
+                        $inputs['sib_s1'] == 'true' ? $stat->s1 : '',
+                        $inputs['sib_s2'] == 'true' ? $stat->s2 : '',
+                        $inputs['sib_s3'] == 'true' ? $stat->s3 : '',
+                        $inputs['sib_s4'] == 'true' ? $stat->s4 : '',
+                        $stat->s5,
+                        $clicks,
+                        $payout,
+                        $leads,
+                        $revenue,
+                        $weGet,
+                        $margin,
                     ]);
                 }
 
                 $lastRowNumber = $rowNumber;
 
-                ++$rowNumber;
+                $rowNumber++;
 
                 $sheet->appendRow([
                     '',
@@ -318,12 +313,11 @@ class AffiliateReportController extends Controller
                 ]);
 
                 //style the headers
-                $sheet->cells("E$rowNumber:K$rowNumber", function($cells)
-                {
+                $sheet->cells("E$rowNumber:K$rowNumber", function ($cells) {
                     // Set font
                     $cells->setFont([
-                        'size'       => '12',
-                        'bold'       =>  true
+                        'size' => '12',
+                        'bold' => true,
                     ]);
 
                     $cells->setAlignment('right');
@@ -334,29 +328,26 @@ class AffiliateReportController extends Controller
                     "G2:G$rowNumber" => '$0.000',
                     "I2:I$rowNumber" => '$0.00',
                     "J2:J$rowNumber" => '$0.00',
-                    "K2:K$rowNumber" => '0.00%'
+                    "K2:K$rowNumber" => '0.00%',
                 ]);
             });
         })->store('xlsx', storage_path('downloads'));
 
         $file_path = storage_path('downloads').'/'.$reportTitle.'.xlsx';
 
-        if(file_exists($file_path))
-        {
-            return response()->download($file_path,$reportTitle.'.xlsx',[
-                'Content-Length: '.filesize($file_path)
+        if (file_exists($file_path)) {
+            return response()->download($file_path, $reportTitle.'.xlsx', [
+                'Content-Length: '.filesize($file_path),
             ]);
-        }
-        else
-        {
+        } else {
             exit("Requested file $file_path  does not exist on our server!");
         }
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
-
-    public function getIframeWebsiteStats(Request $request){
+    public function getIframeWebsiteStats(Request $request)
+    {
 
         $inputs = $request->all();
         $searchValue = $inputs['search']['value'];
@@ -367,12 +358,9 @@ class AffiliateReportController extends Controller
         //Log::info('all_stat_count: '.$allStatCount);
         //Log::info('sql: '.RevenueTrackerCakeStatistic::websiteRevenueStatisticsForServerside($inputs)->toSql());
 
-        if($inputs['length'] != -1)
-        {
+        if ($inputs['length'] != -1) {
             $stats = $allStats->skip($inputs['start'])->take($inputs['length'])->get();
-        }
-        else
-        {
+        } else {
             //GET ALL STATS
             $stats = $allStats->get();
         }
@@ -385,69 +373,65 @@ class AffiliateReportController extends Controller
         $total_revenue = 0.0;
         $total_weget = 0.0;
 
-        foreach($stats as $stat)
-        {
+        foreach ($stats as $stat) {
             //Log::info($stat);
 
-            $revenue = $stat->revenue != null ? doubleval($stat->revenue) : 0.0;
-            $weGet = $stat->we_get != null ? doubleval($stat->we_get) : 0.0;
-            $margin = $stat->margin != null ? number_format(doubleval($stat->margin),2).'%' : 'N/A';
-            $payout = $stat->payout != null ? doubleval($stat->payout) : 0.0;
+            $revenue = $stat->revenue != null ? floatval($stat->revenue) : 0.0;
+            $weGet = $stat->we_get != null ? floatval($stat->we_get) : 0.0;
+            $margin = $stat->margin != null ? number_format(floatval($stat->margin), 2).'%' : 'N/A';
+            $payout = $stat->payout != null ? floatval($stat->payout) : 0.0;
 
             $websiteName = '<span class="revenue-tracker" data-id="'.$stat->affiliate_id.'" data-rtid="'.$stat->revenue_tracker_id.'" data-webname="'.$stat->website.'">'.$stat->website.'</span>';
 
             $data = [
                 'website_name' => $websiteName,
                 'passovers' => $stat->passovers,
-                'payout' => '$ '.number_format($payout,2),
+                'payout' => '$ '.number_format($payout, 2),
                 'leads' => $stat->leads,
-                'revenue' => '$ '.number_format($revenue,2),
-                'we_get' => '$ '.number_format($weGet,2),
-                'margin' => $margin
+                'revenue' => '$ '.number_format($revenue, 2),
+                'we_get' => '$ '.number_format($weGet, 2),
+                'margin' => $margin,
             ];
 
             $total_passovers = $total_passovers + intval($stat->passovers);
-            $total_payout = $total_payout + doubleval($stat->payout);
+            $total_payout = $total_payout + floatval($stat->payout);
             $total_leads = $total_leads + intval($stat->leads);
-            $total_revenue = $total_revenue + doubleval($revenue);
+            $total_revenue = $total_revenue + floatval($revenue);
             $total_weget = $total_weget + $weGet;
             //$total_margin = $total_margin + $margin;
 
-            array_push($statData,$data);
+            array_push($statData, $data);
         }
 
-        if($total_revenue==0)
-        {
+        if ($total_revenue == 0) {
             $totalMarginText = 'N/A';
-        }
-        else
-        {
-            $total_margin = (($total_revenue - $total_payout) / $total_revenue ) * 100.00;
-            $totalMarginText = number_format($total_margin,2).'%';
+        } else {
+            $total_margin = (($total_revenue - $total_payout) / $total_revenue) * 100.00;
+            $totalMarginText = number_format($total_margin, 2).'%';
         }
 
-        if(!empty($searchValue) || $searchValue!='')
-        {
+        if (! empty($searchValue) || $searchValue != '') {
             $totalFiltered = $allStatCount;
         }
 
-        $responseData = array(
-            "draw"            => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
-            "recordsTotal"    => $allStatCount,  // total number of records
-            "recordsFiltered" => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
-            "data"            => $statData,   // total data array
-            'totalPassovers'     => $total_passovers,
-            'totalPayout'     => '$ '.number_format($total_payout,2),
-            'totalLeads'      => $total_leads,
-            'totalRevenue'    => '$ '.number_format($total_revenue,2),
-            'totalWeGet'      => '$ '.number_format($total_weget,2),
-            'totalMargin'     => $totalMarginText
-        );
+        $responseData = [
+            'draw' => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
+            'recordsTotal' => $allStatCount,  // total number of records
+            'recordsFiltered' => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
+            'data' => $statData,   // total data array
+            'totalPassovers' => $total_passovers,
+            'totalPayout' => '$ '.number_format($total_payout, 2),
+            'totalLeads' => $total_leads,
+            'totalRevenue' => '$ '.number_format($total_revenue, 2),
+            'totalWeGet' => '$ '.number_format($total_weget, 2),
+            'totalMargin' => $totalMarginText,
+        ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
-    public function getWebsiteStats(Request $request){
+    public function getWebsiteStats(Request $request)
+    {
         // \DB::connection('secondary')->enableQueryLog();
         // \DB::enableQueryLog();
         $inputs = $request->all();
@@ -456,19 +440,19 @@ class AffiliateReportController extends Controller
 
         $stats = $allStats->get();
 
-        $rts = $stats->map(function($st) {
+        $rts = $stats->map(function ($st) {
             return $st->revenue_tracker_id;
         });
-        $websites = AffiliateRevenueTracker::whereIn('revenue_tracker_id', $rts)->lists('website', 'revenue_tracker_id');
+        $websites = AffiliateRevenueTracker::whereIn('revenue_tracker_id', $rts)->pluck('website', 'revenue_tracker_id');
 
         // \Log::info(\DB::connection('secondary')->getQueryLog());
         // \Log::info(\DB::getQueryLog());
-        $responseData = array(
+        $responseData = [
             'records' => $stats,
-            'websites' => $websites
-        );
+            'websites' => $websites,
+        ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
     public function revenueTrackerStats(Request $request)
@@ -477,23 +461,23 @@ class AffiliateReportController extends Controller
         // $searchValue = $inputs['search']['value'];
         // Log::info($request->all());
         // DB::enableQueryLog();
-        $allStats = AffiliateReport::getReports($inputs)->where(function($q) {
-            $q->where('lead_count','!=', 0)
-             ->orWhere('revenue', '!=', 0);
+        $allStats = AffiliateReport::getReports($inputs)->where(function ($q) {
+            $q->where('lead_count', '!=', 0)
+                ->orWhere('revenue', '!=', 0);
         });
         $stats = $allStats->get();
         // Log::info(DB::getQueryLog());
-        $cids = $stats->map(function($st) {
+        $cids = $stats->map(function ($st) {
             return $st->campaign_id;
         });
-        $campaigns = Campaign::whereIn('id', $cids)->lists('name', 'id');
+        $campaigns = Campaign::whereIn('id', $cids)->pluck('name', 'id');
 
-        $responseData = array(
+        $responseData = [
             'records' => $stats,
-            'campaigns' => $campaigns
-        );
+            'campaigns' => $campaigns,
+        ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
     public function iframeRevenueTrackerStats(Request $request)
@@ -505,12 +489,9 @@ class AffiliateReportController extends Controller
         $allStatCount = InternalIframeAffiliateReport::getReports($inputs)->get()->count();
         $totalFiltered = $allStatCount;
 
-        if($inputs['length'] != -1)
-        {
+        if ($inputs['length'] != -1) {
             $stats = $allStats->skip($inputs['start'])->take($inputs['length'])->get();
-        }
-        else
-        {
+        } else {
             //GET ALL STATS
             $stats = $allStats->get();
         }
@@ -520,45 +501,42 @@ class AffiliateReportController extends Controller
         $total_leads = 0;
         $total_revenue = 0.0;
 
-        foreach($stats as $stat)
-        {
-            $revenue = $stat->revenue != null ? doubleval($stat->revenue) : 0.0;
-            $leadCount = $stat->lead_count != null ? doubleval($stat->lead_count) : 0.0;
+        foreach ($stats as $stat) {
+            $revenue = $stat->revenue != null ? floatval($stat->revenue) : 0.0;
+            $leadCount = $stat->lead_count != null ? floatval($stat->lead_count) : 0.0;
 
             //$campaignName = '<span class="campaign-name" data-id="'.$stat->affiliate_id.'" data-rtid="'.$stat->revenue_tracker_id.'" data-webname="'.$stat->website.'">'.$stat->website.'</span>';
             $data = [
                 'campaign' => $stat->campaign->name,
                 'leads' => $leadCount,
-                'revenue' => '$ '.number_format($revenue,2)
+                'revenue' => '$ '.number_format($revenue, 2),
             ];
 
             $total_leads = $total_leads + $leadCount;
             $total_revenue = $total_revenue + $revenue;
 
-            array_push($statData,$data);
+            array_push($statData, $data);
         }
 
-        if(!empty($searchValue) || $searchValue!='')
-        {
+        if (! empty($searchValue) || $searchValue != '') {
             $totalFiltered = $allStatCount;
         }
 
-        $responseData = array(
-            "draw"            => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
-            "recordsTotal"    => $allStatCount,  // total number of records
-            "recordsFiltered" => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
-            "data"            => $statData,   // total data array
-            'totalLeads'     => $total_leads,
-            'totalRevenue'    => '$ '.number_format($total_revenue,2)
-        );
+        $responseData = [
+            'draw' => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
+            'recordsTotal' => $allStatCount,  // total number of records
+            'recordsFiltered' => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
+            'data' => $statData,   // total data array
+            'totalLeads' => $total_leads,
+            'totalRevenue' => '$ '.number_format($total_revenue, 2),
+        ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
     /**
      * Uploading of reports sheet
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function uploadReports(Request $request)
@@ -573,36 +551,29 @@ class AffiliateReportController extends Controller
 
         $responseData = [
             'status' => 'upload_successful',
-            'message' => 'Reports Sheet Uploaded Successful!'
+            'message' => 'Reports Sheet Uploaded Successful!',
         ];
 
-        if( $originalExtension=='xls' ||
-            $originalExtension=='xlsx' ||
-            $originalExtension=='csv')
-        {
-            if($originalExtension=='xls')
-            {
-                $originalFilename = basename($file->getClientOriginalName(), ".xls");
-            }
-            else if($originalExtension=='xlsx')
-            {
-                $originalFilename = basename($file->getClientOriginalName(), ".xlsx");
-            }
-            else if($originalExtension=='csv')
-            {
-                $originalFilename = basename($file->getClientOriginalName(), ".csv");
+        if ($originalExtension == 'xls' ||
+            $originalExtension == 'xlsx' ||
+            $originalExtension == 'csv') {
+            if ($originalExtension == 'xls') {
+                $originalFilename = basename($file->getClientOriginalName(), '.xls');
+            } elseif ($originalExtension == 'xlsx') {
+                $originalFilename = basename($file->getClientOriginalName(), '.xlsx');
+            } elseif ($originalExtension == 'csv') {
+                $originalFilename = basename($file->getClientOriginalName(), '.csv');
             }
 
             $fullFilename = $originalFilename.'_'.Carbon::today()->toDateString().'.'.$originalExtension;
 
-            if(Storage::exists('uploads/'.$fullFilename))
-            {
+            if (Storage::exists('uploads/'.$fullFilename)) {
                 //delete the old and replace with new
                 Storage::delete('uploads/'.$fullFilename);
             }
 
             //save the file to local storage
-            Storage::disk('local')->put($fullFilename,  File::get($file));
+            Storage::disk('local')->put($fullFilename, File::get($file));
 
             //copy the uploaded file to uploads
             Storage::move($fullFilename, 'uploads/'.$fullFilename);
@@ -610,78 +581,68 @@ class AffiliateReportController extends Controller
             //check if the user used the uploader file.
             $isEngageIQReportUploader = strpos($originalFilename, config('constants.ENGAGE_IQ_REPORT_EXCEL_UPLOADER'));
 
-            if(is_bool($isEngageIQReportUploader)==false)
-            {
+            if (is_bool($isEngageIQReportUploader) == false) {
                 //$originalFilename = config('constants.ENGAGE_IQ_REPORT_EXCEL_UPLOADER');
 
                 //get the file path of spreadsheet file to be read
                 $filePath = storage_path('app/uploads').'/'.$fullFilename;
-                $reader = Excel::load($filePath, function($reader) {})->all();
+                $reader = Excel::load($filePath, function ($reader) {
+                })->all();
 
                 $nonExistingCampaign = '';
 
                 //will contain problems during parsing
                 $errorMsg = '';
 
-                foreach ($reader as $sheet)
-                {
+                foreach ($reader as $sheet) {
                     $sheetTitle = $sheet->getTitle();
                     $sheetTitleArray = explode('-', $sheetTitle);
                     $campaignID = $sheetTitleArray[0];
                     $campaign = Campaign::find($campaignID);
-                    if($campaign!=null)
-                    {
-                        foreach ($sheet as $row)
-                        {
-                            if( !isset($row['date']) || !isset($row['publisher']))
-                            {
+                    if ($campaign != null) {
+                        foreach ($sheet as $row) {
+                            if (! isset($row['date']) || ! isset($row['publisher'])) {
                                 continue;
                             }
 
-                            if($row['publisher']==='' || $row['publisher']===null)
-                            {
+                            if ($row['publisher'] === '' || $row['publisher'] === null) {
                                 //do not include rows that don't have publisher id
                                 continue;
                             }
 
                             $date = $row['date'];
 
-                            if(is_string($row['date']) && $row['date']==='')
-                            {
+                            if (is_string($row['date']) && $row['date'] === '') {
                                 //do not include rows that don't have date
                                 continue;
-                            }
-                            else
-                            {
+                            } else {
                                 $date = Carbon::parse($row['date']);
                             }
 
                             //check if there is revenue column
-                            if(!isset($row['revenue']))
-                            {
+                            if (! isset($row['revenue'])) {
                                 $responseData = [
                                     'status' => 'file_problem',
-                                    'message' => 'There campaigns in the report sheet that do not have revenue column!'
+                                    'message' => 'There campaigns in the report sheet that do not have revenue column!',
                                 ];
 
-                                return response()->json($responseData,200);
+                                return response()->json($responseData, 200);
                             }
 
                             $revenue = 0.0;
 
-                            if(is_numeric($row['revenue']) && $row['revenue']!==null)
-                            {
-                                $revenue = doubleval($row['revenue']);
+                            if (is_numeric($row['revenue']) && $row['revenue'] !== null) {
+                                $revenue = floatval($row['revenue']);
                             }
 
                             //get the revenue tracker and removed the CD prefix
-                            $revenueTrackerID = str_replace('CD','', $row['publisher']);
+                            $revenueTrackerID = str_replace('CD', '', $row['publisher']);
 
                             Log::info('EngageIQ Report Sheet');
                             Log::info("revenue_tracker_id: $revenueTrackerID");
 
                             //get the revenue tracker
-                            $tracker = AffiliateRevenueTracker::where('revenue_tracker_id','=',$revenueTrackerID)->first();
+                            $tracker = AffiliateRevenueTracker::where('revenue_tracker_id', '=', $revenueTrackerID)->first();
 
                             $s1 = isset($row['s1']) ? $row['s1'] : '';
                             $s2 = isset($row['s2']) ? $row['s2'] : '';
@@ -690,13 +651,12 @@ class AffiliateReportController extends Controller
                             // $s5 = isset($row['s5']) ? $row['s5'] : '';
                             $s5 = '';
 
-                            if($tracker!=null && $revenue > 0)
-                            {
+                            if ($tracker != null && $revenue > 0) {
                                 $rev_trackers[] = $tracker->revenue_tracker_id;
                                 // if(!isset($rev_trackers[$tracker->revenue_tracker_id])) {
                                 //     $rev_trackers[] = $tracker->revenue_tracker_id;
                                 // }
-                                
+
                                 $affiliateReport = AffiliateReport::firstOrNew([
                                     'affiliate_id' => $tracker->affiliate_id,
                                     'revenue_tracker_id' => $tracker->revenue_tracker_id,
@@ -712,16 +672,13 @@ class AffiliateReportController extends Controller
                                 $affiliateReport->lead_count = 0;
                                 $affiliateReport->revenue = $revenue;
 
-                                try
-                                {
+                                try {
                                     $affiliateReport->save();
                                     Log::info("affiliate_id: $affiliateReport->affiliate_id");
                                     Log::info("revenue_tracker_id: $affiliateReport->revenue_tracker_id");
                                     Log::info("campaign_id: $campaign->id");
                                     Log::info("revenue: $revenue");
-                                }
-                                catch(QueryException $e)
-                                {
+                                } catch (QueryException $e) {
                                     Log::info($e->getMessage());
                                     Log::info('affiliate_id: '.$affiliateReport->affiliate_id);
                                     Log::info('revenue_tracker_id: '.$affiliateReport->revenue_tracker_id);
@@ -730,48 +687,45 @@ class AffiliateReportController extends Controller
                                 }
                             }
                         }
-                    }
-                    else
-                    {
+                    } else {
                         $nonExistingCampaign = $nonExistingCampaign.$campaignID.',';
                     }
                 }
 
-                if(!empty($nonExistingCampaign))
-                {
+                if (! empty($nonExistingCampaign)) {
                     //this means there are missing campaign IDs
-                    $nonExistingCampaign = trim($nonExistingCampaign, ",");
+                    $nonExistingCampaign = trim($nonExistingCampaign, ',');
 
                     $responseData = [
                         'status' => 'upload_warning',
-                        'message' => "The report sheet was processed but there are campaigns that do not exist. ($nonExistingCampaign)"
+                        'message' => "The report sheet was processed but there are campaigns that do not exist. ($nonExistingCampaign)",
                     ];
                 }
                 $rev_trackers = array_unique($rev_trackers);
                 // Log::info('------------');
                 // Log::info($rev_trackers);
-                if(count($rev_trackers) > 0) {
+                if (count($rev_trackers) > 0) {
                     // DB::enableQueryLog();
                     $affRevTrackers = AffiliateRevenueTracker::whereIn('revenue_tracker_id', $rev_trackers)
                         ->select(['affiliate_id', 'revenue_tracker_id', 'campaign_id'])->get();
                     $rts = [];
-                    foreach($affRevTrackers as $art) {
+                    foreach ($affRevTrackers as $art) {
                         $rts[$art->revenue_tracker_id] = [
                             'a' => $art->affiliate_id,
-                            'c' => $art->campaign_id
+                            'c' => $art->campaign_id,
                         ];
                     }
 
                     // Log::info($rts);
 
-                    $has_data = RevenueTrackerCakeStatistic::where('created_at','=', $date)
+                    $has_data = RevenueTrackerCakeStatistic::where('created_at', '=', $date)
                         ->whereIn('revenue_tracker_id', $rev_trackers)
-                        ->lists('revenue_tracker_id')->toArray();
+                        ->pluck('revenue_tracker_id')->toArray();
                     // Log::info($has_data);
 
                     $rows = [];
-                    foreach($rts as $rev_tracker => $rdata) {
-                        if(!in_array($rev_tracker, $has_data) && $rdata['c'] != 0) {
+                    foreach ($rts as $rev_tracker => $rdata) {
+                        if (! in_array($rev_tracker, $has_data) && $rdata['c'] != 0) {
                             $rows[] = [
                                 'affiliate_id' => $rdata['a'],
                                 'revenue_tracker_id' => $rev_tracker,
@@ -784,48 +738,42 @@ class AffiliateReportController extends Controller
                                 's5' => '',
                                 'type' => 1,
                                 'clicks' => 0,
-                                'payout' => 0
+                                'payout' => 0,
                             ];
                         }
                     }
 
-                    if(count($rows) > 0) {
+                    if (count($rows) > 0) {
                         Log::info('Rev Trackers No Revenue');
                         Log::info($rows);
                     }
 
                     $chunks = array_chunk($rows, 1000);
-                    foreach($chunks as $chunk) {
-                        try{
+                    foreach ($chunks as $chunk) {
+                        try {
                             $connection = config('app.type') == 'reports' ? 'mysql' : 'secondary';
                             DB::connection($connection)->table('revenue_tracker_cake_statistics')->insert($chunk);
-                        }
-                        catch(QueryException $e)
-                        {
-                            Log::info("Cake No Clicks Saving Error!");
+                        } catch (QueryException $e) {
+                            Log::info('Cake No Clicks Saving Error!');
                             Log::info($e->getMessage());
-                        }  
+                        }
                     }
-                    
+
                     $process = new \App\Helpers\CleanAffiliateReportHelper($date);
                     $process->clean();
                 }
-            }
-            else
-            {
+            } else {
                 $responseData = [
                     'status' => 'upload_fail',
-                    'message' => 'Please upload the EngageIQ uploader template!'
+                    'message' => 'Please upload the EngageIQ uploader template!',
                 ];
 
                 $uploadSuccess = false;
             }
-        }
-        else
-        {
+        } else {
             $responseData = [
                 'status' => 'upload_fail',
-                'message' => 'Invalid File Format! Please upload only XLS/x or CSV formats.'
+                'message' => 'Invalid File Format! Please upload only XLS/x or CSV formats.',
             ];
 
             $uploadSuccess = false;
@@ -835,51 +783,43 @@ class AffiliateReportController extends Controller
 
         $userLogMessage = '';
 
-        if(!$uploadSuccess)
-        {
-            if(isset($fullFilename))
-            {
+        if (! $uploadSuccess) {
+            if (isset($fullFilename)) {
                 $userLogMessage = "File upload attempt. Affiliate reports file $fullFilename file upload failed!";
+            } else {
+                $userLogMessage = 'File upload attempt. Affiliate reports file upload failed wrong file format!';
             }
-            else
-            {
-                $userLogMessage = "File upload attempt. Affiliate reports file upload failed wrong file format!";
-            }
-        }
-        else
-        {
+        } else {
             $userLogMessage = "File upload attempt. Affiliate reports file $fullFilename file upload success! Generating new excel report";
 
             $from = Carbon::parse($date)->toDateString();
             // $to = Carbon::parse($date)->addDay()->toDateString();
             $to = $from;
-            if(config('app.type') != 'reports') {
+            if (config('app.type') != 'reports') {
                 $reports_url = config('app.reports_url');
                 $url = $reports_url.'regenerateAffiliateReportExcel';
                 $inputs = $request->all();
                 $curl = new Curl();
                 $curl->get($url, [
                     'to' => $to,
-                    'from' => $from
+                    'from' => $from,
                 ]);
                 if ($curl->error) {
                     $response = $curl->error_code;
-                }
-                else {
+                } else {
                     $response = $curl->response;
                     $response = json_decode($response);
                 }
                 Log::info($response);
-            }else {
+            } else {
                 //Delete Existing Excel Report and Regenerate
                 $excel = new AffiliateReportExcelGeneratorHelper($from, $to, 1);
-                $fileNameToDownload = $excel->getFullFileName(); 
+                $fileNameToDownload = $excel->getFullFileName();
                 $filePathToDownload = storage_path('downloads')."/$fileNameToDownload";
 
                 // Log::info($from);
                 // Log::info($to);
-                if(file_exists($filePathToDownload))
-                {
+                if (file_exists($filePathToDownload)) {
                     unlink($filePathToDownload);
                 }
                 $job = (new GenerateAffiliateExcelReport($from, $to, 1));
@@ -894,24 +834,24 @@ class AffiliateReportController extends Controller
             'change_severity' => 1,
             'summary' => $userLogMessage,
             'old_value' => null,
-            'new_value' => null
+            'new_value' => null,
         ]));
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
-    public function regenerateAffiliateReportExcel(Request $request) {
+    public function regenerateAffiliateReportExcel(Request $request)
+    {
         $from = $request->from;
         $to = $request->to;
         //Delete Existing Excel Report and Regenerate
         $excel = new AffiliateReportExcelGeneratorHelper($from, $to, 1);
-        $fileNameToDownload = $excel->getFullFileName(); 
+        $fileNameToDownload = $excel->getFullFileName();
         $filePathToDownload = storage_path('downloads')."/$fileNameToDownload";
 
         // Log::info($from);
         // Log::info($to);
-        if(file_exists($filePathToDownload))
-        {
+        if (file_exists($filePathToDownload)) {
             unlink($filePathToDownload);
         }
         $job = (new GenerateAffiliateExcelReport($from, $to, 1));
@@ -921,8 +861,6 @@ class AffiliateReportController extends Controller
     /**
      * Generate of H and P reports
      *
-     * @param Request $request
-     * @param $snapshot_period
      * @return \Illuminate\Http\JsonResponse
      */
     public function generateHandPAffiliateReportsXLS(Request $request, $snapshot_period)
@@ -936,19 +874,18 @@ class AffiliateReportController extends Controller
 
         $handpAffiliateStats = HandPAffiliateReport::handPAffiliateStats($params)->get();
 
-        $cids = $handpAffiliateStats->map(function($st) {
+        $cids = $handpAffiliateStats->map(function ($st) {
             return $st->campaign_id;
         });
-        $campaigns = Campaign::whereIn('id', $cids)->lists('name', 'id');
+        $campaigns = Campaign::whereIn('id', $cids)->pluck('name', 'id');
 
-        $aids = $handpAffiliateStats->map(function($st) {
+        $aids = $handpAffiliateStats->map(function ($st) {
             return $st->affiliate_id;
         });
-        $affiliates = Affiliate::whereIn('id', $aids)->lists('company', 'id');
+        $affiliates = Affiliate::whereIn('id', $aids)->pluck('company', 'id');
 
         //check if there are h and p types
-        if(count($handpAffiliateStats)<=0)
-        {
+        if (count($handpAffiliateStats) <= 0) {
             //remove if there is cached generated download
             //Cache::forget($key);
 
@@ -956,22 +893,19 @@ class AffiliateReportController extends Controller
                 'status' => 'generate_failed',
                 'message' => 'There are no data to generate!',
                 'key' => '',
-                'file' => ''
+                'file' => '',
             ];
 
-            return response()->json($responseData,200);
+            return response()->json($responseData, 200);
         }
 
         $dateRange = [];
 
         //if period is none then use the date range provided
-        if($snapshot_period=='none' && (!empty($inputs['start_date']) && !empty($inputs['end_date'])))
-        {
+        if ($snapshot_period == 'none' && (! empty($inputs['start_date']) && ! empty($inputs['end_date']))) {
             $dateRange['from'] = Carbon::parse($inputs['start_date'])->toDateString();
             $dateRange['to'] = Carbon::parse($inputs['end_date'])->toDateString();
-        }
-        else
-        {
+        } else {
             $dateRange = AffiliateReport::getSnapShotPeriodRange($snapshot_period);
         }
 
@@ -982,8 +916,7 @@ class AffiliateReportController extends Controller
         $publisherCompany = [];
 
         //aggregate the collection
-        foreach($handpAffiliateStats as $stat)
-        {
+        foreach ($handpAffiliateStats as $stat) {
             $publisher = "$stat->affiliate_id/S1=$stat->s1";
             $affiliate_name = isset($affiliates[$stat->affiliate_id]) ? $affiliates[$stat->affiliate_id] : '';
             $campaign_name = isset($campaigns[$stat->campaign_id]) ? $campaigns[$stat->campaign_id] : '';
@@ -993,32 +926,27 @@ class AffiliateReportController extends Controller
                 'campaign' => $campaign_name,
                 'leads' => $stat->leads,
                 'payout' => $stat->payout,
-                'revenue' => $stat->revenue
+                'revenue' => $stat->revenue,
             ]);
 
-            if(!isset($arrangedStatCollections[$publisher]))
-            {
+            if (! isset($arrangedStatCollections[$publisher])) {
                 //create new set and insert the data collection
                 $dataSet = collect([]);
                 $dataSet->push($data);
                 $arrangedStatCollections->put($publisher, $dataSet);
-            }
-            else
-            {
+            } else {
                 $arrangedStatCollections[$publisher]->push($data);
             }
 
             //publisher - company mapping
             $publisherCompany[$publisher] = [
                 'affiliate_id' => $stat->affiliate_id,
-                'publisher_name' => $affiliate_name
+                'publisher_name' => $affiliate_name,
             ];
         }
 
-        Excel::create($title,function($excel) use($title, $sheetTitle, $arrangedStatCollections, $publisherCompany, $snapshot_period)
-        {
-            $excel->sheet($sheetTitle,function($sheet) use($title, $arrangedStatCollections, $publisherCompany, $snapshot_period)
-            {
+        Excel::create($title, function ($excel) use ($sheetTitle, $arrangedStatCollections, $publisherCompany) {
+            $excel->sheet($sheetTitle, function ($sheet) use ($arrangedStatCollections, $publisherCompany) {
 
                 $rowNumber = 0;
                 $keys = $arrangedStatCollections->keys();
@@ -1028,35 +956,33 @@ class AffiliateReportController extends Controller
 
                 $totalsMap = collect([]);
 
-                foreach($keys as $collectionKey)
-                {
+                foreach ($keys as $collectionKey) {
                     //set up the title header row
                     $sheet->appendRow([
-                        'Publisher', 'Campaign', 'Leads', 'Payout', 'Revenue'
+                        'Publisher', 'Campaign', 'Leads', 'Payout', 'Revenue',
                     ]);
 
-                    ++$rowNumber;
+                    $rowNumber++;
 
                     $this->setCellStyle($sheet, "A$rowNumber:E$rowNumber", 12, true, 'center', 'center', '#FF0000');
 
                     $handpAffiliateReports = $arrangedStatCollections[$collectionKey];
 
-                    $beginMerge = $rowNumber+1;
+                    $beginMerge = $rowNumber + 1;
 
-                    foreach($handpAffiliateReports as $report)
-                    {
+                    foreach ($handpAffiliateReports as $report) {
                         $sheet->appendRow([
-                           $collectionKey, $report['campaign'], $report['leads'], $report['payout'], $report['revenue']
+                            $collectionKey, $report['campaign'], $report['leads'], $report['payout'], $report['revenue'],
                         ]);
 
-                        ++$rowNumber;
+                        $rowNumber++;
                     }
 
                     $endMerge = $rowNumber;
 
                     //compute the totals
                     $sheet->appendRow([
-                        '', 'Total', "=SUM(C$beginMerge:C$endMerge)", "=SUM(D$beginMerge:D$endMerge)", "=SUM(E$beginMerge:E$endMerge)"
+                        '', 'Total', "=SUM(C$beginMerge:C$endMerge)", "=SUM(D$beginMerge:D$endMerge)", "=SUM(E$beginMerge:E$endMerge)",
                     ]);
 
                     $mergedResultRow = $endMerge + 1;
@@ -1067,46 +993,43 @@ class AffiliateReportController extends Controller
                         'publisher_name' => $publisherCompany[$collectionKey]['publisher_name'],
                         'revenue' => "=E$mergedResultRow",
                         'leads' => "=C$mergedResultRow",
-                        'we_pay' => "=D$mergedResultRow"
+                        'we_pay' => "=D$mergedResultRow",
                     ]);
 
                     //$totalsMap->push($totalsData);
                     //resolve the affiliate_id of collection key
                     $affiliateID = $publisherCompany[$collectionKey]['affiliate_id'];
 
-                    if(!isset($totalsMap[$affiliateID]))
-                    {
+                    if (! isset($totalsMap[$affiliateID])) {
                         //create new set and insert the data collection
                         $dataSet = collect([]);
                         $dataSet->push($totalsData);
-                        $totalsMap->put($affiliateID,$dataSet);
-                    }
-                    else
-                    {
+                        $totalsMap->put($affiliateID, $dataSet);
+                    } else {
                         $totalsMap[$affiliateID]->push($totalsData);
                     }
 
-                    ++$rowNumber;
+                    $rowNumber++;
 
                     //apply color to totals
-                    $this->setCellStyle($sheet, "C$rowNumber", null, false, null, null, "#7EC0EE");
-                    $this->setCellStyle($sheet, "D$rowNumber", null, false, null, null, "#FFFF00");
-                    $this->setCellStyle($sheet, "E$rowNumber", null, false, null, null, "#00FF00");
+                    $this->setCellStyle($sheet, "C$rowNumber", null, false, null, null, '#7EC0EE');
+                    $this->setCellStyle($sheet, "D$rowNumber", null, false, null, null, '#FFFF00');
+                    $this->setCellStyle($sheet, "E$rowNumber", null, false, null, null, '#00FF00');
                     //style the total field
                     $this->setCellStyle($sheet, "B$rowNumber", 12, true, 'right', 'center', null);
 
                     $sheet->appendRow([
-                        '', '', '', '', ''
+                        '', '', '', '', '',
                     ]);
 
-                    ++$rowNumber;
+                    $rowNumber++;
 
                     //merge the publisher cells
                     $range = "A$beginMerge:A$endMerge";
                     $sheet->mergeCells($range);
 
                     //set the alignment to top center
-                    $sheet->cell('A'.$beginMerge, function($cell) {
+                    $sheet->cell('A'.$beginMerge, function ($cell) {
                         $cell->setAlignment('center');
                         $cell->setValignment('top');
                     });
@@ -1115,10 +1038,10 @@ class AffiliateReportController extends Controller
                 }
 
                 $sheet->appendRow([
-                    'REVENUE/COST', '', '', '', '', ''
+                    'REVENUE/COST', '', '', '', '', '',
                 ]);
 
-                ++$rowNumber;
+                $rowNumber++;
 
                 //merge the revenue/cost header
                 $range = "A$rowNumber:F$rowNumber";
@@ -1128,10 +1051,10 @@ class AffiliateReportController extends Controller
                 $this->setCellStyle($sheet, $range, null, true, 'center', 'center', '#0000FF');
 
                 $sheet->appendRow([
-                    'Publisher', 'Publisher Name', 'Revenue', 'Leads', 'We Pay', '% Margin'
+                    'Publisher', 'Publisher Name', 'Revenue', 'Leads', 'We Pay', '% Margin',
                 ]);
 
-                ++$rowNumber;
+                $rowNumber++;
 
                 $marginPercentageStartRow = $rowNumber + 1;
 
@@ -1145,22 +1068,20 @@ class AffiliateReportController extends Controller
 
                 $totalsCellRow = [];
 
-                foreach($totalsMap as $key => $data)
-                {
-                    ++$rowNumber;
+                foreach ($totalsMap as $key => $data) {
+                    $rowNumber++;
 
                     $sectionBegin = $rowNumber;
                     $lastPublisherName = '';
 
                     $sheet->appendRow([
-                        '', '', '', '', '', ''
+                        '', '', '', '', '', '',
                     ]);
 
                     $this->setCellStyle($sheet, "A$rowNumber:F$rowNumber", 12, true, 'left', 'center', '#948A54');
 
-                    foreach($data as $totalData)
-                    {
-                        ++$rowNumber;
+                    foreach ($data as $totalData) {
+                        $rowNumber++;
 
                         /*
                         $sheet->appendRow([
@@ -1169,7 +1090,7 @@ class AffiliateReportController extends Controller
                         */
 
                         $sheet->appendRow([
-                            $totalData['publisher'], $totalData['publisher_name'], $totalData['revenue'], $totalData['leads'], $totalData['we_pay'], "=(C$rowNumber-E$rowNumber)/C$rowNumber"
+                            $totalData['publisher'], $totalData['publisher_name'], $totalData['revenue'], $totalData['leads'], $totalData['we_pay'], "=(C$rowNumber-E$rowNumber)/C$rowNumber",
                         ]);
 
                         $lastPublisherName = $totalData['publisher_name'];
@@ -1184,114 +1105,102 @@ class AffiliateReportController extends Controller
                     $this->setCellValue($sheet, "E$sectionBegin", "=SUM(E$startCell:E$rowNumber)");
                     $this->setCellValue($sheet, "F$sectionBegin", "=(C$sectionBegin-E$sectionBegin)/C$sectionBegin");
 
-                    if(!isset($totalsCellRow['revenue']))
-                    {
+                    if (! isset($totalsCellRow['revenue'])) {
                         $dataArray = [];
                         array_push($dataArray, "C$sectionBegin");
                         $totalsCellRow['revenue'] = $dataArray;
-                    }
-                    else
-                    {
-                        array_push($totalsCellRow['revenue'],"C$sectionBegin");
+                    } else {
+                        array_push($totalsCellRow['revenue'], "C$sectionBegin");
                     }
 
-                    if(!isset($totalsCellRow['leads']))
-                    {
+                    if (! isset($totalsCellRow['leads'])) {
                         $dataArray = [];
                         array_push($dataArray, "D$sectionBegin");
                         $totalsCellRow['leads'] = $dataArray;
-                    }
-                    else
-                    {
-                        array_push($totalsCellRow['leads'],"D$sectionBegin");
+                    } else {
+                        array_push($totalsCellRow['leads'], "D$sectionBegin");
                     }
 
-                    if(!isset($totalsCellRow['we_pay']))
-                    {
+                    if (! isset($totalsCellRow['we_pay'])) {
                         $dataArray = [];
                         array_push($dataArray, "E$sectionBegin");
                         $totalsCellRow['we_pay'] = $dataArray;
-                    }
-                    else
-                    {
-                        array_push($totalsCellRow['we_pay'],"E$sectionBegin");
+                    } else {
+                        array_push($totalsCellRow['we_pay'], "E$sectionBegin");
                     }
                 }
 
                 $sheet->appendRow([
-                    '', '', '', '', '', ''
+                    '', '', '', '', '', '',
                 ]);
 
-                ++$rowNumber;
+                $rowNumber++;
 
                 //total revenue formula
                 $cellCodes = '';
-                foreach($totalsCellRow['revenue'] as $cellCode)
-                {
+                foreach ($totalsCellRow['revenue'] as $cellCode) {
                     $cellCodes = $cellCodes."$cellCode,";
                 }
-                $cellCodes = trim($cellCodes,',');
+                $cellCodes = trim($cellCodes, ',');
                 $revenueFormula = "=SUM($cellCodes)";
 
                 //total leads formula
                 $cellCodes = '';
-                foreach($totalsCellRow['leads'] as $cellCode)
-                {
+                foreach ($totalsCellRow['leads'] as $cellCode) {
                     $cellCodes = $cellCodes."$cellCode,";
                 }
 
-                $cellCodes = trim($cellCodes,',');
+                $cellCodes = trim($cellCodes, ',');
                 $leadsFormula = "=SUM($cellCodes)";
 
                 //total we pay formula
                 $cellCodes = '';
-                foreach($totalsCellRow['we_pay'] as $cellCode)
-                {
+                foreach ($totalsCellRow['we_pay'] as $cellCode) {
                     $cellCodes = $cellCodes."$cellCode,";
                 }
 
-                $cellCodes = trim($cellCodes,',');
+                $cellCodes = trim($cellCodes, ',');
                 $wePayFormula = "=SUM($cellCodes)";
 
-                ++$rowNumber;
+                $rowNumber++;
 
                 $sheet->appendRow([
-                    '', 'Total', $revenueFormula, $leadsFormula, $wePayFormula, "=(C$rowNumber-E$rowNumber)/C$rowNumber"
+                    '', 'Total', $revenueFormula, $leadsFormula, $wePayFormula, "=(C$rowNumber-E$rowNumber)/C$rowNumber",
                 ]);
 
                 $this->setCellStyle($sheet, "A$rowNumber:F$rowNumber", 12, true, 'right', 'center', '#ffc000');
 
                 //formatting of margin percentage
                 $sheet->setColumnFormat([
-                    "F$marginPercentageStartRow:F$rowNumber" => '00.00%'
+                    "F$marginPercentageStartRow:F$rowNumber" => '00.00%',
                 ]);
                 Log::info("F$marginPercentageStartRow:F$rowNumber");
 
-                ++$rowNumber;
+                $rowNumber++;
 
                 $sheet->appendRow([
-                    '', '', '', '', '', ''
+                    '', '', '', '', '', '',
                 ]);
 
-                ++$rowNumber;
+                $rowNumber++;
 
                 $sheet->appendRow([
-                    '', '', '', '', '', ''
+                    '', '', '', '', '', '',
                 ]);
 
-                ++$rowNumber;
+                $rowNumber++;
 
                 $sheet->appendRow([
-                    'Profit', '', '', '', '', ''
+                    'Profit', '', '', '', '', '',
                 ]);
 
-                ++$rowNumber;
+                $rowNumber++;
 
                 $totalRowNumber = $rowNumber - 4;
-                $profitFirstRowNumber = $rowNumber -1;
+                $profitFirstRowNumber = $rowNumber - 1;
 
                 $sheet->appendRow([
-                    "=C$totalRowNumber-E$totalRowNumber", '', '', '', '', ''
+                    "=C$totalRowNumber-E$totalRowNumber", '', '', '', '', '',
                 ]);
 
                 //apply design to profit section
@@ -1309,47 +1218,42 @@ class AffiliateReportController extends Controller
             'status' => 'generate_successful',
             'message' => 'Reports Sheet is generated successfully and you can download it now!',
             'key' => $key,
-            'file' => $title.'.xls'
+            'file' => $title.'.xls',
         ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
     public function setCellValue($sheet, $cellCode, $value)
     {
-        $sheet->cell($cellCode, function($cell) use ($value){
+        $sheet->cell($cellCode, function ($cell) use ($value) {
             // manipulate the cell
             $cell->setValue($value);
         });
     }
 
-    public function setCellStyle($sheet, $cellRange, $fontSize=null, $bold=false, $alignment, $vAlignment, $backgroundColor)
+    public function setCellStyle($sheet, $cellRange, $fontSize, $bold, $alignment, $vAlignment, $backgroundColor)
     {
         //style the headers
-        $sheet->cells($cellRange, function($cells) use ($fontSize, $bold, $alignment, $vAlignment, $backgroundColor)
-        {
+        $sheet->cells($cellRange, function ($cells) use ($fontSize, $bold, $alignment, $vAlignment, $backgroundColor) {
             $font['bold'] = $bold;
 
-            if($fontSize != null)
-            {
+            if ($fontSize != null) {
                 $font['size'] = $fontSize;
             }
 
             // Set font
             $cells->setFont($font);
 
-            if($alignment != null)
-            {
+            if ($alignment != null) {
                 $cells->setAlignment($alignment);
             }
 
-            if($vAlignment != null)
-            {
+            if ($vAlignment != null) {
                 $cells->setValignment($vAlignment);
             }
 
-            if($backgroundColor != null)
-            {
+            if ($backgroundColor != null) {
                 $cells->setBackground($backgroundColor);
             }
         });
@@ -1407,11 +1311,9 @@ class AffiliateReportController extends Controller
     /**
      * Generating of iframe affiliate reports
      *
-     * @param Request $request
-     * @param $snapshot_period
      * @return \Illuminate\Http\JsonResponse
      */
-    public function  generateIframeAffiliateReportXLS(Request $request, $snapshot_period)
+    public function generateIframeAffiliateReportXLS(Request $request, $snapshot_period)
     {
         ini_set('max_execution_time', 300);
         $inputs = $request->all();
@@ -1425,8 +1327,7 @@ class AffiliateReportController extends Controller
         $revenueTrackerStatistics = RevenueTrackerWebsiteViewStatistic::revenueStatistics($params)->get();
 
         //check if there are h and p types
-        if(count($revenueTrackerStatistics)<=0)
-        {
+        if (count($revenueTrackerStatistics) <= 0) {
             //remove if there is cached generated download
             //Cache::forget($key);
 
@@ -1434,10 +1335,10 @@ class AffiliateReportController extends Controller
                 'status' => 'generate_failed',
                 'message' => 'There are no data to generate!',
                 'key' => '',
-                'file' => ''
+                'file' => '',
             ];
 
-            return response()->json($responseData,200);
+            return response()->json($responseData, 200);
         }
 
         $params = [];
@@ -1447,13 +1348,10 @@ class AffiliateReportController extends Controller
         $dateRange = [];
 
         //if period is none then use the date range provided
-        if($snapshot_period=='none' && (!empty($inputs['start_date']) && !empty($inputs['end_date'])))
-        {
+        if ($snapshot_period == 'none' && (! empty($inputs['start_date']) && ! empty($inputs['end_date']))) {
             $dateRange['from'] = Carbon::parse($inputs['start_date']);
             $dateRange['to'] = Carbon::parse($inputs['end_date']);
-        }
-        else
-        {
+        } else {
             $dateRange = AffiliateReport::getSnapShotPeriodRange($snapshot_period);
         }
 
@@ -1463,32 +1361,28 @@ class AffiliateReportController extends Controller
         //get all revenue trackers from the affiliate reports base on date period date.
         $affiliateReportsRevenueTrackers = InternalIframeAffiliateReport::allRevenueTracker($params)->get();
 
-        Excel::create($title,function($excel) use($title,$sheetTitle,$affiliateReportsRevenueTrackers,$revenueTrackerStatistics,$snapshot_period ,$inputs)
-        {
-            $excel->sheet($sheetTitle,function($sheet) use($title,$affiliateReportsRevenueTrackers,$revenueTrackerStatistics,$snapshot_period, $inputs)
-            {
+        Excel::create($title, function ($excel) use ($sheetTitle, $affiliateReportsRevenueTrackers, $revenueTrackerStatistics, $snapshot_period, $inputs) {
+            $excel->sheet($sheetTitle, function ($sheet) use ($affiliateReportsRevenueTrackers, $revenueTrackerStatistics, $snapshot_period, $inputs) {
                 $rowNumber = 1;
                 $firstDataRowNumber = 1;
 
                 $publishersRevenueCells = [];
 
-                foreach($affiliateReportsRevenueTrackers as $tracker)
-                {
+                foreach ($affiliateReportsRevenueTrackers as $tracker) {
                     //Set auto size for sheet
                     $sheet->setAutoSize(true);
 
                     //set up the title header row
                     $sheet->appendRow([
-                        'Publisher', 'Campaign', 'Leads', 'Revenue'
+                        'Publisher', 'Campaign', 'Leads', 'Revenue',
                     ]);
 
                     //style the headers
-                    $sheet->cells("A$rowNumber:D$rowNumber", function($cells)
-                    {
+                    $sheet->cells("A$rowNumber:D$rowNumber", function ($cells) {
                         // Set font
                         $cells->setFont([
-                            'size'       => '12',
-                            'bold'       =>  true
+                            'size' => '12',
+                            'bold' => true,
                         ]);
 
                         $cells->setAlignment('center');
@@ -1496,7 +1390,7 @@ class AffiliateReportController extends Controller
                         $cells->setBackground('#FF0000');
                     });
 
-                    ++$rowNumber;
+                    $rowNumber++;
 
                     //get all the affiliate reports for the particular revenue tracker
                     $params['period'] = $snapshot_period;
@@ -1506,34 +1400,32 @@ class AffiliateReportController extends Controller
                     $revenueTrackerAffiliateReportStats = InternalIframeAffiliateReport::getRevenueTrackerAffiliateReports($params)->with('campaign')->get();
                     $begin = $rowNumber;
 
-                    foreach($revenueTrackerAffiliateReportStats as $stat)
-                    {
+                    foreach ($revenueTrackerAffiliateReportStats as $stat) {
                         $sheet->appendRow([
-                            $stat->revenue_tracker_id, $stat->campaign->name, $stat->lead_count, $stat->revenue
+                            $stat->revenue_tracker_id, $stat->campaign->name, $stat->lead_count, $stat->revenue,
                         ]);
 
-                        ++$rowNumber;
+                        $rowNumber++;
                     }
 
                     //append total row for total revenue
-                    $total_formula = '=SUM( D'.$begin.':D'.($rowNumber-1).')';
-                    $totalLeadsFormula = '=SUM( C'.$begin.':C'.($rowNumber-1).')';
-                    $sheet->appendRow( array(
-                        '', 'Total', $totalLeadsFormula, $total_formula
-                    ));
+                    $total_formula = '=SUM( D'.$begin.':D'.($rowNumber - 1).')';
+                    $totalLeadsFormula = '=SUM( C'.$begin.':C'.($rowNumber - 1).')';
+                    $sheet->appendRow([
+                        '', 'Total', $totalLeadsFormula, $total_formula,
+                    ]);
 
                     $publishersRevenueCells[$tracker->revenue_tracker_id] = [
                         'leads_formula' => '=$C$'.$rowNumber,
-                        'revenue_formula' => '=$D$'.$rowNumber
+                        'revenue_formula' => '=$D$'.$rowNumber,
                     ];
 
                     //style the total field
-                    $sheet->cells("B$rowNumber:B$rowNumber", function($cells)
-                    {
+                    $sheet->cells("B$rowNumber:B$rowNumber", function ($cells) {
                         // Set font
                         $cells->setFont([
-                            'size'       => '12',
-                            'bold'       =>  true
+                            'size' => '12',
+                            'bold' => true,
                         ]);
 
                         $cells->setAlignment('right');
@@ -1541,49 +1433,47 @@ class AffiliateReportController extends Controller
                     });
 
                     //style the total value field
-                    $sheet->cells("C$rowNumber:D$rowNumber", function($cells)
-                    {
+                    $sheet->cells("C$rowNumber:D$rowNumber", function ($cells) {
                         $cells->setAlignment('right');
                         $cells->setValignment('center');
                         $cells->setBackground('#00FF00');
                     });
 
-                    ++$rowNumber;
+                    $rowNumber++;
 
                     //add extra row for separation
-                    $sheet->appendRow( array(
-                        '', '', '', ''
-                    ));
+                    $sheet->appendRow([
+                        '', '', '', '',
+                    ]);
 
-                    ++$rowNumber;
+                    $rowNumber++;
 
                     //merge the cells in publisher column
-                    $end = count($revenueTrackerAffiliateReportStats)+$begin-1;
+                    $end = count($revenueTrackerAffiliateReportStats) + $begin - 1;
                     $range = "A$begin:A$end";
                     $sheet->mergeCells($range);
 
                     //set the alignment to middle
-                    $sheet->cell('A'.$begin, function($cell) {
+                    $sheet->cell('A'.$begin, function ($cell) {
                         $cell->setAlignment('center');
                         $cell->setValignment('top');
                     });
                 }
 
                 //for the revenue/cost
-                $sheet->appendRow( array(
-                    'REVENUE/COST', '', '', '', '', '', ''
-                ));
+                $sheet->appendRow([
+                    'REVENUE/COST', '', '', '', '', '', '',
+                ]);
 
                 //merge the columns of the REVENUE/COST row
                 $sheet->mergeCells("A$rowNumber:G$rowNumber");
 
                 //style the REVENUE/COST header
-                $sheet->cells("A$rowNumber:G$rowNumber", function($cells)
-                {
+                $sheet->cells("A$rowNumber:G$rowNumber", function ($cells) {
                     // Set font
                     $cells->setFont([
-                        'size'       => '12',
-                        'bold'       =>  true
+                        'size' => '12',
+                        'bold' => true,
                     ]);
 
                     $cells->setAlignment('center');
@@ -1591,19 +1481,18 @@ class AffiliateReportController extends Controller
                     $cells->setBackground('#0000FF');
                 });
 
-                ++$rowNumber;
+                $rowNumber++;
 
-                $sheet->appendRow( array(
-                    'Publisher', 'Publisher Name', 'Leads', 'Revenue', 'Passovers', 'We Pay', '% Margin'
-                ));
+                $sheet->appendRow([
+                    'Publisher', 'Publisher Name', 'Leads', 'Revenue', 'Passovers', 'We Pay', '% Margin',
+                ]);
 
                 //style the header below the REVENUE/COST header
-                $sheet->cells("A$rowNumber:G$rowNumber", function($cells)
-                {
+                $sheet->cells("A$rowNumber:G$rowNumber", function ($cells) {
                     // Set font
                     $cells->setFont([
-                        'size'       => '12',
-                        'bold'       =>  true
+                        'size' => '12',
+                        'bold' => true,
                     ]);
 
                     $cells->setAlignment('center');
@@ -1611,14 +1500,13 @@ class AffiliateReportController extends Controller
                     $cells->setBackground('#FFFF00');
                 });
 
-                ++$rowNumber;
+                $rowNumber++;
 
                 $noBreakDown = [];
                 $withBreakDown = [];
 
                 //for the revenue/cost
-                foreach($revenueTrackerStatistics as $stat)
-                {
+                foreach ($revenueTrackerStatistics as $stat) {
                     //check if current stat can be broken down
                     $params = [];
                     $params['period'] = $snapshot_period;
@@ -1631,26 +1519,21 @@ class AffiliateReportController extends Controller
                     Log::info('count: '.count($breakDownStats));
                     Log::info($params);
 
-                    if(count($breakDownStats)<=1)
-                    {
+                    if (count($breakDownStats) <= 1) {
                         //segregate the stats that don't have any breakdowns
-                        array_push($noBreakDown,$stat);
-                    }
-                    else
-                    {
+                        array_push($noBreakDown, $stat);
+                    } else {
                         $data['parent'] = $stat;
                         $data['child'] = $breakDownStats;
 
-                        array_push($withBreakDown,$data);
+                        array_push($withBreakDown, $data);
                     }
                 }
 
                 $marginPercentageStartRow = $rowNumber;
 
-                foreach($noBreakDown as $nbkstat)
-                {
-                    try
-                    {
+                foreach ($noBreakDown as $nbkstat) {
+                    try {
                         //'Publisher', 'Publisher Name', 'Revenue', 'Passovers', 'We Pay', '% Margin'
                         $sheet->appendRow([
                             "$nbkstat->affiliate_id/$nbkstat->revenue_tracker_id",
@@ -1659,19 +1542,16 @@ class AffiliateReportController extends Controller
                             $publishersRevenueCells[$nbkstat->revenue_tracker_id]['revenue_formula'],
                             $nbkstat->passovers,
                             $nbkstat->payout,
-                            "=(D$rowNumber - F$rowNumber)/D$rowNumber"
+                            "=(D$rowNumber - F$rowNumber)/D$rowNumber",
                         ]);
 
-                        ++$rowNumber;
-                    }
-                    catch(ErrorException $e)
-                    {
+                        $rowNumber++;
+                    } catch (ErrorException $e) {
                         Log::info('Missing Publisher: '.$e->getMessage());
                     }
                 }
 
-                foreach($withBreakDown as $wbkstat)
-                {
+                foreach ($withBreakDown as $wbkstat) {
                     $sheet->appendRow([
                         '',
                         $wbkstat['parent']->company,
@@ -1679,12 +1559,11 @@ class AffiliateReportController extends Controller
                         $wbkstat['parent']->revenue,
                         $wbkstat['parent']->passovers,
                         $wbkstat['parent']->payout,
-                        "=(D$rowNumber - F$rowNumber)/D$rowNumber"
+                        "=(D$rowNumber - F$rowNumber)/D$rowNumber",
                     ]);
 
                     //style the header below the REVENUE/COST header
-                    $sheet->cells("A$rowNumber:G$rowNumber", function($cells)
-                    {
+                    $sheet->cells("A$rowNumber:G$rowNumber", function ($cells) {
                         $cells->setAlignment('center');
                         $cells->setValignment('center');
                         $cells->setBackground('#A8A8A8');
@@ -1692,15 +1571,13 @@ class AffiliateReportController extends Controller
 
                     $sumUpRowToChange = $rowNumber;
 
-                    ++$rowNumber;
+                    $rowNumber++;
 
                     $sumUpBegin = $rowNumber;
 
-                    foreach($wbkstat['child'] as $cwbkstat)
-                    {
+                    foreach ($wbkstat['child'] as $cwbkstat) {
 
-                        try
-                        {
+                        try {
                             //'Publisher', 'Publisher Name', 'Revenue', 'Passovers', 'We Pay', '% Margin'
                             $sheet->appendRow([
                                 "$cwbkstat->affiliate_id/$cwbkstat->revenue_tracker_id",
@@ -1709,45 +1586,43 @@ class AffiliateReportController extends Controller
                                 $publishersRevenueCells[$cwbkstat->revenue_tracker_id]['revenue_formula'],
                                 $cwbkstat->passovers,
                                 $cwbkstat->payout,
-                                "=(D$rowNumber - F$rowNumber)/D$rowNumber"
+                                "=(D$rowNumber - F$rowNumber)/D$rowNumber",
                             ]);
 
-                            ++$rowNumber;
-                        }
-                        catch(ErrorException $e)
-                        {
+                            $rowNumber++;
+                        } catch (ErrorException $e) {
                             Log::info('Missing Publisher: '.$e->getMessage());
                         }
                     }
 
-                    $sheet->cell("C$sumUpRowToChange", function($cell) use ($sumUpBegin,$rowNumber) {
+                    $sheet->cell("C$sumUpRowToChange", function ($cell) use ($sumUpBegin, $rowNumber) {
                         // manipulate the cell
-                        $end = $rowNumber-1;
+                        $end = $rowNumber - 1;
                         $cell->setValue("=SUM(C$sumUpBegin:C$end)");
                     });
 
-                    $sheet->cell("D$sumUpRowToChange", function($cell) use ($sumUpBegin,$rowNumber) {
+                    $sheet->cell("D$sumUpRowToChange", function ($cell) use ($sumUpBegin, $rowNumber) {
                         // manipulate the cell
-                        $end = $rowNumber-1;
+                        $end = $rowNumber - 1;
                         $cell->setValue("=SUM(D$sumUpBegin:D$end)");
                     });
 
-                    $sheet->cell("E$sumUpRowToChange", function($cell) use ($sumUpBegin,$rowNumber) {
+                    $sheet->cell("E$sumUpRowToChange", function ($cell) use ($sumUpBegin, $rowNumber) {
                         // manipulate the cell
-                        $end = $rowNumber-1;
+                        $end = $rowNumber - 1;
                         $cell->setValue("=SUM(E$sumUpBegin:E$end)");
                     });
 
-                    $sheet->cell("F$sumUpRowToChange", function($cell) use ($sumUpBegin,$rowNumber) {
+                    $sheet->cell("F$sumUpRowToChange", function ($cell) use ($sumUpBegin, $rowNumber) {
                         // manipulate the cell
-                        $end = $rowNumber-1;
+                        $end = $rowNumber - 1;
                         $cell->setValue("=SUM(F$sumUpBegin:F$end)");
                     });
                 }
 
                 //formatting of margin percentage
                 $sheet->setColumnFormat([
-                    'G'.$marginPercentageStartRow.':G'.$rowNumber => '00.00%'
+                    'G'.$marginPercentageStartRow.':G'.$rowNumber => '00.00%',
                 ]);
 
             });
@@ -1763,17 +1638,15 @@ class AffiliateReportController extends Controller
             'status' => 'generate_successful',
             'message' => 'Reports Sheet is generated successfully and you can download it now!',
             'key' => $key,
-            'file' => $title.'.xls'
+            'file' => $title.'.xls',
         ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
     /**
      * Downloading of iframe reports
      *
-     * @param Request $request
-     * @param $snapshot_period
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     public function downloadIframeAffiliateReportXLS(Request $request, $snapshot_period)
@@ -1785,50 +1658,42 @@ class AffiliateReportController extends Controller
         $key = "1-$snapshot_period".$inputs['start_date'].'-'.$inputs['end_date'];
 
         //If there is no cached report then generate it then download it
-        if(!Cache::has($key))
-        {
+        if (! Cache::has($key)) {
             //execute download
             $this->generateIframeAffiliateReportXLS($request, $snapshot_period);
             $filePathToDownload = Cache::get($key);
-        }
-        else
-        {
+        } else {
             //this means there is cached report just download it.
             $filePathToDownload = Cache::get($key);
         }
 
         //if period is none then use the date range provided
-        if($snapshot_period=='none' && (!empty($inputs['start_date']) && !empty($inputs['end_date'])))
-        {
+        if ($snapshot_period == 'none' && (! empty($inputs['start_date']) && ! empty($inputs['end_date']))) {
             $dateRange['from'] = Carbon::parse($inputs['start_date']);
             $dateRange['to'] = Carbon::parse($inputs['end_date']);
-        }
-        else
-        {
+        } else {
             $dateRange = AffiliateReport::getSnapShotPeriodRange($snapshot_period);
         }
 
         $title = 'internal_iframe_affiliate_reports('.$dateRange['from']->toDateString().')';
 
-        if(file_exists($filePathToDownload))
-        {
-            return response()->download($filePathToDownload,$title.'.xls',[
-                'Content-Length: '.filesize($filePathToDownload)
+        if (file_exists($filePathToDownload)) {
+            return response()->download($filePathToDownload, $title.'.xls', [
+                'Content-Length: '.filesize($filePathToDownload),
             ]);
-        }
-        else
-        {
+        } else {
             exit("Requested file $filePathToDownload  does not exist on our server!");
         }
     }
 
-    public function  generateAffiliateReportXLS(Request $request, $affiliate_type, $snapshot_period)
+    public function generateAffiliateReportXLS(Request $request, $affiliate_type, $snapshot_period)
     {
-        if(config('app.type') != 'reports') {
+        if (config('app.type') != 'reports') {
             $response = $this->curlToGenerateAffiliateReportXLS($request, $affiliate_type, $snapshot_period);
             $responseData = json_decode($response);
+
             return response()->json($responseData, 200);
-        }else {
+        } else {
             $inputs = $request->all();
             $params = [];
             $params['affiliate_type'] = $affiliate_type;
@@ -1839,31 +1704,27 @@ class AffiliateReportController extends Controller
             $dateRange = [];
 
             //if period is none then use the date range provided
-            if($snapshot_period=='none' && (!empty($inputs['start_date']) && !empty($inputs['end_date'])))
-            {
+            if ($snapshot_period == 'none' && (! empty($inputs['start_date']) && ! empty($inputs['end_date']))) {
                 $dateRange['from'] = Carbon::parse($inputs['start_date']);
                 $dateRange['to'] = Carbon::parse($inputs['end_date']);
-            }
-            else
-            {
+            } else {
                 $dateRange = AffiliateReport::getSnapShotPeriodRange($snapshot_period);
             }
 
             $excel = new AffiliateReportExcelGeneratorHelper($dateRange['from']->toDateString(), $dateRange['to']->toDateString(), $affiliate_type);
 
-            $fileNameToDownload = $excel->getFullFileName(); 
+            $fileNameToDownload = $excel->getFullFileName();
             $filePathToDownload = storage_path('downloads')."/$fileNameToDownload";
 
             $nsbFileName = $excel->getNSBFullFileName();
 
             $fileChecker = file_exists($filePathToDownload);
-            $nsbFileChecker = file_exists(storage_path('downloads')."/$nsbFileName"); 
+            $nsbFileChecker = file_exists(storage_path('downloads')."/$nsbFileName");
 
             // $fileChecker = config('app.type') == 'reports' ? file_exists($filePathToDownload) : Storage::disk('reports')->has($fileNameToDownload);
-            // $nsbFileChecker = config('app.type') == 'reports' ? file_exists(storage_path('downloads')."/$nsbFileName") : Storage::disk('reports')->has($nsbFileName); 
+            // $nsbFileChecker = config('app.type') == 'reports' ? file_exists(storage_path('downloads')."/$nsbFileName") : Storage::disk('reports')->has($nsbFileName);
 
-            if($fileChecker)
-            {
+            if ($fileChecker) {
                 $responseData = [
                     'status' => 'generate_successful',
                     'message' => 'Reports Sheet was generated successfully and you can download it now!',
@@ -1872,10 +1733,8 @@ class AffiliateReportController extends Controller
                     'hasSubidBreakdown' => $nsbFileChecker,
                     'nsb_file' => $nsbFileName,
                 ];
-            }
-            else
-            {
-                if($excel->noSimilarRunningJob()) {
+            } else {
+                if ($excel->noSimilarRunningJob()) {
                     $job = (new GenerateAffiliateExcelReport($dateRange['from']->toDateString(), $dateRange['to']->toDateString(), $affiliate_type));
                     dispatch($job);
                 }
@@ -1894,7 +1753,8 @@ class AffiliateReportController extends Controller
         }
     }
 
-    public function curlToGenerateAffiliateReportXLS(Request $request, $affiliate_type, $snapshot_period) {
+    public function curlToGenerateAffiliateReportXLS(Request $request, $affiliate_type, $snapshot_period)
+    {
         $reports_url = config('app.reports_url');
         $url = $reports_url.'generateAffiliateReportXLS/'.$affiliate_type.'/'.$snapshot_period;
         $inputs = $request->all();
@@ -1902,8 +1762,7 @@ class AffiliateReportController extends Controller
         $curl->get($url, $inputs);
         if ($curl->error) {
             return $curl->error_code;
-        }
-        else {
+        } else {
             return $curl->response;
         }
     }
@@ -1911,7 +1770,6 @@ class AffiliateReportController extends Controller
     /**
      * Downloading of generated file.
      *
-     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     public function downloadAffiliateReportXLS(Request $request)
@@ -1922,13 +1780,14 @@ class AffiliateReportController extends Controller
 
         $disk = config('app.type') == 'reports' ? 'downloads' : 'reports';
 
-        if(Storage::disk($disk)->has($fileNameToDownload)) {
+        if (Storage::disk($disk)->has($fileNameToDownload)) {
             $filecontent = Storage::disk($disk)->get($fileNameToDownload);
-            return response()->make($filecontent, '200', array(
-                    'Content-Type' => 'application/octet-stream',
-                    'Content-Disposition' => 'attachment; filename="'.$fileNameToDownload.'"'
-                ));
-        }else {
+
+            return response()->make($filecontent, '200', [
+                'Content-Type' => 'application/octet-stream',
+                'Content-Disposition' => 'attachment; filename="'.$fileNameToDownload.'"',
+            ]);
+        } else {
             exit("Requested file $filePathToDownload  does not exist on our server!");
         }
 
@@ -1956,7 +1815,7 @@ class AffiliateReportController extends Controller
         //         exit("Requested file $filePathToDownload  does not exist on our server!");
         //     }
         // }
-            
+
     }
 
     public function getIframeAffiliateStats(Request $request)
@@ -1969,12 +1828,9 @@ class AffiliateReportController extends Controller
         $totalFiltered = $allStatCount;
         // Log::info('all_stat_count: '.$allStatCount);
 
-        if($inputs['length'] != -1)
-        {
+        if ($inputs['length'] != -1) {
             $stats = $allStats->skip($inputs['start'])->take($inputs['length'])->get();
-        }
-        else
-        {
+        } else {
             //GET ALL STATS
             $stats = $allStats->get();
         }
@@ -1988,20 +1844,16 @@ class AffiliateReportController extends Controller
         $total_weget = 0.0;
         $total_margin = 0.0;
 
-        foreach($stats as $stat)
-        {
-            $revenue = $stat->revenue != null ? doubleval($stat->revenue) : 0.0;
-            $weGet = $stat->we_get != null ? doubleval($stat->we_get) : 0.0;
-            $payout = $stat->payout != null ? doubleval($stat->payout) : 0.0;
+        foreach ($stats as $stat) {
+            $revenue = $stat->revenue != null ? floatval($stat->revenue) : 0.0;
+            $weGet = $stat->we_get != null ? floatval($stat->we_get) : 0.0;
+            $payout = $stat->payout != null ? floatval($stat->payout) : 0.0;
 
-            if(($revenue==null && $payout==null) || ($revenue==0.0 && $payout>0.0))
-            {
+            if (($revenue == null && $payout == null) || ($revenue == 0.0 && $payout > 0.0)) {
                 $marginText = 'N/A';
-            }
-            else
-            {
+            } else {
                 $margin = (($revenue - $payout) / $revenue) * 100.00;
-                $marginText = number_format(doubleval($margin),2).'%';
+                $marginText = number_format(floatval($margin), 2).'%';
             }
 
             $aff_name = '<span class="ar_aff_id" data-id="'.$stat->affiliate_id.'">'.$stat->company.'</span>';
@@ -2009,55 +1861,52 @@ class AffiliateReportController extends Controller
             $data = [
                 'affiliate' => $aff_name,
                 'passovers' => $stat->passovers,
-                'payout' => '$ '.number_format($payout,2),
+                'payout' => '$ '.number_format($payout, 2),
                 'leads' => $stat->leads,
-                'revenue' => '$ '.number_format($revenue,2),
-                'we_get' => '$ '.number_format($weGet,2),
-                'margin' => $marginText
+                'revenue' => '$ '.number_format($revenue, 2),
+                'we_get' => '$ '.number_format($weGet, 2),
+                'margin' => $marginText,
             ];
 
             $total_passovers = $total_passovers + intval($stat->passovers);
-            $total_payout = $total_payout + doubleval($stat->payout);
+            $total_payout = $total_payout + floatval($stat->payout);
             $total_leads = $total_leads + intval($stat->leads);
-            $total_revenue = $total_revenue + doubleval($revenue);
+            $total_revenue = $total_revenue + floatval($revenue);
             $total_weget = $total_weget + $weGet;
             //$total_margin = $total_margin + $margin;
 
-            array_push($statData,$data);
+            array_push($statData, $data);
         }
 
-        if($total_revenue==0)
-        {
+        if ($total_revenue == 0) {
             $totalMarginText = 'N/A';
-        }
-        else
-        {
-            $total_margin = (($total_revenue - $total_payout) / $total_revenue ) * 100.00;
-            $totalMarginText = number_format($total_margin,2).'%';
+        } else {
+            $total_margin = (($total_revenue - $total_payout) / $total_revenue) * 100.00;
+            $totalMarginText = number_format($total_margin, 2).'%';
         }
 
-        if(!empty($searchValue) || $searchValue!='')
-        {
+        if (! empty($searchValue) || $searchValue != '') {
             $totalFiltered = $allStatCount;
         }
 
-        $responseData = array(
-            "draw"            => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
-            "recordsTotal"    => $allStatCount,  // total number of records
-            "recordsFiltered" => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
-            "data"            => $statData,   // total data array
-            'totalPassovers'     => $total_passovers,
-            'totalPayout'     => '$ '.number_format($total_payout,2),
-            'totalLeads'      => $total_leads,
-            'totalRevenue'    => '$ '.number_format($total_revenue,2),
-            'totalWeGet'      => '$ '.number_format($total_weget,2),
-            'totalMargin'     => $totalMarginText
-        );
+        $responseData = [
+            'draw' => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
+            'recordsTotal' => $allStatCount,  // total number of records
+            'recordsFiltered' => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
+            'data' => $statData,   // total data array
+            'totalPassovers' => $total_passovers,
+            'totalPayout' => '$ '.number_format($total_payout, 2),
+            'totalLeads' => $total_leads,
+            'totalRevenue' => '$ '.number_format($total_revenue, 2),
+            'totalWeGet' => '$ '.number_format($total_weget, 2),
+            'totalMargin' => $totalMarginText,
+        ];
 
-        return response()->json($responseData,200);
+        return response()->json($responseData, 200);
     }
 
-    public function test() {
+    public function test()
+    {
         return 'Success';
     }
 }

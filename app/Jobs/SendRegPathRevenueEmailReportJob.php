@@ -2,26 +2,26 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Job;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Mail;
-use Carbon\Carbon;
-use App\AffiliateWebsite;
-use App\UserMeta;
-use App\User;
-use App\AffiliateWebsiteReport;
-use DB;
-use Log;
-use App\Setting;
 use App\Affiliate;
+use App\AffiliateWebsite;
+use App\AffiliateWebsiteReport;
+use App\Setting;
+use App\User;
+use App\UserMeta;
+use Carbon\Carbon;
+use DB;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Log;
+use Mail;
 
-class SendRegPathRevenueEmailReportJob extends Job implements SelfHandling, ShouldQueue
+class SendRegPathRevenueEmailReportJob extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
+
     protected $from;
+
     protected $to;
 
     /**
@@ -29,7 +29,7 @@ class SendRegPathRevenueEmailReportJob extends Job implements SelfHandling, Shou
      *
      * @return void
      */
-    public function __construct($from,$to)
+    public function __construct($from, $to)
     {
         $this->from = $from;
         $this->to = $to;
@@ -45,8 +45,8 @@ class SendRegPathRevenueEmailReportJob extends Job implements SelfHandling, Shou
         Log::info('Affilaite Reg Path Email Report');
         Log::info($this->from.' - '.$this->to);
 
-        $websites = AffiliateWebsite::lists('website_name','id')->toArray();
-        $payouts = AffiliateWebsite::lists('payout','id')->toArray();
+        $websites = AffiliateWebsite::pluck('website_name', 'id')->toArray();
+        $payouts = AffiliateWebsite::pluck('payout', 'id')->toArray();
         // DB::enableQueryLog();
         // DB::connection('secondary')->enableQueryLog();
         // $user_ids = UserMeta::where('key', 'reg_path_revenue_email_report')->where('value',1)->get();
@@ -65,19 +65,19 @@ class SendRegPathRevenueEmailReportJob extends Job implements SelfHandling, Shou
         // }
         // Log::info($affiliates);
 
-        $user_ids = UserMeta::where('key', 'reg_path_revenue_email_report')->where('value',1)->with('user')->get();
+        $user_ids = UserMeta::where('key', 'reg_path_revenue_email_report')->where('value', 1)->with('user')->get();
         // Log::info($user_ids);
-        $affiliate_ids = $user_ids->map(function($st) {
+        $affiliate_ids = $user_ids->map(function ($st) {
             return $st->user->affiliate_id;
         });
         $affiliates = [];
-        foreach($user_ids as $user) {
+        foreach ($user_ids as $user) {
             $affiliates[$user->user->affiliate_id] = $user->user;
         }
 
         $coworker_emails = [];
         $cws = UserMeta::where('key', 'coworker_email')->with('user')->get();
-        foreach($cws as $cw) {
+        foreach ($cws as $cw) {
             $coworker_emails[$cw->user->affiliate_id] = explode(';', $cw->value);
         }
 
@@ -92,9 +92,9 @@ class SendRegPathRevenueEmailReportJob extends Job implements SelfHandling, Shou
             'end_date' => $this->to,
             'order_col' => 'date',
             'order_dir' => 'asc',
-            'affiliate_ids' => $affiliate_ids
+            'affiliate_ids' => $affiliate_ids,
         ];
-        
+
         // DB::connection('secondary')->enableQueryLog();
         $items = AffiliateWebsiteReport::externalPathRevenue($params)
             ->select(DB::RAW('date, SUM(payout) as payout, SUM(count) as count, website_id, affiliate_id'))
@@ -104,8 +104,10 @@ class SendRegPathRevenueEmailReportJob extends Job implements SelfHandling, Shou
 
         $rows = [];
         $aff_ids = [];
-        foreach($items as $i) {
-            if(!in_array($i->affiliate_id, $aff_ids)) $aff_ids[] = $i->affiliate_id;
+        foreach ($items as $i) {
+            if (! in_array($i->affiliate_id, $aff_ids)) {
+                $aff_ids[] = $i->affiliate_id;
+            }
             $rows[$i->affiliate_id][$i->website_id][$i->date] = $i;
         }
         // Log::info($rows);
@@ -113,35 +115,35 @@ class SendRegPathRevenueEmailReportJob extends Job implements SelfHandling, Shou
         $ss = Setting::where('code', 'js_midpath_email_report')->first();
         $cc_emails = explode(';', $ss->description);
 
-        $affiliates_names = Affiliate::whereIn('id', $aff_ids)->lists('company', 'id')->toArray();
+        $affiliates_names = Affiliate::whereIn('id', $aff_ids)->pluck('company', 'id')->toArray();
         // Log::info($affiliates_names);
         $date = Carbon::yesterday()->format('m/d/Y');
         $display_date = Carbon::parse($this->from)->format('F Y');
-        foreach($rows as $affiliate_id => $row) {
+        foreach ($rows as $affiliate_id => $row) {
             $the_affiliate = $affiliates[$affiliate_id];
             $the_coworker = isset($coworker_emails[$affiliate_id]) ? $coworker_emails[$affiliate_id] : [];
 
             // Log::info($the_affiliate);
             Mail::send('emails.affiliate_reg_path_revenue',
-                ['from' => $this->from, 'to' => $this->to, 'items' => $row,'websites' => $websites,'payouts' => $payouts, 'date' => $display_date],
-                function ($m) use($affiliate_id, $the_affiliate, $cc_emails, $affiliates_names, $date, $the_coworker){
-                
-                foreach($cc_emails as $cc) {
-                    $m->cc($cc);
-                }
+                ['from' => $this->from, 'to' => $this->to, 'items' => $row, 'websites' => $websites, 'payouts' => $payouts, 'date' => $display_date],
+                function ($m) use ($affiliate_id, $the_affiliate, $cc_emails, $affiliates_names, $date, $the_coworker) {
 
-                if(count($the_coworker) > 0) {
-                    foreach($the_coworker as $cw) {
-                        $m->cc($cw);
+                    foreach ($cc_emails as $cc) {
+                        $m->cc($cc);
                     }
-                }
 
-                $affiliate_name = isset($affiliates_names[$affiliate_id]) ? $affiliates_names[$affiliate_id] : '';
-                $title = $affiliate_id.' - '.$affiliate_name.' Js Midpath Revenue Report '.$date;
+                    if (count($the_coworker) > 0) {
+                        foreach ($the_coworker as $cw) {
+                            $m->cc($cw);
+                        }
+                    }
 
-                $m->to($the_affiliate->email, $the_affiliate->first_name.' '.$the_affiliate->last_name)
-                    ->subject($title);
-            });
+                    $affiliate_name = isset($affiliates_names[$affiliate_id]) ? $affiliates_names[$affiliate_id] : '';
+                    $title = $affiliate_id.' - '.$affiliate_name.' Js Midpath Revenue Report '.$date;
+
+                    $m->to($the_affiliate->email, $the_affiliate->first_name.' '.$the_affiliate->last_name)
+                        ->subject($title);
+                });
         }
     }
 }

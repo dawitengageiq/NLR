@@ -2,10 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Http\Requests\Request;
 use App\User;
 use Validator;
-use Log;
 
 class UpdateContactRequest extends Request
 {
@@ -31,17 +29,15 @@ class UpdateContactRequest extends Request
         $inputs = $this->all();
         $user = User::find($inputs['id']);
 
-        if($user->email!=$inputs['email'])
-        {
+        if ($user->email != $inputs['email']) {
             $validationEmailRule = 'required|email|unique:users';
         }
 
-        Validator::extend('affiliate_advertiser_chosen', function($attribute, $value, $parameters) {
+        Validator::extend('affiliate_advertiser_chosen', function ($attribute, $value, $parameters) {
 
             $inputs = $this->all();
 
-            if($inputs['affiliate_id']==0 && $inputs['advertiser_id']==0)
-            {
+            if ($inputs['affiliate_id'] == 0 && $inputs['advertiser_id'] == 0) {
                 return false;
             }
 
@@ -64,9 +60,9 @@ class UpdateContactRequest extends Request
     public function messages()
     {
         return [
-            'email.unique'     =>  'Email is already taken as a affiliate/advertiser contact or as a user.',
+            'email.unique' => 'Email is already taken as a affiliate/advertiser contact or as a user.',
             'affiliate_id.affiliate_advertiser_chosen' => 'You need to assign this contact to affiliate or advertiser.',
-            'advertiser_id.affiliate_advertiser_chosen' => 'You need to assign this contact to affiliate or advertiser.'
+            'advertiser_id.affiliate_advertiser_chosen' => 'You need to assign this contact to affiliate or advertiser.',
         ];
     }
 
@@ -74,14 +70,12 @@ class UpdateContactRequest extends Request
     {
         $inputs = $this->all();
 
-        if(!isset($inputs['affiliate_id']))
-        {
+        if (! isset($inputs['affiliate_id'])) {
             //$this->merge(['affiliate_id' => 0]);
             $inputs['affiliate_id'] = 0;
         }
 
-        if(!isset($inputs['advertiser_id']))
-        {
+        if (! isset($inputs['advertiser_id'])) {
             //$this->merge(['advertiser_id' => 0]);
             $inputs['advertiser_id'] = 0;
         }

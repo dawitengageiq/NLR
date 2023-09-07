@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateCampaignViewsTable extends Migration
 {
@@ -16,7 +16,7 @@ class CreateCampaignViewsTable extends Migration
             $table->increments('id');
             $table->integer('campaign_id')->unsigned()->index();
             $table->integer('affiliate_id')->unsigned()->nullable()->index();
-            $table->string('session',255);
+            $table->string('session', 255);
             $table->timestamps();
 
             $table->foreign('campaign_id')->references('id')->on('campaigns')->onDelete('cascade');

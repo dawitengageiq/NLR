@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Jobs\SendUserOneTrustEmailJob;
+use Illuminate\Console\Command;
 
 class SendUserOneTrustEmail extends Command
 {

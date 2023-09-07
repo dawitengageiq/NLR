@@ -1,18 +1,21 @@
 <?php
+
 namespace App\Http\Services\Campaigns\Utils\Lists\Ordering;
 
 final class ByCampaignType
 {
     /**
      * Default variables
-     *
      */
     protected $model;
+
     protected $campaignOrdering = [];
+
     protected $campaignTypeOrder = [];
+
     protected $typeOrderCount = [];
 
-    public function __construct (\App\CampaignTypeOrder $campaignTypeOrder)
+    public function __construct(\App\CampaignTypeOrder $campaignTypeOrder)
     {
         $this->model = $campaignTypeOrder;
     }
@@ -20,12 +23,13 @@ final class ByCampaignType
     /**
      * Get the affiliate cap per campaign
      *
-     * @param integer|bolean $defaultOrder
-     * @param integer $revenueTrackerID
-     * @param integer $campaignTypID
-     * @var  array $campaignTypeOrder
+     * @param  int|bolean  $defaultOrder
+     * @param  int  $revenueTrackerID
+     * @param  int  $campaignTypID
+     *
+     * @var  array
      */
-    public function get ($revenueTrackerID, $campaignTypID )
+    public function get($revenueTrackerID, $campaignTypID)
     {
         $campaignTypeOrder = $this->model->select('campaign_type_id', 'campaign_id_order')
             ->whereIn('campaign_type_id', $campaignTypID)
@@ -35,8 +39,9 @@ final class ByCampaignType
             ->keyBy('campaign_type_id');
 
         $this->campaignTypeOrder = $campaignTypeOrder->map(
-            function($order, $typeID) {
+            function ($order, $typeID) {
                 $this->typeOrderCount[$typeID] = count(json_decode($order['campaign_id_order']));
+
                 return json_decode($order['campaign_id_order']);
             }
         )->toArray();
@@ -47,7 +52,7 @@ final class ByCampaignType
      *
      * @return bolean
      */
-    public function hasOrder ()
+    public function hasOrder()
     {
         return (count($this->campaignOrdering)) ? true : false;
     }
@@ -55,67 +60,75 @@ final class ByCampaignType
     /**
      * Check campaign type exist on campaign type ordering
      *
-     * @param integer $campaignType
-     * @var array $campaignOrdering
+     * @param  int  $campaignType
+     *
+     * @var array
+     *
      * @return bolean
      */
-    public function has ($campaignType)
+    public function has($campaignType)
     {
         $this->campaignOrdering = [];
 
-        if(array_key_exists($campaignType, $this->campaignTypeOrder)) {
+        if (array_key_exists($campaignType, $this->campaignTypeOrder)) {
             $this->campaignOrdering = $this->campaignTypeOrder[$campaignType];
+
             return true;
         }
+
         return false;
     }
 
     /**
      * Check if campaign id exists in campaign type ordering
      *
-     * @param integer $campaignID
+     * @param  int  $campaignID
      * @return bolean
      */
-    public function campaignIdExists ($campaignID)
+    public function campaignIdExists($campaignID)
     {
-        if(in_array($campaignID, $this->campaignOrdering)) return true;
+        if (in_array($campaignID, $this->campaignOrdering)) {
+            return true;
+        }
+
         return false;
     }
 
     /**
      * Stack campaigns order by campaign type ordering
      *
-     * @param integer $campaignID
-     * @param integer $campaignType
-     * @param integer $lastSet
-     * @param array $stack
+     * @param  int  $campaignID
+     * @param  int  $campaignType
+     * @param  int  $lastSet
+     * @param  array  $stack
      * @return array
      */
-    public function stack ($campaignID, $campaignType, $lastSet, $stack)
+    public function stack($campaignID, $campaignType, $lastSet, $stack)
     {
         $stack[$campaignType][$lastSet][array_search($campaignID, $this->campaignOrdering)] = $campaignID;
         // sort indexes
         ksort($stack[$campaignType][$lastSet]);
+
         return $stack;
     }
 
     /**
      * Stack campaigns order by campaign type ordering
      *
-     * @param integer $campaignID
-     * @param integer $campaignType
-     * @param integer $lastSet
-     * @param array $stack
+     * @param  int  $campaignID
+     * @param  int  $campaignType
+     * @param  int  $lastSet
+     * @param  array  $stack
      * @return array
      */
-    public function push ($campaignID, $campaignType, $lastSet, $stack)
+    public function push($campaignID, $campaignType, $lastSet, $stack)
     {
         $stack[$campaignType][$lastSet][$this->typeOrderCount[$campaignType]] = $campaignID;
         // sort indexes
         ksort($stack[$campaignType][$lastSet]);
         // Increment to be the next indexes;
         $this->typeOrderCount[$campaignType]++;
+
         return $stack;
     }
-
 }

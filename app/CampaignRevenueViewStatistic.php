@@ -2,13 +2,13 @@
 
 namespace App;
 
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
 use DB;
+use Illuminate\Database\Eloquent\Model;
 
 class CampaignRevenueViewStatistic extends Model
 {
-    protected $connection; 
+    protected $connection;
+
     public $timestamps = false;
 
     /**
@@ -32,36 +32,36 @@ class CampaignRevenueViewStatistic extends Model
         's2',
         's3',
         's4',
-        's5'
+        's5',
     ];
 
-    public function __construct(array $attributes = array())
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        if(config('app.type') != 'reports') {
+        if (config('app.type') != 'reports') {
             $this->connection = 'secondary';
         }
     }
 
-//    public function scopeGetChangeStats($query, $params)
-//    {
-//        $revenueQueryPart = "";
-//        $viewsQueryPart = "";
-//
-//        if(isset($params['predefined_date_range']))
-//        {
-//
-//        }
-//
-//        $query->select('campaign_id');
-//
-//        return $query;
-//    }
+    //    public function scopeGetChangeStats($query, $params)
+    //    {
+    //        $revenueQueryPart = "";
+    //        $viewsQueryPart = "";
+    //
+    //        if(isset($params['predefined_date_range']))
+    //        {
+    //
+    //        }
+    //
+    //        $query->select('campaign_id');
+    //
+    //        return $query;
+    //    }
 
-    public function scopeCampaignMostChanges($query, $date_range, $from, $to, $affiliates) {
+    public function scopeCampaignMostChanges($query, $date_range, $from, $to, $affiliates)
+    {
 
-        switch($date_range)
-        {
+        switch ($date_range) {
             case 'last_week' :
                 $diffChecker = 'WEEK(campaign_revenue_view_statistics.created_at) as identifier';
                 break;
@@ -78,9 +78,9 @@ class CampaignRevenueViewStatistic extends Model
         $query->whereBetween('campaign_revenue_view_statistics.created_at', [$from, $to]);
         // ->leftJoin('campaigns', 'campaigns.id', '=', 'campaign_revenue_view_statistics.campaign_id')
 
-        $query->where('views','>', 0);
-        
-        if($affiliates != '' && count($affiliates) > 0) {
+        $query->where('views', '>', 0);
+
+        if ($affiliates != '' && count($affiliates) > 0) {
             $query->whereIn('revenue_tracker_id', $affiliates);
         }
 

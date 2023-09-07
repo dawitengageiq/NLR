@@ -4,15 +4,13 @@ namespace App\Jobs;
 
 use App\CampaignView;
 use App\CampaignViewReport;
-use App\Jobs\Job;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\QueryException;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Log;
 
-class SaveCampaignView extends Job implements SelfHandling, ShouldQueue
+class SaveCampaignView extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
@@ -20,8 +18,6 @@ class SaveCampaignView extends Job implements SelfHandling, ShouldQueue
 
     /**
      * Create a new job instance.
-     *
-     * @param $details
      */
     public function __construct($details)
     {
@@ -35,15 +31,13 @@ class SaveCampaignView extends Job implements SelfHandling, ShouldQueue
      */
     public function handle()
     {
-        if($this->attempts() > 1)
-        {
+        if ($this->attempts() > 1) {
             return;
         }
 
         // extract($this->details);
 
-        try
-        {
+        try {
             CampaignView::create($this->details);
             // CampaignView::create([  //save the view
             //     'campaign_id'   => $id,
@@ -55,28 +49,23 @@ class SaveCampaignView extends Job implements SelfHandling, ShouldQueue
             //echo 'Campaign Saved!';
 
             $report = CampaignViewReport::firstOrNew([
-                'campaign_id'           =>  $this->details['campaign_id'],
-                'revenue_tracker_id'    =>  $this->details['affiliate_id']
+                'campaign_id' => $this->details['campaign_id'],
+                'revenue_tracker_id' => $this->details['affiliate_id'],
             ]);
 
-            if($report->exists)
-            {
+            if ($report->exists) {
                 $report->total_view_count = $report->total_view_count + 1;
                 $report->current_view_count = $report->current_view_count + 1;
                 $report->campaign_type_id = $this->details['campaign_type_id'];
-            }
-            else
-            {
+            } else {
                 $report->total_view_count = 1;
                 $report->current_view_count = 1;
                 $report->campaign_type_id = $this->details['campaign_type_id'];
             }
 
-            $report->campaign_type_id =  $this->details['campaign_type_id'];
+            $report->campaign_type_id = $this->details['campaign_type_id'];
             $report->save();
-        }
-        catch(QueryException $exception)
-        {
+        } catch (QueryException $exception) {
             // $errorCode = $exception->errorInfo[1];
             // Log::info('Campaign View insert error code: '.$errorCode);
             // Log::info($exception->getMessage());

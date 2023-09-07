@@ -2,13 +2,8 @@
 
 namespace App\Resources;
 
-use \Illuminate\Http\Request;
-
-use App\Http\Services\Helpers\Reflection;
-
 class UserActionLog extends Resource
 {
-
     /**
      * Transform the resource into an array.
      *
@@ -28,5 +23,4 @@ class UserActionLog extends Resource
             'user_full_name' => ($user = $this->getValue('user')) ? $user->full_name : '',
         ];
     }
-
 }

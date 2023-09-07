@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AddMorePixelDetailsInAffiliateRevenueTrackerTable extends Migration
 {
@@ -27,7 +27,7 @@ class AddMorePixelDetailsInAffiliateRevenueTrackerTable extends Migration
     public function down()
     {
         Schema::table('affiliate_revenue_trackers', function (Blueprint $table) {
-            $table->dropColumn(['pixel_header','pixel_body','pixel_footer']);
+            $table->dropColumn(['pixel_header', 'pixel_body', 'pixel_footer']);
         });
     }
 }

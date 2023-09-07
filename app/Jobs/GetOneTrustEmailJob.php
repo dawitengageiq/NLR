@@ -2,24 +2,25 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Job;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Carbon\Carbon;
-use Curl\Curl;
 use App\LeadUser;
 use App\LeadUserRequest;
+use Carbon\Carbon;
+use Curl\Curl;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Log;
 
-class GetOneTrustEmailJob extends Job implements SelfHandling, ShouldQueue
+class GetOneTrustEmailJob extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
     protected $date;
+
     protected $end_date;
+
     protected $size;
+
     protected $states;
 
     /**
@@ -42,42 +43,44 @@ class GetOneTrustEmailJob extends Job implements SelfHandling, ShouldQueue
      */
     public function handle()
     {
-        Log::info('Get One Trust Date: '. $this->date);
+        Log::info('Get One Trust Date: '.$this->date);
         $page = 0;
         $get = true;
-        $emails = array();
-        $users = array();
-        while($get) {
+        $emails = [];
+        $users = [];
+        while ($get) {
             $output = $this->curler('https://app.onetrust.com/api/datasubject/v2/requestqueues/en-us?size='.$this->size.'&sort=createdDate,asc&modifieddate='.$this->date.'&page='.$page);
 
-            foreach($output['content'] as $req) {
-                if($req['status'] != 'UNVERIFIED') {
-                    if(!in_array($req['email'], $emails)) $emails[] = $req['email'];
+            foreach ($output['content'] as $req) {
+                if ($req['status'] != 'UNVERIFIED') {
+                    if (! in_array($req['email'], $emails)) {
+                        $emails[] = $req['email'];
+                    }
                     $requestQueueRefId = $req['requestQueueRefId'];
                     $user_additional_data = $this->curler('https://app.onetrust.com/api/datasubject/v2/requestqueues/'.$requestQueueRefId.'/language/en-us');
                     $additional_data = json_decode($user_additional_data['additionalData'], true);
 
                     $state = '';
-                    if(isset($additional_data['State'])) {
+                    if (isset($additional_data['State'])) {
                         $state = trim($additional_data['State']);
-                        if(strlen($state) > 2) {
+                        if (strlen($state) > 2) {
                             $state = array_search(strtolower($state), $this->states) ? array_search(strtolower($state), $this->states) : $state;
                         }
                     }
 
-                    $users[] = array(
+                    $users[] = [
                         'email' => $req['email'],
                         'status' => $req['status'],
                         'request' => $req['requestTypes'][0],
                         'first_name' => $req['firstName'],
                         'last_name' => $req['lastName'],
-                        'request_date' => date('Y-m-d H:i:s',strtotime($req['dateCreated'])),
+                        'request_date' => date('Y-m-d H:i:s', strtotime($req['dateCreated'])),
                         'state' => $state,
                         'zip' => isset($additional_data['Zip']) ? $additional_data['Zip'] : '',
                         'city' => isset($additional_data['City']) ? $additional_data['City'] : '',
                         'address' => isset($additional_data['Address']) ? $additional_data['Address'] : '',
                         'phone_number' => isset($additional_data['Phone Number']) ? $additional_data['Phone Number'] : '',
-                    );
+                    ];
                 }
             }
 
@@ -101,9 +104,9 @@ class GetOneTrustEmailJob extends Job implements SelfHandling, ShouldQueue
         //     );
         // }
 
-        if(count($users) > 0) {
-            Log::info('User Count: '. count($users));
-            foreach($users as $key => $user) {
+        if (count($users) > 0) {
+            Log::info('User Count: '.count($users));
+            foreach ($users as $key => $user) {
                 $request_type = $user['request'];
                 $email = $user['email'];
                 $first_name = $user['first_name'];
@@ -117,7 +120,7 @@ class GetOneTrustEmailJob extends Job implements SelfHandling, ShouldQueue
 
                 $uu = LeadUserRequest::firstOrNew([
                     'email' => $email,
-                    'request_date' => $request_date
+                    'request_date' => $request_date,
                 ]);
 
                 $uu->request_type = $request_type;
@@ -132,50 +135,46 @@ class GetOneTrustEmailJob extends Job implements SelfHandling, ShouldQueue
                 $uu->phone_number = $phone_number;
                 $uu->save();
             }
-        }else {
+        } else {
             Log::info('No users');
         }
 
         Log::info('One Trust Process Done');
-            
+
     }
 
-    public function curler($url) {
+    public function curler($url)
+    {
         Log::info($url);
 
         $callCounter = 0;
         $response = null;
-        do
-        {
+        do {
             $curl = new Curl();
-            $curl->setOpt(CURLOPT_HTTPHEADER, array(
-                'APIKey: 5058555e7eaf1cd20f4d7394659ac2b7'
-            ));
+            $curl->setOpt(CURLOPT_HTTPHEADER, [
+                'APIKey: 5058555e7eaf1cd20f4d7394659ac2b7',
+            ]);
             $curl->get($url);
 
-            if($curl->error)
-            {
-                Log::info("OneTrust API Error!");
+            if ($curl->error) {
+                Log::info('OneTrust API Error!');
                 Log::info($curl->error_message);
-                ++$callCounter;
-            }
-            else
-            {
+                $callCounter++;
+            } else {
                 $response = json_decode($curl->response, true);
             }
 
             //stop the process when budget breached
-            if($callCounter==10)
-            {
+            if ($callCounter == 10) {
                 Log::info('ONE TRUST API call limit reached!');
                 $curl->close();
                 break;
             }
 
-        } while($curl->error);
+        } while ($curl->error);
 
         $curl->close();
+
         return $response;
     }
-
 }

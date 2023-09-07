@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Database\Seeder;
 use App\Lead;
 use App\LeadDataCsv;
+use Illuminate\Database\Seeder;
 
 class LeadDataCsvSeeder extends Seeder
 {
@@ -17,12 +17,11 @@ class LeadDataCsvSeeder extends Seeder
         $faker = Faker\Factory::create();
         //$leads = Lead::lists('id','lead_email')->toArray();
         //$leads = Lead::select('id','lead_email')->get();
-        $leads = Lead::select('id','lead_email')->whereRaw('id NOT IN (SELECT lead_data_csvs.id FROM lead_data_csvs)')->get();
+        $leads = Lead::select('id', 'lead_email')->whereRaw('id NOT IN (SELECT lead_data_csvs.id FROM lead_data_csvs)')->get();
 
-        foreach($leads as $lead)
-        {
+        foreach ($leads as $lead) {
             $data = LeadDataCsv::firstOrNew([
-                'id'	=>	$lead->id,
+                'id' => $lead->id,
             ]);
 
             //$data->value = '{"email":"'.$lead->lead_email.'","fname":"'.$faker->firstName.'","lname":"'.$faker->lastName.'","ipaddress":"'.$faker->ipv4.'","city":"'.$faker->city.'","state":"CAL","zip":"'.$faker->postcode.'","dobday":"23","dobmonth":"04","dobyear":"1988"}';

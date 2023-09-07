@@ -1,12 +1,12 @@
 <?php
 
 namespace App;
-use Illuminate\Database\Eloquent\Model;
+
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 
 class Cron extends Model
 {
-
     protected $fillable = [
         'leads_queued',
         'leads_processed',
@@ -14,7 +14,7 @@ class Cron extends Model
         'time_started',
         'time_ended',
         'status',
-        'lead_ids'
+        'lead_ids',
     ];
 
     public $timestamps = false;
@@ -25,6 +25,6 @@ class Cron extends Model
         $whereStatement = "DATE(time_started) < DATE('".$dateNow->toDateTimeString()."')";
 
         return $query->whereRaw($whereStatement)
-                     ->where('status','=',0);
+            ->where('status', '=', 0);
     }
 }

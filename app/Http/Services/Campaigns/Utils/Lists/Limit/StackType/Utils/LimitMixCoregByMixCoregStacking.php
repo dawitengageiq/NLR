@@ -1,29 +1,27 @@
 <?php
+
 namespace App\Http\Services\Campaigns\Utils\Lists\Limit\StackType\Utils;
-
-use Config;
-
-use RevenueTracker;
 
 class LimitMixCoregByMixCoregStacking extends LimitMixCoregByPathType
 {
-
     /**
      * Apply the revenue tracker limit for coreg
      *
-     * @param array $stacks
-     * @param  $limit
-     * @param integer $tempIndex
-     * @param boolean $hasOrdering
-     * @param array $pathLimit
+     * @param  array  $stacks
+     * @param    $limit
+     * @param  int  $tempIndex
+     * @param  bool  $hasOrdering
+     * @param  array  $pathLimit
      * @return array
      */
     public function apply($param)
     {
-        list($stacks, $limit, $tempIndex, $hasOrdering, $this->pathLimit, $this->revenueTrackerLimit) = $param;
+        [$stacks, $limit, $tempIndex, $hasOrdering, $this->pathLimit, $this->revenueTrackerLimit] = $param;
 
         // If mix coreg ordering exist, process...
-        if($hasOrdering) return $this->applyFirstLevelLimitThenLimitPerPage($stacks, $limit, $tempIndex);
+        if ($hasOrdering) {
+            return $this->applyFirstLevelLimitThenLimitPerPage($stacks, $limit, $tempIndex);
+        }
 
         // Process the limit by path type and revenue tracker
         return $this->applyPathTypeLimitThenFirstLevelLimit($stacks, $this->revenueTrackerLimit['coreg']);
@@ -32,10 +30,10 @@ class LimitMixCoregByMixCoregStacking extends LimitMixCoregByPathType
     /**
      * Apply the revenue tracker limit for coreg then limit per page if available
      *
-     * @param array $stacks
+     * @param  array  $stacks
      * @return array
      */
-    protected function applyFirstLevelLimitThenLimitPerPage ($stacks, $limit, $tempIndex)
+    protected function applyFirstLevelLimitThenLimitPerPage($stacks, $limit, $tempIndex)
     {
         // Coreg types id
         $coregTypes = array_keys(config('constants.MIXED_COREG_TYPE_FOR_ORDERING'));
@@ -47,11 +45,15 @@ class LimitMixCoregByMixCoregStacking extends LimitMixCoregByPathType
         $collection = collect(array_values($tempArray));
 
         // Implement revenue tracker first level limit here
-        if($revLimit = $this->revenueTrackerLimit['coreg']) $collection->splice($revLimit);
+        if ($revLimit = $this->revenueTrackerLimit['coreg']) {
+            $collection->splice($revLimit);
+        }
 
         // If no limit set per pages
         // Distribute to coreg types equally(if possible)
-        if(!$limit) $limit =  ceil($collection->count() / 4);
+        if (! $limit) {
+            $limit = ceil($collection->count() / 4);
+        }
 
         // Distribute to coreg types
         $pageCount = 1;

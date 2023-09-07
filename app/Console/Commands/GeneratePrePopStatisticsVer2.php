@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Jobs\Reports\GeneratePrepopStatisticsV2;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class GeneratePrePopStatisticsVer2 extends Command
 {
@@ -44,8 +44,7 @@ class GeneratePrePopStatisticsVer2 extends Command
 
         $date = $this->option('date');
 
-        if(empty($date))
-        {
+        if (empty($date)) {
             $date = Carbon::now()->subDay()->toDateString();
         }
 

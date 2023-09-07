@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Jobs\ConsolidatedGraph\Utils\Traits;
 
 trait Revenue
@@ -6,32 +7,34 @@ trait Revenue
     /**
      * Set rvenue to override default value of revenues container : @var $revenues
      *
-     * @param string  $indx
-     * @param integer  $value
-     * @param string $env
-     * @param integer $subtrahend
+     * @param  string  $indx
+     * @param  int  $value
+     * @param  string  $env
+     * @param  int  $subtrahend
      * @return void
      */
     protected function setRevenue($indx, $value, $env, $subtrahend = 0)
     {
-        if(!$env) {
+        if (! $env) {
             $this->revenues[$indx] = $value;
+
             return;
         }
 
-        if(array_key_exists($value, $this->affiliateReports)) {
+        if (array_key_exists($value, $this->affiliateReports)) {
             $this->revenues[$indx] = number_format(($this->affiliateReports[$value]['revenue'] - $subtrahend), 3, '.', '');
+
             return;
         }
 
         $this->revenues[$indx] = number_format(0, 3, '.', '');
-        return;
+
     }
 
     /**
      * Value for cpa revenue.
      *
-     * @param string $idx
+     * @param  string  $idx
      */
     protected function cpaRevenue($idx)
     {
@@ -41,15 +44,23 @@ trait Revenue
     /**
      * Value for coreg page 3 revenue per views.
      *
-     * @param string $idx
+     * @param  string  $idx
      * @return void
      */
     protected function allMpRevenue($idx)
     {
-        if(!array_key_exists('pd_revenue', $this->params)) $this->params['pd_revenue'] = 0;
-        if(!array_key_exists('tb_revenue', $this->params)) $this->params['tb_revenue'] = 0;
-        if(!array_key_exists('iff_revenue', $this->params)) $this->params['iff_revenue'] = 0;
-        if(!array_key_exists('rexadz_revenue', $this->params)) $this->params['rexadz_revenue'] = 0;
+        if (! array_key_exists('pd_revenue', $this->params)) {
+            $this->params['pd_revenue'] = 0;
+        }
+        if (! array_key_exists('tb_revenue', $this->params)) {
+            $this->params['tb_revenue'] = 0;
+        }
+        if (! array_key_exists('iff_revenue', $this->params)) {
+            $this->params['iff_revenue'] = 0;
+        }
+        if (! array_key_exists('rexadz_revenue', $this->params)) {
+            $this->params['rexadz_revenue'] = 0;
+        }
         // if(!array_key_exists('all_inbox_revenue', $this->params)) $this->params['all_inbox_revenue'] = 0;
 
         $external = $this->params['pd_revenue'];
@@ -64,14 +75,22 @@ trait Revenue
     /**
      * All coreg revenue
      *
-     * @param  string $idx
+     * @param  string  $idx
      */
     protected function allCoregRevenue($idx)
     {
-        if(!array_key_exists('coreg_p1_revenue', $this->params)) $this->params['coreg_p1_revenue'] = 0;
-        if(!array_key_exists('coreg_p2_revenue', $this->params)) $this->params['coreg_p2_revenue'] = 0;
-        if(!array_key_exists('coreg_p3_revenue', $this->params)) $this->params['coreg_p3_revenue'] = 0;
-        if(!array_key_exists('coreg_p4_revenue', $this->params)) $this->params['coreg_p4_revenue'] = 0;
+        if (! array_key_exists('coreg_p1_revenue', $this->params)) {
+            $this->params['coreg_p1_revenue'] = 0;
+        }
+        if (! array_key_exists('coreg_p2_revenue', $this->params)) {
+            $this->params['coreg_p2_revenue'] = 0;
+        }
+        if (! array_key_exists('coreg_p3_revenue', $this->params)) {
+            $this->params['coreg_p3_revenue'] = 0;
+        }
+        if (! array_key_exists('coreg_p4_revenue', $this->params)) {
+            $this->params['coreg_p4_revenue'] = 0;
+        }
 
         $coreg = $this->params['coreg_p1_revenue'];
         $coreg += $this->params['coreg_p2_revenue'];

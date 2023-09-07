@@ -1,8 +1,8 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 
 class PingController extends Controller
 {
@@ -19,6 +19,7 @@ class PingController extends Controller
         $http_status = curl_getinfo($http, CURLINFO_HTTP_CODE);
         curl_close($http);
         $http_status = (string) $http_status;
+
         return $http_status;
     }
 
@@ -26,13 +27,14 @@ class PingController extends Controller
     public function globalTestMarketPing(Request $request)
     {
         $email = $request->input('email');
-        $UserName = "ENGAGE_IQ"; 
-        $DateandHour = gmdate("Y-m-d H");  
-        $HashedPassword = substr(md5("QOSRD16#pmq2dEbl"), 0, 10);  
-        $Key = "sk5734d80d6ad1d"; 
-        $sharedSecret = md5($UserName . ":" . $Key . ":" . $DateandHour . ":" . $HashedPassword); 
-        $emailhashvalue=md5(strtolower($email));
-        $myurl="https://panelmanager.lightspeedgmiservices.com/PanelManager/Panel.ashx?method=checkRecruitEligibility&username=$UserName&sharedSecret=$sharedSecret&PanelBrand=gtm&Email=$emailhashvalue";
+        $UserName = 'ENGAGE_IQ';
+        $DateandHour = gmdate('Y-m-d H');
+        $HashedPassword = substr(md5('QOSRD16#pmq2dEbl'), 0, 10);
+        $Key = 'sk5734d80d6ad1d';
+        $sharedSecret = md5($UserName.':'.$Key.':'.$DateandHour.':'.$HashedPassword);
+        $emailhashvalue = md5(strtolower($email));
+        $myurl = "https://panelmanager.lightspeedgmiservices.com/PanelManager/Panel.ashx?method=checkRecruitEligibility&username=$UserName&sharedSecret=$sharedSecret&PanelBrand=gtm&Email=$emailhashvalue";
+
         return $content = file_get_contents($myurl);
     }
 
@@ -40,8 +42,9 @@ class PingController extends Controller
     public function surveyAndQuizzesPing(Request $request)
     {
         $email = $request->input('email');
-        $emailhashvalue=md5($email);
-        $myurl="http://puzz.biglist.com/api/1.1/lists/news/subscriptions/$emailhashvalue?apikey=bbmwhaw9n43awadfgh&format=xml";
+        $emailhashvalue = md5($email);
+        $myurl = "http://puzz.biglist.com/api/1.1/lists/news/subscriptions/$emailhashvalue?apikey=bbmwhaw9n43awadfgh&format=xml";
+
         return $content = file_get_contents($myurl);
     }
 }
