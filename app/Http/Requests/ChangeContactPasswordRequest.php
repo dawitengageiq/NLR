@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\User;
 use Auth;
+use Illuminate\Foundation\Http\FormRequest;
 use Session;
 use Validator;
 

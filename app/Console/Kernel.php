@@ -474,6 +474,7 @@ class Kernel extends ConsoleKernel
                  ->appendOutputTo(storage_path('logs').'/TestCommand.log');
         */
     }
+
     /**
      * Register the Closure based commands for the application.
      *

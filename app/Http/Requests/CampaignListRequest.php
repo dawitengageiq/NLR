@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Exceptions\CampaignListsResolverException;
+use Illuminate\Foundation\Http\FormRequest;
 
 class CampaignListRequest extends FormRequest
 {
