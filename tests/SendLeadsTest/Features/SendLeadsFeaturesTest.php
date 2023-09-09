@@ -3,7 +3,7 @@
 use App\Http\Services\SendLeadsValidator;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-class SendLeadsFeaturesTest extends TestCase
+class SendLeadsFeaturesTest extends BrowserKitTestCase
 {
     use DatabaseTransactions;
     use SendLeadsTrait;

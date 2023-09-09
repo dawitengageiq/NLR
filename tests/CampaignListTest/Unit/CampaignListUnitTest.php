@@ -1,6 +1,6 @@
 <?php
 
-class CampaignListUnitTest extends TestCase
+class CampaignListUnitTest extends BrowserKitTestCase
 {
     /**
      * @test

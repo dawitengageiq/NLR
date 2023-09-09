@@ -1,6 +1,6 @@
 <?php
 
-class CheckJeremyClassTest extends TestCase
+class CheckJeremyClassTest extends BrowserKitTestCase
 {
     public function testFailure()
     {

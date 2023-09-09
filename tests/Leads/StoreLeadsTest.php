@@ -4,7 +4,7 @@ use App\Http\Services\Leads\LeadStore;
 use App\Http\Services\SendLeadsValidator;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
-class StoreLeadsTest extends TestCase
+class StoreLeadsTest extends BrowserKitTestCase
 {
     //use DatabaseMigrations;
     use SendLeadsTrait;
