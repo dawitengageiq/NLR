@@ -1,6 +1,6 @@
 <?php
 
-class ApiTest extends TestCase
+class ApiTest extends BrowserKitTestCase
 {
     public function testGetMyTokenAPI()
     {

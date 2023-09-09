@@ -2,7 +2,7 @@
 
 use App\User;
 
-class AdminVisitPagesTest extends TestCase
+class AdminVisitPagesTest extends BrowserKitTestCase
 {
     public function testAdminLogin()
     {

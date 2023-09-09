@@ -2,7 +2,7 @@
 
 use Illuminate\Database\QueryException;
 
-class SendLeadsUnitTest extends TestCase
+class SendLeadsUnitTest extends BrowserKitTestCase
 {
     /**
      * the SendLeadsValidator instance

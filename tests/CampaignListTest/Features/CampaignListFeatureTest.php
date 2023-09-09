@@ -4,7 +4,7 @@ namespace tests\CampaignListFeatureTest\Features;
 
 use App\Jobs\SaveLeadUser;
 
-class CampaignListFeatureTest extends TestCase
+class CampaignListFeatureTest extends BrowserKitTestCase
 {
     use SendLeadsTrait;
 

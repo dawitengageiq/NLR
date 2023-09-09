@@ -2,7 +2,7 @@
 
 use App\Http\Services\SendLeadsValidator;
 
-class LeadRepositoryTest extends TestCase
+class LeadRepositoryTest extends BrowserKitTestCase
 {
     use SendLeadsTrait;
 
