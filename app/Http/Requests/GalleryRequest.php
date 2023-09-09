@@ -2,13 +2,14 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Request;
 use Storage;
 use Validator;
 
 // use Log;
 
-class GalleryRequest extends Request
+class GalleryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

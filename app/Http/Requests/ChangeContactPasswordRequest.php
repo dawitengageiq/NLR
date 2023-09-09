@@ -4,10 +4,11 @@ namespace App\Http\Requests;
 
 use App\User;
 use Auth;
+use Illuminate\Foundation\Http\FormRequest;
 use Session;
 use Validator;
 
-class ChangeContactPasswordRequest extends Request
+class ChangeContactPasswordRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

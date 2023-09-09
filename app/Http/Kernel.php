@@ -17,7 +17,8 @@ class Kernel extends HttpKernel
         \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
         \Illuminate\Session\Middleware\StartSession::class,
         \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-        \App\Http\Middleware\VerifyCsrfToken::class
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        \App\Http\Middleware\VerifyCsrfToken::class,
     ];
 
     /**
@@ -29,8 +30,9 @@ class Kernel extends HttpKernel
         'admin' => Middleware\UnauthorizedIfNotAdministrator::class,
         'advertiser' => Middleware\UnauthorizedIfNotAdvertiser::class,
         'affiliate' => Middleware\UnauthorizedIfNotAffiliate::class,
-        'auth' => Middleware\Authenticate::class,
-        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
+        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => Middleware\RedirectIfAuthenticated::class,
         'restrict_access' => Middleware\RestrictSectionAccessIfNotPermitted::class,
         'api' => Middleware\ReturnErrorIfAPIError::class,

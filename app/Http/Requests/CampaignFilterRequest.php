@@ -3,10 +3,11 @@
 namespace App\Http\Requests;
 
 use Carbon\Carbon;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Request;
 use Validator;
 
-class CampaignFilterRequest extends Request
+class CampaignFilterRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

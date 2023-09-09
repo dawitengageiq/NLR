@@ -41,7 +41,7 @@ final class ContentReplaceable
             return $html;
         }
 
-        $replace = new self ($dataToReplace, $html);
+        $replace = new self($dataToReplace, $html);
 
         return $replace->execute()->html;
     }
