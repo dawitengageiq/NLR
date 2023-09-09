@@ -474,4 +474,13 @@ class Kernel extends ConsoleKernel
                  ->appendOutputTo(storage_path('logs').'/TestCommand.log');
         */
     }
+    /**
+     * Register the Closure based commands for the application.
+     *
+     * @return void
+     */
+    protected function commands()
+    {
+        require base_path('routes/console.php');
+    }
 }
