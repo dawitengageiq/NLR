@@ -157,7 +157,7 @@ class Content
             $this->setAffiliateID(1);
         }
         if (array_key_exists('session', $this->inputs)) {
-            $this->setSession($this->inputs['session']);
+            $this->setLaravelSession($this->inputs['session']);
         }
         if (array_key_exists('path', $this->inputs)) {
             $this->setPath($this->inputs['path']);
