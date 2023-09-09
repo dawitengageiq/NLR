@@ -2,10 +2,11 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Request;
 use Validator;
 
-class AdminSettingRequest extends Request
+class AdminSettingRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

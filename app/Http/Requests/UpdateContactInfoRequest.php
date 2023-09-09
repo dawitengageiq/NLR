@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
-class UpdateContactInfoRequest extends Request
+use Illuminate\Foundation\Http\FormRequest;
+
+class UpdateContactInfoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

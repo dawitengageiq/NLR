@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Foundation\Http\FormRequest;
 use App\Exceptions\CampaignListsResolverException;
 
-class CampaignListRequest extends Request
+class CampaignListRequest extends FormRequest
 {
     /**
      * Default variables

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
-class RevenueTrackerRequest extends Request
+use Illuminate\Foundation\Http\FormRequest;
+
+class RevenueTrackerRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
