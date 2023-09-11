@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Hash;
 use App\Advertiser;
 use App\Affiliate;
 use App\AffiliateRevenueTracker;
@@ -587,7 +588,7 @@ class AffiliateController extends Controller
 
         $user = User::find($request->input('user_id'));
 
-        $user->password = bcrypt($request->input('password'));
+        $user->password = Hash::make($request->input('password'));
         $user->save();
 
         $responseData = [
