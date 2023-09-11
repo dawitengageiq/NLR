@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Hash;
 use App\Helpers\auth\AuthenticatesAndRegistersUsers;
 use App\User;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
+use Illuminate\Support\Facades\Hash;
 use Validator;
 
 class AuthenticationController extends Controller

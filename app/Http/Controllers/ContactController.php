@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Hash;
 use App\Commands\GetUserActionPermission;
 use App\Http\Requests\AddContactRequest;
 use App\Http\Requests\UpdateContactRequest;
@@ -10,6 +9,7 @@ use App\User;
 use Bus;
 use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Log;
 
 class ContactController extends Controller

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Hash;
 use App\Http\Requests;
 use App\Http\Requests\AddUserRequest;
 use App\Http\Requests\ChangePasswordRequest;
@@ -12,6 +11,7 @@ use App\User;
 use DB;
 use File;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Log;
 
 class UserController extends Controller

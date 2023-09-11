@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Hash;
 use App\Advertiser;
 use App\Affiliate;
 use App\AffiliateRevenueTracker;
@@ -29,6 +28,7 @@ use Carbon\Carbon;
 use DB;
 use Excel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Log;
 use Session;
 
