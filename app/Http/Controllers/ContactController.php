@@ -9,6 +9,7 @@ use App\User;
 use Bus;
 use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Log;
 
 class ContactController extends Controller
@@ -199,7 +200,7 @@ class ContactController extends Controller
     ) {
         $inputs = $request->all();
         //encrypt password
-        $inputs['password'] = bcrypt($inputs['password']);
+        $inputs['password'] = Hash::make($inputs['password']);
         $inputs['account_type'] = 1; // 1 value indicates that the user is not a engageiq admin user
 
         //remove affiliate_id if it is 0
@@ -299,7 +300,7 @@ class ContactController extends Controller
         $user->last_name = $last_name;
         $user->gender = $gender;
         $user->position = $position;
-        //$user->password = bcrypt($password);
+        //$user->password = Hash::make($password);
         $user->address = $address;
         $user->email = $email;
         $user->mobile_number = $mobile_number;

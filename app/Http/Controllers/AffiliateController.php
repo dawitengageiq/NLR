@@ -28,6 +28,7 @@ use Carbon\Carbon;
 use DB;
 use Excel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Log;
 use Session;
 
@@ -587,7 +588,7 @@ class AffiliateController extends Controller
 
         $user = User::find($request->input('user_id'));
 
-        $user->password = bcrypt($request->input('password'));
+        $user->password = Hash::make($request->input('password'));
         $user->save();
 
         $responseData = [

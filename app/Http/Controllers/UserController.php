@@ -11,6 +11,7 @@ use App\User;
 use DB;
 use File;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Log;
 
 class UserController extends Controller
@@ -195,7 +196,7 @@ class UserController extends Controller
     {
         $inputs = $request->all();
         //encrypt password
-        $inputs['password'] = bcrypt($inputs['password']);
+        $inputs['password'] = Hash::make($inputs['password']);
         $inputs['account_type'] = 2;
 
         // Log::info($inputs);
@@ -267,7 +268,7 @@ class UserController extends Controller
         $user->position = $position;
 
         if (! empty($password)) {
-            $user->password = bcrypt($password);
+            $user->password = Hash::make($password);
         }
 
         $user->address = $address;
@@ -329,7 +330,7 @@ class UserController extends Controller
         $newPassword = $inputs['password'];
         $user = $request->user();
 
-        $user->password = bcrypt($newPassword);
+        $user->password = Hash::make($newPassword);
         $user->save();
 
         return response()->json(['status' => 200, 'message' => 'password was successfully changed!']);

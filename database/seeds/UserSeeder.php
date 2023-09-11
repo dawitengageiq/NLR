@@ -3,6 +3,7 @@
 use App\Advertiser;
 use App\Affiliate;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
@@ -23,7 +24,7 @@ class UserSeeder extends Seeder
         $admin->last_name = 'Magbanua';
         $admin->gender = 'M';
         $admin->position = 'Administrator/Developer';
-        $admin->password = bcrypt(12345);
+        $admin->password = Hash::make(12345);
         $admin->role_id = 1;
         $admin->account_type = 2;
         $admin->save();
@@ -43,7 +44,7 @@ class UserSeeder extends Seeder
         $affiliate->last_name = 'Librero';
         $affiliate->gender = 'F';
         $affiliate->position = 'Affiliate Master of Coin';
-        $affiliate->password = bcrypt(12345);
+        $affiliate->password = Hash::make(12345);
         $affiliate->account_type = 1;
         $affiliate->affiliate_id = $faker->randomElement($affiliateIDs);
         $affiliate->save();
@@ -58,7 +59,7 @@ class UserSeeder extends Seeder
         $advertiser->last_name = 'Magbanua';
         $advertiser->gender = 'M';
         $advertiser->position = 'Advertiser Master of TV Shows';
-        $advertiser->password = bcrypt(12345);
+        $advertiser->password = Hash::make(12345);
         $advertiser->account_type = 1;
         $advertiser->advertiser_id = $faker->randomElement($advertiserIDs);
         $advertiser->save();
@@ -73,7 +74,7 @@ class UserSeeder extends Seeder
         $advertiser->last_name = 'Magallen';
         $advertiser->gender = 'M';
         $advertiser->position = 'Nothing';
-        $advertiser->password = bcrypt(12345678);
+        $advertiser->password = Hash::make(12345678);
         $advertiser->account_type = 1;
         $advertiser->advertiser_id = $faker->randomElement($advertiserIDs);
         $advertiser->save();
