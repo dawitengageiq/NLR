@@ -31,8 +31,6 @@ class BugReport extends Model
         'evidences',
     ];
 
-
-
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
