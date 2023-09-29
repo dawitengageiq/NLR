@@ -25,8 +25,8 @@ mix.webpackConfig({
      }
 });
 
-mix.js('resources/assets/js/admin/consolidated/date_range_multiple.js', 'public/js/admin/consolidated/date_range_multiple.min.js')
-    .js('resources/assets/js/admin/consolidated/date_range.js', 'public/js/admin/consolidated/date_range.min.js');
+mix.js('resources/js/admin/consolidated/date_range_multiple.js', 'public/js/admin/consolidated/date_range_multiple.min.js')
+    .js('resources/js/admin/consolidated/date_range.js', 'public/js/admin/consolidated/date_range.min.js');
 
 mix.styles([
         'public/bower_components/select2/dist/css/select2.min.css',
@@ -35,12 +35,12 @@ mix.styles([
         'public/bower_components/datatables-responsive/css/dataTables.responsive.css',
         'public/bower_components/bootstrap-multiselect/dist/css/bootstrap-multiselect.css',
         'public/css/admin/consolidated_chart.min.css',
-        'resources/assets/css/admin/consolidated_graph.css'
+        'resources/css/admin/consolidated_graph.css'
     ], 'public/css/admin/consolidated/date_range_multiple.min.css')
     .styles([
         'public/bower_components/select2/dist/css/select2.min.css',
         'public/bower_components/select2-bootstrap-theme/dist/select2-bootstrap.min.css',
         'public/bower_components/bootstrap-multiselect/dist/css/bootstrap-multiselect.css',
         'public/css/admin/consolidated_chart.min.css',
-        'resources/assets/css/admin/consolidated_graph.css'
+        'resources/css/admin/consolidated_graph.css'
     ], 'public/css/admin/consolidated/date_range.min.css');
