@@ -19,7 +19,7 @@ class ZipCodeController extends Controller
     {
         $inputs = $request->all();
         // Log::info($inputs);
-        $recordsTotal = Cache::remember('zipListCount', 60 * 24, function () {
+        $recordsTotal = Cache::remember('zipListCount', 60 * 24 * 60, function () {
             return ZipCode::count();
         });
 

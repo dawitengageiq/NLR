@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Log;
 use Maatwebsite\Excel\Facades\Excel;
 use SSH;
@@ -161,7 +162,7 @@ class GenerateLeadAdvertiserDataCSV extends Job implements ShouldQueue
 
                     config(['remote.connections.production' => $sftpConnectionConfig]);
 
-                    $remoteDirectory = ends_with($campaignConfig->ftp_directory, '/') ? $campaignConfig->ftp_directory : $campaignConfig->ftp_directory.'/';
+                    $remoteDirectory = Str::endsWith($campaignConfig->ftp_directory, '/') ? $campaignConfig->ftp_directory : $campaignConfig->ftp_directory.'/';
                     SSH::into('production')->put($filePath, $remoteDirectory."$fileTitle.csv");
 
                     // Switch back to the default

@@ -31,13 +31,6 @@ class BugReport extends Model
         'evidences',
     ];
 
-    /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
-    protected $dates = ['deleted_at'];
-
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);

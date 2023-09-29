@@ -24,7 +24,7 @@ class LeadRepositoryTest extends BrowserKitTestCase
         $this->validator = new SendLeadsValidator;
     }
 
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
     }
