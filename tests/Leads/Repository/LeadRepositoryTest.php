@@ -45,6 +45,6 @@ class LeadRepositoryTest extends BrowserKitTestCase
             ->method('leadCreate')
             ->will($this->returnValue($response->id));
         $leadRepository->leadCreate($this->results, 1, 2);
-        $this->assertInternalType('object', $leadRepository);
+        $this->assertIsObject($leadRepository);
     }
 }

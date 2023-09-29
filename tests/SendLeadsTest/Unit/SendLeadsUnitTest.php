@@ -71,7 +71,7 @@ class SendLeadsUnitTest extends BrowserKitTestCase
     {
         $campaignCount = \App\LeadCount::where('campaign_id', $this->results['eiq_campaign_id'])->first();
         if (null !== $campaignCount) {
-            $this->assertInternalType('object', $campaignCount);
+            $this->assertIsObject($campaignCount);
         } else {
             $this->assertNull($campaignCount);
         }
@@ -87,7 +87,7 @@ class SendLeadsUnitTest extends BrowserKitTestCase
     {
         $campaignAffiliateCount = \App\LeadCount::where('campaign_id', $this->results['eiq_campaign_id'])->where('affiliate_id', $this->results['eiq_affiliate_id'])->first();
         if (null !== $campaignAffiliateCount) {
-            $this->assertInternalType('object', $campaignAffiliateCount);
+            $this->assertIsObject($campaignAffiliateCount);
         } else {
             $this->assertNull($campaignAffiliateCount);
         }
@@ -199,6 +199,6 @@ class SendLeadsUnitTest extends BrowserKitTestCase
             ->will($this->returnValue($response));
         $id = $stub->$method($param);
         $this->assertEquals($response->id, $id->id);
-        $this->assertInternalType('int', $id->id);
+        $this->assertIsInt($id->id);
     }
 }
