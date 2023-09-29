@@ -29,11 +29,11 @@ class GetCampaignListAndIDsPair extends Command
         // \DB::enableQueryLog();
         if ($this->activeOnly != '') {
             $activeOnly = $this->activeOnly;
-            $campaignList = Cache::remember('activeCampaignList-', 5, function () {
+            $campaignList = Cache::remember('activeCampaignList-', 300, function () {
                 return Campaign::where('status', '!=', 0)->orderBy('name')->pluck('name', 'id')->toArray();
             });
         } else {
-            $campaignList = Cache::remember('campaignList', 5, function () {
+            $campaignList = Cache::remember('campaignList', 300, function () {
                 return Campaign::orderBy('name')->pluck('name', 'id')->toArray();
             });
         }

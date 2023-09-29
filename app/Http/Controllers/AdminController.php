@@ -4232,7 +4232,7 @@ class AdminController extends Controller
         // Log::info($leads);
 
         // session()->put('duplicate_leads',$leads);
-        $affiliates = Cache::remember('affiliates', 22 * 60, function () {
+        $affiliates = Cache::remember('affiliates', 22 * 60 * 60, function () {
             return Bus::dispatch(new GetInternalAffiliatesCompanyIDPair());
         });
         $affiliates = ['' => 'ALL'] + $affiliates;
