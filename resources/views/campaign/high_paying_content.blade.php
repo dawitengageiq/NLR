@@ -106,7 +106,7 @@
 									{{--<option value="input">Input Field</option>--}}
 									{{--<option value="textarea">Text Area Field</option>--}}
 									{{--<option value="select">Selection Field</option>--}}
-									{{--<option value="yesOrNo">Selection Field (Yes or No only)</option>--}}
+									{{--<option value="yesOrNo">Selection Field (Yes ?? No only)</option>--}}
 									{{--<option value="checkbox">Checkbox with consent</option>--}}
 									{{--<option value="checkbox_no">No checkbox with consent</option>--}}
 									{{--<option value="telephone">Phone Number</option>--}}
