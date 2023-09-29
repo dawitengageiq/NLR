@@ -45,6 +45,7 @@ class Kernel extends HttpKernel
         'api.basic_auth' => Middleware\ApiBasicAuthorization::class,
         'reports_access' => Middleware\Cors::class,
     ];
+
     /**
      * The priority-sorted list of middleware.
      *
