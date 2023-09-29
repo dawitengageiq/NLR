@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use Illuminate\Support\Str;
 use App\CampaignConfig;
 use App\Lead;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -161,7 +162,7 @@ class GenerateLeadAdvertiserDataCSV extends Job implements ShouldQueue
 
                     config(['remote.connections.production' => $sftpConnectionConfig]);
 
-                    $remoteDirectory = ends_with($campaignConfig->ftp_directory, '/') ? $campaignConfig->ftp_directory : $campaignConfig->ftp_directory.'/';
+                    $remoteDirectory = Str::endsWith($campaignConfig->ftp_directory, '/') ? $campaignConfig->ftp_directory : $campaignConfig->ftp_directory.'/';
                     SSH::into('production')->put($filePath, $remoteDirectory."$fileTitle.csv");
 
                     // Switch back to the default
