@@ -28,7 +28,7 @@ class StoreLeadsTest extends BrowserKitTestCase
         $this->getLeadsForValidator();
     }
 
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->leadRepository = $this->getMock('App\Helpers\Repositories\LeadInterface');
