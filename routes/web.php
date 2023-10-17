@@ -11,13 +11,13 @@
 */
 
 //home route
-Route::get('/', ['middleware' => ['auth', 'guest'], function () {
+Route::get('/', function () {
     return view('welcome');
-}]);
+})->middleware('auth', 'guest');
 
-Route::get('home', ['middleware' => ['auth', 'guest'], function () {
+Route::get('home', function () {
     return view('welcome');
-}]);
+})->middleware('auth', 'guest');
 
 Route::get('build_number', function () {
 
@@ -305,7 +305,7 @@ Route::get('sendLead', 'LeadController@store');
 Route::post('updateLeadsToPendingStatus/{strLeadIDs}', 'LeadController@updateLeadsToPendingStatus');
 Route::get('sendPendingLeads', 'LeadController@sendPendingLeads');
 
-Route::group(['middleware' => 'api.basic_auth', 'prefix' => 'api'], function () {
+Route::middleware('api.basic_auth')->prefix('api')->group(function () {
     /*
     Route::get('testing', function () {
         return "awts";
@@ -523,7 +523,7 @@ Route::get('check_global_test_market_ping', 'PingController@globalTestMarketPing
 Route::get('check_survey_and_quizzes_ping', 'PingController@surveyAndQuizzesPing');
 Route::post('report_bug', 'BugReportController@receive');
 
-Route::group(['middleware' => 'auth', 'prefix' => 'search'], function () {
+Route::middleware('auth')->prefix('search')->group(function () {
     Route::post('select/activeRevenueTrackers', 'SearchController@activeRevenueTrackers');
     Route::post('select/activeAffiliates', 'SearchController@activeAffiliates');
     Route::post('select/activeAffiliatesIDName', 'SearchController@activeAffiliatesIDName');
@@ -540,7 +540,7 @@ Route::post('uploadCampaignPayout', 'CampaignController@uploadCampaignPayout');
 /**
  * Graph and creative page in admin
  */
-Route::group(['prefix' => 'admin'], function () {
+Route::prefix('admin')->group(function () {
     Route::get('/chart', 'ChartController@view');
     Route::get('/chart/{version}', 'ChartController@view');
     Route::get('/creativeStatistics', 'CreativeController@index');
@@ -611,7 +611,7 @@ Route::post('notes_tracking', 'NotesController@get_unread_stats');
 Route::post('notes/{id}/viewed', 'NotesController@note_viewed');
 
 /* Reports SERVER */
-Route::group(['prefix' => 'reports'], function () {
+Route::prefix('reports')->group(function () {
     Route::get('test', 'AffiliateReportController@test');
     Route::post('affiliate_reports/datatable', 'AffiliateReportController@getAffiliateStats');
     Route::get('affiliate_reports/generate/{affiliate_type}/{snapshot_period}', 'AffiliateReportController@generateAffiliateReportXLS');
@@ -621,7 +621,7 @@ Route::group(['prefix' => 'reports'], function () {
 /* EMBED */
 Route::get('embed/campaign', 'FilterController@campaignStackProcessorPhp');
 
-Route::group(['namespace' => 'Test'], function () {
+Route::namespace('Test')->group(function () {
     Route::any('test/{method}', 'TestController@index');
 });
 
