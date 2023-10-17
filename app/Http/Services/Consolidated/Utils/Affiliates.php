@@ -34,7 +34,7 @@ class Affiliates
      *
      * @param  string  $date
      */
-    public function setDate($date)
+    public function setDate(string $date)
     {
         $this->date = $date;
     }
@@ -70,7 +70,7 @@ class Affiliates
      *
      * @return array
      */
-    public function get()
+    public function get(): array
     {
         return $this->affiliates;
     }

@@ -56,7 +56,7 @@ class DailyMixCoreg
      *
      * @param  int  $revenueTRrackerID
      */
-    public function setRevenueTRrackerID($revenueTRrackerID)
+    public function setRevenueTRrackerID(int $revenueTRrackerID)
     {
         $this->revenueTrackers->setRevenueTRrackerID($revenueTRrackerID);
     }
@@ -66,7 +66,7 @@ class DailyMixCoreg
      *
      * @return void
      */
-    public function execute()
+    public function execute(): void
     {
         /** STEP 1 CHECK IF DISABLE OR NOT **/
         // If status on reordring mix coreg is disable, do not continue.
@@ -144,7 +144,7 @@ class DailyMixCoreg
      *
      * @return bool
      */
-    public function skipThis()
+    public function skipThis(): bool
     {
         $this->revenueTrackerOrderBy = $this->revenueTracker->mixed_coreg_order_by;
 

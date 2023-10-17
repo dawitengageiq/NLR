@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use App\Cron;
 use App\CronHistory;
 use Carbon\Carbon;
@@ -17,7 +18,7 @@ class CronController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function transferFinishedCronJobs()
+    public function transferFinishedCronJobs(): JsonResponse
     {
         $finishedJobs = Cron::getOldFinishedJobs()->get();
         $jobCount = 0;
@@ -45,7 +46,7 @@ class CronController extends Controller
         return response()->json(['message' => 'Jobs transfered to cron history', 'total' => $jobCount], 200);
     }
 
-    public function getCronJob(Request $request)
+    public function getCronJob(Request $request): JsonResponse
     {
 
         $inputs = $request->all();
@@ -167,7 +168,7 @@ class CronController extends Controller
         return response()->json($responseData, 200);
     }
 
-    public function getCronHistory(Request $request)
+    public function getCronHistory(Request $request): JsonResponse
     {
 
         $inputs = $request->all();

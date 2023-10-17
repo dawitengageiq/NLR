@@ -34,7 +34,7 @@ class RevenueTrackers
      *
      * @param  int  $revenueTRrackerID
      */
-    public function setRevenueTRrackerID($revenueTRrackerID)
+    public function setRevenueTRrackerID(int $revenueTRrackerID)
     {
         $this->query->where('revenue_tracker_id', $revenueTRrackerID);
     }
@@ -45,7 +45,7 @@ class RevenueTrackers
      *
      * @param  int  $hour
      */
-    public function setTime($hour)
+    public function setTime(int $hour)
     {
         $this->query->where('mixed_coreg_daily', '=', $hour.':00:00');
     }
@@ -56,7 +56,7 @@ class RevenueTrackers
      *
      * @param  array  $mixeCoregTypes
      */
-    public function setMixeCoregTypeIDs($mixeCoregTypes)
+    public function setMixeCoregTypeIDs(array $mixeCoregTypes)
     {
         $this->mixeCoregTypes = $mixeCoregTypes;
 
@@ -67,7 +67,7 @@ class RevenueTrackers
      *
      * @return bool
      */
-    public function notExists()
+    public function notExists(): bool
     {
         if (count($this->revenueTrackers) <= 0) {
             return true;
@@ -81,7 +81,7 @@ class RevenueTrackers
      *
      * @return array
      */
-    public function get()
+    public function get(): array
     {
         return $this->revenueTrackers;
     }
@@ -91,7 +91,7 @@ class RevenueTrackers
      *
      * @return yield
      */
-    public function getRevenueTracker()
+    public function getRevenueTracker(): yield
     {
         for ($i = 0; $i < count($this->revenueTrackers); $i++) {
             // Revenue tracker trait

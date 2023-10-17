@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use App\LeadUserBanned;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,7 @@ class LeadUserBannedController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         // \Log::info($request->all());
         // \DB::connection('secondary')->enableQueryLog();
@@ -66,7 +67,7 @@ class LeadUserBannedController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $this->validate($request, [
             'first_name' => 'required',

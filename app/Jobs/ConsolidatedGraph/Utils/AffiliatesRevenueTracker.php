@@ -33,7 +33,7 @@ class AffiliatesRevenueTracker extends \App\Http\Services\Consolidated\Utils\Aff
      *
      * @param  array  $benchmarks
      */
-    public function setBenchmarks($benchmarks)
+    public function setBenchmarks(array $benchmarks)
     {
         collect([1, 2, 8, 13])->map(function ($campaignType) use ($benchmarks) {
             if (array_key_exists($campaignType, $benchmarks)) {

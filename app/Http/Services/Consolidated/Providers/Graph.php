@@ -72,7 +72,7 @@ class Graph
      *
      * @return void
      */
-    protected function execute()
+    protected function execute(): void
     {
         if ($this->app->request->has('chart_type')) {
             $chartType = str_replace('#', '', $this->app->request->get('chart_type'));

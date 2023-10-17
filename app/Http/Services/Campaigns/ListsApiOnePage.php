@@ -128,9 +128,9 @@ class ListsApiOnePage extends Factories\ListsFactory implements \App\Http\Servic
      * @return array
      */
     public function getCampaignsContent(
-        $userDetails,
-        $limit,
-        $qualifiedCampaigns)
+        array $userDetails,
+        int $limit,
+        array $qualifiedCampaigns): array
     {
         // Set the campaigns
         $this->campaignContent->setCampaigns($qualifiedCampaigns);

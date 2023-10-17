@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -69,7 +70,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      *
      * @return bool
      */
-    public function isAdministrator()
+    public function isAdministrator(): bool
     {
         return $this->account_type == 2;
     }
@@ -79,7 +80,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      *
      * @return bool
      */
-    public function isUser()
+    public function isUser(): bool
     {
         return $this->account_type == 1;
     }
@@ -109,7 +110,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function affiliate()
+    public function affiliate(): HasOne
     {
         return $this->belongsTo(Affiliate::class);
     }
@@ -124,7 +125,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function role()
+    public function role(): HasOne
     {
         return $this->belongsTo(Role::class);
     }
@@ -134,7 +135,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      *
      * @return bool
      */
-    public function isSuperUser()
+    public function isSuperUser(): bool
     {
         return $this->role_id == 1;
     }

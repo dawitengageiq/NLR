@@ -10,7 +10,7 @@ trait RevenueTrackerTrait
      *
      * @param  eloquentCollection  $revenueTracker
      */
-    public function setTraitsOf($revenueTracker)
+    public function setTraitsOf(eloquentCollection $revenueTracker)
     {
         $this->revenueTracker = $revenueTracker;
     }
@@ -20,7 +20,7 @@ trait RevenueTrackerTrait
      *
      * @return array
      */
-    public function campaignOrder()
+    public function campaignOrder(): array
     {
         return json_decode($this->revenueTracker->mixedCoregCampaignOrder->campaign_id_order);
     }
@@ -30,7 +30,7 @@ trait RevenueTrackerTrait
      *
      * @return int
      */
-    public function revenueTrackerID()
+    public function revenueTrackerID(): int
     {
         return $this->revenueTracker->revenue_tracker_id;
     }
@@ -50,7 +50,7 @@ trait RevenueTrackerTrait
      *
      * @return int
      */
-    public function mixedCoregOrderBy()
+    public function mixedCoregOrderBy(): int
     {
         return $this->revenueTracker->mixed_coreg_order_by;
     }
@@ -60,7 +60,7 @@ trait RevenueTrackerTrait
      *
      * @return eloquentCollection
      */
-    public function mixedCoregCampaignOrder()
+    public function mixedCoregCampaignOrder(): eloquentCollection
     {
         return $this->revenueTracker->mixedCoregCampaignOrder;
     }
@@ -70,7 +70,7 @@ trait RevenueTrackerTrait
      *
      * @return eloquentCollection
      */
-    public function campaignViewReports()
+    public function campaignViewReports(): eloquentCollection
     {
         return $this->revenueTracker->campaignViewReports;
     }
@@ -81,7 +81,7 @@ trait RevenueTrackerTrait
      * @param  string  $recurrence
      * @return bool
      */
-    public function recurrenceIs($recurrence)
+    public function recurrenceIs(string $recurrence): bool
     {
         if ($this->revenueTracker->mixed_coreg_recurrence == $recurrence) {
             return true;
@@ -96,7 +96,7 @@ trait RevenueTrackerTrait
      * @param  string  $recurrence
      * @return bool
      */
-    public function recurrenceIsNot($recurrence)
+    public function recurrenceIsNot(string $recurrence): bool
     {
         if ($this->revenueTracker->mixed_coreg_recurrence != $recurrence) {
             return true;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use App\Affiliate;
 use App\Campaign;
 use App\Lead;
@@ -27,7 +28,7 @@ class ApiController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getMyToken(Request $request)
+    public function getMyToken(Request $request): JsonResponse
     {
         $isAuthorized = false;
 
@@ -121,7 +122,7 @@ class ApiController extends Controller
      *
      * @return array|\Illuminate\Http\JsonResponse
      */
-    public function logPageView(Request $request)
+    public function logPageView(Request $request): JsonResponse
     {
         $inputs = $request->all();
 

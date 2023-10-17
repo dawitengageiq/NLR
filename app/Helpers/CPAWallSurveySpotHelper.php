@@ -33,7 +33,7 @@ class CPAWallSurveySpotHelper
      *
      * @param  int  $CPAWALLSurveySpotCampaignID
      */
-    public function __construct($CPAWALLSurveySpotCampaignID, Carbon $dateFrom, Carbon $dateTo, JSONParser $parser)
+    public function __construct(int $CPAWALLSurveySpotCampaignID, Carbon $dateFrom, Carbon $dateTo, JSONParser $parser)
     {
         $this->CPAWALLSurveySpotCampaignID = $CPAWALLSurveySpotCampaignID;
         $this->dateFrom = $dateFrom;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\View\View;
 use App\Campaign;
 use App\CampaignFullRejectionStatistics;
 use App\CampaignRejectionStatistic;
@@ -24,7 +25,7 @@ class CampaignRejectionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function view(Request $request)
+    public function view(Request $request): View
     {
         $settings = Setting::where('code', 'high_critical_rejection_rate')->first();
         $high_rates = json_decode($settings->string_value);

@@ -277,7 +277,7 @@ class UserActionLogger
      * @param $user
      * @return array|null
      */
-    public function createUserActionLogEntry($settingCode, $oldValue, $newValue)
+    public function createUserActionLogEntry($settingCode, $oldValue, $newValue): ?array
     {
         if ($oldValue != $newValue) {
             return [

@@ -16,7 +16,7 @@ class SelectLegends
      *
      * @return string
      */
-    public static function register()
+    public static function register(): string
     {
         Form::macro('legends', function ($name = '', $legends = [], $inputs = [], $options = []) {
             $type = 'select';
@@ -75,7 +75,7 @@ class SelectLegends
      * @param  array  $inputs
      * @return string
      */
-    public static function options($legends, $inputs)
+    public static function options($legends, array $inputs): string
     {
         $options = "\t\t\t\t\t\t\t".'<option value="all"';
 

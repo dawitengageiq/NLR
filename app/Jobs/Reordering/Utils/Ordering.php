@@ -14,7 +14,7 @@ class Ordering
      *
      * @param  array  $orders
      */
-    public function setOrders($orders)
+    public function setOrders(array $orders)
     {
         $this->orders = $orders;
     }
@@ -24,7 +24,7 @@ class Ordering
      *
      * @return array
      */
-    public function getOrders()
+    public function getOrders(): array
     {
         return $this->orders;
     }
@@ -35,7 +35,7 @@ class Ordering
      * @param  int  $orderBy
      * @return void
      */
-    public function reorderBy($orderBy)
+    public function reorderBy(int $orderBy): void
     {
         if (count($this->orders) <= 0) {
             return;
@@ -63,7 +63,7 @@ class Ordering
      * @param  array  $array
      * @return array
      */
-    protected function shuffleAssoc($array)
+    protected function shuffleAssoc(array $array): array
     {
         //Initialize
         $new = [];

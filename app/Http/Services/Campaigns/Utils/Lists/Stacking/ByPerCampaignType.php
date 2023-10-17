@@ -33,7 +33,7 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
      *
      * @param  array  $param
      */
-    public function setOrderAndLimits($param)
+    public function setOrderAndLimits(array $param)
     {
         [$limit, $revenueTrackerLimit, $revenueTrackerID, $campaignTypeOrder] = $param;
 
@@ -53,7 +53,7 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
      *
      * @return bool
      */
-    public function hasOrder()
+    public function hasOrder(): bool
     {
         if ($this->ordering->hasOrder()) {
             $this->orderType = 'Campaign Type';
@@ -69,7 +69,7 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
      *
      * @return bool
      */
-    public function orderType()
+    public function orderType(): bool
     {
         return $this->orderType;
     }
@@ -81,7 +81,7 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
      *
      * @var array
      */
-    protected function stackCampaignCoreg($campaign)
+    protected function stackCampaignCoreg(collection $campaign)
     {
         // Pre populate
         if (! array_key_exists($campaign->campaign_type, $this->stack)) {
@@ -109,7 +109,7 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
      *
      * @var array
      */
-    protected function stackOtherCampaigns($campaign)
+    protected function stackOtherCampaigns(collection $campaign)
     {
         if ($this->limit->exceed($campaign->campaign_type)) {
             return;
@@ -139,7 +139,7 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
      *
      * @param  int  $campaignID
      */
-    protected function stackByCampaignTypeOrder($campaignID, $campaignType, $lastSet)
+    protected function stackByCampaignTypeOrder(int $campaignID, $campaignType, $lastSet)
     {
         if ($this->ordering->campaignIdExists($campaignID)) {
             // Populate

@@ -97,7 +97,7 @@ class JSONParser
      *
      * @return null|\SimpleXMLElement
      */
-    public function getXMLResponseObject($url)
+    public function getXMLResponseObject($url): ?SimpleXMLElement
     {
         $dataArray = null;
         $curlResponse = $this->getResponse($url);
@@ -122,7 +122,7 @@ class JSONParser
      *
      * @return null|\SimpleXMLElement
      */
-    public function getXMLResponseNoCDATA($url)
+    public function getXMLResponseNoCDATA($url): ?SimpleXMLElement
     {
         $dataArray = null;
         $xml = null;
@@ -157,7 +157,7 @@ class JSONParser
      *
      * @return int
      */
-    public function getErrorCode()
+    public function getErrorCode(): int
     {
         return $this->error_code;
     }

@@ -40,7 +40,7 @@ class RejectedLeads
      * @param  string  $rejection
      * @return  object eloquent
      */
-    public static function searchLeadByRejection($query, $rejection = '')
+    public static function searchLeadByRejection(Sql $query, string $rejection = ''): object
     {
         $setting = \App\Setting::where('code', 'high_rejection_keywords')->first();
         $keywords = json_decode($setting->description, true);
@@ -74,7 +74,7 @@ class RejectedLeads
      * @param  string  $rejection
      * @return  Bolean
      */
-    protected function errorTypeExist($value, $rejection = 'duplicates')
+    protected function errorTypeExist(string $value, string $rejection = 'duplicates'): Bolean
     {
         $this->others = array_merge($this->duplicates, $this->prePopIssues);  // Don't match in array
 
@@ -93,7 +93,7 @@ class RejectedLeads
      * @param  string  $error_code
      * @return  Bolean
      */
-    protected function forDuplicateAndPrePopIssues($value, $errorCode)
+    protected function forDuplicateAndPrePopIssues(string $value, $errorCode): Bolean
     {
         $this->exists = false;
 
@@ -113,7 +113,7 @@ class RejectedLeads
      * @param  string  $error_code
      * @return  Bolean
      */
-    protected function forFilterIssues($value, $errorCode)
+    protected function forFilterIssues(string $value, $errorCode): Bolean
     {
         // Should not match to error code
         if (stripos(strtolower($value), $errorCode) === false) {
@@ -141,7 +141,7 @@ class RejectedLeads
      * @param  string  $error_code
      * @return  Bolean
      */
-    protected function forOthers($value, $errorCode)
+    protected function forOthers(string $value, $errorCode): Bolean
     {
         // Should not match to  error code
         // Dont break the loop, might the other error code will match

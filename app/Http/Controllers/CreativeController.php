@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\View\View;
 use Illuminate\Http\Request;
 
 class CreativeController extends Controller
@@ -27,7 +28,7 @@ class CreativeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(): View
     {
         return view('admin.creativeStats');
     }

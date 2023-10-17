@@ -9,7 +9,7 @@ trait Margin
      *
      * @return void
      */
-    protected function processMargin()
+    protected function processMargin(): void
     {
         if (! array_key_exists('source_revenue', $this->revenues)) {
             $this->revenues['source_revenue'] = 0;

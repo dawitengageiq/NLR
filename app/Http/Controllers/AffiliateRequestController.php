@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use App\Affiliate;
 use App\AffiliateCampaign;
 use App\AffiliateCampaignRequest;
@@ -22,7 +23,7 @@ class AffiliateRequestController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $totalFiltered = AffiliateCampaignRequest::count();
@@ -331,7 +332,7 @@ class AffiliateRequestController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(int $id)
     {
         //
     }
@@ -342,7 +343,7 @@ class AffiliateRequestController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(int $id)
     {
         //
     }
@@ -353,7 +354,7 @@ class AffiliateRequestController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
         //
     }
@@ -364,7 +365,7 @@ class AffiliateRequestController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(int $id)
     {
         //
     }

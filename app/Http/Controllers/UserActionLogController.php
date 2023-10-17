@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Collection;
+use App\Resources\Resource;
 use App\Resources\UserActionLogDatatable as ResourceCollection;
 use App\Resources\UserActionLogDetailsDatatable as ResourceDetalsCollection;
 use App\UserActionLog;
@@ -37,7 +39,7 @@ class UserActionLogController extends Controller
      *
      * @return App\Resources\Resource
      */
-    public function all(Request $request, UserActionLog $userLog)
+    public function all(Request $request, UserActionLog $userLog): Resource
     {
         $this->additional = ['type' => 'UserActionLogAll'];
 
@@ -77,7 +79,7 @@ class UserActionLogController extends Controller
      * @param  int  $sectionID
      * @return App\Resources\Resource
      */
-    public function get(Request $request, UserActionLog $userLog, $sectionID)
+    public function get(Request $request, UserActionLog $userLog, int $sectionID): Resource
     {
         $this->additional = ['type' => 'UserActionLogBySection'];
 
@@ -128,7 +130,7 @@ class UserActionLogController extends Controller
      * @param  int  $referenceID
      * @return App\Resources\Resource
      */
-    public function getByReference(Request $request, UserActionLog $userLog, $sectionID, $referenceID)
+    public function getByReference(Request $request, UserActionLog $userLog, int $sectionID, int $referenceID): Resource
     {
         $this->additional = ['type' => 'UserActionLogByReference'];
 
@@ -181,7 +183,7 @@ class UserActionLogController extends Controller
      * @param  string  $action
      * @return App\Resources\Resource
      */
-    public function details(Request $request, UserActionLog $userLog, $sectionID, $referenceID, $action)
+    public function details(Request $request, UserActionLog $userLog, int $sectionID, int $referenceID, string $action): Resource
     {
         $this->additional = ['type' => 'UserActionLogDetails'];
 
@@ -243,7 +245,7 @@ class UserActionLogController extends Controller
      * @param  string|null  $url
      * @return bool
      */
-    protected function isInvalid($args, $url = null)
+    protected function isInvalid(array $args, ?string $url = null): bool
     {
         foreach ($args as $required => $method) {
             if (method_exists($this, camelCase($method))) {
@@ -263,7 +265,7 @@ class UserActionLogController extends Controller
      * @param  string  $url
      * @return bool
      */
-    protected function isNumeric($required, $url)
+    protected function isNumeric(int $required, string $url): bool
     {
         if (! is_numeric($required)) {
             $this->additional = array_merge($this->additional, [
@@ -285,7 +287,7 @@ class UserActionLogController extends Controller
      * @param  string  $message
      * @return bool
      */
-    protected function isEmpty($isEmpty, $message)
+    protected function isEmpty(bool $isEmpty, string $message): bool
     {
         if ($isEmpty) {
             $this->additional = array_merge($this->additional, ['message' => $message]);
@@ -305,7 +307,7 @@ class UserActionLogController extends Controller
      * @param  string  $action
      * @return Illuminate\Support\Collection
      */
-    protected function formatRecords($isEmpty, $activities, $sectionID, $action)
+    protected function formatRecords(bool $isEmpty, $activities, int $sectionID, string $action): Collection
     {
         if ($isEmpty || strtolower($action) == 'update') {
             return $activities;

@@ -51,7 +51,7 @@ class AdminApplyToRunRequest extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function failed()
+    public function failed(): void
     {
         // Called when the job is failing...
     }

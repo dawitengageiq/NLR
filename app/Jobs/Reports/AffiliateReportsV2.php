@@ -707,7 +707,7 @@ class AffiliateReportsV2 extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function failed()
+    public function failed(): void
     {
         //job failed
         Log::info('AffiliateReportsV2 Failed! - '.Carbon::now()->toDateTimeString());

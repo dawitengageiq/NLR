@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\RedirectResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Illuminate\View\View;
+use Illuminate\Http\JsonResponse;
 use App\Action;
 use App\ActionRole;
 use App\Advertiser;
@@ -131,7 +135,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function index()
+    public function index(): RedirectResponse
     {
         //determine what page should be displayed base on the main section permission
         if ($this->dashboardPermitted || auth()->user()->isSuperUser()) {
@@ -176,7 +180,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function dashboard()
+    public function dashboard(): View
     {
         return view('admin.dashboard');
     }
@@ -186,7 +190,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function survey_takers()
+    public function survey_takers(): View
     {
         //this is to determine if fresh visit in order to sort records by created at
         Session::forget('no_visit');
@@ -199,7 +203,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function leadCounts()
+    public function leadCounts(): JsonResponse
     {
         $selectSQL = "SELECT (CASE WHEN lead_status=0 THEN '#failed-leads' WHEN lead_status=1 THEN '#success-leads' WHEN lead_status=2 THEN '#rejected-leads' WHEN lead_status=3 THEN '#pending-leads' ELSE '#nah' END) AS lead_type, COUNT(id) AS lead_count FROM leads GROUP BY lead_status ORDER BY lead_status";
         $counts = DB::select($selectSQL);
@@ -221,7 +225,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function topTenCampaignsByRevenueYesterday()
+    public function topTenCampaignsByRevenueYesterday(): JsonResponse
     {
 
         if (Cache::has('topTenCampaignsByRevenueYesterday')) {
@@ -242,7 +246,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function topTenCampaignsByRevenueForCurrentWeek()
+    public function topTenCampaignsByRevenueForCurrentWeek(): JsonResponse
     {
         if (Cache::has('topTenCampaignsByRevenueForCurrentWeek')) {
             $campaigns = Cache::get('topTenCampaignsByRevenueForCurrentWeek');
@@ -290,7 +294,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function topTenCampaignsByRevenueForCurrentMonth()
+    public function topTenCampaignsByRevenueForCurrentMonth(): JsonResponse
     {
         if (Cache::has('topTenCampaignsByRevenueForCurrentMonth')) {
             $campaigns = Cache::get('topTenCampaignsByRevenueForCurrentMonth');
@@ -335,7 +339,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function topTenAffiliatesByRevenueYesterday()
+    public function topTenAffiliatesByRevenueYesterday(): JsonResponse
     {
         if (Cache::has('topTenAffiliatesByRevenueYesterday')) {
             $affiliates = Cache::get('topTenAffiliatesByRevenueYesterday');
@@ -356,7 +360,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function topTenAffiliatesByRevenueForCurrentWeek()
+    public function topTenAffiliatesByRevenueForCurrentWeek(): JsonResponse
     {
         if (Cache::has('topTenAffiliatesByRevenueForCurrentWeek')) {
             $affiliates = Cache::get('topTenAffiliatesByRevenueForCurrentWeek');
@@ -389,7 +393,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function topTenAffiliatesByRevenueForCurrentMonth()
+    public function topTenAffiliatesByRevenueForCurrentMonth(): JsonResponse
     {
         if (Cache::has('topTenAffiliatesByRevenueForCurrentMonth')) {
             $affiliates = Cache::get('topTenAffiliatesByRevenueForCurrentMonth');
@@ -424,7 +428,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function activeCampaigns()
+    public function activeCampaigns(): JsonResponse
     {
         return view('admin.activecampaigns');
         // $campaigns = Campaign::activeCampaigns()->get();
@@ -436,7 +440,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function contacts()
+    public function contacts(): View
     {
         return view('admin.contacts');
     }
@@ -446,7 +450,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function affiliates()
+    public function affiliates(): View
     {
         //$affiliates = Affiliate::all();
         $states = config('constants.US_STATES_ABBR');
@@ -460,7 +464,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function advertisers()
+    public function advertisers(): View
     {
         //$advertisers = Advertiser::all()->toArray();
         $advertisers = Advertiser::all();
@@ -475,7 +479,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function campaigns()
+    public function campaigns(): View
     {
         //$campaigns = Campaign::all();
         //$campaigns = Campaign::take(5)->get();
@@ -526,7 +530,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function zip_master()
+    public function zip_master(): View
     {
         return view('admin.zip_master');
     }
@@ -536,7 +540,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function zip_codes()
+    public function zip_codes(): View
     {
         return view('admin.zip_codes');
     }
@@ -546,13 +550,13 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function filterTypes()
+    public function filterTypes(): View
     {
         //$filterTypes = FilterType::all();
         return view('admin.filtertypes');
     }
 
-    public function pageOptinRateStats(Request $request)
+    public function pageOptinRateStats(Request $request): View
     {
         //get campaign type order
         $order = Setting::where('code', 'stack_path_campaign_type_order')->first();
@@ -580,7 +584,7 @@ class AdminController extends Controller
         return view('admin.pageoptinratestats', compact('order_type', 'campaigns', 'benchmarks', 'linkout_campaigns'));
     }
 
-    public function pageOptIn(Request $request)
+    public function pageOptIn(Request $request): JsonResponse
     {
         $columns = [
             'page_view_statistics.created_at',
@@ -1188,7 +1192,7 @@ class AdminController extends Controller
         }
     }
 
-    public function clicksVsRegsStats(Request $request)
+    public function clicksVsRegsStats(Request $request): View
     {
         $affiliates = Affiliate::select('id', DB::raw('CONCAT(id, " - ", company) AS id_company'))->where('status', 1)->orderBy('id_company', 'asc')->pluck('id_company', 'id')->toArray();
 
@@ -1555,7 +1559,7 @@ class AdminController extends Controller
         }
     }
 
-    public function pageViewStats(Request $request)
+    public function pageViewStats(Request $request): View
     {
         $inputs = $request->all();
         $affiliates = Affiliate::select('id', DB::raw('CONCAT(id, " - ", company) AS id_company'))->where('status', 1)->orderBy('id_company', 'asc')->pluck('id_company', 'id')->toArray();
@@ -2087,7 +2091,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function searchLeads(Request $request)
+    public function searchLeads(Request $request): View
     {
         // $leads = [];
         // $inputs = [];
@@ -2186,7 +2190,7 @@ class AdminController extends Controller
         return $request->all();
     }
 
-    public function getSearchLeads(Request $request)
+    public function getSearchLeads(Request $request): JsonResponse
     {
         $inputs = $request->all();
         // Log::info($inputs);
@@ -2280,7 +2284,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function revenueStatistics(Request $request)
+    public function revenueStatistics(Request $request): View
     {
         return view('admin.revenueStats');
     }
@@ -2506,7 +2510,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getLeadDetails($lead_id)
+    public function getLeadDetails($lead_id): JsonResponse
     {
         $data = [];
         $data['leadDataADV'] = null;
@@ -2543,7 +2547,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updateLeadDetails(Request $request)
+    public function updateLeadDetails(Request $request): JsonResponse
     {
         $inputs = $request->all();
 
@@ -2572,7 +2576,7 @@ class AdminController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public function downloadSearchedLeads()
+    public function downloadSearchedLeads(): BinaryFileResponse
     {
         // DB::enableQueryLog();
         $inputs = session()->get('searched_leads_input');
@@ -2728,7 +2732,7 @@ class AdminController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public function downloadRevenueReport()
+    public function downloadRevenueReport(): BinaryFileResponse
     {
         // DB::enableQueryLog();
         // $leads = session()->get('revenue_leads');
@@ -2981,7 +2985,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function revenueTrackers()
+    public function revenueTrackers(): View
     {
         $affiliates = Affiliate::select('id', DB::raw('CONCAT(id, " - ", company) AS id_company'))->where('status', 1)->orderBy('id_company', 'asc')->pluck('id_company', 'id')->toArray();
         $path_types = config('constants.PATH_TYPES');
@@ -3022,7 +3026,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function gallery()
+    public function gallery(): View
     {
         //$files =  Storage::disk('public')->get('images\gallery\logo-globaltestmarket-1.png');
         //$files =  Storage::disk('public')->has('images\gallery\logo-globaltestmarket-1.png');
@@ -3599,7 +3603,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function preview_content(Request $request)
+    public function preview_content(Request $request): View
     {
         $content = $request->input('content');
         $type = $request->input('type');
@@ -3725,7 +3729,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function shortcodes()
+    public function shortcodes(): View
     {
         return view('campaign.content_shortcode_info');
     }
@@ -3735,7 +3739,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function eiqHttpRequestDoc()
+    public function eiqHttpRequestDoc(): View
     {
         return view('campaign.eiq_http_request_info');
     }
@@ -3745,7 +3749,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getDashboardGraphsStatisticsProcessor(Request $request)
+    public function getDashboardGraphsStatisticsProcessor(Request $request): JsonResponse
     {
         Validator::extend('date_greater_equal', function ($attribute, $value, $parameters) {
             $max = Carbon::parse($value);
@@ -3855,7 +3859,7 @@ class AdminController extends Controller
     }
 
     /* DAILY TOTAL REVENUE */
-    public function getReceivedRevenueStatisticsDashboard(Request $request)
+    public function getReceivedRevenueStatisticsDashboard(Request $request): JsonResponse
     {
         $from_date = $request->input('from_date');
         $to_date = $request->input('to_date');
@@ -3878,7 +3882,7 @@ class AdminController extends Controller
     }
 
     /* DAILY AFFILIATE REVENUE */
-    public function getAffiliateRevenueStatisticsDashboard(Request $request)
+    public function getAffiliateRevenueStatisticsDashboard(Request $request): JsonResponse
     {
         $from_date = $request->input('from_date');
         $to_date = $request->input('to_date');
@@ -3933,7 +3937,7 @@ class AdminController extends Controller
     }
 
     /* DAILY TOTAL AFFILIATE REGISTRATIONS */
-    public function getAffiliateSurveyTakersDashboard(Request $request)
+    public function getAffiliateSurveyTakersDashboard(Request $request): JsonResponse
     {
         $from_date = $request->input('from_date');
         $to_date = $request->input('to_date');
@@ -3992,7 +3996,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function downloadAffiliateReport(Request $request)
+    public function downloadAffiliateReport(Request $request): JsonResponse
     {
         // return $request->all();
 
@@ -4130,7 +4134,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getTopCampaignsByLeads(Request $request)
+    public function getTopCampaignsByLeads(Request $request): JsonResponse
     {
         $date = $request->input('date');
         if ($date == '') {
@@ -4178,12 +4182,12 @@ class AdminController extends Controller
         return response()->json($stats);
     }
 
-    public function apply_to_run()
+    public function apply_to_run(): View
     {
         return view('admin.applyToRun');
     }
 
-    public function categories()
+    public function categories(): View
     {
         $statuses = config('constants.UNI_STATUS');
         $categories = Category::all()->toArray();
@@ -4192,12 +4196,12 @@ class AdminController extends Controller
     }
 
     //Banned Leads && Banned Attempts
-    public function banned_leads()
+    public function banned_leads(): View
     {
         return view('admin.banned.leads');
     }
 
-    public function banned_attempts()
+    public function banned_attempts(): View
     {
         return view('admin.banned.attempts');
     }
@@ -4251,7 +4255,7 @@ class AdminController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public function downloadSearchedDuplicateLeads()
+    public function downloadSearchedDuplicateLeads(): BinaryFileResponse
     {
         $inputs = session()->get('duplicate_leads_input');
         $leads = [];
@@ -4328,14 +4332,14 @@ class AdminController extends Controller
         }
     }
 
-    public function cronJob()
+    public function cronJob(): View
     {
         // $crons = Cron::all();
         // return view('admin.cronjob', compact('crons'));
         return view('admin.cronjob');
     }
 
-    public function cronHistory()
+    public function cronHistory(): View
     {
         return view('admin.cronhistory');
     }
@@ -4347,27 +4351,27 @@ class AdminController extends Controller
         return $crons = Cron::whereIn('status', $leads)->orWhere('status', 1)->get()->toArray();
     }
 
-    public function affiliateReports()
+    public function affiliateReports(): View
     {
         return view('admin.affiliatereport');
     }
 
-    public function cake_conversions()
+    public function cake_conversions(): View
     {
         return view('admin.cakeconversions');
     }
 
-    public function coregReports()
+    public function coregReports(): View
     {
         return view('admin.coregreport');
     }
 
-    public function prepopStatistics()
+    public function prepopStatistics(): View
     {
         return view('admin.prepopstatistics');
     }
 
-    public function surveyPaths()
+    public function surveyPaths(): View
     {
         $paths = Path::all()->toArray();
 
@@ -4447,7 +4451,7 @@ class AdminController extends Controller
         return $summary;
     }
 
-    public function creativeReports(Request $request)
+    public function creativeReports(Request $request): View
     {
         $inputs = $request->all();
         // \Log::info($inputs);
@@ -4476,7 +4480,7 @@ class AdminController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public function downloadCreativeRevenueReports()
+    public function downloadCreativeRevenueReports(): BinaryFileResponse
     {
         $inputs = session()->get('searched_creatives_input');
         $summary = $this->generateCreativeReport($inputs);
@@ -4556,7 +4560,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function userActionHistory()
+    public function userActionHistory(): View
     {
         // users
         $users = User::select('id', DB::raw('CONCAT(first_name, " ", middle_name, " ", last_name, " (",id,") ") AS full_name'))
@@ -4612,7 +4616,7 @@ class AdminController extends Controller
         return view('admin.useractionlogs', compact('users', 'finalSections', 'finalSeverities'));
     }
 
-    public function userActionHistoryReport(Request $request)
+    public function userActionHistoryReport(Request $request): JsonResponse
     {
         $inputs = $request->all();
 
@@ -4733,7 +4737,7 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function activeCampaignsServerSide(Request $request)
+    public function activeCampaignsServerSide(Request $request): JsonResponse
     {
         $inputs = $request->all();
 
@@ -4765,7 +4769,7 @@ class AdminController extends Controller
         return response()->json($responseData, 200);
     }
 
-    public function campaignRevenueViewChangeServerSide(Request $request)
+    public function campaignRevenueViewChangeServerSide(Request $request): JsonResponse
     {
         $inputs = $request->all();
         // $predefinedDateRange = $inputs['predefined_date_range'];

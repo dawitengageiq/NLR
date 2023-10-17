@@ -31,7 +31,7 @@ class Aliases extends AliasLoader
      *
      * @param  array  $aliases
      */
-    public function set($aliases)
+    public function set(array $aliases)
     {
         if (count($this->aliases) == 0) {
             $this->aliases = array_merge($this->aliases, $aliases);
@@ -61,7 +61,7 @@ class Aliases extends AliasLoader
      * @param  array  $alias
      * @param  array  $facade
      */
-    public function registerAlias($alias, $facade)
+    public function registerAlias(array $alias, array $facade)
     {
         $this->loader->alias($alias, $facade);
     }

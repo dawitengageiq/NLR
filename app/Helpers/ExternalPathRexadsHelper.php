@@ -32,7 +32,7 @@ class ExternalPathRexadsHelper
      *
      * @param  int  $externalPathRexAdsCampaignID
      */
-    public function __construct($externalPathRexAdsCampaignID, Carbon $dateFrom, Carbon $dateTo, JSONParser $parser)
+    public function __construct(int $externalPathRexAdsCampaignID, Carbon $dateFrom, Carbon $dateTo, JSONParser $parser)
     {
         $this->startDate = $dateFrom;
         $this->endDate = $dateTo;
@@ -146,7 +146,7 @@ class ExternalPathRexadsHelper
      * @param  array  $out
      * @return array
      */
-    public function xmlToArray($xmlObject, $out = [])
+    public function xmlToArray($xmlObject, array $out = []): array
     {
         foreach ((array) $xmlObject as $index => $node) {
             $out[$index] = (is_object($node)) ? $this->xmlToArray($node) : $node;

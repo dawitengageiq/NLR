@@ -21,7 +21,7 @@ trait Style
      *
      * @param  string  $range column range
      */
-    protected function headerStyle($range, $lastCol = 'AN')
+    protected function headerStyle(string $range, $lastCol = 'AN')
     {
         $this->excel->getActiveSheet()
             ->getStyle($range)
@@ -75,7 +75,7 @@ trait Style
      *
      * @param  string  $range column range
      */
-    protected function footerStyle($range)
+    protected function footerStyle(string $range)
     {
         $this->excel->getActiveSheet()
             ->getStyle($range)
@@ -156,7 +156,7 @@ trait Style
      *
      * @param  string  $range column range
      */
-    protected function legendsStyle($range)
+    protected function legendsStyle(string $range)
     {
         $this->excel->getActiveSheet()
             ->getStyle($range)
@@ -208,7 +208,7 @@ trait Style
      *
      * @param  int  $row
      */
-    protected function applylegendColors($row)
+    protected function applylegendColors(int $row)
     {
         $color = 'F2F3F5';
 

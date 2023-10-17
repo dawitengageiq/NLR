@@ -16,7 +16,7 @@ class MixedCoregCampaignOrder
      *
      * @param  array  $mixedCoreg
      */
-    public function set($mixedCoreg)
+    public function set(array $mixedCoreg)
     {
         $this->mixedCoreg = $mixedCoreg;
     }
@@ -37,7 +37,7 @@ class MixedCoregCampaignOrder
      *
      * @return array
      */
-    public function campaignIdOrder()
+    public function campaignIdOrder(): array
     {
         return $this->mixedCoreg->campaign_id_order;
     }

@@ -10,7 +10,7 @@ trait AffiliateReport
      * @param  \Illuminate\Database\Eloquent\Collection|Empty  $affiliateReport
      * @return void
      */
-    protected function processAffiliateReport($affiliateReport, $campaigns)
+    protected function processAffiliateReport($affiliateReport, $campaigns): void
     {
         if (! $affiliateReport instanceof \Illuminate\Database\Eloquent\Collection) {
             return;

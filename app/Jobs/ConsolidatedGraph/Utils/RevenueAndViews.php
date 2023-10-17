@@ -182,7 +182,7 @@ class RevenueAndViews
      *
      * @param  array  $campaignTypes
      */
-    public function setCampaignTypes($campaignTypes)
+    public function setCampaignTypes(array $campaignTypes)
     {
         // mix coreg campaig types
         $counter = 1;
@@ -207,7 +207,7 @@ class RevenueAndViews
      *
      * @return array
      */
-    public function extractDataFromOtherTables(\App\AffiliateRevenueTracker $revenueTracker, $campaigns, $date)
+    public function extractDataFromOtherTables(\App\AffiliateRevenueTracker $revenueTracker, $campaigns, $date): array
     {
         $this->processClicksRegStats($revenueTracker->clicksVsRegistrationStatistics);
         $this->processCakeRevenue($revenueTracker->cakeRevenue, $revenueTracker->revenue_tracker_id, $revenueTracker->exit_page_id, $date);
@@ -318,7 +318,7 @@ class RevenueAndViews
      *
      * @param  string  $date
      */
-    public function checkRevenueTrackerExist($date = '')
+    public function checkRevenueTrackerExist(string $date = '')
     {
         if ($date) {
             $this->checkRevenueTrackerInReferenceInTodaysDateIfExists($this->carbon->parse($date));
@@ -360,7 +360,7 @@ class RevenueAndViews
      *
      * @return array
      */
-    public function records()
+    public function records(): array
     {
         return $this->consolidatedData;
     }
@@ -402,7 +402,7 @@ class RevenueAndViews
      *
      * @return bool
      */
-    protected function revenueTrackerHasRecords()
+    protected function revenueTrackerHasRecords(): bool
     {
         if ($this->consolidatedData) {
             return true;
@@ -416,7 +416,7 @@ class RevenueAndViews
      *
      * @param  string  $idx
      */
-    protected function setLegendValue($idx)
+    protected function setLegendValue(string $idx)
     {
         $this->consolidatedData->$idx = $this->params[$idx];
     }

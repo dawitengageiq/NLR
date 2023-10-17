@@ -114,7 +114,7 @@ class ListsApiMultiplePage extends Lists implements \App\Http\Services\Contracts
      * @param  int  $pathType
      * @return array
      */
-    public function buildQueryString($pathType)
+    public function buildQueryString(int $pathType): array
     {
         return array_values($this->stacking->get($pathType)
             ->map(function ($stackCampaigns) {

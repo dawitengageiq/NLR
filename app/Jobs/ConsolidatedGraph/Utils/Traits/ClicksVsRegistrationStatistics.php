@@ -11,7 +11,7 @@ trait ClicksVsRegistrationStatistics
      * @param  \App\ClicksVsRegistrationStatistics|Empty  $clicksRegStats
      * @return void
      */
-    protected function processClicksRegStats($clicksRegStats)
+    protected function processClicksRegStats($clicksRegStats): void
     {
         if (! $clicksRegStats instanceof \App\ClicksVsRegistrationStatistics) {
             return;

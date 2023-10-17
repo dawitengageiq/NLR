@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\View\View;
 use App\BannedAttempt;
 use App\Http\Requests;
 use App\Http\Services;
@@ -177,7 +178,7 @@ class CampaignListController extends Controller
         Requests\CampaignListApiRequest $request,
         Services\Campaigns\Repos\Zip $zip,
         Services\Campaigns\Repos\LeadUser $leadUser
-    ) {
+    ): View {
         /**
          * STEP 1
          * Determine the needed campaign ids
@@ -310,7 +311,7 @@ class CampaignListController extends Controller
     protected function saveUserDetails(
         Services\Campaigns\Repos\Zip $zip,
         Services\Campaigns\Repos\LeadUser $leadUser,
-        $toSave
+        bool $toSave
     ) {
         // Zip details
         $zip->set($this->userDetails['zip']);

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\View\View;
+use Illuminate\Http\JsonResponse;
 use App\Action;
 use App\Role;
 use DB;
@@ -23,7 +25,7 @@ class RoleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(): View
     {
         $actions = Action::all();
         $actionsData = [];
@@ -41,7 +43,7 @@ class RoleController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function roles(Request $request)
+    public function roles(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $totalFiltered = Role::count();
@@ -177,7 +179,7 @@ class RoleController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $inputs = $request->all();
 
@@ -228,7 +230,7 @@ class RoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id): JsonResponse
     {
         //get the role
         $role = Role::find($id);
@@ -297,7 +299,7 @@ class RoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(int $id)
     {
         //
     }
@@ -308,7 +310,7 @@ class RoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(int $id)
     {
         //
     }
@@ -318,7 +320,7 @@ class RoleController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
+    public function destroy($id): JsonResponse
     {
         $role = Role::find($id);
 

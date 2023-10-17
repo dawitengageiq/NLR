@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use App\Commands\GetUserActionPermission;
 use App\FilterType;
 use Bus;
@@ -26,7 +27,7 @@ class FilterTypeController extends Controller
         $this->canDelete = Bus::dispatch(new GetUserActionPermission($user, 'use_delete_filter_type'));
     }
 
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $totalFiltered = FilterType::count();
@@ -139,7 +140,7 @@ class FilterTypeController extends Controller
      *
      * @return Response
      */
-    public function create()
+    public function create(): Response
     {
         //
     }
@@ -152,7 +153,7 @@ class FilterTypeController extends Controller
     public function store(
         Request $request,
         \App\Http\Services\UserActionLogger $userAction
-    ) {
+    ): JsonResponse {
         $fileName = null;
 
         if ($request->hasFile('icon')) {
@@ -207,7 +208,7 @@ class FilterTypeController extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function show($id)
+    public function show(int $id): Response
     {
         //
     }
@@ -218,7 +219,7 @@ class FilterTypeController extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function edit($id)
+    public function edit(int $id): Response
     {
         //
     }
@@ -232,8 +233,8 @@ class FilterTypeController extends Controller
     public function update(
         Request $request,
         \App\Http\Services\UserActionLogger $userAction,
-        $id
-    ) {
+        int $id
+    ): JsonResponse {
         $filterType = FilterType::find($id);
 
         $current_state = $filterType->toArray(); //For Logging
@@ -303,8 +304,8 @@ class FilterTypeController extends Controller
      */
     public function destroy(
         \App\Http\Services\UserActionLogger $userAction,
-        $id
-    ) {
+        int $id
+    ): JsonResponse {
 
         $responseMessage = [
             'status' => 200,

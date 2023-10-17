@@ -2,6 +2,8 @@
 
 namespace App\Resources;
 
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use App\Http\Services\Helpers\Reflection;
 use Illuminate\Container\Container;
 use Illuminate\Database;
@@ -47,7 +49,7 @@ class Resource
      * @param  int|null  $statusCode
      * @return \Illuminate\Http\JsonResponse
      */
-    public function response($statusCode = null)
+    public function response(?int $statusCode = null): JsonResponse
     {
         return $this->toResponse($statusCode);
     }
@@ -58,7 +60,7 @@ class Resource
      * @param  int|null  $statusCode
      * @return \Illuminate\Http\JsonResponse
      */
-    public function toResponse($statusCode = null)
+    public function toResponse(?int $statusCode = null): JsonResponse
     {
         $this->request = Container::getInstance()->make('request');
 
@@ -80,7 +82,7 @@ class Resource
      * @param  \Illuminate\Http\Request
      * @return array
      */
-    public function toArray($request)
+    public function toArray($request): array
     {
         return $this->item;
     }
@@ -91,7 +93,7 @@ class Resource
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function with($request)
+    public function with(Request $request): array
     {
         return $this->with;
     }
@@ -101,7 +103,7 @@ class Resource
      *
      * @return $this
      */
-    public function additional(array $data)
+    public function additional(array $data): static
     {
         $this->additional = array_merge($this->additional, $data);
 
@@ -113,7 +115,7 @@ class Resource
      *
      * @return array
      */
-    protected function resolve()
+    protected function resolve(): array
     {
         // if ($this->resource instanceof Collection) {
         $newCollection = [];
@@ -139,7 +141,7 @@ class Resource
      * @param  int|null  $statusCode
      * @return int
      */
-    protected function calculateStatus($statusCode = null)
+    protected function calculateStatus(?int $statusCode = null): int
     {
         if ($statusCode) {
             return $statusCode;
@@ -157,7 +159,7 @@ class Resource
      * @param  array  $additional
      * @return array
      */
-    protected function wrap($data, $with = [], $additional = [])
+    protected function wrap(array $data, array $with = [], array $additional = []): array
     {
         if ($data instanceof Database\Eloquent\Collection
         || $data instanceof Support\Collection) {

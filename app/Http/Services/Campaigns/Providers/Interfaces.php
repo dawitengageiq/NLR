@@ -69,7 +69,7 @@ class Interfaces
      *
      * @return object
      */
-    protected function resolveClassName()
+    protected function resolveClassName(): object
     {
         if (array_key_exists($this->path, $this->className)) {
             return $this->className[$this->path];

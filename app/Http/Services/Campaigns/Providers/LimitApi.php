@@ -12,7 +12,7 @@ class LimitApi extends Limit
      */
     public function __construct(
         \Illuminate\Foundation\Application $app,
-        $limit
+        array $limit
     ) {
         $this->app = $app;
         $this->limit = $limit;
@@ -26,7 +26,7 @@ class LimitApi extends Limit
      *
      * @param  array  $args
      */
-    public static function bind(...$args)
+    public static function bind(array ...$args)
     {
         new static($args[0], $args[1]);
     }

@@ -10,7 +10,7 @@ class UserActionLogDetailsDatatable extends Resource
      * @param  \Illuminate\Http\Request
      * @return array
      */
-    public function toArray($request)
+    public function toArray($request): array
     {
         $sections = config('constants.USER_ACTION_SECTION_TYPE');
 

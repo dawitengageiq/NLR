@@ -17,7 +17,7 @@ class UserActionEvent extends Event
      *
      * @param  array  $logData
      */
-    public function __construct($logData = [])
+    public function __construct(array $logData = [])
     {
         $this->logData = $logData;
     }

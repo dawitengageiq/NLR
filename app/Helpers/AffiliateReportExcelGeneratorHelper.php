@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 
+use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use App\Affiliate;
 use App\AffiliateReport;
 use App\AffiliateRevenueTracker;
@@ -87,7 +89,7 @@ class AffiliateReportExcelGeneratorHelper
      * @param $snapshot_period
      * @return \Illuminate\Http\JsonResponse
      */
-    public function generate()
+    public function generate(): JsonResponse
     {
         DB::enableQueryLog();
         if (! $this->noSimilarRunningJob()) {
@@ -1158,7 +1160,7 @@ class AffiliateReportExcelGeneratorHelper
      * @param  Request  $request
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public function download()
+    public function download(): BinaryFileResponse
     {
         $fileNameToDownload = $this->getFullFileName();
         $filePathToDownload = storage_path('downloads')."/$fileNameToDownload";

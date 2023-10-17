@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use App\Affiliate;
 use App\AffiliateCampaign;
 use App\AffiliateRevenueTracker;
@@ -43,7 +44,7 @@ class LeadController extends Controller
      *
      * @return Response
      */
-    public function index()
+    public function index(): Response
     {
         //
     }
@@ -53,7 +54,7 @@ class LeadController extends Controller
      *
      * @return Response
      */
-    public function create()
+    public function create(): Response
     {
         //
     }
@@ -65,7 +66,7 @@ class LeadController extends Controller
      *
      * @throws \ErrorException
      */
-    public function sendPendingLeads(Settings $settings)
+    public function sendPendingLeads(Settings $settings): JsonResponse
     {
         // Get the number of leads
         $numberOfLeads = $settings->getValue('num_leads_to_process_for_send_pending_leads');
@@ -530,7 +531,7 @@ class LeadController extends Controller
     /**
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updateLeadsToPendingStatus($strLeadIDs, Request $request)
+    public function updateLeadsToPendingStatus($strLeadIDs, Request $request): JsonResponse
     {
         $inputs = $request->all();
         $tableName = isset($inputs['table']) ? $inputs['table'] : '';
@@ -670,7 +671,7 @@ class LeadController extends Controller
      * @param  string  $capType
      * @return LeadCount
      */
-    public function executeReset($campaignCounts, $campaignID, $affiliateID = null, $capType = 'Unlimited')
+    public function executeReset($campaignCounts, $campaignID, $affiliateID = null, string $capType = 'Unlimited'): LeadCount
     {
         //reset the counter if it's time to reset already
         if ($campaignCounts == null) {

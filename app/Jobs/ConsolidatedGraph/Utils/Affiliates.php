@@ -31,7 +31,7 @@ class Affiliates extends \App\Http\Services\Consolidated\Utils\Affiliates
      *
      * @param  array  $benchmarks
      */
-    public function setBenchmarks($benchmarks)
+    public function setBenchmarks(array $benchmarks)
     {
         if (array_key_exists(1, $benchmarks)) {
             $this->campaignIDs[] = $benchmarks[1];

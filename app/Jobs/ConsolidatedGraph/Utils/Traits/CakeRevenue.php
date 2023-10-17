@@ -2,6 +2,8 @@
 
 namespace App\Jobs\ConsolidatedGraph\Utils\Traits;
 
+use App\CakeRevenue;
+
 trait CakeRevenue
 {
     /**
@@ -10,7 +12,7 @@ trait CakeRevenue
      * @param  \App\CakeRevenue|Empty  $cakeRevenue
      * @return void
      */
-    protected function processCakeRevenue($cakeRevenue, $revenueTrackerdID, $exitPageID, $date)
+    protected function processCakeRevenue($cakeRevenue, $revenueTrackerdID, $exitPageID, $date): void
     {
         // Fetch last page revenue, we will not use the default last page offer id
         if ($exitPageID) {
@@ -35,7 +37,7 @@ trait CakeRevenue
      * @param  string  $date
      * @return App\CakeRevenue
      */
-    public function lastPageRevenue($revenueTrackerdID, $exitPageID, $date)
+    public function lastPageRevenue(int $revenueTrackerdID, int $exitPageID, string $date): CakeRevenue
     {
         return \App\CakeRevenue::where('offer_id', $exitPageID)
             ->where('revenue_tracker_id', $revenueTrackerdID)

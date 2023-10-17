@@ -51,7 +51,7 @@ class Excel extends \App\Http\Services\Factories\ExportExcel
      * @param  int  $row
      * @return LaravelExcelReader
      */
-    public function setRecordsHeader($header, $row = 1)
+    public function setRecordsHeader(array $header, int $row = 1): LaravelExcelReader
     {
         $this->header = $header;
         $this->headerRow = $row;
@@ -67,7 +67,7 @@ class Excel extends \App\Http\Services\Factories\ExportExcel
      * @param  array  $footer
      * @return LaravelExcelReader
      */
-    public function setRecordsFooter($footer)
+    public function setRecordsFooter(array $footer): LaravelExcelReader
     {
         $this->footer = $footer;
 
@@ -80,7 +80,7 @@ class Excel extends \App\Http\Services\Factories\ExportExcel
      * @param  array  $records
      * @return LaravelExcelReader
      */
-    public function setRecords($records)
+    public function setRecords(array $records): LaravelExcelReader
     {
         // \Log::info($records);
         // \Log::info('test');
@@ -136,7 +136,7 @@ class Excel extends \App\Http\Services\Factories\ExportExcel
      *
      * @return int
      */
-    public function recordsCount()
+    public function recordsCount(): int
     {
         return count($this->records) + $this->ab_testing_row_counts;
     }
@@ -147,7 +147,7 @@ class Excel extends \App\Http\Services\Factories\ExportExcel
      * @param  array  $legends
      * @return LaravelExcelReader
      */
-    public function setLegendsWithDescription($legends)
+    public function setLegendsWithDescription(array $legends): LaravelExcelReader
     {
         $this->legends = $legends;
 
@@ -160,7 +160,7 @@ class Excel extends \App\Http\Services\Factories\ExportExcel
      *
      * @param  LaravelExcelWorksheet  $sheet
      */
-    public function generateSheet($sheet)
+    public function generateSheet(LaravelExcelWorksheet $sheet)
     {
         /** BOF STEP 1 - HEADER **/
         // Add the header
@@ -224,7 +224,7 @@ class Excel extends \App\Http\Services\Factories\ExportExcel
      *
      * @throws PhpExcelException
      */
-    public function fromArray($sheet)
+    public function fromArray($sheet): Worksheet
     {
         foreach ($this->records as &$row) {
             if (is_array($row)) {
@@ -252,7 +252,7 @@ class Excel extends \App\Http\Services\Factories\ExportExcel
      * @param  string  $firstLetters
      * @return array
      */
-    protected function createColumnsRange($count, $counter = 0, $firstLetters = '')
+    protected function createColumnsRange(int $count, int $counter = 0, string $firstLetters = ''): array
     {
         $firstLettersIndx = 0;
         if ($firstLetters) {
@@ -291,7 +291,7 @@ class Excel extends \App\Http\Services\Factories\ExportExcel
      *
      * @param  LaravelExcelWorksheet  $sheet
      */
-    protected function createLegendsDescritions($sheet)
+    protected function createLegendsDescritions(LaravelExcelWorksheet $sheet)
     {
         // $this->recordsCount() + $this->headerRow + 4 : The row that will be occupied by the legends with description, below legend header.
         $count = $this->recordsCount() + ($this->headerRow + 4);

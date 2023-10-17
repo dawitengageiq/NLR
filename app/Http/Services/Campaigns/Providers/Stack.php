@@ -51,7 +51,7 @@ class Stack
      */
     public function __construct(
         \Illuminate\Foundation\Application $app,
-        $orderType
+        string $orderType
     ) {
         $this->app = $app;
         $this->path = $app->request->path();
@@ -69,7 +69,7 @@ class Stack
      */
     public static function bind(
         \Illuminate\Foundation\Application $app,
-        $orderType
+        string $orderType
     ) {
         new static($app, $orderType);
     }
@@ -90,7 +90,7 @@ class Stack
      *
      * @return string
      */
-    protected function resolveStackType()
+    protected function resolveStackType(): string
     {
         if ('test/get_campaign_list_by_api' != $this->path
         && in_array($this->type, $this->pathOrderType)) {

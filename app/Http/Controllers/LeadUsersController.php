@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use App\LeadUser;
 use App\Setting;
 use Carbon\Carbon;
@@ -14,7 +16,7 @@ use Log;
 
 class LeadUsersController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $inputs = $request->all();
         session()->put('survey_takers_input', $inputs);
@@ -145,7 +147,7 @@ class LeadUsersController extends Controller
         return response()->json($responseData, 200);
     }
 
-    public function downloadSurveyTakers()
+    public function downloadSurveyTakers(): BinaryFileResponse
     {
         $inputs = session()->get('survey_takers_input');
 

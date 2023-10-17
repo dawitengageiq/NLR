@@ -44,7 +44,7 @@ class Limit
      */
     public function __construct(
         \Illuminate\Foundation\Application $app,
-        $mixedCoregLimit,
+        string $mixedCoregLimit,
         \App\Http\Services\Campaigns\Repos\Settings $settings
     ) {
         $this->app = $app;
@@ -64,7 +64,7 @@ class Limit
      *
      * @param  array  $args
      */
-    public static function bind(...$args)
+    public static function bind(array ...$args)
     {
         new static(
             $args[0],
@@ -90,7 +90,7 @@ class Limit
      *
      * @return string
      */
-    protected function resolveLimitData()
+    protected function resolveLimitData(): string
     {
         $pathTypeLimit = $this->settings->pathTypeLimit();
 
@@ -134,7 +134,7 @@ class Limit
      *
      * @return string
      */
-    protected function limit()
+    protected function limit(): string
     {
         $coregTypes = array_keys(config('constants.MIXED_COREG_TYPE_FOR_ORDERING'));
         if (count($this->pathTypeLimit)) {
@@ -160,7 +160,7 @@ class Limit
      * @param  string  $limit
      * @return yield
      */
-    protected function applyLimit($coregTypes, $limit)
+    protected function applyLimit($coregTypes, string $limit): yield
     {
         // foreach($mixedCoregs as $mixedCoreg) {
         for ($i = 0; $i < count($coregTypes); $i++) {

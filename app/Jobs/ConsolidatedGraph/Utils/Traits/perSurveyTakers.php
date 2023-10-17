@@ -18,7 +18,7 @@ trait perSurveyTakers
      * @param  float  $dividend
      * @param  float  $divisor
      */
-    protected function perSurveyTakers($idx, $dividend, $divisor)
+    protected function perSurveyTakers(string $idx, float $dividend, float $divisor)
     {
         $total = ($divisor > 0) ? ($dividend / $divisor) : 0;
         if (array_key_exists($idx, $this->stValue2Percent)) {
@@ -34,7 +34,7 @@ trait perSurveyTakers
      * @param  string  $idx
      * @return void
      */
-    protected function sourceRevenuePerSurveyTakers($idx)
+    protected function sourceRevenuePerSurveyTakers(string $idx): void
     {
         if (! array_key_exists('source_revenue', $this->params)
         || ! array_key_exists('survey_takers', $this->params)) {
@@ -57,7 +57,7 @@ trait perSurveyTakers
      * @param  string  $idx
      * @return void
      */
-    protected function cpaPerSurveyTakers($idx)
+    protected function cpaPerSurveyTakers(string $idx): void
     {
         if (! array_key_exists('cpa_revenue', $this->params)
         || ! array_key_exists('survey_takers', $this->params)) {

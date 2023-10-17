@@ -10,7 +10,7 @@ trait PageViewStatistics
      * @param  \Illuminate\Database\Eloquent\PageViewStatistics|Empty  $pageViewStats
      * @return void
      */
-    protected function processPageViewStats($pageViewStats)
+    protected function processPageViewStats($pageViewStats): void
     {
         if (! $pageViewStats instanceof \App\PageViewStatistics) {
             return;

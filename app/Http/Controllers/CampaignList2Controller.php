@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use App\AffiliateRevenueTracker;
 use App\AffiliateWebsite;
 use App\BannedAttempt;
@@ -27,7 +28,7 @@ class CampaignList2Controller extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $params = $request->all();
         /* Check if user is banned */
@@ -1009,7 +1010,7 @@ class CampaignList2Controller extends Controller
             });
     }
 
-    public function capaignListJson(Request $request)
+    public function capaignListJson(Request $request): JsonResponse
     {
         // \Log::info('Test');
         $params = $request->all();
@@ -1720,7 +1721,7 @@ class CampaignList2Controller extends Controller
         return response()->json($response);
     }
 
-    public function saveLeadUser(Request $request)
+    public function saveLeadUser(Request $request): JsonResponse
     {
         $params = $request->all();
         // \Log::info($params);

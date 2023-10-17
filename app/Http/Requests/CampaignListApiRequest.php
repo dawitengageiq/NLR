@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Http\Response;
 use View;
 
 class CampaignListApiRequest extends CampaignListRequest
@@ -52,7 +53,7 @@ class CampaignListApiRequest extends CampaignListRequest
      *
      * @return array
      */
-    public function browserDetails()
+    public function browserDetails(): array
     {
         return $this->browser;
     }
@@ -62,7 +63,7 @@ class CampaignListApiRequest extends CampaignListRequest
      *
      * @return array
      */
-    public function deviceDetails()
+    public function deviceDetails(): array
     {
         return $this->device;
     }
@@ -72,7 +73,7 @@ class CampaignListApiRequest extends CampaignListRequest
      *
      * @return string
      */
-    public function redirectUrl()
+    public function redirectUrl(): string
     {
         return $this->redirectUrl;
     }
@@ -83,7 +84,7 @@ class CampaignListApiRequest extends CampaignListRequest
      *
      * @return bolean
      */
-    public function toReloadParentFrame()
+    public function toReloadParentFrame(): bolean
     {
         return $this->reloadParentFrame;
     }
@@ -93,7 +94,7 @@ class CampaignListApiRequest extends CampaignListRequest
      *
      * @return bolean
      */
-    public function targetUrl()
+    public function targetUrl(): bolean
     {
         return $this->targetUrl;
     }
@@ -143,7 +144,7 @@ class CampaignListApiRequest extends CampaignListRequest
      *
      * @return \Illuminate\Http\Response
      */
-    public function forbiddenResponse()
+    public function forbiddenResponse(): Response
     {
         View::share('data', ['message' => $this->message]);
         View::share('redirect_url', $this->redirectUrl());
@@ -157,7 +158,7 @@ class CampaignListApiRequest extends CampaignListRequest
      *
      * @return bolean
      */
-    protected function invalidEmailFormat()
+    protected function invalidEmailFormat(): bolean
     {
         if (! filter_var($this->get('email'), FILTER_VALIDATE_EMAIL)) {
             return true;

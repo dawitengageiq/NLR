@@ -76,7 +76,7 @@ class Lists
      *
      * @return void
      */
-    protected function execute()
+    protected function execute(): void
     {
         Stack::bind($this->app, $this->revenueTracker->orderType());
 

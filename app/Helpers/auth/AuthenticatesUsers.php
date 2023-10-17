@@ -2,6 +2,7 @@
 
 namespace App\Helpers\auth;
 
+use Illuminate\Http\Response;
 use App\User;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Http\Request;
@@ -19,7 +20,7 @@ trait AuthenticatesUsers
      *
      * @return \Illuminate\Http\Response
      */
-    public function getLogin()
+    public function getLogin(): Response
     {
         if (view()->exists('auth.authenticate')) {
             return view('auth.authenticate');
@@ -33,7 +34,7 @@ trait AuthenticatesUsers
      *
      * @return \Illuminate\Http\Response
      */
-    public function postLogin(Request $request)
+    public function postLogin(Request $request): Response
     {
         $this->validate($request, [
             $this->loginUsername() => 'required', 'password' => 'required',
@@ -86,7 +87,7 @@ trait AuthenticatesUsers
      * @param  bool  $throttles
      * @return \Illuminate\Http\Response
      */
-    protected function handleUserWasAuthenticated(Request $request, $throttles)
+    protected function handleUserWasAuthenticated(Request $request, bool $throttles): Response
     {
         if ($throttles) {
             $this->clearLoginAttempts($request);
@@ -104,7 +105,7 @@ trait AuthenticatesUsers
      *
      * @return array
      */
-    protected function getCredentials(Request $request)
+    protected function getCredentials(Request $request): array
     {
         return $request->only($this->loginUsername(), 'password');
     }
@@ -114,7 +115,7 @@ trait AuthenticatesUsers
      *
      * @return string
      */
-    protected function getFailedLoginMessage()
+    protected function getFailedLoginMessage(): string
     {
         return Lang::has('auth.failed')
             ? Lang::get('auth.failed')
@@ -126,7 +127,7 @@ trait AuthenticatesUsers
      *
      * @return \Illuminate\Http\Response
      */
-    public function getLogout()
+    public function getLogout(): Response
     {
         Auth::logout();
 
@@ -140,7 +141,7 @@ trait AuthenticatesUsers
      *
      * @return string
      */
-    public function loginPath()
+    public function loginPath(): string
     {
         return property_exists($this, 'loginPath') ? $this->loginPath : '/auth/login';
         //return property_exists($this, 'loginPath') ? $this->loginPath : '/login';
@@ -151,7 +152,7 @@ trait AuthenticatesUsers
      *
      * @return string
      */
-    public function loginUsername()
+    public function loginUsername(): string
     {
         return property_exists($this, 'username') ? $this->username : 'email';
     }
@@ -161,7 +162,7 @@ trait AuthenticatesUsers
      *
      * @return bool
      */
-    protected function isUsingThrottlesLoginsTrait()
+    protected function isUsingThrottlesLoginsTrait(): bool
     {
         return in_array(
             ThrottlesLogins::class, class_uses_recursive(get_class($this))

@@ -228,7 +228,7 @@ class ExternalPathPermissionDataHelper
      * @param  array  $out
      * @return array
      */
-    public function xmlToArray($xmlObject, $out = [])
+    public function xmlToArray($xmlObject, array $out = []): array
     {
         foreach ((array) $xmlObject as $index => $node) {
             $out[$index] = (is_object($node)) ? $this->xmlToArray($node) : $node;

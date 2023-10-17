@@ -9,7 +9,7 @@ trait RedirectsUsers
      *
      * @return string
      */
-    public function redirectPath()
+    public function redirectPath(): string
     {
         if (property_exists($this, 'redirectPath')) {
             return $this->redirectPath;

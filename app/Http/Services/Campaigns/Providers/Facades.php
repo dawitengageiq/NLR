@@ -65,7 +65,7 @@ class Facades
      *
      * @return void
      */
-    protected function execute()
+    protected function execute(): void
     {
         $this->app->bind('survey_stack', function () {
             return new \App\Http\Services\Helpers\SurveyStack;
@@ -83,7 +83,7 @@ class Facades
      *
      * @return void
      */
-    protected function registerAlias()
+    protected function registerAlias(): void
     {
         // Set the aliases
         $this->alias->set([

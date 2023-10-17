@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use App\ZipMaster;
 use DB;
 use Illuminate\Http\Request;
@@ -13,7 +14,7 @@ class ZipMasterController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $totalFiltered = ZipMaster::count();

@@ -74,7 +74,7 @@ class Interfaces
      *
      * @return object
      */
-    protected function resolveClassName()
+    protected function resolveClassName(): object
     {
         if (array_key_exists($this->type, $this->className)) {
             return $this->className[$this->type];

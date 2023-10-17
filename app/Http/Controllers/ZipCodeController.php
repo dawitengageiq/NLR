@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use App\ZipCode;
 use Cache;
 use DB;
@@ -15,7 +16,7 @@ class ZipCodeController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $inputs = $request->all();
         // Log::info($inputs);

@@ -66,7 +66,7 @@ class CampaignContentController extends Controller
      *
      * @param  array  $userDetails
      */
-    protected function setUserDetails($userDetails)
+    protected function setUserDetails(array $userDetails)
     {
         // birtdate
         $userDetails['dobyear'] = '';
@@ -88,7 +88,7 @@ class CampaignContentController extends Controller
      *
      * @return array
      */
-    protected function varNeededB4Eval()
+    protected function varNeededB4Eval(): array
     {
         return [
             ($this->userDetails['gender'] == 'F') ? 'Female' : 'Male',                          // gender

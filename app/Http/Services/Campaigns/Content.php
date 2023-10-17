@@ -65,7 +65,7 @@ class Content
      *
      * @return bolean
      */
-    public function hasCampaigns()
+    public function hasCampaigns(): bolean
     {
         return (count($this->campaigns)) ? true : false;
     }
@@ -75,7 +75,7 @@ class Content
      *
      * @return bolean
      */
-    public function hasCampaignType()
+    public function hasCampaignType(): bolean
     {
         return ($this->campaignType) ? true : false;
     }
@@ -85,7 +85,7 @@ class Content
      *
      * @return int
      */
-    public function campaignCount()
+    public function campaignCount(): int
     {
         return count($this->campaigns);
     }
@@ -96,7 +96,7 @@ class Content
      * @param  array  $campaigns
      * @return void
      */
-    public function setCampaigns($campaigns)
+    public function setCampaigns(array $campaigns): void
     {
         $this->campaigns = $campaigns;
         if ($this->hasCampaigns()) {
@@ -110,7 +110,7 @@ class Content
      * @param  string  $affiliateID
      * @return void
      */
-    public function setAffiliateID($affiliateID)
+    public function setAffiliateID(string $affiliateID): void
     {
         $this->affiliateID = $affiliateID;
     }
@@ -121,7 +121,7 @@ class Content
      * @param  string  $session
      * @return void
      */
-    public function setSession($session)
+    public function setSession(string $session): void
     {
         $this->session = $session;
     }
@@ -132,7 +132,7 @@ class Content
      * @param  string  $path
      * @return void
      */
-    public function setPath($path)
+    public function setPath(string $path): void
     {
         $this->path = $path;
     }
@@ -143,7 +143,7 @@ class Content
      * @param  Illuminate\Http\Request | string  $request
      * @return void
      */
-    public function setInitialVariables($request)
+    public function setInitialVariables($request): void
     {
         $this->determineRequestType($request);
 
@@ -193,7 +193,7 @@ class Content
      * @return int
      * @return array - if no content return message
      */
-    public function getHtmlData()
+    public function getHtmlData(): int
     {
         if (! $this->creativeContent->emptyContent) {
             return $this->html;
@@ -421,7 +421,7 @@ class Content
      *
      * @return collection
      */
-    protected function determineRequestType($request)
+    protected function determineRequestType($request): collection
     {
         // Determine the type of data
         if (! is_object($request)) {

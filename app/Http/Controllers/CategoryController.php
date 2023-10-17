@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use App\Category;
 use Illuminate\Http\Request;
 
@@ -64,7 +65,7 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(int $id)
     {
         //
     }
@@ -75,7 +76,7 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(int $id)
     {
         //
     }
@@ -125,7 +126,7 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function status($id)
+    public function status($id): JsonResponse
     {
         $category = Category::find($id);
 

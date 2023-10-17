@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use App\CampaignRevenueBreakdown;
 use App\OfferGoesDown;
 use App\PathSpeed;
@@ -14,7 +15,7 @@ use Log;
 
 class DashboardController extends Controller
 {
-    public function offerGoesDownStats(Request $request)
+    public function offerGoesDownStats(Request $request): JsonResponse
     {
         $inputs = $request->all();
         // Log::info($inputs);
@@ -65,7 +66,7 @@ class DashboardController extends Controller
         return response()->json($responseData, 200);
     }
 
-    public function campaignRevenueBreakdown(Request $request, $id)
+    public function campaignRevenueBreakdown(Request $request, $id): JsonResponse
     {
         // Log::info($id);
         $inputs = $request->all();
@@ -108,7 +109,7 @@ class DashboardController extends Controller
         return response()->json($responseData, 200);
     }
 
-    public function pathSpeed(Request $request, $path)
+    public function pathSpeed(Request $request, $path): JsonResponse
     {
         // if(Cache::has('monitisPaths')) {
         //    $paths = Cache::get('monitisPaths');

@@ -308,7 +308,7 @@ class ConsolidatedGraphController extends Controller
      *
      * @return bool
      */
-    protected function dummyChart(Request $request)
+    protected function dummyChart(Request $request): bool
     {
         if ($request->get('dummy') == 1 || $request->get('dummy') == 'true') {
 
@@ -329,7 +329,7 @@ class ConsolidatedGraphController extends Controller
      *
      * @return void
      */
-    protected function provideDataFromRequest(Request $request)
+    protected function provideDataFromRequest(Request $request): void
     {
         $this->graph->setSubIDsInclude([
             's1' => $request->sib_s1,
@@ -369,7 +369,7 @@ class ConsolidatedGraphController extends Controller
      * @param  string  $chartType
      * @return bool
      */
-    protected function applyLegendsColor($chartType)
+    protected function applyLegendsColor(string $chartType): bool
     {
         if ($chartType == 'export_excel_date_range_multiple') {
             return true;
@@ -417,7 +417,7 @@ class ConsolidatedGraphController extends Controller
      *
      * @param  Request  $request
      */
-    protected function setDataForAllInbox($request)
+    protected function setDataForAllInbox(Request $request)
     {
         // Provide the specific revenue tracker id for query.
         $this->graph->setRevenueTrackerID($request->get('revenue_tracker_id'));
@@ -432,7 +432,7 @@ class ConsolidatedGraphController extends Controller
      *
      * @return string
      */
-    protected function exportlink(Request $request)
+    protected function exportlink(Request $request): string
     {
         // $revenueTrackerID = (is_array($request->get('revenue_tracker_id'))) ? http_build_query($request->get('revenue_tracker_id')) : $request->get('revenue_tracker_id');
 
@@ -491,7 +491,7 @@ class ConsolidatedGraphController extends Controller
      * @param  string  $chartType
      * @return int
      */
-    protected function allInboxRevenue($chartType)
+    protected function allInboxRevenue(string $chartType): int
     {
         if ($chartType == '#all_inbox' && array_key_exists($this->viewData['inputs']['date_from'], $this->viewData['records'])) {
             return $this->viewData['records'][$this->viewData['inputs']['date_from']]['all_inbox_revenue'];
@@ -505,7 +505,7 @@ class ConsolidatedGraphController extends Controller
      *
      * @return bool
      */
-    protected function hasIncompleteData(Request $request)
+    protected function hasIncompleteData(Request $request): bool
     {
 
         if (array_key_exists($request->get('chart_type'), $this->requirements)) {
@@ -540,7 +540,7 @@ class ConsolidatedGraphController extends Controller
      *
      * @return $this
      */
-    protected function redirect($queryString, $errorMessage)
+    protected function redirect($queryString, $errorMessage): static
     {
         return redirect()
             ->route('consolidated_graph', $this->redirectData($queryString))
@@ -553,7 +553,7 @@ class ConsolidatedGraphController extends Controller
      * @param  string  $msg
      * @return array
      */
-    protected function redirectData($queryString)
+    protected function redirectData($queryString): array
     {
         parse_str($queryString, $array);
         if (array_key_exists('chart_type', $array)) {
@@ -569,7 +569,7 @@ class ConsolidatedGraphController extends Controller
      * @param  string  $chartType
      * @return array
      */
-    protected function setExcelHeadersAndWithDescription($chartType)
+    protected function setExcelHeadersAndWithDescription(string $chartType): array
     {
         $legends = $this->graph->legends();
         $legendsWithDesc = [];

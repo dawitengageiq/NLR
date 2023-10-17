@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use App\Affiliate;
 use App\AffiliateRevenueTracker;
 use DB;
@@ -20,7 +21,7 @@ class SearchController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function activeRevenueTrackers(Request $request)
+    public function activeRevenueTrackers(Request $request): JsonResponse
     {
         $inputs = $request->all();
 
@@ -50,7 +51,7 @@ class SearchController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function activeAffiliates(Request $request)
+    public function activeAffiliates(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $term = isset($inputs['term']) ? $inputs['term'] : '';
@@ -76,7 +77,7 @@ class SearchController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function activeAffiliatesIDName(Request $request)
+    public function activeAffiliatesIDName(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $term = isset($inputs['term']) ? $inputs['term'] : '';
@@ -107,7 +108,7 @@ class SearchController extends Controller
         */
     }
 
-    public function campaignAffiliate(Request $request)
+    public function campaignAffiliate(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $term = isset($inputs['term']) ? $inputs['term'] : '';
@@ -139,7 +140,7 @@ class SearchController extends Controller
         return response()->json($responseData, 200);
     }
 
-    public function getRevenueTrackers(Request $request)
+    public function getRevenueTrackers(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $term = isset($inputs['term']) ? $inputs['term'] : '';
@@ -156,7 +157,7 @@ class SearchController extends Controller
         return response()->json($responseData, 200);
     }
 
-    public function getAvailableRevenueTrackersForExitPage(Request $request)
+    public function getAvailableRevenueTrackersForExitPage(Request $request): JsonResponse
     {
         $inputs = $request->all();
         // Log::info($inputs);

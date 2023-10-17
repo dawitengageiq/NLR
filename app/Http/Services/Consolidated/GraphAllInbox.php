@@ -40,7 +40,7 @@ class GraphAllInbox extends GraphByDateRange implements \App\Http\Services\Contr
      *
      * @param  string  $date
      */
-    public function setdate($date)
+    public function setdate(string $date)
     {
         // Use for Query
         $this->date = $date;

@@ -54,7 +54,7 @@ class WebsitesViewTracker extends Model
      *
      * @return bool
      */
-    public function scopeTrack($query, $email, $websiteID, $payout, $timeInterval)
+    public function scopeTrack($query, $email, $websiteID, $payout, $timeInterval): bool
     {
         if ($query->where(['email' => $email, 'status' => 'active'])
             ->where('created_at', '>=', Carbon::now()->subHours($timeInterval))

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\View\View;
+use Illuminate\Http\JsonResponse;
 use App\Http\Requests;
 use App\Http\Requests\AddUserRequest;
 use App\Http\Requests\ChangePasswordRequest;
@@ -29,7 +31,7 @@ class UserController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index()
+    public function index(): View
     {
         //get all roles
         $roles = Role::pluck('name', 'id')->toArray();
@@ -37,7 +39,7 @@ class UserController extends Controller
         return view('management.user', compact('roles'));
     }
 
-    public function user($id)
+    public function user($id): View
     {
         $user = User::find($id);
 
@@ -49,7 +51,7 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function users(Request $request)
+    public function users(Request $request): JsonResponse
     {
         $currentUser = $request->user();
 
@@ -182,7 +184,7 @@ class UserController extends Controller
      *
      * @return Response
      */
-    public function create()
+    public function create(): Response
     {
         //
     }
@@ -192,7 +194,7 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(AddUserRequest $request)
+    public function store(AddUserRequest $request): JsonResponse
     {
         $inputs = $request->all();
         //encrypt password
@@ -212,7 +214,7 @@ class UserController extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function show($id)
+    public function show(int $id): Response
     {
         //
     }
@@ -223,7 +225,7 @@ class UserController extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function edit($id)
+    public function edit(int $id): Response
     {
         //
     }
@@ -233,7 +235,7 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(UpdateUserRequest $request, $id)
+    public function update(UpdateUserRequest $request, $id): JsonResponse
     {
         $inputs = $request->all();
 
@@ -288,7 +290,7 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updateProfile(Requests\UpdateUserProfileRequest $request)
+    public function updateProfile(Requests\UpdateUserProfileRequest $request): JsonResponse
     {
         $inputs = $request->all();
 
@@ -324,7 +326,7 @@ class UserController extends Controller
         return response()->json(['status' => 200, 'id' => $user->id]);
     }
 
-    public function changePassword(ChangePasswordRequest $request)
+    public function changePassword(ChangePasswordRequest $request): JsonResponse
     {
         $inputs = $request->all();
         $newPassword = $inputs['password'];
@@ -341,7 +343,7 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
+    public function destroy($id): JsonResponse
     {
         $responseMessage = [
             'status' => 200,
@@ -367,7 +369,7 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function profile_image_upload(Request $request)
+    public function profile_image_upload(Request $request): JsonResponse
     {
         $user = $request->user();
         $inputs = $request->all();

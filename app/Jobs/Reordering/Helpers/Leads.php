@@ -39,7 +39,7 @@ class Leads
      *
      * @param  array  $campaignOrder
      */
-    public function setCampaignOrder($campaignOrder)
+    public function setCampaignOrder(array $campaignOrder)
     {
         $this->query->whereIn('leads.campaign_id', $campaignOrder);
     }
@@ -49,7 +49,7 @@ class Leads
      *
      * @param  int  $revenueRrackerID
      */
-    public function setRevenueTRrackerID($revenueRrackerID)
+    public function setRevenueTRrackerID(int $revenueRrackerID)
     {
         $this->revenueRrackerID = $revenueRrackerID;
         $this->query->where('leads.affiliate_id', '=', $this->revenueRrackerID);
@@ -73,7 +73,7 @@ class Leads
      *
      * @return bool
      */
-    public function notExists()
+    public function notExists(): bool
     {
         if (count($this->leads) <= 0) {
             return true;
@@ -87,7 +87,7 @@ class Leads
      *
      * @return array
      */
-    public function get()
+    public function get(): array
     {
         return $this->leads;
     }

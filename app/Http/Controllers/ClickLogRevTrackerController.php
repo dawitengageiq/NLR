@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use App\AffiliateRevenueTracker;
 use App\ClickLogRevTrackers;
 use App\Http\Services;
@@ -27,7 +28,7 @@ class ClickLogRevTrackerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $inputs = $request->all();
 
@@ -60,7 +61,7 @@ class ClickLogRevTrackerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $rev_tracker_id = $request->id;
 

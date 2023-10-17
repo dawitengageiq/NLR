@@ -11,7 +11,7 @@ class RandomProbability extends Command
      *
      * @param  array  $set
      */
-    public function __construct($set = [])
+    public function __construct(array $set = [])
     {
         $this->set = $set;
     }

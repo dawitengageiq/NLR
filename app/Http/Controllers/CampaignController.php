@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
 use App\Affiliate;
 use App\AffiliateCampaign;
 use App\AffiliateCampaignRequest;
@@ -63,7 +65,7 @@ class CampaignController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $inputs = $request->all();
         // Log::info($inputs);
@@ -226,7 +228,7 @@ class CampaignController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $this->validate($request, [
             'name' => 'required',
@@ -343,7 +345,7 @@ class CampaignController extends Controller
         return response()->json($responseData, 200);
     }
 
-    public function update(Request $request)
+    public function update(Request $request): JsonResponse
     {
         // Log::info($request->all());
         // Log::info(apache_request_headers());
@@ -671,7 +673,7 @@ class CampaignController extends Controller
         return $affected;
     }
 
-    public function getCampaignInfo(Request $request)
+    public function getCampaignInfo(Request $request): JsonResponse
     {
         $eiq_iframe_id = env('EIQ_IFRAME_ID', 0);
         $campaign = $request->input('id');
@@ -1195,7 +1197,7 @@ class CampaignController extends Controller
         ], null);
     }
 
-    public function editCampaignStackContent(Request $request)
+    public function editCampaignStackContent(Request $request): Response
     {
         // Log::info($request->all());
         // Log::info(mb_strlen($request->input('content')));
@@ -1253,7 +1255,7 @@ class CampaignController extends Controller
     //        $content->save();
     //    }
 
-    public function editCampaignHighPayingContent(Request $request)
+    public function editCampaignHighPayingContent(Request $request): Response
     {
         $this->validate($request, [
             'name' => 'required',
@@ -1842,7 +1844,7 @@ class CampaignController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getCampaignCreative(Request $request)
+    public function getCampaignCreative(Request $request): JsonResponse
     {
         $inputs = $request->all();
         // Log::info($inputs);
@@ -1975,7 +1977,7 @@ class CampaignController extends Controller
         return 0;
     }
 
-    public function uploadCampaignPayout(Request $request)
+    public function uploadCampaignPayout(Request $request): JsonResponse
     {
         $file = $request->file('file');
 
@@ -2059,7 +2061,7 @@ class CampaignController extends Controller
         return response()->json($responseData, 200);
     }
 
-    public function getCampaignContentFormBuilder(Request $request)
+    public function getCampaignContentFormBuilder(Request $request): JsonResponse
     {
         $id = $request->input('id');
         $type = $request->input('type');
@@ -2807,7 +2809,7 @@ class CampaignController extends Controller
         return $inputs['lock'];
     }
 
-    public function uploadFieldOptions(Request $request)
+    public function uploadFieldOptions(Request $request): JsonResponse
     {
         $options = [];
         $counter = 0;
@@ -2856,7 +2858,7 @@ class CampaignController extends Controller
         return $campaigns;
     }
 
-    public function campaignAffiliateManagement(Request $request)
+    public function campaignAffiliateManagement(Request $request): JsonResponse
     {
         $inputs = $request->all();
         // Log::info($inputs);
@@ -2965,7 +2967,7 @@ class CampaignController extends Controller
         ], 200);
     }
 
-    public function getCampaignInfoForAffiliateMgmtDatatable(Request $request)
+    public function getCampaignInfoForAffiliateMgmtDatatable(Request $request): JsonResponse
     {
         $inputs = $request->all();
         // Log::info($inputs);
@@ -3047,7 +3049,7 @@ class CampaignController extends Controller
         return response()->json($responseData, 200);
     }
 
-    public function getCampaignAffiliateDatatable(Request $request)
+    public function getCampaignAffiliateDatatable(Request $request): JsonResponse
     {
         $inputs = $request->all();
         // Log::info($inputs);
@@ -3111,7 +3113,7 @@ class CampaignController extends Controller
     }
 
     //NOT USED
-    public function campAffiliateDataTable(Request $request)
+    public function campAffiliateDataTable(Request $request): JsonResponse
     {
         $inputs = $request->all();
         // Log::info($inputs);
@@ -3191,7 +3193,7 @@ class CampaignController extends Controller
         return response()->json($responseData, 200);
     }
 
-    public function getAvailableCampaignAffiliates(Request $request)
+    public function getAvailableCampaignAffiliates(Request $request): JsonResponse
     {
         $id = $request->input('id');
         $affiliates = Affiliate::getAvailableAffiliates($id)->pluck('name', 'id')->toArray();
@@ -3199,7 +3201,7 @@ class CampaignController extends Controller
         return response()->json($affiliates, 200);
     }
 
-    public function getAvailableAffiliatePayouts(Request $request)
+    public function getAvailableAffiliatePayouts(Request $request): JsonResponse
     {
         $id = $request->input('id');
         $affiliates = Affiliate::getAvailableAffiliatesForPayout($id)->pluck('name', 'id')->toArray();
@@ -3207,7 +3209,7 @@ class CampaignController extends Controller
         return response()->json($affiliates, 200);
     }
 
-    public function payoutHistoryTable(Request $request)
+    public function payoutHistoryTable(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $historyData = [];
@@ -3277,7 +3279,7 @@ class CampaignController extends Controller
         return response()->json($responseData, 200);
     }
 
-    public function getCampaignJsonContent(Request $request)
+    public function getCampaignJsonContent(Request $request): JsonResponse
     {
         $id = $request->input('id');
         $type = $request->input('type');
@@ -3333,7 +3335,7 @@ class CampaignController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getCampaignJsonCreative(Request $request)
+    public function getCampaignJsonCreative(Request $request): JsonResponse
     {
         $inputs = $request->all();
         // Log::info($inputs);

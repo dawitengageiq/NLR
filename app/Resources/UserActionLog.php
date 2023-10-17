@@ -10,7 +10,7 @@ class UserActionLog extends Resource
      * @param  \Illuminate\Http\Request
      * @return array
      */
-    public function toArray($request)
+    public function toArray($request): array
     {
         return [
             'section_id' => $this->getValue('section_id'),

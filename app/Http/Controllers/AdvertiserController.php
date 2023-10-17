@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\View\View;
+use Illuminate\Http\JsonResponse;
 use App\Advertiser;
 use App\Affiliate;
 use App\Campaign;
@@ -46,7 +48,7 @@ class AdvertiserController extends Controller
      *
      * @return mixed
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $totalRecords = $totalFiltered = Advertiser::count();
@@ -132,27 +134,27 @@ class AdvertiserController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function dashboard()
+    public function dashboard(): View
     {
         return view('advertiser.dashboard');
     }
 
-    public function statistics()
+    public function statistics(): View
     {
         return view('advertiser.statistics');
     }
 
-    public function account()
+    public function account(): View
     {
         return view('advertiser.account');
     }
 
-    public function edit_account()
+    public function edit_account(): View
     {
         return view('advertiser.edit_account');
     }
 
-    public function change_password()
+    public function change_password(): View
     {
         return view('advertiser.change_password');
     }
@@ -183,7 +185,7 @@ class AdvertiserController extends Controller
      *
      * @return Response
      */
-    public function create()
+    public function create(): Response
     {
         //
     }
@@ -196,7 +198,7 @@ class AdvertiserController extends Controller
     public function store(
         AdvertiserRequest $request,
         \App\Http\Services\UserActionLogger $userAction
-    ) {
+    ): JsonResponse {
         $inputs = $request->all();
         $advertiser = Advertiser::create($inputs);
 
@@ -218,7 +220,7 @@ class AdvertiserController extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function show($id)
+    public function show(int $id): Response
     {
         //
     }
@@ -229,7 +231,7 @@ class AdvertiserController extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function edit($id)
+    public function edit(int $id): Response
     {
         //
     }
@@ -243,7 +245,7 @@ class AdvertiserController extends Controller
         AdvertiserRequest $request,
         \App\Http\Services\UserActionLogger $userAction,
         $id
-    ) {
+    ): JsonResponse {
         //
 
         $inputs = $request->all();
@@ -297,7 +299,7 @@ class AdvertiserController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function contacts()
+    public function contacts(): View
     {
         return view('advertiser.contacts');
     }
@@ -307,7 +309,7 @@ class AdvertiserController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function campaigns()
+    public function campaigns(): View
     {
         $advertisers = array_merge(['0' => ''], Advertiser::pluck('company', 'id')->toArray());
 
@@ -330,7 +332,7 @@ class AdvertiserController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function searchLeads(Request $request)
+    public function searchLeads(Request $request): View
     {
         //this is to determine if fresh visit in order to sort records by created at
         Session::forget('no_visit');
@@ -359,7 +361,7 @@ class AdvertiserController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function revenueStatistics(Request $request)
+    public function revenueStatistics(Request $request): View
     {
         //this is to determine if fresh visit in order to sort records by created at
         Session::forget('no_visit');
@@ -388,7 +390,7 @@ class AdvertiserController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function topTenCampaignsByRevenueYesterday(Request $request)
+    public function topTenCampaignsByRevenueYesterday(Request $request): JsonResponse
     {
         $yesterday = Carbon::now()->subDay()->toDateString();
         $user = $request->user();
@@ -406,7 +408,7 @@ class AdvertiserController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function topTenCampaignsByRevenueForCurrentWeek(Request $request)
+    public function topTenCampaignsByRevenueForCurrentWeek(Request $request): JsonResponse
     {
         $currentDate = Carbon::now()->toDateString();
         $user = $request->user();
@@ -424,7 +426,7 @@ class AdvertiserController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function topTenCampaignsByRevenueForCurrentMonth(Request $request)
+    public function topTenCampaignsByRevenueForCurrentMonth(Request $request): JsonResponse
     {
         $currentDate = Carbon::now()->toDateString();
         $user = $request->user();
@@ -440,7 +442,7 @@ class AdvertiserController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function leadCounts(Request $request)
+    public function leadCounts(Request $request): JsonResponse
     {
         $user = $request->user();
 
@@ -464,7 +466,7 @@ class AdvertiserController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function activeCampaigns(Request $request)
+    public function activeCampaigns(Request $request): JsonResponse
     {
         $user = $request->user();
         $param['advertiser_id'] = $user->advertiser->id;
@@ -479,7 +481,7 @@ class AdvertiserController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function status($id)
+    public function status($id): JsonResponse
     {
         $advertiser = Advertiser::find($id);
 

@@ -11,7 +11,7 @@ trait RevenueTrackerCakeStatistic
      * @param  \App\RevenueTrackerCakeStatistic|Empty  $leads
      * @return void
      */
-    protected function processRevTrackerCakeStats($revTrackerCakeStats)
+    protected function processRevTrackerCakeStats($revTrackerCakeStats): void
     {
         if (! $revTrackerCakeStats instanceof \App\RevenueTrackerCakeStatistic) {
             return;

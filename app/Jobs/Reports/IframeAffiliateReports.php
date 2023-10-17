@@ -378,7 +378,7 @@ class IframeAffiliateReports extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function failed()
+    public function failed(): void
     {
         //job failed
         Log::info('IframeAffiliateReports Failed! - '.Carbon::now()->toDateTimeString());

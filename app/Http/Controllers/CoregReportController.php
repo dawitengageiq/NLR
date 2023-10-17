@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use App\Affiliate;
 use App\Campaign;
 use App\CoregReport;
@@ -313,7 +314,7 @@ class CoregReportController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function download()
+    public function download(): BinaryFileResponse
     {
         $title = 'CoregReport_'.Carbon::yesterday()->toDateString();
         $file_path = storage_path('downloads').'/'.$title.'.xlsx';

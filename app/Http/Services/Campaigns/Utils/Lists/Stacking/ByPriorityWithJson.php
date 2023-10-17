@@ -26,7 +26,7 @@ class ByPriorityWithJson
      *
      * @param  collection  $campaign
      */
-    public function insertIntoStack($campaign)
+    public function insertIntoStack(collection $campaign)
     {
         // Mixed Coregs
         if (in_array($campaign->campaign_type, array_keys(Config::get('constants.MIXED_COREG_TYPE_FOR_ORDERING')))) {
@@ -55,7 +55,7 @@ class ByPriorityWithJson
      *
      * @param  collection  $campaign
      */
-    protected function stackCampaignCoreg($campaign)
+    protected function stackCampaignCoreg(collection $campaign)
     {
         // Pre populate
         if (! array_key_exists($campaign->campaign_type, $this->lists)) {
@@ -76,7 +76,7 @@ class ByPriorityWithJson
      *
      * @var array lists
      */
-    protected function stackOtherCampaigns($campaign)
+    protected function stackOtherCampaigns(collection $campaign)
     {
         // Pre populate
         if (! array_key_exists($campaign->campaign_type, $this->lists)) {
@@ -95,7 +95,7 @@ class ByPriorityWithJson
      *
      * @param  collection  $campaign
      */
-    protected function stackExternalAndLongFormCampaign($campaign)
+    protected function stackExternalAndLongFormCampaign(collection $campaign)
     {
         $key = 0;
         //1 Display per Page: External, Long Form (1st Grp) & (2nd Grp)

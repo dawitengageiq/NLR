@@ -128,7 +128,7 @@ class AffiliateReportCurl implements AffiliateReportCurlInterface
      *
      * @throws \Sabre\Xml\LibXMLException
      */
-    public function campaignSummaryForCPAWALLDeduction($campaignSummaryBaseURL, $prefix, $subPrefix, $revenueTrackerID, $dateFromStr, $dateToStr)
+    public function campaignSummaryForCPAWALLDeduction($campaignSummaryBaseURL, $prefix, $subPrefix, $revenueTrackerID, $dateFromStr, $dateToStr): array
     {
         $campaignSummaryURL = $campaignSummaryBaseURL.'&start_date='.$dateFromStr.
             '&end_date='.$dateToStr.
@@ -237,7 +237,7 @@ class AffiliateReportCurl implements AffiliateReportCurlInterface
      *
      * @return array|null
      */
-    public function clicksReport($clicksReportBaseURL, $prefix, $affiliateID, $campaignID, $dateFromStr, $dateToStr)
+    public function clicksReport($clicksReportBaseURL, $prefix, $affiliateID, $campaignID, $dateFromStr, $dateToStr): ?array
     {
         $cakeClickURL = $clicksReportBaseURL."&affiliate_id=$affiliateID&campaign_id=$campaignID&start_date=$dateFromStr&end_date=$dateToStr&include_duplicates=true";
 

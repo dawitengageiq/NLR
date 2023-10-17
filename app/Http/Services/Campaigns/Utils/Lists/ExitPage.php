@@ -12,7 +12,7 @@ class ExitPage
      */
     public function randomID(
         $stack,
-        $index)
+        $index): array
     {
         if (count($stack[$index][0]) == 0) {
             return [0 => []];

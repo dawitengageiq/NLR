@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use App\LeadDataAdvArchive;
 use App\LeadDataCsvArchive;
 use App\LeadMessageArchive;
@@ -14,7 +15,7 @@ class LeadArchiveController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getLeadDetails($lead_id)
+    public function getLeadDetails($lead_id): JsonResponse
     {
         $data = [];
         $data['leadDataADV'] = null;
