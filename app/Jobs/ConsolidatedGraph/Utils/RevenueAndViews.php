@@ -152,9 +152,6 @@ class RevenueAndViews
      * Instantiate.
      * Provide needed model and Carbon::class.
      * the legends/column for graph was provided from config.
-     *
-     * @param  App\ConsolidatedGraph  $model
-     * @param  Carbon\Carbon  $carbon
      */
     public function __construct(
         ConsolidatedGraph $model,
@@ -179,10 +176,8 @@ class RevenueAndViews
 
     /**
      * Set the campaign types
-     *
-     * @param  array  $campaignTypes
      */
-    public function setCampaignTypes($campaignTypes)
+    public function setCampaignTypes(array $campaignTypes)
     {
         // mix coreg campaig types
         $counter = 1;
@@ -204,10 +199,8 @@ class RevenueAndViews
     /**
      * Extract the data from otherTables needed to generate records.
      * Generate the parametrs that will be use to generate records.
-     *
-     * @return array
      */
-    public function extractDataFromOtherTables(\App\AffiliateRevenueTracker $revenueTracker, $campaigns, $date)
+    public function extractDataFromOtherTables(\App\AffiliateRevenueTracker $revenueTracker, $campaigns, $date): array
     {
         $this->processClicksRegStats($revenueTracker->clicksVsRegistrationStatistics);
         $this->processCakeRevenue($revenueTracker->cakeRevenue, $revenueTracker->revenue_tracker_id, $revenueTracker->exit_page_id, $date);
@@ -315,10 +308,8 @@ class RevenueAndViews
      * if not, clone the modal as a new model to consolidatedData container.
      * Note: the param $data is empty in normal cron process but when an artisan call and date as arguments,
      * the if($date) function will be executed and no duplicate records occur.
-     *
-     * @param  string  $date
      */
-    public function checkRevenueTrackerExist($date = '')
+    public function checkRevenueTrackerExist(string $date = '')
     {
         if ($date) {
             $this->checkRevenueTrackerInReferenceInTodaysDateIfExists($this->carbon->parse($date));
@@ -357,10 +348,8 @@ class RevenueAndViews
 
     /**
      * Get records.
-     *
-     * @return array
      */
-    public function records()
+    public function records(): array
     {
         return $this->consolidatedData;
     }
@@ -399,10 +388,8 @@ class RevenueAndViews
 
     /**
      *  Check if revenue tracker has a record on database.
-     *
-     * @return bool
      */
-    protected function revenueTrackerHasRecords()
+    protected function revenueTrackerHasRecords(): bool
     {
         if ($this->consolidatedData) {
             return true;
@@ -413,10 +400,8 @@ class RevenueAndViews
 
     /**
      * Set revenue value of legend.
-     *
-     * @param  string  $idx
      */
-    protected function setLegendValue($idx)
+    protected function setLegendValue(string $idx)
     {
         $this->consolidatedData->$idx = $this->params[$idx];
     }

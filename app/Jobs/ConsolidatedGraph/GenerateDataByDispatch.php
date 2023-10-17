@@ -98,7 +98,7 @@ class GenerateDataByDispatch implements ShouldQueue
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         // Time execution starts
         $this->startLog = $this->carbon->now();

@@ -10,10 +10,8 @@ class SettingSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         $send_pending_lead_cron_expiration = Setting::firstOrNew([
             'code' => 'send_pending_lead_cron_expiration',

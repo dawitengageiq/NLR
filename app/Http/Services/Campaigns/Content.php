@@ -62,41 +62,32 @@ class Content
 
     /**
      * Check wiether the request contaigns campaign ids
-     *
-     * @return bolean
      */
-    public function hasCampaigns()
+    public function hasCampaigns(): bolean
     {
         return (count($this->campaigns)) ? true : false;
     }
 
     /**
      * Check wiether the request falls in any certain type
-     *
-     * @return bolean
      */
-    public function hasCampaignType()
+    public function hasCampaignType(): bolean
     {
         return ($this->campaignType) ? true : false;
     }
 
     /**
      * Count the campaign ids in a request
-     *
-     * @return int
      */
-    public function campaignCount()
+    public function campaignCount(): int
     {
         return count($this->campaigns);
     }
 
     /**
      * Set campaigns
-     *
-     * @param  array  $campaigns
-     * @return void
      */
-    public function setCampaigns($campaigns)
+    public function setCampaigns(array $campaigns): void
     {
         $this->campaigns = $campaigns;
         if ($this->hasCampaigns()) {
@@ -106,33 +97,24 @@ class Content
 
     /**
      * Set affiliate id
-     *
-     * @param  string  $affiliateID
-     * @return void
      */
-    public function setAffiliateID($affiliateID)
+    public function setAffiliateID(string $affiliateID): void
     {
         $this->affiliateID = $affiliateID;
     }
 
     /**
      * Set session
-     *
-     * @param  string  $session
-     * @return void
      */
-    public function setSession($session)
+    public function setSession(string $session): void
     {
         $this->session = $session;
     }
 
     /**
      * Set path
-     *
-     * @param  string  $path
-     * @return void
      */
-    public function setPath($path)
+    public function setPath(string $path): void
     {
         $this->path = $path;
     }
@@ -141,9 +123,8 @@ class Content
      * Set the initial data needed to process campaigns content
      *
      * @param  Illuminate\Http\Request | string  $request
-     * @return void
      */
-    public function setInitialVariables($request)
+    public function setInitialVariables($request): void
     {
         $this->determineRequestType($request);
 
@@ -189,11 +170,8 @@ class Content
 
     /**
      * Get the html content of all campaign ids
-     *
-     * @return int
-     * @return array - if no content return message
      */
-    public function getHtmlData()
+    public function getHtmlData(): int
     {
         if (! $this->creativeContent->emptyContent) {
             return $this->html;
@@ -418,10 +396,8 @@ class Content
 
     /**
      * Determine the rquest is object or string
-     *
-     * @return collection
      */
-    protected function determineRequestType($request)
+    protected function determineRequestType($request): collection
     {
         // Determine the type of data
         if (! is_object($request)) {

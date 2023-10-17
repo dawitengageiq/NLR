@@ -31,10 +31,8 @@ class Affiliates
 
     /**
      * Set the date, use in cron.
-     *
-     * @param  string  $date
      */
-    public function setDate($date)
+    public function setDate(string $date)
     {
         $this->date = $date;
     }
@@ -67,10 +65,8 @@ class Affiliates
 
     /**
      * Get the affiliates.
-     *
-     * @return array
      */
-    public function get()
+    public function get(): array
     {
         return $this->affiliates;
     }

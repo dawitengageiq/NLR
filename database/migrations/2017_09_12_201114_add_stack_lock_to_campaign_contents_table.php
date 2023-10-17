@@ -7,10 +7,8 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('campaign_contents', function (Blueprint $table) {
             $table->boolean('stack_lock');
@@ -19,10 +17,8 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('campaign_contents', function (Blueprint $table) {
             $table->dropColumn('stack_lock');

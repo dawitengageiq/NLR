@@ -47,11 +47,10 @@ class Stack
      * Instantiate.
      *
      *  @param  Illuminate\Foundation\Application  $app
-     *  @param  string  $orderType
      */
     public function __construct(
         \Illuminate\Foundation\Application $app,
-        $orderType
+        string $orderType
     ) {
         $this->app = $app;
         $this->path = $app->request->path();
@@ -65,11 +64,10 @@ class Stack
      * Static function.
      *
      *  @param  Illuminate\Foundation\Application  $app
-     *  @param  string  $orderType
      */
     public static function bind(
         \Illuminate\Foundation\Application $app,
-        $orderType
+        string $orderType
     ) {
         new static($app, $orderType);
     }
@@ -87,10 +85,8 @@ class Stack
 
     /**
      * Resolve what limit type to use.
-     *
-     * @return string
      */
-    protected function resolveStackType()
+    protected function resolveStackType(): string
     {
         if ('test/get_campaign_list_by_api' != $this->path
         && in_array($this->type, $this->pathOrderType)) {

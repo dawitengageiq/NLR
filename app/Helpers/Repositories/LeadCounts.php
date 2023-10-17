@@ -21,10 +21,9 @@ class LeadCounts implements LeadCountsInterface
 
     /**
      * @param  null  $affiliateID
-     * @param  string  $capType
      * @param  null  $timezone
      */
-    public function executeReset($campaignCounts, $campaignID, $affiliateID = null, $capType = 'Unlimited', $timezone = null, $updateMe = true)
+    public function executeReset($campaignCounts, $campaignID, $affiliateID = null, string $capType = 'Unlimited', $timezone = null, $updateMe = true)
     {
         // Log::info('Reset the campaign_id = '.$campaignID);
         // Log::info('Reset the affiliate_id = '.$affiliateID);

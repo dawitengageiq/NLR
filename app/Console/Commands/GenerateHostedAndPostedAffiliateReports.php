@@ -34,10 +34,8 @@ class GenerateHostedAndPostedAffiliateReports extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Initiating generating of H and P reports...');
 

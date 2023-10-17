@@ -15,6 +15,7 @@ use DB;
 use Exception;
 use Faker\Factory;
 use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Log;
@@ -24,10 +25,8 @@ class ApiController extends Controller
 {
     /**
      * API for getting the API token
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function getMyToken(Request $request)
+    public function getMyToken(Request $request): JsonResponse
     {
         $isAuthorized = false;
 
@@ -121,7 +120,7 @@ class ApiController extends Controller
      *
      * @return array|\Illuminate\Http\JsonResponse
      */
-    public function logPageView(Request $request)
+    public function logPageView(Request $request): JsonResponse
     {
         $inputs = $request->all();
 

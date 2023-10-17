@@ -32,10 +32,8 @@ class AllInboxEndOfDayCleaner extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Executing AllInbox CLEANER CURL...');
 

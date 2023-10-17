@@ -68,12 +68,8 @@ class SelectAffiliates
 
     /**
      * Set affiliates options
-     *
-     * @param  array  $affiliates
-     * @param  array  $inputs
-     * @return string
      */
-    public static function options($affiliates, $inputs)
+    public static function options(array $affiliates, array $inputs): string
     {
         $options = "\t\t\t\t\t\t\t".'<option value="">ALL</option>'."\n\r";
 

@@ -10,10 +10,8 @@ class LeadSentResultSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         // use the factory to create a Faker\Generator instance
         $faker = Faker\Factory::create();

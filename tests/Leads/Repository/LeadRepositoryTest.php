@@ -32,7 +32,7 @@ class LeadRepositoryTest extends BrowserKitTestCase
     /**
      * @test
      */
-    public function save_leads_to_leads_table_if_not_duplicate()
+    public function save_leads_to_leads_table_if_not_duplicate(): void
     {
         $response = new stdClass;
         $response->id = 1;

@@ -36,20 +36,16 @@ class Leads
 
     /**
      * Set campaign order that will be used to fetch leads that are in the list of this order.
-     *
-     * @param  array  $campaignOrder
      */
-    public function setCampaignOrder($campaignOrder)
+    public function setCampaignOrder(array $campaignOrder)
     {
         $this->query->whereIn('leads.campaign_id', $campaignOrder);
     }
 
     /**
      * Set revenue tracker id to be used on specific query
-     *
-     * @param  int  $revenueRrackerID
      */
-    public function setRevenueTRrackerID($revenueRrackerID)
+    public function setRevenueTRrackerID(int $revenueRrackerID)
     {
         $this->revenueRrackerID = $revenueRrackerID;
         $this->query->where('leads.affiliate_id', '=', $this->revenueRrackerID);
@@ -70,10 +66,8 @@ class Leads
 
     /**
      * Check if there is leads
-     *
-     * @return bool
      */
-    public function notExists()
+    public function notExists(): bool
     {
         if (count($this->leads) <= 0) {
             return true;
@@ -84,10 +78,8 @@ class Leads
 
     /**
      * Get all leads
-     *
-     * @return array
      */
-    public function get()
+    public function get(): array
     {
         return $this->leads;
     }

@@ -7,10 +7,8 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('lead_user_request', function (Blueprint $table) {
             $table->string('phone_number', 75)->nullable();
@@ -19,10 +17,8 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('lead_user_request', function (Blueprint $table) {
             $table->dropColumn(['phone_number']);

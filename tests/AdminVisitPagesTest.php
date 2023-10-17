@@ -4,7 +4,7 @@ use App\User;
 
 class AdminVisitPagesTest extends BrowserKitTestCase
 {
-    public function testAdminLogin()
+    public function testAdminLogin(): void
     {
         $this->visit('/auth/login')
             ->type('ariel@engageiq.com', 'email')
@@ -13,7 +13,7 @@ class AdminVisitPagesTest extends BrowserKitTestCase
             ->seePageIs('/admin/dashboard');
     }
 
-    public function testVisitPages()
+    public function testVisitPages(): void
     {
         //get the admin user depends on your record
         $user = User::firstOrCreate([

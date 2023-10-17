@@ -59,10 +59,8 @@ class AffiliateEarningsByDateFilter extends Command
 
     /**
      * Execute the command.
-     *
-     * @return void
      */
-    public function handle()
+    public function handle(): int
     {
         $settings = Setting::where('code', 'publisher_percentage_revenue')->first();
         $share = $settings ? $settings->description : 100;

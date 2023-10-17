@@ -33,10 +33,8 @@ class GetLeadUserSubscribedCampaigns extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Getting Subscribed Campaigns for users who wants to optout.....');
 

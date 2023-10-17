@@ -35,10 +35,8 @@ class GenerateUniqueClicksReports extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Initiating generation of unique clicks reports...');
 

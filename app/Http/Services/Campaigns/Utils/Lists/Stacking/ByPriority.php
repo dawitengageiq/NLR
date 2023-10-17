@@ -56,10 +56,8 @@ class ByPriority implements \App\Http\Services\Campaigns\Utils\Lists\Contracts\S
      * Limits was set in service provider
      * Since this is default stacking, means we use ordering of query string, and
      * We dont nedd to use other type ordering.
-     *
-     * @param  array  $param
      */
-    public function setOrderAndLimits($param)
+    public function setOrderAndLimits(array $param)
     {
         [$limit, $revenueTrackerLimit] = $param;
 
@@ -71,33 +69,26 @@ class ByPriority implements \App\Http\Services\Campaigns\Utils\Lists\Contracts\S
     /**
      * Check has ordering
      * return false for we use default query ordering and no custom ordering was used here.
-     *
-     * @return bool
      */
-    public function hasOrder()
+    public function hasOrder(): bool
     {
         return false;
     }
 
     /**
      * Get what type of ordering was used
-     *
-     * @return bool
      */
-    public function orderType()
+    public function orderType(): bool
     {
         return 'default';
     }
 
     /**
      * Stack the qualified campaign
-     *
-     * @param  collection  $campaign
-     * @param  int  $pathType
      */
     public function stackCampaign(
-        $campaign,
-        $pathType)
+        collection $campaign,
+        int $pathType)
     {
         //Long Path
         if ($pathType == 1) {
@@ -130,11 +121,8 @@ class ByPriority implements \App\Http\Services\Campaigns\Utils\Lists\Contracts\S
 
     /**
      * Arrange the qualified campaigns by campaign type order
-     *
-     * @param  int  $pathType
-     * @return collection
      */
-    public function get($pathType)
+    public function get(int $pathType): collection
     {
         if ($pathType == 1) {
             return $this->passedCampaigns;
@@ -191,10 +179,8 @@ class ByPriority implements \App\Http\Services\Campaigns\Utils\Lists\Contracts\S
 
     /**
      * Get the order of campaign type by name
-     *
-     * @return array
      */
-    public function getCampaignTypeNameOrder()
+    public function getCampaignTypeNameOrder(): array
     {
         return $this->campaignTypesOrder;
     }
@@ -202,11 +188,10 @@ class ByPriority implements \App\Http\Services\Campaigns\Utils\Lists\Contracts\S
     /**
      * Stack the qualified campaign coregs
      *
-     * @param  collection  $campaign
      *
      * @var array
      */
-    protected function stackCampaignCoreg($campaign)
+    protected function stackCampaignCoreg(collection $campaign)
     {
         // Pre populate
         if (! array_key_exists($campaign->campaign_type, $this->stack)) {
@@ -223,11 +208,10 @@ class ByPriority implements \App\Http\Services\Campaigns\Utils\Lists\Contracts\S
     /**
      * Stack the qualified campaign other coregs and exit page
      *
-     * @param  collection  $campaign
      *
      * @var array
      */
-    protected function stackOtherCampaigns($campaign)
+    protected function stackOtherCampaigns(collection $campaign)
     {
         if ($this->limit->exceed($campaign->campaign_type)) {
             return;
@@ -248,11 +232,10 @@ class ByPriority implements \App\Http\Services\Campaigns\Utils\Lists\Contracts\S
     /**
      * Stack the qualified campaign externals and long forms
      *
-     * @param  collection  $campaign
      *
      * @var int
      */
-    protected function stackExternalAndLongFormCampaign($campaign)
+    protected function stackExternalAndLongFormCampaign(collection $campaign)
     {
         // Implement her the limit of the campaign type
         if ($this->limit->exceed($campaign->campaign_type)) {

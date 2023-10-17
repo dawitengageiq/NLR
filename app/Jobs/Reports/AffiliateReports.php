@@ -45,10 +45,8 @@ class AffiliateReports extends Job implements ShouldQueue
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $startLog = Carbon::now();
         Log::info('Affiliate Revenue Tracker Start Time: '.$startLog->toDateTimeString());

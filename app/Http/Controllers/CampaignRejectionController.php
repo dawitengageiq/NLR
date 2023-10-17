@@ -9,6 +9,7 @@ use App\Helpers\GetDateByRangeHelper;
 use App\Setting;
 use DB;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 use Log;
 
 class CampaignRejectionController extends Controller
@@ -21,10 +22,8 @@ class CampaignRejectionController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function view(Request $request)
+    public function view(Request $request): View
     {
         $settings = Setting::where('code', 'high_critical_rejection_rate')->first();
         $high_rates = json_decode($settings->string_value);

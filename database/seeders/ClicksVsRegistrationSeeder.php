@@ -10,10 +10,8 @@ class ClicksVsRegistrationSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         $revenueTrackers = App\AffiliateRevenueTracker::where('offer_id', '!=', 1)->get();
         $date = Carbon::yesterday()->toDateString();

@@ -5,6 +5,7 @@ namespace App\Http\Services\Consolidated;
 use App\ConsolidatedGraph;
 use Carbon\Carbon;
 use DB;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * Consolidate graph class.
@@ -94,10 +95,8 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
 
     /**
      * Set the revenue tracker, provided by Controller.
-     *
-     * @param  int  $revenueTrackerIDs
      */
-    public function setRevenueTrackerID($revenueTrackerIDs)
+    public function setRevenueTrackerID(int $revenueTrackerIDs)
     {
         if (is_array($revenueTrackerIDs)) {
             $revenueTrackerIDs = array_filter($revenueTrackerIDs);
@@ -112,10 +111,8 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
     /**
      * Set legends, provided by controller from config.consolidatedgraph.legends.
      * We have to set immediatly the counters for generating chart series.
-     *
-     * @param  array  $legends
      */
-    public function setLegends($legends)
+    public function setLegends(array $legends)
     {
         $this->legends = $legends;
 
@@ -124,10 +121,8 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
 
     /**
      * Pre define dates, range: Yesterday, Week to date, Month to date, All of last Month
-     *
-     * @param  string  $predefineDates
      */
-    public function setPredefineDates($predefineDates)
+    public function setPredefineDates(string $predefineDates)
     {
         $this->predefineDates = $predefineDates;
     }
@@ -274,22 +269,16 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
 
     /**
      * Predefine dates Query for yesterday
-     *
-     * @param  Illuminate\Database\Eloquent\Builder  $query
-     * @return Illuminate\Database\Eloquent\Builder
      */
-    protected function queryYesterday($query)
+    protected function queryYesterday(Builder $query): Builder
     {
         return $query->whereDate('created_at', '=', $this->carbon->yesterday());
     }
 
     /**
      * Predefine dates Query for week to date
-     *
-     * @param  Illuminate\Database\Eloquent\Builder  $query
-     * @return Illuminate\Database\Eloquent\Builder
      */
-    protected function queryWeekToDate($query)
+    protected function queryWeekToDate(Builder $query): Builder
     {
         // return $query->whereBetween('created_at', [$this->carbon->subWeek(), $this->carbon->now()]);
         return $query->whereBetween('created_at', [$this->carbon->startOfWeek()->toDateTimeString(), $this->carbon->endOfWeek()->toDateTimeString()]);
@@ -297,11 +286,8 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
 
     /**
      * Predefine dates Query for month to date
-     *
-     * @param  Illuminate\Database\Eloquent\Builder  $query
-     * @return Illuminate\Database\Eloquent\Builder
      */
-    protected function queryMonthToDate($query)
+    protected function queryMonthToDate(Builder $query): Builder
     {
         // return $query->whereBetween('created_at', [$this->carbon->subMonth(), $this->carbon->now()]);
         return $query->whereBetween('created_at', [$this->carbon->startOfMonth()->toDateTimeString(), $this->carbon->endOfMonth()->toDateTimeString()]);
@@ -309,11 +295,8 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
 
     /**
      * Predefine dates Query for all last month
-     *
-     * @param  Illuminate\Database\Eloquent\Builder  $query
-     * @return Illuminate\Database\Eloquent\Builder
      */
-    protected function queryLastMonth($query)
+    protected function queryLastMonth(Builder $query): Builder
     {
         $lastMonth = $this->carbon->subMonth();
 

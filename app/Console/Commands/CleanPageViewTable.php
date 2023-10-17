@@ -36,10 +36,8 @@ class CleanPageViewTable extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Initiating Page Views cleanup');
         \Log::info('Initiating Page Views cleanup');

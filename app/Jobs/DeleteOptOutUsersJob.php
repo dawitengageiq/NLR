@@ -38,10 +38,8 @@ class DeleteOptOutUsersJob extends Job implements ShouldQueue
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         Log::info('Deleting Opt out users');
         $status = 1;

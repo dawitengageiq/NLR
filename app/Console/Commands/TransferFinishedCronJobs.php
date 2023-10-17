@@ -32,10 +32,8 @@ class TransferFinishedCronJobs extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         //In future move the transfer finished cron jobs function process here. The following code would be temporary only.
         $this->info(Carbon::now()->toDateTimeString());

@@ -8,10 +8,8 @@ class AffiliateCampaignSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         App\AffiliateCampaign::firstOrCreate([
             'campaign_id' => 1,

@@ -4,16 +4,15 @@ namespace App\Http\Controllers;
 
 use App\ZipMaster;
 use DB;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ZipMasterController extends Controller
 {
     /**
      * DataTable server side get/post function
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $totalFiltered = ZipMaster::count();

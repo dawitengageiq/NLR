@@ -52,10 +52,8 @@ class CampaignRevenueBreakdownJob extends Job implements ShouldQueue
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         //DB::enableQueryLog();
         if ($this->campaign == $this->all_inbox_id) {

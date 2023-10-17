@@ -11,7 +11,9 @@ use App\Http\Requests\AdvertiserRequest;
 use Bus;
 use Carbon;
 use DB;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 use Log;
 use Session;
 
@@ -43,10 +45,8 @@ class AdvertiserController extends Controller
 
     /**
      * Display a listing of the resource. This is a server side processing
-     *
-     * @return mixed
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $totalRecords = $totalFiltered = Advertiser::count();
@@ -132,27 +132,27 @@ class AdvertiserController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function dashboard()
+    public function dashboard(): View
     {
         return view('advertiser.dashboard');
     }
 
-    public function statistics()
+    public function statistics(): View
     {
         return view('advertiser.statistics');
     }
 
-    public function account()
+    public function account(): View
     {
         return view('advertiser.account');
     }
 
-    public function edit_account()
+    public function edit_account(): View
     {
         return view('advertiser.edit_account');
     }
 
-    public function change_password()
+    public function change_password(): View
     {
         return view('advertiser.change_password');
     }
@@ -180,23 +180,19 @@ class AdvertiserController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return Response
      */
-    public function create()
+    public function create(): Response
     {
         //
     }
 
     /**
      * Store a newly created advertiser resource in storage.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function store(
         AdvertiserRequest $request,
         \App\Http\Services\UserActionLogger $userAction
-    ) {
+    ): JsonResponse {
         $inputs = $request->all();
         $advertiser = Advertiser::create($inputs);
 
@@ -214,36 +210,28 @@ class AdvertiserController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
      */
-    public function show($id)
+    public function show(int $id): Response
     {
         //
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
      */
-    public function edit($id)
+    public function edit(int $id): Response
     {
         //
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function update(
         AdvertiserRequest $request,
         \App\Http\Services\UserActionLogger $userAction,
         $id
-    ) {
+    ): JsonResponse {
         //
 
         $inputs = $request->all();
@@ -294,20 +282,16 @@ class AdvertiserController extends Controller
 
     /**
      * Advertiser page route for contacts
-     *
-     * @return \Illuminate\View\View
      */
-    public function contacts()
+    public function contacts(): View
     {
         return view('advertiser.contacts');
     }
 
     /**
      * Advertiser page route for campaigns
-     *
-     * @return \Illuminate\View\View
      */
-    public function campaigns()
+    public function campaigns(): View
     {
         $advertisers = array_merge(['0' => ''], Advertiser::pluck('company', 'id')->toArray());
 
@@ -330,7 +314,7 @@ class AdvertiserController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function searchLeads(Request $request)
+    public function searchLeads(Request $request): View
     {
         //this is to determine if fresh visit in order to sort records by created at
         Session::forget('no_visit');
@@ -356,10 +340,8 @@ class AdvertiserController extends Controller
 
     /**
      * for revenueStats
-     *
-     * @return \Illuminate\View\View
      */
-    public function revenueStatistics(Request $request)
+    public function revenueStatistics(Request $request): View
     {
         //this is to determine if fresh visit in order to sort records by created at
         Session::forget('no_visit');
@@ -385,10 +367,8 @@ class AdvertiserController extends Controller
 
     /**
      * Top 10 campaigns by revenue yesterday
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function topTenCampaignsByRevenueYesterday(Request $request)
+    public function topTenCampaignsByRevenueYesterday(Request $request): JsonResponse
     {
         $yesterday = Carbon::now()->subDay()->toDateString();
         $user = $request->user();
@@ -403,10 +383,8 @@ class AdvertiserController extends Controller
 
     /**
      * Top 10 campaigns by revenue from the current week
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function topTenCampaignsByRevenueForCurrentWeek(Request $request)
+    public function topTenCampaignsByRevenueForCurrentWeek(Request $request): JsonResponse
     {
         $currentDate = Carbon::now()->toDateString();
         $user = $request->user();
@@ -421,10 +399,8 @@ class AdvertiserController extends Controller
 
     /**
      * Top 10 campaigns by revenue from the current month
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function topTenCampaignsByRevenueForCurrentMonth(Request $request)
+    public function topTenCampaignsByRevenueForCurrentMonth(Request $request): JsonResponse
     {
         $currentDate = Carbon::now()->toDateString();
         $user = $request->user();
@@ -437,10 +413,8 @@ class AdvertiserController extends Controller
 
     /**
      * Different lead counts
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function leadCounts(Request $request)
+    public function leadCounts(Request $request): JsonResponse
     {
         $user = $request->user();
 
@@ -461,10 +435,8 @@ class AdvertiserController extends Controller
 
     /**
      * Will return active campaigns
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function activeCampaigns(Request $request)
+    public function activeCampaigns(Request $request): JsonResponse
     {
         $user = $request->user();
         $param['advertiser_id'] = $user->advertiser->id;
@@ -476,10 +448,8 @@ class AdvertiserController extends Controller
 
     /**
      * This will determine if certain advertiser is active.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function status($id)
+    public function status($id): JsonResponse
     {
         $advertiser = Advertiser::find($id);
 

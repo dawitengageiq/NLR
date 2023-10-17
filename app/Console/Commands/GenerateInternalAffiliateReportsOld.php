@@ -36,10 +36,8 @@ class GenerateInternalAffiliateReportsOld extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info(Carbon::now()->toDateTimeString());
         $this->info('Initiating generating of internal affiliate reports...');

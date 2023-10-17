@@ -7,10 +7,8 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('leads_archive', function (Blueprint $table) {
             $table->integer('path_id')->index()->unsigned()->nullable()->after('creative_id');
@@ -20,10 +18,8 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('leads_archive', function (Blueprint $table) {
             $table->dropForeign('leads_archive_path_id_foreign');

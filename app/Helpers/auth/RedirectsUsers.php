@@ -6,10 +6,8 @@ trait RedirectsUsers
 {
     /**
      * Get the post register / login redirect path.
-     *
-     * @return string
      */
-    public function redirectPath()
+    public function redirectPath(): string
     {
         if (property_exists($this, 'redirectPath')) {
             return $this->redirectPath;

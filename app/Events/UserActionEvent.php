@@ -14,20 +14,16 @@ class UserActionEvent extends Event
      * Create a new event instance.
      *
      * UserActionEvent constructor.
-     *
-     * @param  array  $logData
      */
-    public function __construct($logData = [])
+    public function __construct(array $logData = [])
     {
         $this->logData = $logData;
     }
 
     /**
      * Get the channels the event should be broadcast on.
-     *
-     * @return array
      */
-    public function broadcastOn()
+    public function broadcastOn(): array
     {
         return [];
     }

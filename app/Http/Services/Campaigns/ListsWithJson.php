@@ -52,11 +52,10 @@ class ListsWithJson
     /**
      * Set the campaign type order, will be used in campaign query
      *
-     * @param  array  $typeOrdering
      *
      * @var array
      */
-    public function setTypeOrder($typeOrdering)
+    public function setTypeOrder(array $typeOrdering)
     {
         $this->typeOrdering = $typeOrdering;
     }
@@ -110,12 +109,11 @@ class ListsWithJson
      *
      * @param  bolean  $filter
      * @param  int  $pathType
-     * @param  int  $revenueTrackerID
      *
      * @var array
      * @var array
      */
-    public function filterEachCampaign($toFilter, $revenueTrackerID)
+    public function filterEachCampaign($toFilter, int $revenueTrackerID)
     {
         /* GO THROUGH EACH CAMPAIGN TO CHECK IF THEY QUALIFY */
         foreach ($this->campaigns as $campaign) {
@@ -139,9 +137,8 @@ class ListsWithJson
      * Check campaign passed the filtering
      *
      * @param eloquent collection $campaign
-     * @return bool
      */
-    protected function filterPassed($campaign, $revenueTrackerID)
+    protected function filterPassed($campaign, $revenueTrackerID): bool
     {
         /* CHECK EACH CAMPAIGN CAP IF REACHED */
         //If default campaign cap failed, skip campaign

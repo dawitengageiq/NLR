@@ -32,10 +32,8 @@ class SendBugReports extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $job = (new SendBugReportsV2())->delay(2);
         dispatch($job);

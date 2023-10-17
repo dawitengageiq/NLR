@@ -26,8 +26,6 @@ class GenerateCharts extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @param  Charts  $charts
      */
     public function __construct(CreateChartImage $charts)
     {
@@ -37,10 +35,8 @@ class GenerateCharts extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         if (Cache::has($this->argument('version').'_rejection_report')) {
             // set the data

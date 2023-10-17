@@ -35,10 +35,8 @@ class GenerateExternalPathAffiliateReports extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Initiating generating of External Path reports...');
 

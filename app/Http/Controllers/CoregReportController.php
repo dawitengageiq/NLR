@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Log;
 use Maatwebsite\Excel\Facades\Excel;
 use PHPExcel_Style_NumberFormat;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class CoregReportController extends Controller
 {
@@ -310,10 +311,8 @@ class CoregReportController extends Controller
 
     /**
      * Download Excel Report
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function download()
+    public function download(): BinaryFileResponse
     {
         $title = 'CoregReport_'.Carbon::yesterday()->toDateString();
         $file_path = storage_path('downloads').'/'.$title.'.xlsx';

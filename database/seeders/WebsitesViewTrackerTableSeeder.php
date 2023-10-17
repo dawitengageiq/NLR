@@ -9,10 +9,8 @@ class WebsitesViewTrackerTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         WebsitesViewTracker::factory()->count(150)->create();
     }

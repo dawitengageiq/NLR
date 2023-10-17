@@ -275,9 +275,8 @@ class UserActionLogger
      * Create user action log entry array
      *
      * @param $user
-     * @return array|null
      */
-    public function createUserActionLogEntry($settingCode, $oldValue, $newValue)
+    public function createUserActionLogEntry($settingCode, $oldValue, $newValue): ?array
     {
         if ($oldValue != $newValue) {
             return [

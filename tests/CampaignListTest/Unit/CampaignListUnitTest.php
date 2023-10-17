@@ -5,7 +5,7 @@ class CampaignListUnitTest extends BrowserKitTestCase
     /**
      * @test
      */
-    public function getCampaigns()
+    public function getCampaigns(): void
     {
         $stub = $this->getMockBuilder(CampaignList::class)
             ->setmethods(['getCampaigns'])

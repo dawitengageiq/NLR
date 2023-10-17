@@ -35,10 +35,8 @@ class ConsolidatedGraphDataGenerator extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Executing consolidated graph data generator.');
         //$this->generator->execute($this->argument('date'));

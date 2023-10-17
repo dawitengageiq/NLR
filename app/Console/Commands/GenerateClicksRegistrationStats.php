@@ -35,10 +35,8 @@ class GenerateClicksRegistrationStats extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Initiating generating of clicks vs registration stats...');
         $dateYesterdayStr = $this->option('from');

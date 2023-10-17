@@ -8,10 +8,8 @@ class AffiliateCampaignRequestSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         $faker = Faker\Factory::create();
         $affiliates = \App\Affiliate::pluck('id')->take(10)->toArray();

@@ -26,7 +26,7 @@ class AllInbox extends Job implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle()
+    public function handle(): void
     {
         if ($this->attempts() > 1) {
             return;

@@ -13,10 +13,8 @@ class LeadsSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         $coregs = Campaign::whereNotIn('campaign_type', [4, 5, 6])->where('status', '!=', 0)->pluck('id')->toArray();
         $rev_trackers = AffiliateRevenueTracker::pluck('revenue_tracker_id')->toArray();

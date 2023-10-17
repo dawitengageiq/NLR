@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Foundation\Application;
+
 class TestCase extends Illuminate\Foundation\Testing\TestCase
 {
     //use DatabaseSetup;
@@ -12,10 +14,8 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 
     /**
      * Creates the application.
-     *
-     * @return \Illuminate\Foundation\Application
      */
-    public function createApplication()
+    public function createApplication(): Application
     {
         $app = require __DIR__.'/../bootstrap/app.php';
 

@@ -11,10 +11,8 @@ class CampaignFilterGroupSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         $campaigns = CampaignFilter::groupBy('campaign_id')->pluck('campaign_id');
 

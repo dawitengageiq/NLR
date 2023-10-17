@@ -33,10 +33,8 @@ class UpdateRevenueTrackerSubIDBreakdownStatus extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $rev_trackers = AffiliateRevenueTracker::whereNotNull('new_subid_breakdown_status')->get();
         foreach ($rev_trackers as $rt) {

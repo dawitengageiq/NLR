@@ -28,11 +28,11 @@ class Kernel extends HttpKernel
     ];
 
     /**
-     * The application's route middleware.
+     * The application's middleware aliases.
      *
      * @var array
      */
-    protected $routeMiddleware = [
+    protected $middlewareAliases = [
         'admin' => Middleware\UnauthorizedIfNotAdministrator::class,
         'advertiser' => Middleware\UnauthorizedIfNotAdvertiser::class,
         'affiliate' => Middleware\UnauthorizedIfNotAffiliate::class,

@@ -32,10 +32,8 @@ class UpdateCampaignTypeOrder extends Job implements ShouldQueue
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $affected_orders = CampaignTypeOrder::whereIn('campaign_type_id', [$this->old_campaign_type, $this->new_campaign_type])->get();
 

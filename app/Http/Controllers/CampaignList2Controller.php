@@ -16,6 +16,7 @@ use App\WebsitesViewTracker;
 use App\ZipCode;
 use Bus;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use RandomProbability;
@@ -24,10 +25,8 @@ class CampaignList2Controller extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $params = $request->all();
         /* Check if user is banned */
@@ -1009,7 +1008,7 @@ class CampaignList2Controller extends Controller
             });
     }
 
-    public function capaignListJson(Request $request)
+    public function capaignListJson(Request $request): JsonResponse
     {
         // \Log::info('Test');
         $params = $request->all();
@@ -1720,7 +1719,7 @@ class CampaignList2Controller extends Controller
         return response()->json($response);
     }
 
-    public function saveLeadUser(Request $request)
+    public function saveLeadUser(Request $request): JsonResponse
     {
         $params = $request->all();
         // \Log::info($params);

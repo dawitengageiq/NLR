@@ -8,9 +8,8 @@ trait AffiliateReport
      * Process affiliate report data, affilate report have the revenue data.
      *
      * @param  \Illuminate\Database\Eloquent\Collection|Empty  $affiliateReport
-     * @return void
      */
-    protected function processAffiliateReport($affiliateReport, $campaigns)
+    protected function processAffiliateReport($affiliateReport, $campaigns): void
     {
         if (! $affiliateReport instanceof \Illuminate\Database\Eloquent\Collection) {
             return;

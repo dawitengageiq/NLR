@@ -20,10 +20,12 @@ use DB;
 use ErrorException;
 use File;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Storage;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class AffiliateReportController extends Controller
 {
@@ -189,7 +191,7 @@ class AffiliateReportController extends Controller
         return $stats;
     }
 
-    public function subIDStats(Request $request)
+    public function subIDStats(Request $request): JsonResponse
     {
         $inputs = $request->all();
 
@@ -346,7 +348,7 @@ class AffiliateReportController extends Controller
         return response()->json($responseData, 200);
     }
 
-    public function getIframeWebsiteStats(Request $request)
+    public function getIframeWebsiteStats(Request $request): JsonResponse
     {
 
         $inputs = $request->all();
@@ -480,7 +482,7 @@ class AffiliateReportController extends Controller
         return response()->json($responseData, 200);
     }
 
-    public function iframeRevenueTrackerStats(Request $request)
+    public function iframeRevenueTrackerStats(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $searchValue = $inputs['search']['value'];
@@ -536,10 +538,8 @@ class AffiliateReportController extends Controller
 
     /**
      * Uploading of reports sheet
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function uploadReports(Request $request)
+    public function uploadReports(Request $request): JsonResponse
     {
         $file = $request->file('file');
 
@@ -860,10 +860,8 @@ class AffiliateReportController extends Controller
 
     /**
      * Generate of H and P reports
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function generateHandPAffiliateReportsXLS(Request $request, $snapshot_period)
+    public function generateHandPAffiliateReportsXLS(Request $request, $snapshot_period): JsonResponse
     {
         $inputs = $request->all();
 
@@ -1310,10 +1308,8 @@ class AffiliateReportController extends Controller
 
     /**
      * Generating of iframe affiliate reports
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function generateIframeAffiliateReportXLS(Request $request, $snapshot_period)
+    public function generateIframeAffiliateReportXLS(Request $request, $snapshot_period): JsonResponse
     {
         ini_set('max_execution_time', 300);
         $inputs = $request->all();
@@ -1646,10 +1642,8 @@ class AffiliateReportController extends Controller
 
     /**
      * Downloading of iframe reports
-     *
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public function downloadIframeAffiliateReportXLS(Request $request, $snapshot_period)
+    public function downloadIframeAffiliateReportXLS(Request $request, $snapshot_period): BinaryFileResponse
     {
         $filePathToDownload = '';
 
@@ -1686,7 +1680,7 @@ class AffiliateReportController extends Controller
         }
     }
 
-    public function generateAffiliateReportXLS(Request $request, $affiliate_type, $snapshot_period)
+    public function generateAffiliateReportXLS(Request $request, $affiliate_type, $snapshot_period): JsonResponse
     {
         if (config('app.type') != 'reports') {
             $response = $this->curlToGenerateAffiliateReportXLS($request, $affiliate_type, $snapshot_period);
@@ -1769,10 +1763,8 @@ class AffiliateReportController extends Controller
 
     /**
      * Downloading of generated file.
-     *
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public function downloadAffiliateReportXLS(Request $request)
+    public function downloadAffiliateReportXLS(Request $request): BinaryFileResponse
     {
         $inputs = $request->all();
         $fileNameToDownload = $inputs['file_name_dl'];
@@ -1818,7 +1810,7 @@ class AffiliateReportController extends Controller
 
     }
 
-    public function getIframeAffiliateStats(Request $request)
+    public function getIframeAffiliateStats(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $searchValue = $inputs['search']['value'];

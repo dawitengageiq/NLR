@@ -27,11 +27,10 @@ class ByPathType implements \App\Http\Services\Campaigns\Utils\Lists\Contracts\L
     /**
      * Set limits
      *
-     * @param  string  $campaignTypeLimit
      *
      * @var array
      */
-    public function set($campaignTypeLimit)
+    public function set(string $campaignTypeLimit)
     {
         // Update ampaign type path Limits if use campaign type limit is enable
         if (count($campaignTypeLimit)) {
@@ -41,10 +40,8 @@ class ByPathType implements \App\Http\Services\Campaigns\Utils\Lists\Contracts\L
 
     /**
      * Get the path type limit
-     *
-     * @return array
      */
-    public function getPathLimit()
+    public function getPathLimit(): array
     {
         return $this->pathLimit;
     }
@@ -54,9 +51,8 @@ class ByPathType implements \App\Http\Services\Campaigns\Utils\Lists\Contracts\L
      * NOTE: the limit of campaign type non mix-coregs is not check here, refer to applyPathTypeLimitThenFirstLevelLimit
      *
      * @param  collection  $campaign
-     * @return bool
      */
-    public function exceed($campaignType)
+    public function exceed($campaignType): bool
     {
         if (! $this->pathLimit[$campaignType]) {
             return false;

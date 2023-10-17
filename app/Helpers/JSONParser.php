@@ -94,10 +94,8 @@ class JSONParser
 
     /**
      * Get the response from the server and convert the XML response to an object.
-     *
-     * @return null|\SimpleXMLElement
      */
-    public function getXMLResponseObject($url)
+    public function getXMLResponseObject($url): ?SimpleXMLElement
     {
         $dataArray = null;
         $curlResponse = $this->getResponse($url);
@@ -119,10 +117,8 @@ class JSONParser
 
     /**
      * Get the response from the server and convert the XML response to an object.
-     *
-     * @return null|\SimpleXMLElement
      */
-    public function getXMLResponseNoCDATA($url)
+    public function getXMLResponseNoCDATA($url): ?SimpleXMLElement
     {
         $dataArray = null;
         $xml = null;
@@ -154,10 +150,8 @@ class JSONParser
 
     /**
      * Error code
-     *
-     * @return int
      */
-    public function getErrorCode()
+    public function getErrorCode(): int
     {
         return $this->error_code;
     }

@@ -7,6 +7,7 @@ use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract
@@ -66,20 +67,16 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
     /**
      * will determine if user is admin
-     *
-     * @return bool
      */
-    public function isAdministrator()
+    public function isAdministrator(): bool
     {
         return $this->account_type == 2;
     }
 
     /**
      * will determine if user is affiliate or advertiser
-     *
-     * @return bool
      */
-    public function isUser()
+    public function isUser(): bool
     {
         return $this->account_type == 1;
     }
@@ -106,10 +103,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
     /**
      * check if user is affiliate
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function affiliate()
+    public function affiliate(): HasOne
     {
         return $this->belongsTo(Affiliate::class);
     }
@@ -121,20 +116,16 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
     /**
      * check user's role
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function role()
+    public function role(): HasOne
     {
         return $this->belongsTo(Role::class);
     }
 
     /**
      * check if use is super user
-     *
-     * @return bool
      */
-    public function isSuperUser()
+    public function isSuperUser(): bool
     {
         return $this->role_id == 1;
     }

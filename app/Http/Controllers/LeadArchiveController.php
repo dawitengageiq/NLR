@@ -6,15 +6,14 @@ use App\LeadDataAdvArchive;
 use App\LeadDataCsvArchive;
 use App\LeadMessageArchive;
 use App\LeadSentResultArchive;
+use Illuminate\Http\JsonResponse;
 
 class LeadArchiveController extends Controller
 {
     /**
      * Function of getting the details
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function getLeadDetails($lead_id)
+    public function getLeadDetails($lead_id): JsonResponse
     {
         $data = [];
         $data['leadDataADV'] = null;

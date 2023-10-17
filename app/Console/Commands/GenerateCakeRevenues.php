@@ -33,10 +33,8 @@ class GenerateCakeRevenues extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Initiating generating of cake revenues...');
         $dateYesterdayStr = $this->option('from');

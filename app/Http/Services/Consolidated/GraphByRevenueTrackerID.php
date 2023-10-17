@@ -46,10 +46,8 @@ class GraphByRevenueTrackerID extends GraphByDateRange implements \App\Http\Serv
 
     /**
      * Set the revenue tracker ids from affilates.
-     *
-     * @param  array  $affiliates
      */
-    public function setRevenueTrackerIDs($affiliates)
+    public function setRevenueTrackerIDs(array $affiliates)
     {
         foreach ($affiliates as $affiliate) {
             foreach ($affiliate['revenue_tracker'] as $revenueTracker) {
@@ -60,20 +58,16 @@ class GraphByRevenueTrackerID extends GraphByDateRange implements \App\Http\Serv
 
     /**
      * Get thelist/array of rerevenue tracker ids.
-     *
-     * @return array
      */
-    public function revenueTrackerIDs()
+    public function revenueTrackerIDs(): array
     {
         return $this->revenueTrackerIDs;
     }
 
     /**
      * Set the date.
-     *
-     * @param  string  $date
      */
-    public function setdate($date)
+    public function setdate(string $date)
     {
         // Use for Query
         $this->date = $date;
@@ -81,10 +75,8 @@ class GraphByRevenueTrackerID extends GraphByDateRange implements \App\Http\Serv
 
     /**
      * Get the date.
-     *
-     * @return string
      */
-    public function date()
+    public function date(): string
     {
         return $this->date;
     }

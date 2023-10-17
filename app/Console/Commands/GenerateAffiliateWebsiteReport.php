@@ -34,10 +34,8 @@ class GenerateAffiliateWebsiteReport extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Initiating generating of Affiliate Website Report...');
         $date = $this->option('date');

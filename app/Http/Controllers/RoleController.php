@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Action;
 use App\Role;
 use DB;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 use Log;
 
 class RoleController extends Controller
@@ -20,10 +22,8 @@ class RoleController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(): View
     {
         $actions = Action::all();
         $actionsData = [];
@@ -38,10 +38,8 @@ class RoleController extends Controller
 
     /**
      * Sever side data provider for roles page
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function roles(Request $request)
+    public function roles(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $totalFiltered = Role::count();
@@ -174,10 +172,8 @@ class RoleController extends Controller
      * Store a newly created role in storage.
      *
      * notice: dev protect this route with basic authentication
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $inputs = $request->all();
 
@@ -224,11 +220,8 @@ class RoleController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id): JsonResponse
     {
         //get the role
         $role = Role::find($id);
@@ -294,10 +287,9 @@ class RoleController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(int $id)
     {
         //
     }
@@ -305,20 +297,17 @@ class RoleController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(int $id)
     {
         //
     }
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
+    public function destroy($id): JsonResponse
     {
         $role = Role::find($id);
 

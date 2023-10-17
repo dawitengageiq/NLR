@@ -29,10 +29,8 @@ class ByMixCoregPages extends ByPerCampaignType implements \App\Http\Services\Ca
      * Fallback: get/use the campaig type ordering, if not available
      * Order by priority(set in query params)
      * Set limit that was provided in service provider
-     *
-     * @param  array  $param
      */
-    public function setOrderAndLimits($param)
+    public function setOrderAndLimits(array $param)
     {
         [$limit, $revenueTrackerLimit, $revenueTrackerID, $campaignTypeOrder] = $param;
 
@@ -52,10 +50,8 @@ class ByMixCoregPages extends ByPerCampaignType implements \App\Http\Services\Ca
 
     /**
      * Check has ordering
-     *
-     * @return bool
      */
-    public function hasOrder()
+    public function hasOrder(): bool
     {
         // check if mix coreg ordering is available
         if ($this->mixCoregOrder->hasOrder()) {
@@ -75,10 +71,8 @@ class ByMixCoregPages extends ByPerCampaignType implements \App\Http\Services\Ca
 
     /**
      * Get what type of ordering was used
-     *
-     * @return bool
      */
-    public function orderType()
+    public function orderType(): bool
     {
         return $this->orderType;
     }
@@ -86,11 +80,10 @@ class ByMixCoregPages extends ByPerCampaignType implements \App\Http\Services\Ca
     /**
      * Stack the qualified campaign coregs
      *
-     * @param  collection  $campaign
      *
      * @var array
      */
-    protected function stackCampaignCoreg($campaign)
+    protected function stackCampaignCoreg(collection $campaign)
     {
         /* 1ST STEP - CHECK CAMPAIGN TYPE IS INCLUDED IN MIX COREG ORDERING*/
         // If the mixcoreg order is available.
@@ -121,10 +114,8 @@ class ByMixCoregPages extends ByPerCampaignType implements \App\Http\Services\Ca
 
     /**
      * Implement mix coreg order
-     *
-     * @param  int  $campaignID
      */
-    protected function stackByMixCoregOrder($campaignID)
+    protected function stackByMixCoregOrder(int $campaignID)
     {
         if ($this->mixCoregOrder->campaignIdExists($campaignID)) {
             // Pre populate

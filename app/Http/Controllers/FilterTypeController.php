@@ -6,6 +6,7 @@ use App\Commands\GetUserActionPermission;
 use App\FilterType;
 use Bus;
 use DB;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class FilterTypeController extends Controller
@@ -26,7 +27,7 @@ class FilterTypeController extends Controller
         $this->canDelete = Bus::dispatch(new GetUserActionPermission($user, 'use_delete_filter_type'));
     }
 
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $totalFiltered = FilterType::count();
@@ -136,23 +137,19 @@ class FilterTypeController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return Response
      */
-    public function create()
+    public function create(): Response
     {
         //
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @return Response
      */
     public function store(
         Request $request,
         \App\Http\Services\UserActionLogger $userAction
-    ) {
+    ): JsonResponse {
         $fileName = null;
 
         if ($request->hasFile('icon')) {
@@ -203,37 +200,28 @@ class FilterTypeController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
      */
-    public function show($id)
+    public function show(int $id): Response
     {
         //
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
      */
-    public function edit($id)
+    public function edit(int $id): Response
     {
         //
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  int  $id
-     * @return Response
      */
     public function update(
         Request $request,
         \App\Http\Services\UserActionLogger $userAction,
-        $id
-    ) {
+        int $id
+    ): JsonResponse {
         $filterType = FilterType::find($id);
 
         $current_state = $filterType->toArray(); //For Logging
@@ -297,14 +285,11 @@ class FilterTypeController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return Response
      */
     public function destroy(
         \App\Http\Services\UserActionLogger $userAction,
-        $id
-    ) {
+        int $id
+    ): JsonResponse {
 
         $responseMessage = [
             'status' => 200,

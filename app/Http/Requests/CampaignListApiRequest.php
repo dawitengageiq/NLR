@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Http\Response;
 use View;
 
 class CampaignListApiRequest extends CampaignListRequest
@@ -49,30 +50,24 @@ class CampaignListApiRequest extends CampaignListRequest
 
     /**
      * Retrieve browser details
-     *
-     * @return array
      */
-    public function browserDetails()
+    public function browserDetails(): array
     {
         return $this->browser;
     }
 
     /**
      * Retrieve device details
-     *
-     * @return array
      */
-    public function deviceDetails()
+    public function deviceDetails(): array
     {
         return $this->device;
     }
 
     /**
      * Retrieve redirect url
-     *
-     * @return string
      */
-    public function redirectUrl()
+    public function redirectUrl(): string
     {
         return $this->redirectUrl;
     }
@@ -80,30 +75,24 @@ class CampaignListApiRequest extends CampaignListRequest
     /**
      * True:Reload parent iframe/self irame
      * False:Reload window top
-     *
-     * @return bolean
      */
-    public function toReloadParentFrame()
+    public function toReloadParentFrame(): bolean
     {
         return $this->reloadParentFrame;
     }
 
     /**
      * Environment url
-     *
-     * @return bolean
      */
-    public function targetUrl()
+    public function targetUrl(): bolean
     {
         return $this->targetUrl;
     }
 
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         // Set data needed for error page if ....
         $this->setErrorPageData();
@@ -140,10 +129,8 @@ class CampaignListApiRequest extends CampaignListRequest
 
     /**
      * Get the response for a forbidden operation.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function forbiddenResponse()
+    public function forbiddenResponse(): Response
     {
         View::share('data', ['message' => $this->message]);
         View::share('redirect_url', $this->redirectUrl());
@@ -154,10 +141,8 @@ class CampaignListApiRequest extends CampaignListRequest
 
     /**
      * Validate email have correct email format.
-     *
-     * @return bolean
      */
-    protected function invalidEmailFormat()
+    protected function invalidEmailFormat(): bolean
     {
         if (! filter_var($this->get('email'), FILTER_VALIDATE_EMAIL)) {
             return true;

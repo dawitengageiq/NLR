@@ -60,11 +60,10 @@ class Lists extends Factories\ListsFactory implements \App\Http\Services\Contrac
     /**
      * Set the campaign type order, will be used in campaign query
      *
-     * @param  array  $typeOrdering
      *
      * @var array
      */
-    public function setTypeOrdering($typeOrdering)
+    public function setTypeOrdering(array $typeOrdering)
     {
         $this->typeOrdering = $typeOrdering;
         $this->stacking->setTypeOrdering($typeOrdering);

@@ -34,10 +34,8 @@ class CleanQueuedLeads extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Initiating Queued Leads Cleanup');
         \Log::info('Initiating Queued Leads Cleanup');

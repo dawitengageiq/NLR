@@ -8,10 +8,8 @@ class CampaignPayoutSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         App\CampaignPayout::firstOrCreate([
             'campaign_id' => 1,

@@ -36,7 +36,7 @@ class SendLeadsUnitTest extends BrowserKitTestCase
      * @test
      * test if SendLeadsTrait is called successfully
      */
-    public function show()
+    public function show(): void
     {
         var_dump($this->results);
     }
@@ -46,7 +46,7 @@ class SendLeadsUnitTest extends BrowserKitTestCase
      * return the campaign id
      * integer
      */
-    public function check_if_campaign_return_id()
+    public function check_if_campaign_return_id(): void
     {
         $this->checkMikeTestHello(CampaignRepository::class, 'getCampaignByIdAndStatus', $this->results['eiq_campaign_id']);
     }
@@ -57,17 +57,15 @@ class SendLeadsUnitTest extends BrowserKitTestCase
      * @return affiliate id
      * integer
      */
-    public function check_if_affiliate_return_id()
+    public function check_if_affiliate_return_id(): affiliate
     {
         $this->checkMikeTestHello(AffiliateRepository::class, 'getAffiliateById', $this->results['eiq_affiliate_id']);
     }
 
     /**
      * @test
-     *
-     * @return object
      */
-    public function check_if_campaign_should_return_object()
+    public function check_if_campaign_should_return_object(): object
     {
         $campaignCount = \App\LeadCount::where('campaign_id', $this->results['eiq_campaign_id'])->first();
         if (null !== $campaignCount) {
@@ -83,7 +81,7 @@ class SendLeadsUnitTest extends BrowserKitTestCase
      *
      * @return bool if object
      */
-    public function check_if_campaign_affiliate_should_return_object()
+    public function check_if_campaign_affiliate_should_return_object(): bool
     {
         $campaignAffiliateCount = \App\LeadCount::where('campaign_id', $this->results['eiq_campaign_id'])->where('affiliate_id', $this->results['eiq_affiliate_id'])->first();
         if (null !== $campaignAffiliateCount) {
@@ -99,7 +97,7 @@ class SendLeadsUnitTest extends BrowserKitTestCase
      * @return bool
      * silly very long method name, at least you got the idea
      */
-    public function capreach_should_return_true_if_campaign_counts_and_campaign_affiliate_counts_were_both_not_null_and_return_false_if_campaign_counts_and_campaign_affiliate_counts_were_both_null()
+    public function capreach_should_return_true_if_campaign_counts_and_campaign_affiliate_counts_were_both_not_null_and_return_false_if_campaign_counts_and_campaign_affiliate_counts_were_both_null(): bool
     {
         $response = true;
         /**
@@ -164,7 +162,7 @@ class SendLeadsUnitTest extends BrowserKitTestCase
      * @test
      * save the leads if not duplicate entry
      */
-    public function leads_should_save_if_not_duplicate()
+    public function leads_should_save_if_not_duplicate(): void
     {
         $payout = 1;
         $received = 2;

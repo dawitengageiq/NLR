@@ -6,12 +6,13 @@ use App\Note;
 use App\NoteCategory;
 use Auth;
 use DB;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Log;
 
 class NotesController extends Controller
 {
-    public function get_categories()
+    public function get_categories(): JsonResponse
     {
         return response()->json([
             'categories' => NoteCategory::all(),
@@ -78,7 +79,7 @@ class NotesController extends Controller
         $userAction->logger(11, 111, $id, $category->toArray(), null, 'Delete category: '.$category->name);
     }
 
-    public function get_notes_by_category(Request $request, $id)
+    public function get_notes_by_category(Request $request, $id): JsonResponse
     {
         $user = Auth::id();
         $notes = Note::leftJoin('note_trackings', function ($q) use ($user) {

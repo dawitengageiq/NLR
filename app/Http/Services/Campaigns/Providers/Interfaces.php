@@ -31,8 +31,6 @@ class Interfaces
 
     /**
      * Instantiate.
-     *
-     * @param  Illuminate\Foundation\Application  $app
      */
     public function __construct(\Illuminate\Foundation\Application $app)
     {
@@ -44,8 +42,6 @@ class Interfaces
 
     /**
      * Static function.
-     *
-     * @param  Illuminate\Foundation\Application  $app
      */
     public static function bind(\Illuminate\Foundation\Application $app)
     {
@@ -66,10 +62,8 @@ class Interfaces
 
     /**
      * Resolve what class to use.
-     *
-     * @return object
      */
-    protected function resolveClassName()
+    protected function resolveClassName(): object
     {
         if (array_key_exists($this->path, $this->className)) {
             return $this->className[$this->path];

@@ -5,17 +5,15 @@ namespace App\Http\Middleware;
 use App\Commands\GetUserActionPermission;
 use Bus;
 use Closure;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class RestrictSectionAccessIfNotPermitted
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next): \Symfony\Component\HttpFoundation\Response
     {
         $path = $request->path();
         $user = $request->user();

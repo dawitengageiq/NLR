@@ -53,7 +53,7 @@ class AffiliateReportsV3 extends Job implements ShouldQueue
      *
      * @throws \Sabre\Xml\LibXMLException
      */
-    public function handle(AffiliateReportCurl $affiliateReportCurl)
+    public function handle(AffiliateReportCurl $affiliateReportCurl): void
     {
         if ($this->attempts() > 1) {
             return;
@@ -753,10 +753,8 @@ class AffiliateReportsV3 extends Job implements ShouldQueue
 
     /**
      * Handle a job failure.
-     *
-     * @return void
      */
-    public function failed()
+    public function failed(): void
     {
         //job failed
         Log::info('AffiliateReportsV3 Failed! - '.Carbon::now()->toDateTimeString());

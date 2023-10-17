@@ -46,10 +46,8 @@ class AffiliateReportsV2 extends Job implements ShouldQueue
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         if ($this->attempts() > 1) {
             return;
@@ -704,10 +702,8 @@ class AffiliateReportsV2 extends Job implements ShouldQueue
 
     /**
      * Handle a job failure.
-     *
-     * @return void
      */
-    public function failed()
+    public function failed(): void
     {
         //job failed
         Log::info('AffiliateReportsV2 Failed! - '.Carbon::now()->toDateTimeString());

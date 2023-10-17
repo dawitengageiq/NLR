@@ -11,31 +11,24 @@ class Ordering
 
     /**
      * Set campaign order from calculate::class
-     *
-     * @param  array  $orders
      */
-    public function setOrders($orders)
+    public function setOrders(array $orders)
     {
         $this->orders = $orders;
     }
 
     /**
      * Get the new campaign ids Order
-     *
-     * @return array
      */
-    public function getOrders()
+    public function getOrders(): array
     {
         return $this->orders;
     }
 
     /**
      * Determine the type of reordering then reorder
-     *
-     * @param  int  $orderBy
-     * @return void
      */
-    public function reorderBy($orderBy)
+    public function reorderBy(int $orderBy): void
     {
         if (count($this->orders) <= 0) {
             return;
@@ -59,11 +52,8 @@ class Ordering
 
     /**
      * Random reordering
-     *
-     * @param  array  $array
-     * @return array
      */
-    protected function shuffleAssoc($array)
+    protected function shuffleAssoc(array $array): array
     {
         //Initialize
         $new = [];

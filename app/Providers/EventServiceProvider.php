@@ -22,10 +22,8 @@ class EventServiceProvider extends ServiceProvider
 
     /**
      * Register any other events for your application.
-     *
-     * @return void
      */
-    public function boot(DispatcherContract $events)
+    public function boot(DispatcherContract $events): void
     {
         parent::boot($events);
 
@@ -76,10 +74,8 @@ class EventServiceProvider extends ServiceProvider
 
     /**
      * Determine if events and listeners should be automatically discovered.
-     *
-     * @return bool
      */
-    public function shouldDiscoverEvents()
+    public function shouldDiscoverEvents(): bool
     {
         return false;
     }

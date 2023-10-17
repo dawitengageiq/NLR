@@ -3,16 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\LeadUserBanned;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class LeadUserBannedController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         // \Log::info($request->all());
         // \DB::connection('secondary')->enableQueryLog();
@@ -63,10 +62,8 @@ class LeadUserBannedController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $this->validate($request, [
             'first_name' => 'required',

@@ -7,10 +7,8 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('campaign_view_reports', function (Blueprint $table) {
             $sm = Schema::getConnection()->getDoctrineSchemaManager();
@@ -24,10 +22,8 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('campaign_view_reports', function (Blueprint $table) {
             // $table->dropUnique('ct_id_rt_id_c_id_sub_id_unique_key');

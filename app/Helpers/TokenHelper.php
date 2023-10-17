@@ -114,18 +114,12 @@ class TokenHelper
 
     }
 
-    /**
-     * @return bool
-     */
-    public function isAuthorized()
+    public function isAuthorized(): bool
     {
         return $this->authorized;
     }
 
-    /**
-     * @return bool
-     */
-    public function isValidToken()
+    public function isValidToken(): bool
     {
         return $this->validToken;
     }

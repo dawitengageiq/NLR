@@ -43,7 +43,7 @@ class ArchiveLeads extends Command
     /**
      * Execute the console command.
      */
-    public function handle(Settings $settings)
+    public function handle(Settings $settings): void
     {
         $this->info('Initiating archiving of leads...');
 

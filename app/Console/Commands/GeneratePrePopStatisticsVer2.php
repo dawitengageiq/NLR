@@ -35,10 +35,8 @@ class GeneratePrePopStatisticsVer2 extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Initiating generating of prepop statistics...');
 

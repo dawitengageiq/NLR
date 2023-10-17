@@ -7,10 +7,8 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('affiliate_revenue_trackers', function (Blueprint $table) {
             $table->string('mixed_coreg_recurrence')->default('views');
@@ -20,10 +18,8 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('affiliate_revenue_trackers', function (Blueprint $table) {
             $table->dropColumn(['mixed_coreg_recurrence', 'mixed_coreg_daily']);

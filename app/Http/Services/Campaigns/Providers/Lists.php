@@ -22,8 +22,6 @@ class Lists
     /**
      * Instantiate.
      *
-     * @param  Illuminate\Foundation\Application  $app
-     * @param  App\Http\Services\Campaigns\Repos\RevenueTracker  $revenueTracker
      * @return void;
      */
     public function __construct(
@@ -56,8 +54,6 @@ class Lists
 
     /**
      * Static function.
-     *
-     * @param  Illuminate\Foundation\Application  $app
      */
     public static function boot(\Illuminate\Foundation\Application $app)
     {
@@ -73,10 +69,8 @@ class Lists
 
     /**
      * Bootstrap any application for campaign listing.
-     *
-     * @return void
      */
-    protected function execute()
+    protected function execute(): void
     {
         Stack::bind($this->app, $this->revenueTracker->orderType());
 

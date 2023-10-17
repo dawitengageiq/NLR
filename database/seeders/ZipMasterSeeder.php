@@ -10,10 +10,8 @@ class ZipMasterSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         $states = config('constants.US_STATES_ABBR');
         foreach ($states as $abbr => $full) {

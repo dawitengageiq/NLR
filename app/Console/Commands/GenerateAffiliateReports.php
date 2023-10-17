@@ -43,10 +43,8 @@ class GenerateAffiliateReports extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Initiating generating of affiliate reports...');
         // $dateYesterdayStr = $this->option('from');

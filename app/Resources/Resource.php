@@ -5,6 +5,8 @@ namespace App\Resources;
 use App\Http\Services\Helpers\Reflection;
 use Illuminate\Container\Container;
 use Illuminate\Database;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support;
 
 class Resource
@@ -43,22 +45,16 @@ class Resource
 
     /**
      * Transform the resource into an HTTP response.
-     *
-     * @param  int|null  $statusCode
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function response($statusCode = null)
+    public function response(int $statusCode = null): JsonResponse
     {
         return $this->toResponse($statusCode);
     }
 
     /**
      * Create an HTTP response that represents the object.
-     *
-     * @param  int|null  $statusCode
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function toResponse($statusCode = null)
+    public function toResponse(int $statusCode = null): JsonResponse
     {
         $this->request = Container::getInstance()->make('request');
 
@@ -78,30 +74,24 @@ class Resource
      * Transform the resource into an array.
      *
      * @param  \Illuminate\Http\Request
-     * @return array
      */
-    public function toArray($request)
+    public function toArray($request): array
     {
         return $this->item;
     }
 
     /**
      * Get any additional data that should be returned with the resource array.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
      */
-    public function with($request)
+    public function with(Request $request): array
     {
         return $this->with;
     }
 
     /**
      * Add additional meta data to the resource response.
-     *
-     * @return $this
      */
-    public function additional(array $data)
+    public function additional(array $data): static
     {
         $this->additional = array_merge($this->additional, $data);
 
@@ -110,10 +100,8 @@ class Resource
 
     /**
      * Resolve the resource to an array.
-     *
-     * @return array
      */
-    protected function resolve()
+    protected function resolve(): array
     {
         // if ($this->resource instanceof Collection) {
         $newCollection = [];
@@ -135,11 +123,8 @@ class Resource
 
     /**
      * Calculate the appropriate status code for the response.
-     *
-     * @param  int|null  $statusCode
-     * @return int
      */
-    protected function calculateStatus($statusCode = null)
+    protected function calculateStatus(int $statusCode = null): int
     {
         if ($statusCode) {
             return $statusCode;
@@ -151,13 +136,8 @@ class Resource
 
     /**
      * Wrap the given data if necessary.
-     *
-     * @param  array  $data
-     * @param  array  $with
-     * @param  array  $additional
-     * @return array
      */
-    protected function wrap($data, $with = [], $additional = [])
+    protected function wrap(array $data, array $with = [], array $additional = []): array
     {
         if ($data instanceof Database\Eloquent\Collection
         || $data instanceof Support\Collection) {

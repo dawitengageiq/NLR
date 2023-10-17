@@ -5,6 +5,7 @@ namespace App\Helpers\auth;
 use App\User;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Validator;
@@ -16,10 +17,8 @@ trait AuthenticatesUsers
 
     /**
      * Show the application login form.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function getLogin()
+    public function getLogin(): Response
     {
         if (view()->exists('auth.authenticate')) {
             return view('auth.authenticate');
@@ -30,10 +29,8 @@ trait AuthenticatesUsers
 
     /**
      * Handle a login request to the application.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function postLogin(Request $request)
+    public function postLogin(Request $request): Response
     {
         $this->validate($request, [
             $this->loginUsername() => 'required', 'password' => 'required',
@@ -82,11 +79,8 @@ trait AuthenticatesUsers
 
     /**
      * Send the response after the user was authenticated.
-     *
-     * @param  bool  $throttles
-     * @return \Illuminate\Http\Response
      */
-    protected function handleUserWasAuthenticated(Request $request, $throttles)
+    protected function handleUserWasAuthenticated(Request $request, bool $throttles): Response
     {
         if ($throttles) {
             $this->clearLoginAttempts($request);
@@ -101,20 +95,16 @@ trait AuthenticatesUsers
 
     /**
      * Get the needed authorization credentials from the request.
-     *
-     * @return array
      */
-    protected function getCredentials(Request $request)
+    protected function getCredentials(Request $request): array
     {
         return $request->only($this->loginUsername(), 'password');
     }
 
     /**
      * Get the failed login message.
-     *
-     * @return string
      */
-    protected function getFailedLoginMessage()
+    protected function getFailedLoginMessage(): string
     {
         return Lang::has('auth.failed')
             ? Lang::get('auth.failed')
@@ -123,10 +113,8 @@ trait AuthenticatesUsers
 
     /**
      * Log the user out of the application.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function getLogout()
+    public function getLogout(): Response
     {
         Auth::logout();
 
@@ -137,10 +125,8 @@ trait AuthenticatesUsers
 
     /**
      * Get the path to the login route.
-     *
-     * @return string
      */
-    public function loginPath()
+    public function loginPath(): string
     {
         return property_exists($this, 'loginPath') ? $this->loginPath : '/auth/login';
         //return property_exists($this, 'loginPath') ? $this->loginPath : '/login';
@@ -148,20 +134,16 @@ trait AuthenticatesUsers
 
     /**
      * Get the login username to be used by the controller.
-     *
-     * @return string
      */
-    public function loginUsername()
+    public function loginUsername(): string
     {
         return property_exists($this, 'username') ? $this->username : 'email';
     }
 
     /**
      * Determine if the class is using the ThrottlesLogins trait.
-     *
-     * @return bool
      */
-    protected function isUsingThrottlesLoginsTrait()
+    protected function isUsingThrottlesLoginsTrait(): bool
     {
         return in_array(
             ThrottlesLogins::class, class_uses_recursive(get_class($this))

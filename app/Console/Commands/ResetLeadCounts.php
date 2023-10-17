@@ -39,7 +39,7 @@ class ResetLeadCounts extends Command
     /**
      * Execute the console command.
      */
-    public function handle(LeadCounts $leadCountsHelper)
+    public function handle(LeadCounts $leadCountsHelper): void
     {
         $this->info(Carbon::now()->toDateTimeString());
         $this->info('Resetting lead counters...');

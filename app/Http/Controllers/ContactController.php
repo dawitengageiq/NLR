@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateContactRequest;
 use App\User;
 use Bus;
 use DB;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Log;
@@ -31,10 +32,8 @@ class ContactController extends Controller
 
     /**
      * Server side processing for contacts data table
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $allNonAdminCount = User::allNonAdmin()->count();
@@ -181,23 +180,19 @@ class ContactController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return Response
      */
-    public function create()
+    public function create(): Response
     {
         //
     }
 
     /**
      * Store a newly created contact in storage. This is for user type only and not admin
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function store(
         AddContactRequest $request,
         \App\Http\Services\UserActionLogger $userAction
-    ) {
+    ): JsonResponse {
         $inputs = $request->all();
         //encrypt password
         $inputs['password'] = Hash::make($inputs['password']);
@@ -231,36 +226,28 @@ class ContactController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
      */
-    public function show($id)
+    public function show(int $id): Response
     {
         //
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
      */
-    public function edit($id)
+    public function edit(int $id): Response
     {
 
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function update(
         UpdateContactRequest $request,
         \App\Http\Services\UserActionLogger $userAction,
         $id
-    ) {
+    ): JsonResponse {
         $inputs = $request->all();
 
         $title = $inputs['title'];
@@ -317,13 +304,11 @@ class ContactController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(
         \App\Http\Services\UserActionLogger $userAction,
         $id
-    ) {
+    ): JsonResponse {
         $responseMessage = [
             'status' => 200,
             'delete_status' => true,

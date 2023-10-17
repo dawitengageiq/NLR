@@ -37,12 +37,8 @@ class ExternalPathTiburonDataHelper
 
     /**
      * ExternalPathTiburonDataHelper constructor
-     *
-     * @param  int  $externalPathTiburonCampaignID
-     * @param  string  $dateFrom
-     * @param  string  $dateTo
      */
-    public function __construct($externalPathTiburonCampaignID, $dateFrom, $dateTo, JSONParser $parser)
+    public function __construct(int $externalPathTiburonCampaignID, string $dateFrom, string $dateTo, JSONParser $parser)
     {
         $this->externalPathTiburonCampaignID = $externalPathTiburonCampaignID;
 
@@ -200,11 +196,8 @@ class ExternalPathTiburonDataHelper
      * @license http://www.php.net/license/index.php#doc-lic
      * @license http://creativecommons.org/licenses/by/3.0/
      * @license CC-BY-3.0 <http://spdx.org/licenses/CC-BY-3.0>
-     *
-     * @param  array  $out
-     * @return array
      */
-    public function xmlToArray($xmlObject, $out = [])
+    public function xmlToArray($xmlObject, array $out = []): array
     {
         foreach ((array) $xmlObject as $index => $node) {
             $out[$index] = (is_object($node)) ? $this->xmlToArray($node) : $node;

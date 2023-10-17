@@ -53,10 +53,8 @@ class HighRejectionAlertReport extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $lr_build = env('APP_BUILD', 'NLR');
         $date = $this->option('date');

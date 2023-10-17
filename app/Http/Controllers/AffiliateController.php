@@ -27,10 +27,13 @@ use Bus;
 use Carbon\Carbon;
 use DB;
 use Excel;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\View\View;
 use Log;
 use Session;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class AffiliateController extends Controller
 {
@@ -60,10 +63,8 @@ class AffiliateController extends Controller
 
     /**
      * Will return searched data for affiliates that is compatible with data tables server side processing
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $totalRecords = $totalFiltered = Affiliate::count();
@@ -152,10 +153,8 @@ class AffiliateController extends Controller
 
     /**
      * Server side processing for campaigns tab
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function campaignList(Request $request)
+    public function campaignList(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $affiliateID = $request->user()->affiliate_id;
@@ -344,10 +343,8 @@ class AffiliateController extends Controller
 
     /**
      * Server side process for affiliate website views statistics
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function affiliateWebsiteViewsStatistics(Request $request)
+    public function affiliateWebsiteViewsStatistics(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $inputs['affiliate_id'] = $request->user()->affiliate_id;
@@ -373,7 +370,7 @@ class AffiliateController extends Controller
         return response()->json($responseData, 200);
     }
 
-    public function getRegRevenueBreakdown(Request $request)
+    public function getRegRevenueBreakdown(Request $request): JsonResponse
     {
         $inputs = $request->all();
         // $inputs['affiliate_id'] = $request->user()->affiliate_id;
@@ -399,10 +396,8 @@ class AffiliateController extends Controller
 
     /**
      * Server side process for affiliate statistics
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function affiliateHostedStatistics(Request $request)
+    public function affiliateHostedStatistics(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $inputs['affiliate_id'] = $request->user()->affiliate_id;
@@ -428,7 +423,7 @@ class AffiliateController extends Controller
         return response()->json($responseData, 200);
     }
 
-    public function affiliateWebsiteStatistics(Request $request)
+    public function affiliateWebsiteStatistics(Request $request): JsonResponse
     {
         // DB::enableQueryLog();
         $inputs = $request->all();
@@ -449,10 +444,8 @@ class AffiliateController extends Controller
 
     /**
      * Server side process for affiliate external path revenue statistics
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function externalPathStatistics(Request $request)
+    public function externalPathStatistics(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $inputs['affiliate_id'] = $request->user()->affiliate_id;
@@ -497,7 +490,7 @@ class AffiliateController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function dashboard()
+    public function dashboard(): View
     {
         session(['affiliate_name' => auth()->user()->affiliate_id.' - '.auth()->user()->affiliate->company]);
 
@@ -509,7 +502,7 @@ class AffiliateController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function statistics()
+    public function statistics(): View
     {
         session()->put('campaign_created_ordering', 1);
         $reg_report_email = UserMeta::where('key', 'reg_path_revenue_email_report')->where('user_id', auth()->user()->id)->first();
@@ -517,12 +510,12 @@ class AffiliateController extends Controller
         return view('affiliate.statistics', compact('reg_report_email'));
     }
 
-    public function account()
+    public function account(): View
     {
         return view('affiliate.account');
     }
 
-    public function edit_account()
+    public function edit_account(): View
     {
         //Burt Codes
         $affiliate = Affiliate::find(auth()->user()->affiliate_id);
@@ -577,13 +570,13 @@ class AffiliateController extends Controller
 
     }
 
-    public function change_password()
+    public function change_password(): View
     {
         return view('affiliate.change_password');
     }
 
     //ChangeContactPasswordRequest
-    public function change_password_contact_info(ChangeContactPasswordRequest $request)
+    public function change_password_contact_info(ChangeContactPasswordRequest $request): JsonResponse
     {
 
         $user = User::find($request->input('user_id'));
@@ -637,23 +630,19 @@ class AffiliateController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return Response
      */
-    public function create()
+    public function create(): Response
     {
         //
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @return mixed
      */
     public function store(
         AffiliateRequest $request,
         \App\Http\Services\UserActionLogger $userAction
-    ) {
+    ): JsonResponse {
         $affiliate = new Affiliate;
         $affiliate->company = $request->input('company');
         $affiliate->type = $request->input('type');
@@ -681,36 +670,27 @@ class AffiliateController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
      */
-    public function show($id)
+    public function show(int $id): Response
     {
         //
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
      */
-    public function edit($id)
+    public function edit(int $id): Response
     {
         //
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  Request  $request
-     * @return \Illuminate\Http\JsonResponse
      */
     public function update(
         AffiliateRequest $request,
         \App\Http\Services\UserActionLogger $userAction
-    ) {
+    ): JsonResponse {
         $affiliate = Affiliate::find($request->input('this_id'));
 
         $current_state = $affiliate->toArray(); //For Logging
@@ -766,20 +746,16 @@ class AffiliateController extends Controller
 
     /**
      * Affiliate page route for contacts
-     *
-     * @return \Illuminate\View\View
      */
-    public function contacts()
+    public function contacts(): View
     {
         return view('affiliate.contacts');
     }
 
     /**
      * Affiliate page route for campaigns
-     *
-     * @return \Illuminate\View\View
      */
-    public function campaigns(Request $request)
+    public function campaigns(Request $request): View
     {
         //$campaigns = Campaign::all();
         //$campaigns = Campaign::take(5)->get();
@@ -810,7 +786,7 @@ class AffiliateController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function searchLeads(Request $request)
+    public function searchLeads(Request $request): View
     {
         //this is to determine if fresh visit in order to sort records by created at
         Session::forget('no_visit');
@@ -836,10 +812,8 @@ class AffiliateController extends Controller
 
     /**
      * Function of getting the details
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function getLeadDetails($lead_id)
+    public function getLeadDetails($lead_id): JsonResponse
     {
         $data = [];
         //$data['leadDataADV'] = null;
@@ -878,10 +852,8 @@ class AffiliateController extends Controller
 
     /**
      * for revenueStats
-     *
-     * @return \Illuminate\View\View
      */
-    public function revenueStatistics(Request $request)
+    public function revenueStatistics(Request $request): View
     {
         //this is to determine if fresh visit in order to sort records by created at
         Session::forget('no_visit');
@@ -907,10 +879,8 @@ class AffiliateController extends Controller
 
     /**
      * Top 10 campaigns by revenue yesterday
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function topTenCampaignsByRevenueYesterday(Request $request)
+    public function topTenCampaignsByRevenueYesterday(Request $request): JsonResponse
     {
         $yesterday = Carbon::now()->subDay()->toDateString();
         $user = $request->user();
@@ -924,10 +894,8 @@ class AffiliateController extends Controller
 
     /**
      * Top 10 campaigns by revenue from the current week
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function topTenCampaignsByRevenueForCurrentWeek(Request $request)
+    public function topTenCampaignsByRevenueForCurrentWeek(Request $request): JsonResponse
     {
         $currentDate = Carbon::now()->toDateString();
         $user = $request->user();
@@ -941,10 +909,8 @@ class AffiliateController extends Controller
 
     /**
      * Top 10 campaigns by revenue from the current month
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function topTenCampaignsByRevenueForCurrentMonth(Request $request)
+    public function topTenCampaignsByRevenueForCurrentMonth(Request $request): JsonResponse
     {
         $currentDate = Carbon::now()->toDateString();
         $user = $request->user();
@@ -957,10 +923,8 @@ class AffiliateController extends Controller
 
     /**
      * Different lead counts
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function leadCounts(Request $request)
+    public function leadCounts(Request $request): JsonResponse
     {
         $user = $request->user();
 
@@ -981,10 +945,8 @@ class AffiliateController extends Controller
 
     /**
      * Will return active campaigns
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function activeCampaigns(Request $request)
+    public function activeCampaigns(Request $request): JsonResponse
     {
         $user = $request->user();
         $param['affiliate_id'] = $user->affiliate->id;
@@ -996,10 +958,8 @@ class AffiliateController extends Controller
 
     /**
      * Downloading of searched leads
-     *
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public function downloadSearchedLeads()
+    public function downloadSearchedLeads(): BinaryFileResponse
     {
         $leads = session()->get('searched_leads');
         $title = 'SearchedLeads_'.Carbon::now()->toDateString();
@@ -1064,10 +1024,8 @@ class AffiliateController extends Controller
 
     /**
      * For downloading revenue report
-     *
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public function downloadRevenueReport()
+    public function downloadRevenueReport(): BinaryFileResponse
     {
         $leads = session()->get('revenue_leads');
         $title = 'RevenueLeads_'.Carbon::now()->toDateString();
@@ -1138,7 +1096,7 @@ class AffiliateController extends Controller
         return $d && $d->format('Y-m-d') == $date;
     }
 
-    public function status($id)
+    public function status($id): JsonResponse
     {
         $affiliate = Affiliate::find($id);
 
@@ -1267,7 +1225,7 @@ class AffiliateController extends Controller
         return 1;
     }
 
-    public function getWebsites(Request $request)
+    public function getWebsites(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $webData = [];
@@ -1350,10 +1308,8 @@ class AffiliateController extends Controller
 
     /**
      * Affiliate page route for websites
-     *
-     * @return \Illuminate\View\View
      */
-    public function websites()
+    public function websites(): View
     {
         return view('affiliate.websites');
     }
@@ -1372,7 +1328,7 @@ class AffiliateController extends Controller
         return $website;
     }
 
-    public function getAffiliateWebsites(Request $request)
+    public function getAffiliateWebsites(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $webData = [];
@@ -1436,7 +1392,7 @@ class AffiliateController extends Controller
         return response()->json($responseData, 200);
     }
 
-    public function updateAffiliateWebsiteStatus(Request $request)
+    public function updateAffiliateWebsiteStatus(Request $request): JsonResponse
     {
         $affiliate_id = $request->input('affiliate_id');
         $current_status = $request->input('status');
@@ -1450,7 +1406,7 @@ class AffiliateController extends Controller
         ], 200);
     }
 
-    public function getAutocompleteAffiliate(Request $request)
+    public function getAutocompleteAffiliate(Request $request): JsonResponse
     {
         // Log::info($request->all());
         $term = trim($request->input('term'));
@@ -1461,7 +1417,7 @@ class AffiliateController extends Controller
         return response()->json($affiliates, 200);
     }
 
-    public function userMetaUpdate(Request $request)
+    public function userMetaUpdate(Request $request): JsonResponse
     {
         $meta = UserMeta::firstOrNew([
             'user_id' => auth()->user()->id,

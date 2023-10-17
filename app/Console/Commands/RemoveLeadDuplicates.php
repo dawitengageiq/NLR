@@ -33,10 +33,8 @@ class RemoveLeadDuplicates extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info(Carbon::now()->toDateTimeString());
         $this->info('Initiating duplicate removal...');

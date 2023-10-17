@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\PrepopStatistic;
 use Cache;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Log;
 use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class PrepopStatisticsController extends Controller
 {
@@ -19,10 +21,8 @@ class PrepopStatisticsController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $inputs = $request->all();
         /*
@@ -270,10 +270,8 @@ class PrepopStatisticsController extends Controller
 
     /**
      *  Prepop Statistics download
-     *
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public function downloadPrepopStatisticsReport(Request $request)
+    public function downloadPrepopStatisticsReport(Request $request): BinaryFileResponse
     {
         $inputs = $request->all();
         // \Log::info($inputs);
@@ -540,7 +538,7 @@ class PrepopStatisticsController extends Controller
         exit('There is problem generating the spreadsheet file please regenerate the data!');
     }
 
-    public function getprepopReportStats(Request $request)
+    public function getprepopReportStats(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $columns = [

@@ -35,10 +35,8 @@ class UpdateCampaignPayoutJob extends Job implements ShouldQueue
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         Log::info('Update Campaign Payout Job Process');
         Log::info($this->file);

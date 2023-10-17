@@ -23,6 +23,7 @@ use Carbon\Carbon;
 use Curl\Curl;
 use DB;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Log;
 
@@ -40,20 +41,16 @@ class LeadController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @return Response
      */
-    public function index()
+    public function index(): Response
     {
         //
     }
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return Response
      */
-    public function create()
+    public function create(): Response
     {
         //
     }
@@ -61,11 +58,10 @@ class LeadController extends Controller
     /**
      * Send pending leads (old with cap checker)
      *
-     * @return \Illuminate\Http\JsonResponse
      *
      * @throws \ErrorException
      */
-    public function sendPendingLeads(Settings $settings)
+    public function sendPendingLeads(Settings $settings): JsonResponse
     {
         // Get the number of leads
         $numberOfLeads = $settings->getValue('num_leads_to_process_for_send_pending_leads');
@@ -527,10 +523,7 @@ class LeadController extends Controller
         }
     }
 
-    /**
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function updateLeadsToPendingStatus($strLeadIDs, Request $request)
+    public function updateLeadsToPendingStatus($strLeadIDs, Request $request): JsonResponse
     {
         $inputs = $request->all();
         $tableName = isset($inputs['table']) ? $inputs['table'] : '';
@@ -667,10 +660,8 @@ class LeadController extends Controller
      * This function resets the lead counter
      *
      * @param  null  $affiliateID
-     * @param  string  $capType
-     * @return LeadCount
      */
-    public function executeReset($campaignCounts, $campaignID, $affiliateID = null, $capType = 'Unlimited')
+    public function executeReset($campaignCounts, $campaignID, $affiliateID = null, string $capType = 'Unlimited'): LeadCount
     {
         //reset the counter if it's time to reset already
         if ($campaignCounts == null) {

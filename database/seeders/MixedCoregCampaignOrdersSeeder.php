@@ -12,10 +12,8 @@ class MixedCoregCampaignOrdersSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         $mixeCoregTypes = config('constants.MIXED_COREG_TYPE_FOR_ORDERING');
         $revenueTrackers = AffiliateRevenueTracker::select('revenue_tracker_id')->get();

@@ -46,10 +46,8 @@ class SendUserOneTrustEmailJob extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Sends user the email for the request type they have...');
 

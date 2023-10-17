@@ -134,10 +134,8 @@ class CakeConversion extends Model
 
     /**
      * Date validation
-     *
-     * @return bool
      */
-    protected function validateDate($date)
+    protected function validateDate($date): bool
     {
         $d = DateTime::createFromFormat('Y-m-d', $date);
 

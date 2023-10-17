@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\BannedAttempt;
 use Carbon\Carbon;
 use Excel;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class BannedAttemptController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $inputs = $request->all();
         // \Log::info($inputs);
@@ -141,7 +143,7 @@ class BannedAttemptController extends Controller
         return response()->json($responseData, 200);
     }
 
-    public function download()
+    public function download(): BinaryFileResponse
     {
         $inputs = session()->get('banned_attempt_input');
 

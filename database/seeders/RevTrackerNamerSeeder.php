@@ -8,10 +8,8 @@ class RevTrackerNamerSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         // $affiliates = \App\AffiliateRevenueTracker::groupBy('affiliate_id')->pluck('affiliate_id');
         // foreach($affiliates as $aff_id) {

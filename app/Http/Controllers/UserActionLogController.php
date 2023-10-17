@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Resources\Resource;
 use App\Resources\UserActionLogDatatable as ResourceCollection;
 use App\Resources\UserActionLogDetailsDatatable as ResourceDetalsCollection;
 use App\UserActionLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class UserActionLogController extends Controller
 {
@@ -34,10 +36,8 @@ class UserActionLogController extends Controller
 
     /**
      * Get all records
-     *
-     * @return App\Resources\Resource
      */
-    public function all(Request $request, UserActionLog $userLog)
+    public function all(Request $request, UserActionLog $userLog): Resource
     {
         $this->additional = ['type' => 'UserActionLogAll'];
 
@@ -73,11 +73,8 @@ class UserActionLogController extends Controller
 
     /**
      * Get records by section id
-     *
-     * @param  int  $sectionID
-     * @return App\Resources\Resource
      */
-    public function get(Request $request, UserActionLog $userLog, $sectionID)
+    public function get(Request $request, UserActionLog $userLog, int $sectionID): Resource
     {
         $this->additional = ['type' => 'UserActionLogBySection'];
 
@@ -123,12 +120,8 @@ class UserActionLogController extends Controller
 
     /**
      * Get records by section id and reference id
-     *
-     * @param  int  $sectionID
-     * @param  int  $referenceID
-     * @return App\Resources\Resource
      */
-    public function getByReference(Request $request, UserActionLog $userLog, $sectionID, $referenceID)
+    public function getByReference(Request $request, UserActionLog $userLog, int $sectionID, int $referenceID): Resource
     {
         $this->additional = ['type' => 'UserActionLogByReference'];
 
@@ -174,14 +167,8 @@ class UserActionLogController extends Controller
 
     /**
      * Get records by section id, reference id and user action
-
-     *
-     * @param  int  $sectionID
-     * @param  int  $referenceID
-     * @param  string  $action
-     * @return App\Resources\Resource
      */
-    public function details(Request $request, UserActionLog $userLog, $sectionID, $referenceID, $action)
+    public function details(Request $request, UserActionLog $userLog, int $sectionID, int $referenceID, string $action): Resource
     {
         $this->additional = ['type' => 'UserActionLogDetails'];
 
@@ -238,12 +225,8 @@ class UserActionLogController extends Controller
 
     /**
      *  Check if the arguments is valid
-     *
-     * @param  array  $args
-     * @param  string|null  $url
-     * @return bool
      */
-    protected function isInvalid($args, $url = null)
+    protected function isInvalid(array $args, string $url = null): bool
     {
         foreach ($args as $required => $method) {
             if (method_exists($this, camelCase($method))) {
@@ -258,12 +241,8 @@ class UserActionLogController extends Controller
 
     /**
      * Check arguments is numeric.
-     *
-     * @param  int  $required
-     * @param  string  $url
-     * @return bool
      */
-    protected function isNumeric($required, $url)
+    protected function isNumeric(int $required, string $url): bool
     {
         if (! is_numeric($required)) {
             $this->additional = array_merge($this->additional, [
@@ -280,12 +259,8 @@ class UserActionLogController extends Controller
 
     /**
      * Check records is empty.
-     *
-     * @param  bool  $isEmpty
-     * @param  string  $message
-     * @return bool
      */
-    protected function isEmpty($isEmpty, $message)
+    protected function isEmpty(bool $isEmpty, string $message): bool
     {
         if ($isEmpty) {
             $this->additional = array_merge($this->additional, ['message' => $message]);
@@ -299,13 +274,9 @@ class UserActionLogController extends Controller
     /**
      * Format...
      *
-     * @param  bool  $isEmpty
      * @param  Illuminate\Database\Eloquent\Collection|Illuminate\Support\Collection  $activities
-     * @param  int  $sectionID
-     * @param  string  $action
-     * @return Illuminate\Support\Collection
      */
-    protected function formatRecords($isEmpty, $activities, $sectionID, $action)
+    protected function formatRecords(bool $isEmpty, $activities, int $sectionID, string $action): Collection
     {
         if ($isEmpty || strtolower($action) == 'update') {
             return $activities;

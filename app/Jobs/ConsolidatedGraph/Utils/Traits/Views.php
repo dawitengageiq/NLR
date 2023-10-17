@@ -6,20 +6,16 @@ trait Views
 {
     /**
      * Value for exit page views.
-     *
-     * @param  string  $idx
      */
-    protected function lspViews($idx)
+    protected function lspViews(string $idx)
     {
         $this->consolidatedData->$idx = $this->params['exit_page_views'];
     }
 
     /**
      * Value for mp per views.
-     *
-     * @param  string  $idx
      */
-    protected function mpPerViews($idx)
+    protected function mpPerViews(string $idx)
     {
         if (! array_key_exists('pd_revenue', $this->params)) {
             $this->params['pd_revenue'] = 0;

@@ -13,8 +13,10 @@ use Bus;
 use Carbon\Carbon;
 use DB;
 use Excel;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Log;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class RevenueTrackerController extends Controller
 {
@@ -39,10 +41,8 @@ class RevenueTrackerController extends Controller
 
     /**
      * Server side data table processing for revenue trackers
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $inputs = $request->all();
         $revenueTrackersData = [];
@@ -167,10 +167,8 @@ class RevenueTrackerController extends Controller
 
     /**
      * Store a newly created revenue tracker resource in storage.
-     *
-     * @return mixed
      */
-    public function store(RevenueTrackerRequest $request)
+    public function store(RevenueTrackerRequest $request): JsonResponse
     {
         // \Log::info($request->all());
         $crg_limit = $request->input('crg_limit') == null ? null : $request->input('crg_limit');
@@ -357,7 +355,7 @@ class RevenueTrackerController extends Controller
         $tracker->delete();
     }
 
-    public function campaignOrderDetails($id)
+    public function campaignOrderDetails($id): JsonResponse
     {
         // $campaign_orders = CampaignTypeOrder::where('revenue_tracker_id', $id)->pluck('campaign_id_order','campaign_type_id');
         $reference_dates = [];
@@ -416,7 +414,7 @@ class RevenueTrackerController extends Controller
         return response()->json($responseData, 200);
     }
 
-    public function updateCampaignOrder(Request $request)
+    public function updateCampaignOrder(Request $request): JsonResponse
     {
         $inputs = $request->all();
         // Log::info($inputs);
@@ -577,7 +575,7 @@ class RevenueTrackerController extends Controller
         return $art_id;
     }
 
-    public function download()
+    public function download(): BinaryFileResponse
     {
         $inputs = session()->get('revenue_trackers_input');
         $param = $inputs['search']['value'];
@@ -688,7 +686,7 @@ class RevenueTrackerController extends Controller
         }
     }
 
-    public function getRevenueTrackersWithExitPageDataTable(Request $request)
+    public function getRevenueTrackersWithExitPageDataTable(Request $request): JsonResponse
     {
         $inputs = $request->all();
         // Log::info($inputs);

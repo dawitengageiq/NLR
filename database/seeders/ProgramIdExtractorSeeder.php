@@ -9,10 +9,8 @@ class ProgramIdExtractorSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         $campaigns = Campaign::whereIn('campaign_type', [1, 2, 3, 7, 8, 9, 10, 11, 12])->pluck('name', 'id');
 

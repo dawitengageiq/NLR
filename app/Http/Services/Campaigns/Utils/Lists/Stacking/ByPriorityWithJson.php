@@ -23,10 +23,8 @@ class ByPriorityWithJson
     /**
      * Stack the qualified campaign
      * Called from App\Http\Services\Campaigns\Factories\ListsFactory
-     *
-     * @param  collection  $campaign
      */
-    public function insertIntoStack($campaign)
+    public function insertIntoStack(collection $campaign)
     {
         // Mixed Coregs
         if (in_array($campaign->campaign_type, array_keys(Config::get('constants.MIXED_COREG_TYPE_FOR_ORDERING')))) {
@@ -52,10 +50,8 @@ class ByPriorityWithJson
 
     /**
      * Stack the qualified campaign coregs
-     *
-     * @param  collection  $campaign
      */
-    protected function stackCampaignCoreg($campaign)
+    protected function stackCampaignCoreg(collection $campaign)
     {
         // Pre populate
         if (! array_key_exists($campaign->campaign_type, $this->lists)) {
@@ -72,11 +68,10 @@ class ByPriorityWithJson
     /**
      * Stack the qualified campaign other coregs and exit page
      *
-     * @param  collection  $campaign
      *
      * @var array lists
      */
-    protected function stackOtherCampaigns($campaign)
+    protected function stackOtherCampaigns(collection $campaign)
     {
         // Pre populate
         if (! array_key_exists($campaign->campaign_type, $this->lists)) {
@@ -92,10 +87,8 @@ class ByPriorityWithJson
 
     /**
      * Stack the qualified campaign externals and long forms
-     *
-     * @param  collection  $campaign
      */
-    protected function stackExternalAndLongFormCampaign($campaign)
+    protected function stackExternalAndLongFormCampaign(collection $campaign)
     {
         $key = 0;
         //1 Display per Page: External, Long Form (1st Grp) & (2nd Grp)

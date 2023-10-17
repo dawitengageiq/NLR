@@ -2,7 +2,7 @@
 
 class ApiTest extends BrowserKitTestCase
 {
-    public function testGetMyTokenAPI()
+    public function testGetMyTokenAPI(): void
     {
         $this->post('/getMyToken',
             [],
@@ -14,7 +14,7 @@ class ApiTest extends BrowserKitTestCase
         $this->assertEquals(200, $this->response->status());
     }
 
-    public function testGetCampaignList()
+    public function testGetCampaignList(): void
     {
         //get the token
         $this->post('/getMyToken',
@@ -29,7 +29,7 @@ class ApiTest extends BrowserKitTestCase
             ->see('Trying to get property of non-object');
     }
 
-    public function testGetFilterQuestion()
+    public function testGetFilterQuestion(): void
     {
         //get the token
         $this->post('/getMyToken',
@@ -47,7 +47,7 @@ class ApiTest extends BrowserKitTestCase
         echo $this->response->getContent();
     }
 
-    public function testGetCampaignContent()
+    public function testGetCampaignContent(): void
     {
         //get the token
         $this->post('/getMyToken',
@@ -62,7 +62,7 @@ class ApiTest extends BrowserKitTestCase
             ->see('Trying to get property of non-object');
     }
 
-    public function testGetCampaignContentPhp()
+    public function testGetCampaignContentPhp(): void
     {
         //get the token
         $this->post('/getMyToken',
@@ -77,7 +77,7 @@ class ApiTest extends BrowserKitTestCase
             ->see('Trying to get property of non-object');
     }
 
-    public function testGetCampaignLongContent()
+    public function testGetCampaignLongContent(): void
     {
         //get the token
         $this->post('/getMyToken',
@@ -92,7 +92,7 @@ class ApiTest extends BrowserKitTestCase
             ->see('Trying to get property of non-object');
     }
 
-    public function testGetStackCampaignContentPhp()
+    public function testGetStackCampaignContentPhp(): void
     {
         //get the token
         $this->post('/getMyToken',
@@ -107,7 +107,7 @@ class ApiTest extends BrowserKitTestCase
             ->see('Trying to get property of non-object');
     }
 
-    public function testGetCampaignStackContent()
+    public function testGetCampaignStackContent(): void
     {
         //get the token
         $this->post('/getMyToken',
@@ -122,7 +122,7 @@ class ApiTest extends BrowserKitTestCase
             ->see('Trying to get property of non-object');
     }
 
-    public function testGetHighPayingListCampaigns()
+    public function testGetHighPayingListCampaigns(): void
     {
         //get the token
         $this->post('/getMyToken',
@@ -137,7 +137,7 @@ class ApiTest extends BrowserKitTestCase
             ->see('Trying to get property of non-object');
     }
 
-    public function testGetHighPayingContent()
+    public function testGetHighPayingContent(): void
     {
         //get the token
         $this->post('/getMyToken',
@@ -152,7 +152,7 @@ class ApiTest extends BrowserKitTestCase
             ->see('Trying to get property of non-object');
     }
 
-    public function testGetHighPayingContentAjax()
+    public function testGetHighPayingContentAjax(): void
     {
         //get the token
         $this->post('/getMyToken',
@@ -167,7 +167,7 @@ class ApiTest extends BrowserKitTestCase
             ->see('Trying to get property of non-object');
     }
 
-    public function testZipChecker()
+    public function testZipChecker(): void
     {
         //get the token
         $this->post('/getMyToken',
@@ -184,7 +184,7 @@ class ApiTest extends BrowserKitTestCase
         $this->assertEquals(200, $this->response->status());
     }
 
-    public function testZipDetails()
+    public function testZipDetails(): void
     {
         //get the token
         $this->post('/getMyToken',

@@ -17,10 +17,8 @@ class GetInternalAffiliatesCompanyIDPair extends Command
 
     /**
      * Execute the command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): int
     {
         $affiliates = Affiliate::select('id', DB::raw('CONCAT(company," (",id,") ") AS affiliate_name'))->where('status', 1)->where('type', 1)->orderBy('company')->pluck('affiliate_name', 'id')->toArray();
 

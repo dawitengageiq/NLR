@@ -9,10 +9,8 @@ class LeadUserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         LeadUser::factory()->count(50)->create();
     }

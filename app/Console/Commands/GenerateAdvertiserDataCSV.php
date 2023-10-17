@@ -38,10 +38,8 @@ class GenerateAdvertiserDataCSV extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $dateFrom = $this->option('from');
         $dateTo = $this->option('to');

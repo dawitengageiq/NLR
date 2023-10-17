@@ -9,12 +9,14 @@ use Curl\Curl;
 use DateTime;
 use DB;
 use Excel;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Log;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class LeadUsersController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $inputs = $request->all();
         session()->put('survey_takers_input', $inputs);
@@ -145,7 +147,7 @@ class LeadUsersController extends Controller
         return response()->json($responseData, 200);
     }
 
-    public function downloadSurveyTakers()
+    public function downloadSurveyTakers(): BinaryFileResponse
     {
         $inputs = session()->get('survey_takers_input');
 

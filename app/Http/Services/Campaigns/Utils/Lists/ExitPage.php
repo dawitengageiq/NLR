@@ -8,11 +8,10 @@ class ExitPage
      * RAndom exit page
      *
      * @param  array  $campaign_stack
-     * @return array
      */
     public function randomID(
         $stack,
-        $index)
+        $index): array
     {
         if (count($stack[$index][0]) == 0) {
             return [0 => []];

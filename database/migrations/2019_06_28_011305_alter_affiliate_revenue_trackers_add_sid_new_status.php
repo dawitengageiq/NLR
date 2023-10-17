@@ -7,10 +7,8 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('affiliate_revenue_trackers', function (Blueprint $table) {
             $table->boolean('new_subid_breakdown_status')->nullable();
@@ -20,10 +18,8 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('affiliate_revenue_trackers', function (Blueprint $table) {
             $table->dropColumn(['new_subid_breakdown_status', 'report_subid_breakdown_status']);

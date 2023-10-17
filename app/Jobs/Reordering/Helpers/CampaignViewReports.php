@@ -19,7 +19,7 @@ class CampaignViewReports
      *
      * @var  coleection
      */
-    public function set($campaignViewReports)
+    public function set(eloquentCollection $campaignViewReports)
     {
         $this->campaignViewReports = $campaignViewReports;
     }
@@ -39,7 +39,7 @@ class CampaignViewReports
      *
      * @return yield
      */
-    protected function getCampaignViewReport()
+    protected function getCampaignViewReport(): yield
     {
         for ($i = 0; $i < count($this->campaignViewReports); $i++) {
             yield $this->campaignViewReports[$i];
@@ -54,7 +54,7 @@ class CampaignViewReports
      * @param  eloquentCollection  $campaignViewReport
      * @return void
      */
-    protected function saveReset($campaignViewReport)
+    protected function saveReset(eloquentCollection $campaignViewReport): void
     {
         //exempt all inactive and hidden campaigns
         if ($campaignViewReport->campaignInfo->status != 1 && $campaignViewReport->campaignInfo->status != 2) {

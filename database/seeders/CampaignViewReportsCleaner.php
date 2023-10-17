@@ -11,10 +11,8 @@ class CampaignViewReportsCleaner extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         /*// DB::enableQueryLog();
         // $creativeReport = CampaignViewReport::orderBy('revenue_tracker_id','ASC')->orderBy('campaign_id','ASC')->get();

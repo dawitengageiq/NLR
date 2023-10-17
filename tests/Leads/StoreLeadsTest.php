@@ -41,7 +41,7 @@ class StoreLeadsTest extends BrowserKitTestCase
      *
      * @expectedException Exception
      */
-    public function check_if_leadCreate_method_is_called_when_calling_proceedtosave_method()
+    public function check_if_leadCreate_method_is_called_when_calling_proceedtosave_method(): void
     {
         $leadData = $this->getMock(\App\Helpers\Repositories\LeadData::class);
         $leadIn = $this->getMockbuilder('App\Helpers\Repositories\LeadInterface')

@@ -38,7 +38,7 @@ class IframeAffiliateReports extends Job implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(AffiliateReportCurl $affiliateReportCurl)
+    public function handle(AffiliateReportCurl $affiliateReportCurl): void
     {
         if ($this->attempts() > 1) {
             return;
@@ -375,10 +375,8 @@ class IframeAffiliateReports extends Job implements ShouldQueue
 
     /**
      * Handle a job failure.
-     *
-     * @return void
      */
-    public function failed()
+    public function failed(): void
     {
         //job failed
         Log::info('IframeAffiliateReports Failed! - '.Carbon::now()->toDateTimeString());

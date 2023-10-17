@@ -4,16 +4,15 @@ namespace App\Http\Middleware;
 
 use App\Helpers\TokenHelper;
 use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class ReturnErrorIfAPIError
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
         //get the token
         $userData = $request->header('leadreactortoken');

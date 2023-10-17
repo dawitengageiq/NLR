@@ -3,6 +3,7 @@
 namespace App\Helpers\auth;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
 trait CustomRegistersUsers
@@ -11,20 +12,16 @@ trait CustomRegistersUsers
 
     /**
      * Show the application registration form.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function getRegister()
+    public function getRegister(): Response
     {
         return view('auth.register');
     }
 
     /**
      * Handle a registration request for the application.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function postRegister(Request $request)
+    public function postRegister(Request $request): Response
     {
         $validator = $this->validator($request->all());
 

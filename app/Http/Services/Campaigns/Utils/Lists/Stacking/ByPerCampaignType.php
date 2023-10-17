@@ -30,10 +30,8 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
      * Primary: get the mix coreg order, if not available
      * Order by priority(set in query params)
      * Set limit that was provided in service provider
-     *
-     * @param  array  $param
      */
-    public function setOrderAndLimits($param)
+    public function setOrderAndLimits(array $param)
     {
         [$limit, $revenueTrackerLimit, $revenueTrackerID, $campaignTypeOrder] = $param;
 
@@ -50,10 +48,8 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
 
     /**
      * Check has ordering
-     *
-     * @return bool
      */
-    public function hasOrder()
+    public function hasOrder(): bool
     {
         if ($this->ordering->hasOrder()) {
             $this->orderType = 'Campaign Type';
@@ -66,10 +62,8 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
 
     /**
      * Get what type of ordering was used
-     *
-     * @return bool
      */
-    public function orderType()
+    public function orderType(): bool
     {
         return $this->orderType;
     }
@@ -77,11 +71,10 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
     /**
      * Stack the qualified campaign coregs
      *
-     * @param  collection  $campaign
      *
      * @var array
      */
-    protected function stackCampaignCoreg($campaign)
+    protected function stackCampaignCoreg(collection $campaign)
     {
         // Pre populate
         if (! array_key_exists($campaign->campaign_type, $this->stack)) {
@@ -105,11 +98,10 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
     /**
      * Stack the qualified campaign  other coregs and exit page
      *
-     * @param  collection  $campaign
      *
      * @var array
      */
-    protected function stackOtherCampaigns($campaign)
+    protected function stackOtherCampaigns(collection $campaign)
     {
         if ($this->limit->exceed($campaign->campaign_type)) {
             return;
@@ -136,10 +128,8 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
 
     /**
      * Implement mix coreg order
-     *
-     * @param  int  $campaignID
      */
-    protected function stackByCampaignTypeOrder($campaignID, $campaignType, $lastSet)
+    protected function stackByCampaignTypeOrder(int $campaignID, $campaignType, $lastSet)
     {
         if ($this->ordering->campaignIdExists($campaignID)) {
             // Populate

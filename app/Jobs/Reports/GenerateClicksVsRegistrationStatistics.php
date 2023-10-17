@@ -33,7 +33,7 @@ class GenerateClicksVsRegistrationStatistics extends Job implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(AffiliateReportCurl $affiliateReportCurl)
+    public function handle(AffiliateReportCurl $affiliateReportCurl): void
     {
         $revenueTrackers = AffiliateRevenueTracker::where('offer_id', '!=', 1)->get();
 

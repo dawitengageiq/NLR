@@ -15,7 +15,7 @@ class Calculate
      *
      * @param  array  $campaignOrder
      */
-    public function setCampaignOrder($campaignOrder)
+    public function setCampaignOrder(array $campaignOrder)
     {
         $this->campaignOrder = $campaignOrder;
     }
@@ -25,7 +25,7 @@ class Calculate
      *
      * @return array
      */
-    public function getOrders()
+    public function getOrders(): array
     {
         return $this->orders;
     }
@@ -35,7 +35,7 @@ class Calculate
      *
      * @param  eloquentCollection  $leads
      */
-    public function revenuePerViews($leads)
+    public function revenuePerViews(eloquentCollection $leads)
     {
         $this->orders = iterator_to_array($this->getCalculation($leads));
     }
@@ -45,7 +45,7 @@ class Calculate
      *
      * @return yield
      */
-    protected function getCalculation($leads)
+    protected function getCalculation($leads): yield
     {
         for ($i = 0; $i < count($this->campaignOrder); $i++) {
             $campaignID = $this->campaignOrder[$i];
@@ -60,7 +60,7 @@ class Calculate
      * @param  eloquentCollection  $leads
      * @return float|int
      */
-    protected function calculate($campaignID, $leads)
+    protected function calculate(int $campaignID, eloquentCollection $leads)
     {
         if (array_key_exists($campaignID, $leads->toArray())) {
             if ($leads[$campaignID]->campaignViewReport->current_view_count <= 0

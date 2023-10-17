@@ -12,9 +12,8 @@ class LimitMixCoregByPathType
      * Apply the revenue tracker limit for coreg
      *
      * @param  array  $stacks
-     * @return array
      */
-    public function apply($param)
+    public function apply($param): array
     {
         [$stacks, $pathLimit, $revenueTrackerLimit] = $param;
 
@@ -29,11 +28,8 @@ class LimitMixCoregByPathType
 
     /**
      * Apply the revenue tracker limit for coreg
-     *
-     * @param  array  $stacks
-     * @return array
      */
-    protected function applyPathTypeLimitThenFirstLevelLimit($stacks, $revLimit)
+    protected function applyPathTypeLimitThenFirstLevelLimit(array $stacks, $revLimit): array
     {
         //if(!$this->hasPathLimit && !$revLimit) return $stacks;
 
@@ -67,11 +63,9 @@ class LimitMixCoregByPathType
     /**
      * Apply campaign path type limit
      *
-     * @param  array  $stacks
      * @param  array  $coregTypes
-     * @return array
      */
-    protected function applyPathTypeLimit($stacks, $coregType)
+    protected function applyPathTypeLimit(array $stacks, $coregType): array
     {
         if ($this->hasPathLimit) {
             if ($limit = $this->pathLimit[$coregType]) {
@@ -87,13 +81,8 @@ class LimitMixCoregByPathType
 
     /**
      * Remove excess campaign ids due to limit
-     *
-     * @param  array  $stacks
-     * @param  array  $tempArray
-     * @param  array  $coregTypes
-     * @return array
      */
-    protected function removeExcessIDs($stacks, $tempArray, $coregTypes)
+    protected function removeExcessIDs(array $stacks, array $tempArray, array $coregTypes): array
     {
         foreach ($stacks as $idx => $stack) {
             if (in_array($idx, $coregTypes)) {

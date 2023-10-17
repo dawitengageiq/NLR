@@ -22,10 +22,8 @@ class GetAvailableUsers extends Command
 
     /**
      * Get users not existing to the table $db.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         return User::leftJoin($this->db, 'users.id', '=', $this->db.'.id')
             ->where('account_type', 1)

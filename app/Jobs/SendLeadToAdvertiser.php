@@ -32,7 +32,7 @@ class SendLeadToAdvertiser extends Job implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(LeadData $leadData)
+    public function handle(LeadData $leadData): void
     {
         if ($this->attempts() > 1) {
             return;
@@ -221,11 +221,8 @@ class SendLeadToAdvertiser extends Job implements ShouldQueue
 
     /**
      * Sending of lead
-     *
-     * @param  int  $retry
-     * @return bool
      */
-    protected function sendLead($postHeader, $postMethod, $advertiserURL, $postSuccess, $leadData, $retry = 0)
+    protected function sendLead($postHeader, $postMethod, $advertiserURL, $postSuccess, $leadData, int $retry = 0): bool
     {
         $isLeadSuccess = false;
 
@@ -335,10 +332,8 @@ class SendLeadToAdvertiser extends Job implements ShouldQueue
 
     /**
      * Cap checker
-     *
-     * @return bool
      */
-    protected function checkCap($lead, $campaignCounts, $campaignAffiliateCounts)
+    protected function checkCap($lead, $campaignCounts, $campaignAffiliateCounts): bool
     {
         //get the cap limit for campaign and affiliate campaign
         $campaignCapDetails = Campaign::getCapDetails($lead->campaign_id)->first();
@@ -437,10 +432,8 @@ class SendLeadToAdvertiser extends Job implements ShouldQueue
      * This function resets the lead counter
      *
      * @param  null  $affiliateID
-     * @param  string  $capType
-     * @return LeadCount
      */
-    protected function executeReset($campaignCounts, $campaignID, $affiliateID = null, $capType = 'Unlimited')
+    protected function executeReset($campaignCounts, $campaignID, $affiliateID = null, string $capType = 'Unlimited'): LeadCount
     {
         //reset the counter if it's time to reset already
         if ($campaignCounts == null) {

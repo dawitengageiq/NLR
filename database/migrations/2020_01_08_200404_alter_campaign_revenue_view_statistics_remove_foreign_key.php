@@ -7,10 +7,8 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('campaign_revenue_view_statistics', function (Blueprint $table) {
             $table->dropForeign('campaign_revenue_view_statistics_campaign_id_foreign');
@@ -19,10 +17,8 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('campaign_revenue_view_statistics', function (Blueprint $table) {
             $table->foreign('campaign_id')->references('id')->on('campaigns')->onDelete('cascade');

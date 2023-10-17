@@ -12,20 +12,16 @@ class ChangeContactPasswordRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         Validator::extend('old_password_match', function ($attribute, $value, $parameters) {
 
@@ -60,7 +56,7 @@ class ChangeContactPasswordRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'old_password.old_password_match' => 'Old password that you have provided did not match to the current password. <div id="attempt" style=visibility:hidden>'.Session::get('changePasswordAttempt').'</div>',

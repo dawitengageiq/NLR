@@ -6,14 +6,8 @@ trait Revenue
 {
     /**
      * Set rvenue to override default value of revenues container : @var $revenues
-     *
-     * @param  string  $indx
-     * @param  int  $value
-     * @param  string  $env
-     * @param  int  $subtrahend
-     * @return void
      */
-    protected function setRevenue($indx, $value, $env, $subtrahend = 0)
+    protected function setRevenue(string $indx, int $value, string $env, int $subtrahend = 0): void
     {
         if (! $env) {
             $this->revenues[$indx] = $value;
@@ -33,21 +27,16 @@ trait Revenue
 
     /**
      * Value for cpa revenue.
-     *
-     * @param  string  $idx
      */
-    protected function cpaRevenue($idx)
+    protected function cpaRevenue(string $idx)
     {
         $idx = number_format($this->params['cpa_revenue'], 3, '.', '');
     }
 
     /**
      * Value for coreg page 3 revenue per views.
-     *
-     * @param  string  $idx
-     * @return void
      */
-    protected function allMpRevenue($idx)
+    protected function allMpRevenue(string $idx): void
     {
         if (! array_key_exists('pd_revenue', $this->params)) {
             $this->params['pd_revenue'] = 0;
@@ -74,10 +63,8 @@ trait Revenue
 
     /**
      * All coreg revenue
-     *
-     * @param  string  $idx
      */
-    protected function allCoregRevenue($idx)
+    protected function allCoregRevenue(string $idx)
     {
         if (! array_key_exists('coreg_p1_revenue', $this->params)) {
             $this->params['coreg_p1_revenue'] = 0;

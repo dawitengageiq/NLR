@@ -78,7 +78,7 @@ class CampaignListRequest extends FormRequest
     /**
      * Empty the rules for we are not using the default validation
      */
-    public function rules()
+    public function rules(): array
     {
         return [];
     }
@@ -86,10 +86,8 @@ class CampaignListRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      * Since its a pre process, process some functions.
-     *
-     * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         if ($this->incompleteRequestData()) {
             throw new CampaignListsResolverException('incomplete_parameters');
@@ -109,10 +107,8 @@ class CampaignListRequest extends FormRequest
 
     /**
      * Retrieve user details
-     *
-     * @return array
      */
-    public function userDetails()
+    public function userDetails(): array
     {
         return $this->userDetails;
     }
@@ -189,11 +185,8 @@ class CampaignListRequest extends FormRequest
      * when showing offers, we use the php pre define function:eval().
      *
      * @method sanitize
-     *
-     * @param  string  $data
-     * @return string
      */
-    protected function sanitize($data)
+    protected function sanitize(string $data): string
     {
         if (! is_array($data)) {
             $data = preg_replace('[ \t\r]', '', $data);
@@ -218,10 +211,8 @@ class CampaignListRequest extends FormRequest
 
     /**
      * Check request data is complete.
-     *
-     * @return bolean
      */
-    protected function incompleteRequestData()
+    protected function incompleteRequestData(): bolean
     {
         collect($this->required)->each(function ($required) {
             if (! $this->get($required)) {

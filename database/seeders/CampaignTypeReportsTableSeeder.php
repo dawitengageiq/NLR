@@ -8,10 +8,8 @@ class CampaignTypeReportsTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         $campaignTypes = config('constants.CAMPAIGN_TYPES');
 

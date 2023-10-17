@@ -6,7 +6,10 @@ use App\ClickLogTraceInfo;
 use Carbon\Carbon;
 use DB;
 use Excel;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ClickLogTraceInfoController extends Controller
 {
@@ -18,20 +21,16 @@ class ClickLogTraceInfoController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(): View
     {
         return view('admin.click_logs_report');
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function get(Request $request)
+    public function get(Request $request): JsonResponse
     {
         $inputs = $request->all();
         // \Log::info($inputs);
@@ -100,7 +99,7 @@ class ClickLogTraceInfoController extends Controller
         return response()->json($responseData, 200);
     }
 
-    public function download()
+    public function download(): BinaryFileResponse
     {
         $inputs = session()->get('click_log_trace_info_input');
 

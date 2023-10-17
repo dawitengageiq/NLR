@@ -32,10 +32,8 @@ trait SendLeadsTrait
 
     /**
      * transform query string into array
-     *
-     * @return key=>value
      */
-    protected function getLeadsForValidator()
+    protected function getLeadsForValidator(): key
     {
         $this->qry = $this->leads;
         //string must contain at least one = and cannot be in first position

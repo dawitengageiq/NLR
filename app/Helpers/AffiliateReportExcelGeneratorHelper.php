@@ -10,10 +10,12 @@ use App\Campaign;
 use App\RevenueTrackerCakeStatistic;
 use DB;
 use File;
+use Illuminate\Http\JsonResponse;
 use Log;
 use Maatwebsite\Excel\Facades\Excel;
 use PHPExcel_Cell_DataType;
 use Storage;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class AffiliateReportExcelGeneratorHelper
 {
@@ -85,9 +87,8 @@ class AffiliateReportExcelGeneratorHelper
      * @param  Request  $request
      * @param $affiliate_type
      * @param $snapshot_period
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function generate()
+    public function generate(): JsonResponse
     {
         DB::enableQueryLog();
         if (! $this->noSimilarRunningJob()) {
@@ -1156,9 +1157,8 @@ class AffiliateReportExcelGeneratorHelper
      * Downloading of generated file.
      *
      * @param  Request  $request
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public function download()
+    public function download(): BinaryFileResponse
     {
         $fileNameToDownload = $this->getFullFileName();
         $filePathToDownload = storage_path('downloads')."/$fileNameToDownload";

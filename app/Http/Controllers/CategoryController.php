@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Category;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -61,10 +62,9 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(int $id)
     {
         //
     }
@@ -72,10 +72,9 @@ class CategoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(int $id)
     {
         //
     }
@@ -122,10 +121,8 @@ class CategoryController extends Controller
 
     /**
      * This will determine if certain advertiser is active.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function status($id)
+    public function status($id): JsonResponse
     {
         $category = Category::find($id);
 
