@@ -27,7 +27,8 @@
         "laravelcollective/remote": "^6.0",
         "league/flysystem-sftp": "^1.0",
         "laravel/tinker": "^2.5",
-        "fideloper/proxy": "^4.4"
+        "fideloper/proxy": "^4.4",
+        "laravel/ui": "^2.0"
     },
     "require-dev": {
         "mockery/mockery": "~1.0",
