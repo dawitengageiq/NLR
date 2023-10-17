@@ -124,7 +124,6 @@ class AffiliateReportCurl implements AffiliateReportCurlInterface
     /**
      * Campaign Summary API function that will return campaigns data from cake. This is for CPA Wall deductions
      *
-     * @return array
      *
      * @throws \Sabre\Xml\LibXMLException
      */
@@ -234,8 +233,6 @@ class AffiliateReportCurl implements AffiliateReportCurlInterface
 
     /**
      * Click reports from Cake
-     *
-     * @return array|null
      */
     public function clicksReport($clicksReportBaseURL, $prefix, $affiliateID, $campaignID, $dateFromStr, $dateToStr): ?array
     {

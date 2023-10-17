@@ -17,8 +17,6 @@ trait AuthenticatesUsers
 
     /**
      * Show the application login form.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function getLogin(): Response
     {
@@ -31,8 +29,6 @@ trait AuthenticatesUsers
 
     /**
      * Handle a login request to the application.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function postLogin(Request $request): Response
     {
@@ -83,9 +79,6 @@ trait AuthenticatesUsers
 
     /**
      * Send the response after the user was authenticated.
-     *
-     * @param  bool  $throttles
-     * @return \Illuminate\Http\Response
      */
     protected function handleUserWasAuthenticated(Request $request, bool $throttles): Response
     {
@@ -102,8 +95,6 @@ trait AuthenticatesUsers
 
     /**
      * Get the needed authorization credentials from the request.
-     *
-     * @return array
      */
     protected function getCredentials(Request $request): array
     {
@@ -112,8 +103,6 @@ trait AuthenticatesUsers
 
     /**
      * Get the failed login message.
-     *
-     * @return string
      */
     protected function getFailedLoginMessage(): string
     {
@@ -124,8 +113,6 @@ trait AuthenticatesUsers
 
     /**
      * Log the user out of the application.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function getLogout(): Response
     {
@@ -138,8 +125,6 @@ trait AuthenticatesUsers
 
     /**
      * Get the path to the login route.
-     *
-     * @return string
      */
     public function loginPath(): string
     {
@@ -149,8 +134,6 @@ trait AuthenticatesUsers
 
     /**
      * Get the login username to be used by the controller.
-     *
-     * @return string
      */
     public function loginUsername(): string
     {
@@ -159,8 +142,6 @@ trait AuthenticatesUsers
 
     /**
      * Determine if the class is using the ThrottlesLogins trait.
-     *
-     * @return bool
      */
     protected function isUsingThrottlesLoginsTrait(): bool
     {

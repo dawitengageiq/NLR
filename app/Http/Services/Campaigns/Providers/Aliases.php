@@ -28,8 +28,6 @@ class Aliases extends AliasLoader
 
     /**
      * Set aliases.
-     *
-     * @param  array  $aliases
      */
     public function set(array $aliases)
     {
@@ -57,9 +55,6 @@ class Aliases extends AliasLoader
 
     /**
      * Create aliases for the dependency.
-     *
-     * @param  array  $alias
-     * @param  array  $facade
      */
     public function registerAlias(array $alias, array $facade)
     {

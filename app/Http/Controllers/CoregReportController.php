@@ -311,8 +311,6 @@ class CoregReportController extends Controller
 
     /**
      * Download Excel Report
-     *
-     * @return \Illuminate\Http\Response
      */
     public function download(): BinaryFileResponse
     {

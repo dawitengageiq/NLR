@@ -6,8 +6,6 @@ trait Margin
 {
     /**
      * Process margin.
-     *
-     * @return void
      */
     protected function processMargin(): void
     {

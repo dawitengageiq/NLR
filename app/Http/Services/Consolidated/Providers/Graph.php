@@ -69,8 +69,6 @@ class Graph
 
     /**
      * Bootstrap any application for campaign listing.
-     *
-     * @return void
      */
     protected function execute(): void
     {

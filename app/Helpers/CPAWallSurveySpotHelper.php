@@ -30,8 +30,6 @@ class CPAWallSurveySpotHelper
 
     /**
      * CPAWallSurveySpotHelper constructor
-     *
-     * @param  int  $CPAWALLSurveySpotCampaignID
      */
     public function __construct(int $CPAWALLSurveySpotCampaignID, Carbon $dateFrom, Carbon $dateTo, JSONParser $parser)
     {

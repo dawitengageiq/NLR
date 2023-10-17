@@ -181,7 +181,6 @@ class ConsolidatedGraphController extends Controller
     /**
      * [export2ExcelByDateRange description]
      *
-     * @param  AppHttpServicesConsolidatedUtilsExcel  $excel
      * @return void
      */
     public function export2Excel(
@@ -305,8 +304,6 @@ class ConsolidatedGraphController extends Controller
 
     /**
      * Generate dummy chart
-     *
-     * @return bool
      */
     protected function dummyChart(Request $request): bool
     {
@@ -326,8 +323,6 @@ class ConsolidatedGraphController extends Controller
 
     /**
      * Provide services class with data from request
-     *
-     * @return void
      */
     protected function provideDataFromRequest(Request $request): void
     {
@@ -365,9 +360,6 @@ class ConsolidatedGraphController extends Controller
 
     /**
      * Determine if to apply the legend colors to excel
-     *
-     * @param  string  $chartType
-     * @return bool
      */
     protected function applyLegendsColor(string $chartType): bool
     {
@@ -414,8 +406,6 @@ class ConsolidatedGraphController extends Controller
 
     /**
      * Graph data with all inbox revenue on specific date.
-     *
-     * @param  Request  $request
      */
     protected function setDataForAllInbox(Request $request)
     {
@@ -429,8 +419,6 @@ class ConsolidatedGraphController extends Controller
 
     /**
      * Link for export to excel button
-     *
-     * @return string
      */
     protected function exportlink(Request $request): string
     {
@@ -487,9 +475,6 @@ class ConsolidatedGraphController extends Controller
 
     /**
      * All Inbox revenue
-     *
-     * @param  string  $chartType
-     * @return int
      */
     protected function allInboxRevenue(string $chartType): int
     {
@@ -502,8 +487,6 @@ class ConsolidatedGraphController extends Controller
 
     /**
      * Dtermine if import to excel request parameters are complete.
-     *
-     * @return bool
      */
     protected function hasIncompleteData(Request $request): bool
     {
@@ -537,8 +520,6 @@ class ConsolidatedGraphController extends Controller
 
     /**
      * Redirect page tp graph page.
-     *
-     * @return $this
      */
     protected function redirect($queryString, $errorMessage): static
     {
@@ -551,7 +532,6 @@ class ConsolidatedGraphController extends Controller
      * Request data for redirection
      *
      * @param  string  $msg
-     * @return array
      */
     protected function redirectData($queryString): array
     {
@@ -565,9 +545,6 @@ class ConsolidatedGraphController extends Controller
 
     /**
      * Set legends as header and set the legends with description
-     *
-     * @param  string  $chartType
-     * @return array
      */
     protected function setExcelHeadersAndWithDescription(string $chartType): array
     {

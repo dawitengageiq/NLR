@@ -63,8 +63,6 @@ class AffiliateController extends Controller
 
     /**
      * Will return searched data for affiliates that is compatible with data tables server side processing
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
@@ -155,8 +153,6 @@ class AffiliateController extends Controller
 
     /**
      * Server side processing for campaigns tab
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function campaignList(Request $request): JsonResponse
     {
@@ -347,8 +343,6 @@ class AffiliateController extends Controller
 
     /**
      * Server side process for affiliate website views statistics
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function affiliateWebsiteViewsStatistics(Request $request): JsonResponse
     {
@@ -402,8 +396,6 @@ class AffiliateController extends Controller
 
     /**
      * Server side process for affiliate statistics
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function affiliateHostedStatistics(Request $request): JsonResponse
     {
@@ -452,8 +444,6 @@ class AffiliateController extends Controller
 
     /**
      * Server side process for affiliate external path revenue statistics
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function externalPathStatistics(Request $request): JsonResponse
     {
@@ -640,8 +630,6 @@ class AffiliateController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return Response
      */
     public function create(): Response
     {
@@ -650,8 +638,6 @@ class AffiliateController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @return mixed
      */
     public function store(
         AffiliateRequest $request,
@@ -684,9 +670,6 @@ class AffiliateController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
      */
     public function show(int $id): Response
     {
@@ -695,9 +678,6 @@ class AffiliateController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
      */
     public function edit(int $id): Response
     {
@@ -706,9 +686,6 @@ class AffiliateController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  Request  $request
-     * @return \Illuminate\Http\JsonResponse
      */
     public function update(
         AffiliateRequest $request,
@@ -769,8 +746,6 @@ class AffiliateController extends Controller
 
     /**
      * Affiliate page route for contacts
-     *
-     * @return \Illuminate\View\View
      */
     public function contacts(): View
     {
@@ -779,8 +754,6 @@ class AffiliateController extends Controller
 
     /**
      * Affiliate page route for campaigns
-     *
-     * @return \Illuminate\View\View
      */
     public function campaigns(Request $request): View
     {
@@ -839,8 +812,6 @@ class AffiliateController extends Controller
 
     /**
      * Function of getting the details
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function getLeadDetails($lead_id): JsonResponse
     {
@@ -881,8 +852,6 @@ class AffiliateController extends Controller
 
     /**
      * for revenueStats
-     *
-     * @return \Illuminate\View\View
      */
     public function revenueStatistics(Request $request): View
     {
@@ -910,8 +879,6 @@ class AffiliateController extends Controller
 
     /**
      * Top 10 campaigns by revenue yesterday
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function topTenCampaignsByRevenueYesterday(Request $request): JsonResponse
     {
@@ -927,8 +894,6 @@ class AffiliateController extends Controller
 
     /**
      * Top 10 campaigns by revenue from the current week
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function topTenCampaignsByRevenueForCurrentWeek(Request $request): JsonResponse
     {
@@ -944,8 +909,6 @@ class AffiliateController extends Controller
 
     /**
      * Top 10 campaigns by revenue from the current month
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function topTenCampaignsByRevenueForCurrentMonth(Request $request): JsonResponse
     {
@@ -960,8 +923,6 @@ class AffiliateController extends Controller
 
     /**
      * Different lead counts
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function leadCounts(Request $request): JsonResponse
     {
@@ -984,8 +945,6 @@ class AffiliateController extends Controller
 
     /**
      * Will return active campaigns
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function activeCampaigns(Request $request): JsonResponse
     {
@@ -999,8 +958,6 @@ class AffiliateController extends Controller
 
     /**
      * Downloading of searched leads
-     *
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     public function downloadSearchedLeads(): BinaryFileResponse
     {
@@ -1067,8 +1024,6 @@ class AffiliateController extends Controller
 
     /**
      * For downloading revenue report
-     *
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     public function downloadRevenueReport(): BinaryFileResponse
     {
@@ -1353,8 +1308,6 @@ class AffiliateController extends Controller
 
     /**
      * Affiliate page route for websites
-     *
-     * @return \Illuminate\View\View
      */
     public function websites(): View
     {

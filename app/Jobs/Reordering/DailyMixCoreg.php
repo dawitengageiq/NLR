@@ -15,8 +15,6 @@ class DailyMixCoreg
      * and set the current time.
      *
      * @method __construct
-     *
-     * @param  App\Helpers\Repositories\Settings  $settings
      */
     public function __construct(
         \App\Helpers\Repositories\Settings $settings,
@@ -53,8 +51,6 @@ class DailyMixCoreg
      * If the schedule was set to every minute or hourly, this functions is not needed.
      *
      * @method setRevenueTRrackerID
-     *
-     * @param  int  $revenueTRrackerID
      */
     public function setRevenueTRrackerID(int $revenueTRrackerID)
     {
@@ -63,8 +59,6 @@ class DailyMixCoreg
 
     /**
      * Execute the ordering
-     *
-     * @return void
      */
     public function execute(): void
     {
@@ -141,8 +135,6 @@ class DailyMixCoreg
 
     /**
      * Skip revenue tracker if threshold views not reach
-     *
-     * @return bool
      */
     public function skipThis(): bool
     {

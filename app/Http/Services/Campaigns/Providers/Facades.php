@@ -30,8 +30,6 @@ class Facades
 
     /**
      * Instantiate.
-     *
-     * @param  Illuminate\Foundation\Application  $app
      */
     public function __construct(
         \Illuminate\Foundation\Application $app,
@@ -52,8 +50,6 @@ class Facades
 
     /**
      * Static function.
-     *
-     * @param  Illuminate\Foundation\Application  $app
      */
     public static function bind(\Illuminate\Foundation\Application $app)
     {
@@ -62,8 +58,6 @@ class Facades
 
     /**
      * Register the facade services.
-     *
-     * @return void
      */
     protected function execute(): void
     {
@@ -80,8 +74,6 @@ class Facades
      * Register the aliases
      *
      * @method registerAlias
-     *
-     * @return void
      */
     protected function registerAlias(): void
     {

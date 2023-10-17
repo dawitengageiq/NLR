@@ -10,7 +10,6 @@ trait CakeRevenue
      * Get the last page revenue, use bench mark to determine the campaign id for last page campaign type
      *
      * @param  \App\CakeRevenue|Empty  $cakeRevenue
-     * @return void
      */
     protected function processCakeRevenue($cakeRevenue, $revenueTrackerdID, $exitPageID, $date): void
     {
@@ -31,11 +30,6 @@ trait CakeRevenue
 
     /**
      * Fetch last page revenue
-     *
-     * @param  int  $revenueTrackerdID
-     * @param  int  $exitPageID
-     * @param  string  $date
-     * @return App\CakeRevenue
      */
     public function lastPageRevenue(int $revenueTrackerdID, int $exitPageID, string $date): CakeRevenue
     {

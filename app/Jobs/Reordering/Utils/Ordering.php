@@ -11,8 +11,6 @@ class Ordering
 
     /**
      * Set campaign order from calculate::class
-     *
-     * @param  array  $orders
      */
     public function setOrders(array $orders)
     {
@@ -21,8 +19,6 @@ class Ordering
 
     /**
      * Get the new campaign ids Order
-     *
-     * @return array
      */
     public function getOrders(): array
     {
@@ -31,9 +27,6 @@ class Ordering
 
     /**
      * Determine the type of reordering then reorder
-     *
-     * @param  int  $orderBy
-     * @return void
      */
     public function reorderBy(int $orderBy): void
     {
@@ -59,9 +52,6 @@ class Ordering
 
     /**
      * Random reordering
-     *
-     * @param  array  $array
-     * @return array
      */
     protected function shuffleAssoc(array $array): array
     {

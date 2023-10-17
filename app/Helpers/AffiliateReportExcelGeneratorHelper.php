@@ -87,7 +87,6 @@ class AffiliateReportExcelGeneratorHelper
      * @param  Request  $request
      * @param $affiliate_type
      * @param $snapshot_period
-     * @return \Illuminate\Http\JsonResponse
      */
     public function generate(): JsonResponse
     {
@@ -1158,7 +1157,6 @@ class AffiliateReportExcelGeneratorHelper
      * Downloading of generated file.
      *
      * @param  Request  $request
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     public function download(): BinaryFileResponse
     {

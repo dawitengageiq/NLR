@@ -62,8 +62,6 @@ class CampaignController extends Controller
 
     /**
      * Will return searched data for campaigns that is compatible with data tables server side processing
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
@@ -225,8 +223,6 @@ class CampaignController extends Controller
 
     /**
      * Store newly create campaign
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request): JsonResponse
     {
@@ -1841,8 +1837,6 @@ class CampaignController extends Controller
     /* CAMPAIGN CREATIVES */
     /**
      * Will return campaign's creative combinations that is compatible with data tables server side processing
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function getCampaignCreative(Request $request): JsonResponse
     {
@@ -3332,8 +3326,6 @@ class CampaignController extends Controller
     /* CAMPAIGN CREATIVES */
     /**
      * Will return campaign's creative combinations that is compatible with data tables server side processing
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function getCampaignJsonCreative(Request $request): JsonResponse
     {

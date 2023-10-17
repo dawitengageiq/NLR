@@ -12,8 +12,6 @@ class LeadArchiveController extends Controller
 {
     /**
      * Function of getting the details
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function getLeadDetails($lead_id): JsonResponse
     {

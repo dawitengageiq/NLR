@@ -13,10 +13,6 @@ trait perClicks
 
     /**
      * Division
-     *
-     * @param  string  $idx
-     * @param  float  $dividend
-     * @param  float  $divisor
      */
     protected function perClicks(string $idx, float $dividend, float $divisor)
     {
@@ -30,9 +26,6 @@ trait perClicks
 
     /**
      * Value for revenue per all clicks.
-     *
-     * @param  string  $idx
-     * @return void
      */
     protected function sourceRevenuePerAllClicks(string $idx): void
     {
@@ -53,9 +46,6 @@ trait perClicks
 
     /**
      * Value for survey takers per clicks.
-     *
-     * @param  string  $idx
-     * @return void
      */
     protected function surveyTakersPerClicks(string $idx): void
     {
@@ -76,9 +66,6 @@ trait perClicks
 
     /**
      * Value for cost per clicks.
-     *
-     * @param  string  $idx
-     * @return void
      */
     protected function costPerAllClicks(string $idx): void
     {

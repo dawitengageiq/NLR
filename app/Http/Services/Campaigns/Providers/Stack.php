@@ -47,7 +47,6 @@ class Stack
      * Instantiate.
      *
      *  @param  Illuminate\Foundation\Application  $app
-     *  @param  string  $orderType
      */
     public function __construct(
         \Illuminate\Foundation\Application $app,
@@ -65,7 +64,6 @@ class Stack
      * Static function.
      *
      *  @param  Illuminate\Foundation\Application  $app
-     *  @param  string  $orderType
      */
     public static function bind(
         \Illuminate\Foundation\Application $app,
@@ -87,8 +85,6 @@ class Stack
 
     /**
      * Resolve what limit type to use.
-     *
-     * @return string
      */
     protected function resolveStackType(): string
     {

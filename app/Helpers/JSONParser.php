@@ -94,8 +94,6 @@ class JSONParser
 
     /**
      * Get the response from the server and convert the XML response to an object.
-     *
-     * @return null|\SimpleXMLElement
      */
     public function getXMLResponseObject($url): ?SimpleXMLElement
     {
@@ -119,8 +117,6 @@ class JSONParser
 
     /**
      * Get the response from the server and convert the XML response to an object.
-     *
-     * @return null|\SimpleXMLElement
      */
     public function getXMLResponseNoCDATA($url): ?SimpleXMLElement
     {
@@ -154,8 +150,6 @@ class JSONParser
 
     /**
      * Error code
-     *
-     * @return int
      */
     public function getErrorCode(): int
     {

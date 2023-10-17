@@ -134,8 +134,6 @@ class CakeConversion extends Model
 
     /**
      * Date validation
-     *
-     * @return bool
      */
     protected function validateDate($date): bool
     {

@@ -19,8 +19,6 @@ class GetUserActionPermission extends Command
 
     /**
      * Execute the command.
-     *
-     * @return bool
      */
     public function handle(): int
     {

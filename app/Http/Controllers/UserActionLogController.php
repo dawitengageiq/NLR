@@ -36,8 +36,6 @@ class UserActionLogController extends Controller
 
     /**
      * Get all records
-     *
-     * @return App\Resources\Resource
      */
     public function all(Request $request, UserActionLog $userLog): Resource
     {
@@ -75,9 +73,6 @@ class UserActionLogController extends Controller
 
     /**
      * Get records by section id
-     *
-     * @param  int  $sectionID
-     * @return App\Resources\Resource
      */
     public function get(Request $request, UserActionLog $userLog, int $sectionID): Resource
     {
@@ -125,10 +120,6 @@ class UserActionLogController extends Controller
 
     /**
      * Get records by section id and reference id
-     *
-     * @param  int  $sectionID
-     * @param  int  $referenceID
-     * @return App\Resources\Resource
      */
     public function getByReference(Request $request, UserActionLog $userLog, int $sectionID, int $referenceID): Resource
     {
@@ -176,12 +167,6 @@ class UserActionLogController extends Controller
 
     /**
      * Get records by section id, reference id and user action
-
-     *
-     * @param  int  $sectionID
-     * @param  int  $referenceID
-     * @param  string  $action
-     * @return App\Resources\Resource
      */
     public function details(Request $request, UserActionLog $userLog, int $sectionID, int $referenceID, string $action): Resource
     {
@@ -240,10 +225,6 @@ class UserActionLogController extends Controller
 
     /**
      *  Check if the arguments is valid
-     *
-     * @param  array  $args
-     * @param  string|null  $url
-     * @return bool
      */
     protected function isInvalid(array $args, ?string $url = null): bool
     {
@@ -260,10 +241,6 @@ class UserActionLogController extends Controller
 
     /**
      * Check arguments is numeric.
-     *
-     * @param  int  $required
-     * @param  string  $url
-     * @return bool
      */
     protected function isNumeric(int $required, string $url): bool
     {
@@ -282,10 +259,6 @@ class UserActionLogController extends Controller
 
     /**
      * Check records is empty.
-     *
-     * @param  bool  $isEmpty
-     * @param  string  $message
-     * @return bool
      */
     protected function isEmpty(bool $isEmpty, string $message): bool
     {
@@ -301,11 +274,7 @@ class UserActionLogController extends Controller
     /**
      * Format...
      *
-     * @param  bool  $isEmpty
      * @param  Illuminate\Database\Eloquent\Collection|Illuminate\Support\Collection  $activities
-     * @param  int  $sectionID
-     * @param  string  $action
-     * @return Illuminate\Support\Collection
      */
     protected function formatRecords(bool $isEmpty, $activities, int $sectionID, string $action): Collection
     {

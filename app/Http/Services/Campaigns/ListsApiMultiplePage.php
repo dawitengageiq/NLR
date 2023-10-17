@@ -110,9 +110,6 @@ class ListsApiMultiplePage extends Lists implements \App\Http\Services\Contracts
 
     /**
      * Create qery string, This function is copied from PFR before getting campaign content
-     *
-     * @param  int  $pathType
-     * @return array
      */
     public function buildQueryString(int $pathType): array
     {

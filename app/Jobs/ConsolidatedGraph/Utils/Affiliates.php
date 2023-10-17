@@ -28,8 +28,6 @@ class Affiliates extends \App\Http\Services\Consolidated\Utils\Affiliates
     /**
      * Set benchmarks, benchmarks has campaign id in each campaign type.
      * Use to gather leads for mix coreg 1 and 2.
-     *
-     * @param  array  $benchmarks
      */
     public function setBenchmarks(array $benchmarks)
     {

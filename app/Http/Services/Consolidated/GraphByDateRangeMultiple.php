@@ -95,8 +95,6 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
 
     /**
      * Set the revenue tracker, provided by Controller.
-     *
-     * @param  int  $revenueTrackerIDs
      */
     public function setRevenueTrackerID(int $revenueTrackerIDs)
     {
@@ -113,8 +111,6 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
     /**
      * Set legends, provided by controller from config.consolidatedgraph.legends.
      * We have to set immediatly the counters for generating chart series.
-     *
-     * @param  array  $legends
      */
     public function setLegends(array $legends)
     {
@@ -125,8 +121,6 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
 
     /**
      * Pre define dates, range: Yesterday, Week to date, Month to date, All of last Month
-     *
-     * @param  string  $predefineDates
      */
     public function setPredefineDates(string $predefineDates)
     {
@@ -275,9 +269,6 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
 
     /**
      * Predefine dates Query for yesterday
-     *
-     * @param  Illuminate\Database\Eloquent\Builder  $query
-     * @return Illuminate\Database\Eloquent\Builder
      */
     protected function queryYesterday(Builder $query): Builder
     {
@@ -286,9 +277,6 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
 
     /**
      * Predefine dates Query for week to date
-     *
-     * @param  Illuminate\Database\Eloquent\Builder  $query
-     * @return Illuminate\Database\Eloquent\Builder
      */
     protected function queryWeekToDate(Builder $query): Builder
     {
@@ -298,9 +286,6 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
 
     /**
      * Predefine dates Query for month to date
-     *
-     * @param  Illuminate\Database\Eloquent\Builder  $query
-     * @return Illuminate\Database\Eloquent\Builder
      */
     protected function queryMonthToDate(Builder $query): Builder
     {
@@ -310,9 +295,6 @@ class GraphByDateRangeMultiple extends GraphByDateRange implements \App\Http\Ser
 
     /**
      * Predefine dates Query for all last month
-     *
-     * @param  Illuminate\Database\Eloquent\Builder  $query
-     * @return Illuminate\Database\Eloquent\Builder
      */
     protected function queryLastMonth(Builder $query): Builder
     {

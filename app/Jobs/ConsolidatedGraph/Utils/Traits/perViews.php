@@ -13,10 +13,6 @@ trait perViews
 
     /**
      * Division
-     *
-     * @param  string  $idx
-     * @param  float  $dividend
-     * @param  float  $divisor
      */
     protected function perViews(string $idx, float $dividend, float $divisor)
     {
@@ -35,9 +31,6 @@ trait perViews
 
     /**
      * Value for cpa revenue per views.
-     *
-     * @param  string  $idx
-     * @return void
      */
     protected function cpaRevenuePerViews(string $idx): void
     {
@@ -58,9 +51,6 @@ trait perViews
 
     /**
      * Value for exit page revenue per views.
-     *
-     * @param  string  $idx
-     * @return void
      */
     protected function lspRevenueVsViews(string $idx): void
     {
@@ -81,9 +71,6 @@ trait perViews
 
     /**
      * Value for permission data revenue per views.
-     *
-     * @param  string  $idx
-     * @return void
      */
     protected function pdRevenueVsViews(string $idx): void
     {
@@ -104,9 +91,6 @@ trait perViews
 
     /**
      * Value for tiburon revenue per views.
-     *
-     * @param  string  $idx
-     * @return void
      */
     protected function tbRevenueVsViews(string $idx): void
     {
@@ -136,9 +120,6 @@ trait perViews
 
     /**
      * Value for iffecient revenue per views.
-     *
-     * @param  string  $idx
-     * @return void
      */
     protected function iffRevenueVsViews(string $idx): void
     {
@@ -159,9 +140,6 @@ trait perViews
 
     /**
      * Value for rexadz revenue per views.
-     *
-     * @param  string  $idx
-     * @return void
      */
     protected function rexadzRevenueVsViews(string $idx): void
     {
@@ -182,8 +160,6 @@ trait perViews
 
     /**
      * All coreg revenue per all coreg views
-     *
-     * @param  string  $idx
      */
     protected function allCoregRevenuePerAllCoregViews(string $idx)
     {
@@ -214,9 +190,6 @@ trait perViews
 
     /**
      * Value for coreg page 1 revenue per views.
-     *
-     * @param  string  $idx
-     * @return void
      */
     protected function coregP1RevenueVsViews(string $idx): void
     {
@@ -237,9 +210,6 @@ trait perViews
 
     /**
      * Value for coreg page 2 revenue per views.
-     *
-     * @param  string  $idx
-     * @return void
      */
     protected function coregP2RevenueVsViews(string $idx): void
     {
@@ -260,9 +230,6 @@ trait perViews
 
     /**
      * Value for coreg page 3 revenue per views.
-     *
-     * @param  string  $idx
-     * @return void
      */
     protected function coregP3RevenueVsViews(string $idx): void
     {
@@ -283,9 +250,6 @@ trait perViews
 
     /**
      * Value for coreg page 3 revenue per views.
-     *
-     * @param  string  $idx
-     * @return void
      */
     protected function coregP4RevenueVsViews(string $idx): void
     {

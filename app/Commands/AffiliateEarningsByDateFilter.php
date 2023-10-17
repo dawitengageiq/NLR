@@ -59,8 +59,6 @@ class AffiliateEarningsByDateFilter extends Command
 
     /**
      * Execute the command.
-     *
-     * @return void
      */
     public function handle(): int
     {

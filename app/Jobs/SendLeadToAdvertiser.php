@@ -221,9 +221,6 @@ class SendLeadToAdvertiser extends Job implements ShouldQueue
 
     /**
      * Sending of lead
-     *
-     * @param  int  $retry
-     * @return bool
      */
     protected function sendLead($postHeader, $postMethod, $advertiserURL, $postSuccess, $leadData, int $retry = 0): bool
     {
@@ -335,8 +332,6 @@ class SendLeadToAdvertiser extends Job implements ShouldQueue
 
     /**
      * Cap checker
-     *
-     * @return bool
      */
     protected function checkCap($lead, $campaignCounts, $campaignAffiliateCounts): bool
     {
@@ -437,8 +432,6 @@ class SendLeadToAdvertiser extends Job implements ShouldQueue
      * This function resets the lead counter
      *
      * @param  null  $affiliateID
-     * @param  string  $capType
-     * @return LeadCount
      */
     protected function executeReset($campaignCounts, $campaignID, $affiliateID = null, string $capType = 'Unlimited'): LeadCount
     {

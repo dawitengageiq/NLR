@@ -205,8 +205,6 @@ trait Style
 
     /**
      * Appl the legend colors
-     *
-     * @param  int  $row
      */
     protected function applylegendColors(int $row)
     {

@@ -152,9 +152,6 @@ class RevenueAndViews
      * Instantiate.
      * Provide needed model and Carbon::class.
      * the legends/column for graph was provided from config.
-     *
-     * @param  App\ConsolidatedGraph  $model
-     * @param  Carbon\Carbon  $carbon
      */
     public function __construct(
         ConsolidatedGraph $model,
@@ -179,8 +176,6 @@ class RevenueAndViews
 
     /**
      * Set the campaign types
-     *
-     * @param  array  $campaignTypes
      */
     public function setCampaignTypes(array $campaignTypes)
     {
@@ -204,8 +199,6 @@ class RevenueAndViews
     /**
      * Extract the data from otherTables needed to generate records.
      * Generate the parametrs that will be use to generate records.
-     *
-     * @return array
      */
     public function extractDataFromOtherTables(\App\AffiliateRevenueTracker $revenueTracker, $campaigns, $date): array
     {
@@ -315,8 +308,6 @@ class RevenueAndViews
      * if not, clone the modal as a new model to consolidatedData container.
      * Note: the param $data is empty in normal cron process but when an artisan call and date as arguments,
      * the if($date) function will be executed and no duplicate records occur.
-     *
-     * @param  string  $date
      */
     public function checkRevenueTrackerExist(string $date = '')
     {
@@ -357,8 +348,6 @@ class RevenueAndViews
 
     /**
      * Get records.
-     *
-     * @return array
      */
     public function records(): array
     {
@@ -399,8 +388,6 @@ class RevenueAndViews
 
     /**
      *  Check if revenue tracker has a record on database.
-     *
-     * @return bool
      */
     protected function revenueTrackerHasRecords(): bool
     {
@@ -413,8 +400,6 @@ class RevenueAndViews
 
     /**
      * Set revenue value of legend.
-     *
-     * @param  string  $idx
      */
     protected function setLegendValue(string $idx)
     {

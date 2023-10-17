@@ -33,11 +33,6 @@ class ListsApi
 
     /**
      * Instantiate.
-     *
-     * @param  Illuminate\Foundation\Application  $app
-     * @param  App\Http\Services\Campaigns\Repos\ApiConfig  $apiConfig
-     * @param  App\Http\Services\Campaigns\Repos\RevenueTracker  $revenueTracker
-     * @param  App\Http\Services\Campaigns\Repos\AffiliateWebsites  $affiliateWebsites
      */
     public function __construct(
         \Illuminate\Foundation\Application $app,
@@ -94,8 +89,6 @@ class ListsApi
 
     /**
      * Static function.
-     *
-     * @param  Illuminate\Foundation\Application  $app
      */
     public static function boot(\Illuminate\Foundation\Application $app)
     {

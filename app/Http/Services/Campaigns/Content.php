@@ -62,8 +62,6 @@ class Content
 
     /**
      * Check wiether the request contaigns campaign ids
-     *
-     * @return bolean
      */
     public function hasCampaigns(): bolean
     {
@@ -72,8 +70,6 @@ class Content
 
     /**
      * Check wiether the request falls in any certain type
-     *
-     * @return bolean
      */
     public function hasCampaignType(): bolean
     {
@@ -82,8 +78,6 @@ class Content
 
     /**
      * Count the campaign ids in a request
-     *
-     * @return int
      */
     public function campaignCount(): int
     {
@@ -92,9 +86,6 @@ class Content
 
     /**
      * Set campaigns
-     *
-     * @param  array  $campaigns
-     * @return void
      */
     public function setCampaigns(array $campaigns): void
     {
@@ -106,9 +97,6 @@ class Content
 
     /**
      * Set affiliate id
-     *
-     * @param  string  $affiliateID
-     * @return void
      */
     public function setAffiliateID(string $affiliateID): void
     {
@@ -117,9 +105,6 @@ class Content
 
     /**
      * Set session
-     *
-     * @param  string  $session
-     * @return void
      */
     public function setSession(string $session): void
     {
@@ -128,9 +113,6 @@ class Content
 
     /**
      * Set path
-     *
-     * @param  string  $path
-     * @return void
      */
     public function setPath(string $path): void
     {
@@ -141,7 +123,6 @@ class Content
      * Set the initial data needed to process campaigns content
      *
      * @param  Illuminate\Http\Request | string  $request
-     * @return void
      */
     public function setInitialVariables($request): void
     {
@@ -189,9 +170,6 @@ class Content
 
     /**
      * Get the html content of all campaign ids
-     *
-     * @return int
-     * @return array - if no content return message
      */
     public function getHtmlData(): int
     {
@@ -418,8 +396,6 @@ class Content
 
     /**
      * Determine the rquest is object or string
-     *
-     * @return collection
      */
     protected function determineRequestType($request): collection
     {

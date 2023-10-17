@@ -71,8 +71,6 @@ class Interfaces
 
     /**
      * Resolve what class to use.
-     *
-     * @return object
      */
     protected function resolveClassName(): object
     {

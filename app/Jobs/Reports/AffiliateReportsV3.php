@@ -753,8 +753,6 @@ class AffiliateReportsV3 extends Job implements ShouldQueue
 
     /**
      * Handle a job failure.
-     *
-     * @return void
      */
     public function failed(): void
     {

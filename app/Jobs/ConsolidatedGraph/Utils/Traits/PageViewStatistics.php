@@ -8,7 +8,6 @@ trait PageViewStatistics
      * Process pa age view statistics
      *
      * @param  \Illuminate\Database\Eloquent\PageViewStatistics|Empty  $pageViewStats
-     * @return void
      */
     protected function processPageViewStats($pageViewStats): void
     {

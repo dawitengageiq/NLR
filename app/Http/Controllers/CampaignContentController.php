@@ -63,8 +63,6 @@ class CampaignContentController extends Controller
 
     /**
      * Set user details that are needed
-     *
-     * @param  array  $userDetails
      */
     protected function setUserDetails(array $userDetails)
     {
@@ -85,8 +83,6 @@ class CampaignContentController extends Controller
 
     /**
      * Variables needed befor evaluation
-     *
-     * @return array
      */
     protected function varNeededB4Eval(): array
     {

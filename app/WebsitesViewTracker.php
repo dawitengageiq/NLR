@@ -51,8 +51,6 @@ class WebsitesViewTracker extends Model
 
     /**
      * Track user views by email within 24 hours.
-     *
-     * @return bool
      */
     public function scopeTrack($query, $email, $websiteID, $payout, $timeInterval): bool
     {

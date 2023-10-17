@@ -60,7 +60,6 @@ class Lists extends Factories\ListsFactory implements \App\Http\Services\Contrac
     /**
      * Set the campaign type order, will be used in campaign query
      *
-     * @param  array  $typeOrdering
      *
      * @var array
      */

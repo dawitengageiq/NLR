@@ -8,8 +8,6 @@ class RandomProbability extends Command
 
     /**
      * Pass the weight and id to randomize probability
-     *
-     * @param  array  $set
      */
     public function __construct(array $set = [])
     {
@@ -18,8 +16,6 @@ class RandomProbability extends Command
 
     /**
      * Execute the command.
-     *
-     * @return int|null
      */
     public function handle(): int
     {

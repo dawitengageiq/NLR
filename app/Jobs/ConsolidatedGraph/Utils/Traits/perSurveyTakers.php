@@ -13,10 +13,6 @@ trait perSurveyTakers
 
     /**
      * Division
-     *
-     * @param  string  $idx
-     * @param  float  $dividend
-     * @param  float  $divisor
      */
     protected function perSurveyTakers(string $idx, float $dividend, float $divisor)
     {
@@ -30,9 +26,6 @@ trait perSurveyTakers
 
     /**
      * Value for revenue per survey takers.
-     *
-     * @param  string  $idx
-     * @return void
      */
     protected function sourceRevenuePerSurveyTakers(string $idx): void
     {
@@ -53,9 +46,6 @@ trait perSurveyTakers
 
     /**
      * Value for cpa per survey takers.
-     *
-     * @param  string  $idx
-     * @return void
      */
     protected function cpaPerSurveyTakers(string $idx): void
     {

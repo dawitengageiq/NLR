@@ -9,7 +9,6 @@ trait Payout
      *  Use benchmark to determine the campaign id to be used in each campaign type.
      *
      * @param  \Illuminate\Database\Eloquent\Collection|Empty  $leads
-     * @return void
      */
     protected function processMixcoregPayout($leads): void
     {

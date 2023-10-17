@@ -7,8 +7,6 @@ trait RevenueTrackerTrait
     /**
      * Set individual revenue tracker
      * It will be use to get its own traits
-     *
-     * @param  eloquentCollection  $revenueTracker
      */
     public function setTraitsOf(eloquentCollection $revenueTracker)
     {
@@ -17,8 +15,6 @@ trait RevenueTrackerTrait
 
     /**
      * Get order of campaign ids
-     *
-     * @return array
      */
     public function campaignOrder(): array
     {
@@ -27,8 +23,6 @@ trait RevenueTrackerTrait
 
     /**
      * Get revenue tracker id
-     *
-     * @return int
      */
     public function revenueTrackerID(): int
     {
@@ -47,8 +41,6 @@ trait RevenueTrackerTrait
 
     /**
      * Get order by
-     *
-     * @return int
      */
     public function mixedCoregOrderBy(): int
     {
@@ -57,8 +49,6 @@ trait RevenueTrackerTrait
 
     /**
      * Get eloquentCollection campaign order
-     *
-     * @return eloquentCollection
      */
     public function mixedCoregCampaignOrder(): eloquentCollection
     {
@@ -67,8 +57,6 @@ trait RevenueTrackerTrait
 
     /**
      * Get eloquentCollection campaign view reports
-     *
-     * @return eloquentCollection
      */
     public function campaignViewReports(): eloquentCollection
     {
@@ -77,9 +65,6 @@ trait RevenueTrackerTrait
 
     /**
      * check if recurrence is ...
-     *
-     * @param  string  $recurrence
-     * @return bool
      */
     public function recurrenceIs(string $recurrence): bool
     {
@@ -92,9 +77,6 @@ trait RevenueTrackerTrait
 
     /**
      * check if recurrence is not ...
-     *
-     * @param  string  $recurrence
-     * @return bool
      */
     public function recurrenceIsNot(string $recurrence): bool
     {

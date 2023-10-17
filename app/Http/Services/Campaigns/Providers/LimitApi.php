@@ -6,9 +6,6 @@ class LimitApi extends Limit
 {
     /**
      * Instantiate.
-     *
-     * @param  Illuminate\Foundation\Application  $app
-     * @param  array  $limit
      */
     public function __construct(
         \Illuminate\Foundation\Application $app,
@@ -23,8 +20,6 @@ class LimitApi extends Limit
 
     /**
      * Static function.
-     *
-     * @param  array  $args
      */
     public static function bind(array ...$args)
     {

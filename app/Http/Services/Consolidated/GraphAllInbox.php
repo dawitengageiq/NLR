@@ -37,8 +37,6 @@ class GraphAllInbox extends GraphByDateRange implements \App\Http\Services\Contr
 
     /**
      * Set the date.
-     *
-     * @param  string  $date
      */
     public function setdate(string $date)
     {

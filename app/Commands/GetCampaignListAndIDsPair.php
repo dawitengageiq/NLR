@@ -19,8 +19,6 @@ class GetCampaignListAndIDsPair extends Command
 
     /**
      * Execute the command.
-     *
-     * @return array
      */
     public function handle(): int
     {

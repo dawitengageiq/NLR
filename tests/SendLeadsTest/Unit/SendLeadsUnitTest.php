@@ -64,8 +64,6 @@ class SendLeadsUnitTest extends BrowserKitTestCase
 
     /**
      * @test
-     *
-     * @return object
      */
     public function check_if_campaign_should_return_object(): object
     {

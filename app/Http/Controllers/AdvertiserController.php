@@ -45,8 +45,6 @@ class AdvertiserController extends Controller
 
     /**
      * Display a listing of the resource. This is a server side processing
-     *
-     * @return mixed
      */
     public function index(Request $request): JsonResponse
     {
@@ -182,8 +180,6 @@ class AdvertiserController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return Response
      */
     public function create(): Response
     {
@@ -192,8 +188,6 @@ class AdvertiserController extends Controller
 
     /**
      * Store a newly created advertiser resource in storage.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function store(
         AdvertiserRequest $request,
@@ -216,9 +210,6 @@ class AdvertiserController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
      */
     public function show(int $id): Response
     {
@@ -227,9 +218,6 @@ class AdvertiserController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
      */
     public function edit(int $id): Response
     {
@@ -238,8 +226,6 @@ class AdvertiserController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function update(
         AdvertiserRequest $request,
@@ -296,8 +282,6 @@ class AdvertiserController extends Controller
 
     /**
      * Advertiser page route for contacts
-     *
-     * @return \Illuminate\View\View
      */
     public function contacts(): View
     {
@@ -306,8 +290,6 @@ class AdvertiserController extends Controller
 
     /**
      * Advertiser page route for campaigns
-     *
-     * @return \Illuminate\View\View
      */
     public function campaigns(): View
     {
@@ -358,8 +340,6 @@ class AdvertiserController extends Controller
 
     /**
      * for revenueStats
-     *
-     * @return \Illuminate\View\View
      */
     public function revenueStatistics(Request $request): View
     {
@@ -387,8 +367,6 @@ class AdvertiserController extends Controller
 
     /**
      * Top 10 campaigns by revenue yesterday
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function topTenCampaignsByRevenueYesterday(Request $request): JsonResponse
     {
@@ -405,8 +383,6 @@ class AdvertiserController extends Controller
 
     /**
      * Top 10 campaigns by revenue from the current week
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function topTenCampaignsByRevenueForCurrentWeek(Request $request): JsonResponse
     {
@@ -423,8 +399,6 @@ class AdvertiserController extends Controller
 
     /**
      * Top 10 campaigns by revenue from the current month
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function topTenCampaignsByRevenueForCurrentMonth(Request $request): JsonResponse
     {
@@ -439,8 +413,6 @@ class AdvertiserController extends Controller
 
     /**
      * Different lead counts
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function leadCounts(Request $request): JsonResponse
     {
@@ -463,8 +435,6 @@ class AdvertiserController extends Controller
 
     /**
      * Will return active campaigns
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function activeCampaigns(Request $request): JsonResponse
     {
@@ -478,8 +448,6 @@ class AdvertiserController extends Controller
 
     /**
      * This will determine if certain advertiser is active.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function status($id): JsonResponse
     {

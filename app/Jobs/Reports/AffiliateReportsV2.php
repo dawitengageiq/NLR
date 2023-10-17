@@ -46,8 +46,6 @@ class AffiliateReportsV2 extends Job implements ShouldQueue
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
     public function handle(): void
     {
@@ -704,8 +702,6 @@ class AffiliateReportsV2 extends Job implements ShouldQueue
 
     /**
      * Handle a job failure.
-     *
-     * @return void
      */
     public function failed(): void
     {

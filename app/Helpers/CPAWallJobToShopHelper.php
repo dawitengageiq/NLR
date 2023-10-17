@@ -29,8 +29,6 @@ class CPAWallJobToShopHelper
 
     /**
      * CPAWallJobToShopHelper constructor
-     *
-     * @param  int  $cpaWallJobToShopCampaignID
      */
     public function __construct(int $cpaWallJobToShopCampaignID, Carbon $dateFrom, Carbon $dateTo, JSONParser $parser)
     {

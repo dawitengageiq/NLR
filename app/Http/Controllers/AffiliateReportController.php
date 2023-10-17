@@ -538,8 +538,6 @@ class AffiliateReportController extends Controller
 
     /**
      * Uploading of reports sheet
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function uploadReports(Request $request): JsonResponse
     {
@@ -862,8 +860,6 @@ class AffiliateReportController extends Controller
 
     /**
      * Generate of H and P reports
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function generateHandPAffiliateReportsXLS(Request $request, $snapshot_period): JsonResponse
     {
@@ -1312,8 +1308,6 @@ class AffiliateReportController extends Controller
 
     /**
      * Generating of iframe affiliate reports
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function generateIframeAffiliateReportXLS(Request $request, $snapshot_period): JsonResponse
     {
@@ -1648,8 +1642,6 @@ class AffiliateReportController extends Controller
 
     /**
      * Downloading of iframe reports
-     *
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     public function downloadIframeAffiliateReportXLS(Request $request, $snapshot_period): BinaryFileResponse
     {
@@ -1771,8 +1763,6 @@ class AffiliateReportController extends Controller
 
     /**
      * Downloading of generated file.
-     *
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     public function downloadAffiliateReportXLS(Request $request): BinaryFileResponse
     {

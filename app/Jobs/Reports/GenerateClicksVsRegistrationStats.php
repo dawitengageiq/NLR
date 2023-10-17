@@ -32,8 +32,6 @@ class GenerateClicksVsRegistrationStats extends Job implements ShouldQueue
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
     public function handle(AffiliateReportCurl $affiliateReportCurl): void
     {

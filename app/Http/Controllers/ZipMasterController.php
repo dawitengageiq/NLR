@@ -11,8 +11,6 @@ class ZipMasterController extends Controller
 {
     /**
      * DataTable server side get/post function
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request): JsonResponse
     {

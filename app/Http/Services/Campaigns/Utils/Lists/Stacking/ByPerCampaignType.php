@@ -30,8 +30,6 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
      * Primary: get the mix coreg order, if not available
      * Order by priority(set in query params)
      * Set limit that was provided in service provider
-     *
-     * @param  array  $param
      */
     public function setOrderAndLimits(array $param)
     {
@@ -50,8 +48,6 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
 
     /**
      * Check has ordering
-     *
-     * @return bool
      */
     public function hasOrder(): bool
     {
@@ -66,8 +62,6 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
 
     /**
      * Get what type of ordering was used
-     *
-     * @return bool
      */
     public function orderType(): bool
     {
@@ -77,7 +71,6 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
     /**
      * Stack the qualified campaign coregs
      *
-     * @param  collection  $campaign
      *
      * @var array
      */
@@ -105,7 +98,6 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
     /**
      * Stack the qualified campaign  other coregs and exit page
      *
-     * @param  collection  $campaign
      *
      * @var array
      */
@@ -136,8 +128,6 @@ class ByPerCampaignType extends ByPriority implements \App\Http\Services\Campaig
 
     /**
      * Implement mix coreg order
-     *
-     * @param  int  $campaignID
      */
     protected function stackByCampaignTypeOrder(int $campaignID, $campaignType, $lastSet)
     {

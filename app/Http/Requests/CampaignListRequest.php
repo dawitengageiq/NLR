@@ -86,8 +86,6 @@ class CampaignListRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      * Since its a pre process, process some functions.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -109,8 +107,6 @@ class CampaignListRequest extends FormRequest
 
     /**
      * Retrieve user details
-     *
-     * @return array
      */
     public function userDetails(): array
     {
@@ -189,9 +185,6 @@ class CampaignListRequest extends FormRequest
      * when showing offers, we use the php pre define function:eval().
      *
      * @method sanitize
-     *
-     * @param  string  $data
-     * @return string
      */
     protected function sanitize(string $data): string
     {
@@ -218,8 +211,6 @@ class CampaignListRequest extends FormRequest
 
     /**
      * Check request data is complete.
-     *
-     * @return bolean
      */
     protected function incompleteRequestData(): bolean
     {

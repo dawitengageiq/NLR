@@ -17,8 +17,6 @@ class GetInternalAffiliatesCompanyIDPair extends Command
 
     /**
      * Execute the command.
-     *
-     * @return mixed
      */
     public function handle(): int
     {

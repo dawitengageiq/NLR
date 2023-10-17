@@ -6,8 +6,6 @@ trait Views
 {
     /**
      * Value for exit page views.
-     *
-     * @param  string  $idx
      */
     protected function lspViews(string $idx)
     {
@@ -16,8 +14,6 @@ trait Views
 
     /**
      * Value for mp per views.
-     *
-     * @param  string  $idx
      */
     protected function mpPerViews(string $idx)
     {

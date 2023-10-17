@@ -48,8 +48,6 @@ class UserController extends Controller
 
     /**
      * Server side process for users datatable
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function users(Request $request): JsonResponse
     {
@@ -181,8 +179,6 @@ class UserController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return Response
      */
     public function create(): Response
     {
@@ -191,8 +187,6 @@ class UserController extends Controller
 
     /**
      * Store a newly created contact in storage.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function store(AddUserRequest $request): JsonResponse
     {
@@ -210,9 +204,6 @@ class UserController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
      */
     public function show(int $id): Response
     {
@@ -221,9 +212,6 @@ class UserController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
      */
     public function edit(int $id): Response
     {
@@ -232,8 +220,6 @@ class UserController extends Controller
 
     /**
      * Update the specified user resource in storage.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function update(UpdateUserRequest $request, $id): JsonResponse
     {
@@ -287,8 +273,6 @@ class UserController extends Controller
 
     /**
      * Update user profile
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function updateProfile(Requests\UpdateUserProfileRequest $request): JsonResponse
     {
@@ -340,8 +324,6 @@ class UserController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id): JsonResponse
     {
@@ -366,8 +348,6 @@ class UserController extends Controller
 
     /**
      * user profile image upload
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function profile_image_upload(Request $request): JsonResponse
     {

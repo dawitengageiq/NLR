@@ -45,9 +45,6 @@ class Resource
 
     /**
      * Transform the resource into an HTTP response.
-     *
-     * @param  int|null  $statusCode
-     * @return \Illuminate\Http\JsonResponse
      */
     public function response(?int $statusCode = null): JsonResponse
     {
@@ -56,9 +53,6 @@ class Resource
 
     /**
      * Create an HTTP response that represents the object.
-     *
-     * @param  int|null  $statusCode
-     * @return \Illuminate\Http\JsonResponse
      */
     public function toResponse(?int $statusCode = null): JsonResponse
     {
@@ -80,7 +74,6 @@ class Resource
      * Transform the resource into an array.
      *
      * @param  \Illuminate\Http\Request
-     * @return array
      */
     public function toArray($request): array
     {
@@ -89,9 +82,6 @@ class Resource
 
     /**
      * Get any additional data that should be returned with the resource array.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
      */
     public function with(Request $request): array
     {
@@ -100,8 +90,6 @@ class Resource
 
     /**
      * Add additional meta data to the resource response.
-     *
-     * @return $this
      */
     public function additional(array $data): static
     {
@@ -112,8 +100,6 @@ class Resource
 
     /**
      * Resolve the resource to an array.
-     *
-     * @return array
      */
     protected function resolve(): array
     {
@@ -137,9 +123,6 @@ class Resource
 
     /**
      * Calculate the appropriate status code for the response.
-     *
-     * @param  int|null  $statusCode
-     * @return int
      */
     protected function calculateStatus(?int $statusCode = null): int
     {
@@ -153,11 +136,6 @@ class Resource
 
     /**
      * Wrap the given data if necessary.
-     *
-     * @param  array  $data
-     * @param  array  $with
-     * @param  array  $additional
-     * @return array
      */
     protected function wrap(array $data, array $with = [], array $additional = []): array
     {

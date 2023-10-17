@@ -15,8 +15,6 @@ class CronController extends Controller
 {
     /**
      * Transfer jobs to cron history table
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function transferFinishedCronJobs(): JsonResponse
     {

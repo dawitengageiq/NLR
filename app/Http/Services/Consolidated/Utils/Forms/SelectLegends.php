@@ -13,8 +13,6 @@ class SelectLegends
 
     /**
      * Register legends selection.
-     *
-     * @return string
      */
     public static function register(): string
     {
@@ -72,8 +70,6 @@ class SelectLegends
      * Set legends options
      *
      * @param  array  $affiliates
-     * @param  array  $inputs
-     * @return string
      */
     public static function options($legends, array $inputs): string
     {

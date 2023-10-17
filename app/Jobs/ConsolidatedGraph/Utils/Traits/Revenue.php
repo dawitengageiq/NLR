@@ -6,12 +6,6 @@ trait Revenue
 {
     /**
      * Set rvenue to override default value of revenues container : @var $revenues
-     *
-     * @param  string  $indx
-     * @param  int  $value
-     * @param  string  $env
-     * @param  int  $subtrahend
-     * @return void
      */
     protected function setRevenue(string $indx, int $value, string $env, int $subtrahend = 0): void
     {
@@ -33,8 +27,6 @@ trait Revenue
 
     /**
      * Value for cpa revenue.
-     *
-     * @param  string  $idx
      */
     protected function cpaRevenue(string $idx)
     {
@@ -43,9 +35,6 @@ trait Revenue
 
     /**
      * Value for coreg page 3 revenue per views.
-     *
-     * @param  string  $idx
-     * @return void
      */
     protected function allMpRevenue(string $idx): void
     {
@@ -74,8 +63,6 @@ trait Revenue
 
     /**
      * All coreg revenue
-     *
-     * @param  string  $idx
      */
     protected function allCoregRevenue(string $idx)
     {

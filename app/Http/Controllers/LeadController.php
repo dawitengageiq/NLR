@@ -41,8 +41,6 @@ class LeadController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @return Response
      */
     public function index(): Response
     {
@@ -51,8 +49,6 @@ class LeadController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return Response
      */
     public function create(): Response
     {
@@ -62,7 +58,6 @@ class LeadController extends Controller
     /**
      * Send pending leads (old with cap checker)
      *
-     * @return \Illuminate\Http\JsonResponse
      *
      * @throws \ErrorException
      */
@@ -528,9 +523,6 @@ class LeadController extends Controller
         }
     }
 
-    /**
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function updateLeadsToPendingStatus($strLeadIDs, Request $request): JsonResponse
     {
         $inputs = $request->all();
@@ -668,8 +660,6 @@ class LeadController extends Controller
      * This function resets the lead counter
      *
      * @param  null  $affiliateID
-     * @param  string  $capType
-     * @return LeadCount
      */
     public function executeReset($campaignCounts, $campaignID, $affiliateID = null, string $capType = 'Unlimited'): LeadCount
     {

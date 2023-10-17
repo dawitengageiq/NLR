@@ -14,8 +14,6 @@ class BrowserKitTestCase extends Laravel\BrowserKitTesting\TestCase
 
     /**
      * Creates the application.
-     *
-     * @return \Illuminate\Foundation\Application
      */
     public function createApplication(): Application
     {

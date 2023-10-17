@@ -50,8 +50,6 @@ class CampaignListApiRequest extends CampaignListRequest
 
     /**
      * Retrieve browser details
-     *
-     * @return array
      */
     public function browserDetails(): array
     {
@@ -60,8 +58,6 @@ class CampaignListApiRequest extends CampaignListRequest
 
     /**
      * Retrieve device details
-     *
-     * @return array
      */
     public function deviceDetails(): array
     {
@@ -70,8 +66,6 @@ class CampaignListApiRequest extends CampaignListRequest
 
     /**
      * Retrieve redirect url
-     *
-     * @return string
      */
     public function redirectUrl(): string
     {
@@ -81,8 +75,6 @@ class CampaignListApiRequest extends CampaignListRequest
     /**
      * True:Reload parent iframe/self irame
      * False:Reload window top
-     *
-     * @return bolean
      */
     public function toReloadParentFrame(): bolean
     {
@@ -91,8 +83,6 @@ class CampaignListApiRequest extends CampaignListRequest
 
     /**
      * Environment url
-     *
-     * @return bolean
      */
     public function targetUrl(): bolean
     {
@@ -101,8 +91,6 @@ class CampaignListApiRequest extends CampaignListRequest
 
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -141,8 +129,6 @@ class CampaignListApiRequest extends CampaignListRequest
 
     /**
      * Get the response for a forbidden operation.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function forbiddenResponse(): Response
     {
@@ -155,8 +141,6 @@ class CampaignListApiRequest extends CampaignListRequest
 
     /**
      * Validate email have correct email format.
-     *
-     * @return bolean
      */
     protected function invalidEmailFormat(): bolean
     {

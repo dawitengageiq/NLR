@@ -23,8 +23,6 @@ class ByPriorityWithJson
     /**
      * Stack the qualified campaign
      * Called from App\Http\Services\Campaigns\Factories\ListsFactory
-     *
-     * @param  collection  $campaign
      */
     public function insertIntoStack(collection $campaign)
     {
@@ -52,8 +50,6 @@ class ByPriorityWithJson
 
     /**
      * Stack the qualified campaign coregs
-     *
-     * @param  collection  $campaign
      */
     protected function stackCampaignCoreg(collection $campaign)
     {
@@ -72,7 +68,6 @@ class ByPriorityWithJson
     /**
      * Stack the qualified campaign other coregs and exit page
      *
-     * @param  collection  $campaign
      *
      * @var array lists
      */
@@ -92,8 +87,6 @@ class ByPriorityWithJson
 
     /**
      * Stack the qualified campaign externals and long forms
-     *
-     * @param  collection  $campaign
      */
     protected function stackExternalAndLongFormCampaign(collection $campaign)
     {

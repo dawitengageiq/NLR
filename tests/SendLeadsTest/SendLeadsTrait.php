@@ -32,8 +32,6 @@ trait SendLeadsTrait
 
     /**
      * transform query string into array
-     *
-     * @return key=>value
      */
     protected function getLeadsForValidator(): key
     {

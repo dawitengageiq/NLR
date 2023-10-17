@@ -25,8 +25,6 @@ class ApiController extends Controller
 {
     /**
      * API for getting the API token
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function getMyToken(Request $request): JsonResponse
     {

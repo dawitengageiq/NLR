@@ -26,8 +26,6 @@ class GenerateCharts extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @param  Charts  $charts
      */
     public function __construct(CreateChartImage $charts)
     {
@@ -37,8 +35,6 @@ class GenerateCharts extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return void
      */
     public function handle(): void
     {

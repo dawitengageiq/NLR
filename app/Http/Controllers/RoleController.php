@@ -22,8 +22,6 @@ class RoleController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index(): View
     {
@@ -40,8 +38,6 @@ class RoleController extends Controller
 
     /**
      * Sever side data provider for roles page
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function roles(Request $request): JsonResponse
     {
@@ -176,8 +172,6 @@ class RoleController extends Controller
      * Store a newly created role in storage.
      *
      * notice: dev protect this route with basic authentication
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request): JsonResponse
     {
@@ -226,9 +220,6 @@ class RoleController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
     public function update(Request $request, int $id): JsonResponse
     {
@@ -296,7 +287,6 @@ class RoleController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show(int $id)
@@ -307,7 +297,6 @@ class RoleController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit(int $id)
@@ -317,8 +306,6 @@ class RoleController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id): JsonResponse
     {

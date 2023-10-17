@@ -29,8 +29,6 @@ class ExternalPathRexadsHelper
 
     /**
      * ExternalPathRexadsHelper constructor
-     *
-     * @param  int  $externalPathRexAdsCampaignID
      */
     public function __construct(int $externalPathRexAdsCampaignID, Carbon $dateFrom, Carbon $dateTo, JSONParser $parser)
     {
@@ -142,9 +140,6 @@ class ExternalPathRexadsHelper
      * @license http://www.php.net/license/index.php#doc-lic
      * @license http://creativecommons.org/licenses/by/3.0/
      * @license CC-BY-3.0 <http://spdx.org/licenses/CC-BY-3.0>
-     *
-     * @param  array  $out
-     * @return array
      */
     public function xmlToArray($xmlObject, array $out = []): array
     {

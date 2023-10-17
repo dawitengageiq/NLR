@@ -32,8 +32,6 @@ class ContactController extends Controller
 
     /**
      * Server side processing for contacts data table
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
@@ -182,8 +180,6 @@ class ContactController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return Response
      */
     public function create(): Response
     {
@@ -192,8 +188,6 @@ class ContactController extends Controller
 
     /**
      * Store a newly created contact in storage. This is for user type only and not admin
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function store(
         AddContactRequest $request,
@@ -232,9 +226,6 @@ class ContactController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
      */
     public function show(int $id): Response
     {
@@ -243,9 +234,6 @@ class ContactController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
      */
     public function edit(int $id): Response
     {
@@ -254,8 +242,6 @@ class ContactController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function update(
         UpdateContactRequest $request,
@@ -318,8 +304,6 @@ class ContactController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(
         \App\Http\Services\UserActionLogger $userAction,

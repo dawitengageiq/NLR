@@ -375,8 +375,6 @@ class IframeAffiliateReports extends Job implements ShouldQueue
 
     /**
      * Handle a job failure.
-     *
-     * @return void
      */
     public function failed(): void
     {

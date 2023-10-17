@@ -36,8 +36,6 @@ class RejectedLeads
     /**
      * An extension to the query made in searchLeads method in AdminController.
      *
-     * @param  Sql  $query
-     * @param  string  $rejection
      * @return  object eloquent
      */
     public static function searchLeadByRejection(Sql $query, string $rejection = ''): object
@@ -69,10 +67,6 @@ class RejectedLeads
 
     /**
      * Check if exists on rejection type.
-     *
-     * @param  string  $value
-     * @param  string  $rejection
-     * @return  Bolean
      */
     protected function errorTypeExist(string $value, string $rejection = 'duplicates'): Bolean
     {
@@ -89,9 +83,7 @@ class RejectedLeads
     /**
      * Check if exists on rejection type for duplicate and pre pop iisues.
      *
-     * @param  string  $value
      * @param  string  $error_code
-     * @return  Bolean
      */
     protected function forDuplicateAndPrePopIssues(string $value, $errorCode): Bolean
     {
@@ -109,9 +101,7 @@ class RejectedLeads
     /**
      * Check if exists on rejection type for filter iisues.
      *
-     * @param  string  $value
      * @param  string  $error_code
-     * @return  Bolean
      */
     protected function forFilterIssues(string $value, $errorCode): Bolean
     {
@@ -137,9 +127,7 @@ class RejectedLeads
     /**
      * Check if exists on rejection type for others.
      *
-     * @param  string  $value
      * @param  string  $error_code
-     * @return  Bolean
      */
     protected function forOthers(string $value, $errorCode): Bolean
     {

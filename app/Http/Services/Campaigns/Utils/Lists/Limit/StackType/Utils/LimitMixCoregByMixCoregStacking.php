@@ -12,7 +12,6 @@ class LimitMixCoregByMixCoregStacking extends LimitMixCoregByPathType
      * @param  int  $tempIndex
      * @param  bool  $hasOrdering
      * @param  array  $pathLimit
-     * @return array
      */
     public function apply($param): array
     {
@@ -29,9 +28,6 @@ class LimitMixCoregByMixCoregStacking extends LimitMixCoregByPathType
 
     /**
      * Apply the revenue tracker limit for coreg then limit per page if available
-     *
-     * @param  array  $stacks
-     * @return array
      */
     protected function applyFirstLevelLimitThenLimitPerPage(array $stacks, $limit, $tempIndex): array
     {

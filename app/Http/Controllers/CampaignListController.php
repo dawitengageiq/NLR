@@ -53,11 +53,6 @@ class CampaignListController extends Controller
 
     /**
      * Load the needed dependencies
-     *
-     * @param  \App\Http\Services\Contracts\CampaignListContract  $campaignList
-     * @param  \App\Http\Services\Campaigns\Repos\RevenueTracker  $revenueTracker
-     * @param  \App\Http\Services\Campaigns\Repos\Settings  $campaignSettings
-     * @param  \App\Http\Services\Campaigns\Repos\ApiConfig  $apiConfig
      */
     public function __construct(
         Services\Contracts\CampaignListContract $campaignList,
@@ -79,8 +74,6 @@ class CampaignListController extends Controller
      * Get campaigns after registration in PFR
      * Note: revenue tracker was set on service provider by supplying request data
      *
-     * @param  App\Http\Services\Campaigns\Repos\Zip  $zip
-     * @param  App\Http\Services\Campaigns\Repos\LeadUser  $leadUser
      * @return array
      */
     public function registerUserAndGetCampaigns(
@@ -168,11 +161,6 @@ class CampaignListController extends Controller
     /**
      * Get campaigns from API
      * Note: revenue tracker was set on service provider
-     *
-     * @param  Requests\CampaignListRequest  $request
-     * @param  App\Http\Services\Campaigns\Repos\Zip  $zip
-     * @param  App\Http\Services\Campaigns\Repos\LeadUser  $leadUser
-     * @return Illuminate\View\View
      */
     public function getCampaignsByApi(
         Requests\CampaignListApiRequest $request,
@@ -304,8 +292,6 @@ class CampaignListController extends Controller
     /**
      * Save user details
      *
-     * @param  App\Http\Services\Campaigns\Repos\Zip  $zip
-     * @param  App\Http\Services\Campaigns\Repos\LeadUser  $leadUser
      * @param  bool  $toSave   whether to save the user details
      */
     protected function saveUserDetails(

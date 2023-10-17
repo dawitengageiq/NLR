@@ -52,7 +52,6 @@ class ListsWithJson
     /**
      * Set the campaign type order, will be used in campaign query
      *
-     * @param  array  $typeOrdering
      *
      * @var array
      */
@@ -110,7 +109,6 @@ class ListsWithJson
      *
      * @param  bolean  $filter
      * @param  int  $pathType
-     * @param  int  $revenueTrackerID
      *
      * @var array
      * @var array
@@ -139,7 +137,6 @@ class ListsWithJson
      * Check campaign passed the filtering
      *
      * @param eloquent collection $campaign
-     * @return bool
      */
     protected function filterPassed($campaign, $revenueTrackerID): bool
     {

@@ -46,10 +46,6 @@ class Excel extends \App\Http\Services\Factories\ExportExcel
 
     /**
      * Set the data for header, and provide the row number wher the header will occupied.
-     *
-     * @param  array  $header
-     * @param  int  $row
-     * @return LaravelExcelReader
      */
     public function setRecordsHeader(array $header, int $row = 1): LaravelExcelReader
     {
@@ -63,9 +59,6 @@ class Excel extends \App\Http\Services\Factories\ExportExcel
 
     /**
      * Set the data for footer.
-     *
-     * @param  array  $footer
-     * @return LaravelExcelReader
      */
     public function setRecordsFooter(array $footer): LaravelExcelReader
     {
@@ -76,9 +69,6 @@ class Excel extends \App\Http\Services\Factories\ExportExcel
 
     /**
      * Set the data/list.
-     *
-     * @param  array  $records
-     * @return LaravelExcelReader
      */
     public function setRecords(array $records): LaravelExcelReader
     {
@@ -133,8 +123,6 @@ class Excel extends \App\Http\Services\Factories\ExportExcel
 
     /**
      * Records/Lists count.
-     *
-     * @return int
      */
     public function recordsCount(): int
     {
@@ -143,9 +131,6 @@ class Excel extends \App\Http\Services\Factories\ExportExcel
 
     /**
      * Set the data of legends with descriptions.
-     *
-     * @param  array  $legends
-     * @return LaravelExcelReader
      */
     public function setLegendsWithDescription(array $legends): LaravelExcelReader
     {
@@ -157,8 +142,6 @@ class Excel extends \App\Http\Services\Factories\ExportExcel
 
     /**
      * Generate now the sheet's content.
-     *
-     * @param  LaravelExcelWorksheet  $sheet
      */
     public function generateSheet(LaravelExcelWorksheet $sheet)
     {
@@ -220,7 +203,6 @@ class Excel extends \App\Http\Services\Factories\ExportExcel
      * @param  mixed  $nullValue Value in source array that stands for blank cell
      * @param  string  $startCell Insert array starting from this cell address as the top left coordinate
      * @param  bool  $strictNullComparison Apply strict comparison when testing for null values in the array
-     * @return Worksheet
      *
      * @throws PhpExcelException
      */
@@ -246,11 +228,6 @@ class Excel extends \App\Http\Services\Factories\ExportExcel
 
     /**
      * Excel header column range
-     *
-     * @param  int  $count
-     * @param  int  $counter
-     * @param  string  $firstLetters
-     * @return array
      */
     protected function createColumnsRange(int $count, int $counter = 0, string $firstLetters = ''): array
     {
@@ -288,8 +265,6 @@ class Excel extends \App\Http\Services\Factories\ExportExcel
 
     /**
      * Create the legends lists.
-     *
-     * @param  LaravelExcelWorksheet  $sheet
      */
     protected function createLegendsDescritions(LaravelExcelWorksheet $sheet)
     {

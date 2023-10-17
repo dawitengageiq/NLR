@@ -9,7 +9,6 @@ trait ClicksVsRegistrationStatistics
      * Survey takers count and all clicks count.
      *
      * @param  \App\ClicksVsRegistrationStatistics|Empty  $clicksRegStats
-     * @return void
      */
     protected function processClicksRegStats($clicksRegStats): void
     {

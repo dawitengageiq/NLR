@@ -8,7 +8,6 @@ class ExitPage
      * RAndom exit page
      *
      * @param  array  $campaign_stack
-     * @return array
      */
     public function randomID(
         $stack,

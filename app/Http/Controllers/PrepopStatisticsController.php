@@ -21,8 +21,6 @@ class PrepopStatisticsController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index(Request $request): JsonResponse
     {
@@ -272,8 +270,6 @@ class PrepopStatisticsController extends Controller
 
     /**
      *  Prepop Statistics download
-     *
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     public function downloadPrepopStatisticsReport(Request $request): BinaryFileResponse
     {

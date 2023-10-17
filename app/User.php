@@ -67,8 +67,6 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
     /**
      * will determine if user is admin
-     *
-     * @return bool
      */
     public function isAdministrator(): bool
     {
@@ -77,8 +75,6 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
     /**
      * will determine if user is affiliate or advertiser
-     *
-     * @return bool
      */
     public function isUser(): bool
     {
@@ -107,8 +103,6 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
     /**
      * check if user is affiliate
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function affiliate(): HasOne
     {
@@ -122,8 +116,6 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
     /**
      * check user's role
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function role(): HasOne
     {
@@ -132,8 +124,6 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
     /**
      * check if use is super user
-     *
-     * @return bool
      */
     public function isSuperUser(): bool
     {

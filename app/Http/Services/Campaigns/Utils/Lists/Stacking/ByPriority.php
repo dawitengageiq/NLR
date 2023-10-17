@@ -56,8 +56,6 @@ class ByPriority implements \App\Http\Services\Campaigns\Utils\Lists\Contracts\S
      * Limits was set in service provider
      * Since this is default stacking, means we use ordering of query string, and
      * We dont nedd to use other type ordering.
-     *
-     * @param  array  $param
      */
     public function setOrderAndLimits(array $param)
     {
@@ -71,8 +69,6 @@ class ByPriority implements \App\Http\Services\Campaigns\Utils\Lists\Contracts\S
     /**
      * Check has ordering
      * return false for we use default query ordering and no custom ordering was used here.
-     *
-     * @return bool
      */
     public function hasOrder(): bool
     {
@@ -81,8 +77,6 @@ class ByPriority implements \App\Http\Services\Campaigns\Utils\Lists\Contracts\S
 
     /**
      * Get what type of ordering was used
-     *
-     * @return bool
      */
     public function orderType(): bool
     {
@@ -91,9 +85,6 @@ class ByPriority implements \App\Http\Services\Campaigns\Utils\Lists\Contracts\S
 
     /**
      * Stack the qualified campaign
-     *
-     * @param  collection  $campaign
-     * @param  int  $pathType
      */
     public function stackCampaign(
         collection $campaign,
@@ -130,9 +121,6 @@ class ByPriority implements \App\Http\Services\Campaigns\Utils\Lists\Contracts\S
 
     /**
      * Arrange the qualified campaigns by campaign type order
-     *
-     * @param  int  $pathType
-     * @return collection
      */
     public function get(int $pathType): collection
     {
@@ -191,8 +179,6 @@ class ByPriority implements \App\Http\Services\Campaigns\Utils\Lists\Contracts\S
 
     /**
      * Get the order of campaign type by name
-     *
-     * @return array
      */
     public function getCampaignTypeNameOrder(): array
     {
@@ -202,7 +188,6 @@ class ByPriority implements \App\Http\Services\Campaigns\Utils\Lists\Contracts\S
     /**
      * Stack the qualified campaign coregs
      *
-     * @param  collection  $campaign
      *
      * @var array
      */
@@ -223,7 +208,6 @@ class ByPriority implements \App\Http\Services\Campaigns\Utils\Lists\Contracts\S
     /**
      * Stack the qualified campaign other coregs and exit page
      *
-     * @param  collection  $campaign
      *
      * @var array
      */
@@ -248,7 +232,6 @@ class ByPriority implements \App\Http\Services\Campaigns\Utils\Lists\Contracts\S
     /**
      * Stack the qualified campaign externals and long forms
      *
-     * @param  collection  $campaign
      *
      * @var int
      */

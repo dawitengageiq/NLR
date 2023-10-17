@@ -12,8 +12,6 @@ trait CustomRegistersUsers
 
     /**
      * Show the application registration form.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function getRegister(): Response
     {
@@ -22,8 +20,6 @@ trait CustomRegistersUsers
 
     /**
      * Handle a registration request for the application.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function postRegister(Request $request): Response
     {

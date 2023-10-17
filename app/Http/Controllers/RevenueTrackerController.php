@@ -41,8 +41,6 @@ class RevenueTrackerController extends Controller
 
     /**
      * Server side data table processing for revenue trackers
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
@@ -169,8 +167,6 @@ class RevenueTrackerController extends Controller
 
     /**
      * Store a newly created revenue tracker resource in storage.
-     *
-     * @return mixed
      */
     public function store(RevenueTrackerRequest $request): JsonResponse
     {

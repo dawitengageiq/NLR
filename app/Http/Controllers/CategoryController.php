@@ -62,7 +62,6 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show(int $id)
@@ -73,7 +72,6 @@ class CategoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit(int $id)
@@ -123,8 +121,6 @@ class CategoryController extends Controller
 
     /**
      * This will determine if certain advertiser is active.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function status($id): JsonResponse
     {

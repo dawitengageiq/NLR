@@ -132,8 +132,6 @@ class AdminController extends Controller
 
     /**
      * Index page for admin user
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function index(): RedirectResponse
     {
@@ -177,8 +175,6 @@ class AdminController extends Controller
 
     /**
      * Dashboard page
-     *
-     * @return \Illuminate\View\View
      */
     public function dashboard(): View
     {
@@ -200,8 +196,6 @@ class AdminController extends Controller
 
     /**
      * Different lead counts
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function leadCounts(): JsonResponse
     {
@@ -222,8 +216,6 @@ class AdminController extends Controller
 
     /**
      * Top 10 campaigns by revenue yesterday
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function topTenCampaignsByRevenueYesterday(): JsonResponse
     {
@@ -243,8 +235,6 @@ class AdminController extends Controller
 
     /**
      * Top 10 campaigns by revenue from the current week
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function topTenCampaignsByRevenueForCurrentWeek(): JsonResponse
     {
@@ -291,8 +281,6 @@ class AdminController extends Controller
 
     /**
      * Top 10 campaigns by revenue from the current month
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function topTenCampaignsByRevenueForCurrentMonth(): JsonResponse
     {
@@ -336,8 +324,6 @@ class AdminController extends Controller
 
     /**
      * Top 10 affiliates by revenue yesterday
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function topTenAffiliatesByRevenueYesterday(): JsonResponse
     {
@@ -357,8 +343,6 @@ class AdminController extends Controller
 
     /**
      * Top 10 affiliates by revenue in this current week
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function topTenAffiliatesByRevenueForCurrentWeek(): JsonResponse
     {
@@ -390,8 +374,6 @@ class AdminController extends Controller
 
     /**
      * Top 10 affiliates by revenue in this current week
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function topTenAffiliatesByRevenueForCurrentMonth(): JsonResponse
     {
@@ -425,8 +407,6 @@ class AdminController extends Controller
 
     /**
      * Will return active campaigns
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function activeCampaigns(): JsonResponse
     {
@@ -437,8 +417,6 @@ class AdminController extends Controller
 
     /**
      * Admin page route for contacts
-     *
-     * @return \Illuminate\View\View
      */
     public function contacts(): View
     {
@@ -447,8 +425,6 @@ class AdminController extends Controller
 
     /**
      * Admin page route for affiliates
-     *
-     * @return \Illuminate\View\View
      */
     public function affiliates(): View
     {
@@ -461,8 +437,6 @@ class AdminController extends Controller
 
     /**
      * Admin page route for advertisers
-     *
-     * @return \Illuminate\View\View
      */
     public function advertisers(): View
     {
@@ -476,8 +450,6 @@ class AdminController extends Controller
 
     /**
      * Admin page route for campaigns
-     *
-     * @return \Illuminate\View\View
      */
     public function campaigns(): View
     {
@@ -2281,8 +2253,6 @@ class AdminController extends Controller
 
     /**
      * for revenueStats
-     *
-     * @return \Illuminate\View\View
      */
     public function revenueStatistics(Request $request): View
     {
@@ -2507,8 +2477,6 @@ class AdminController extends Controller
 
     /**
      * Function of getting the details
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function getLeadDetails($lead_id): JsonResponse
     {
@@ -2544,8 +2512,6 @@ class AdminController extends Controller
 
     /**
      * Updating of lead details
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function updateLeadDetails(Request $request): JsonResponse
     {
@@ -2573,8 +2539,6 @@ class AdminController extends Controller
 
     /**
      * Downloading of searched leads
-     *
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     public function downloadSearchedLeads(): BinaryFileResponse
     {
@@ -2729,8 +2693,6 @@ class AdminController extends Controller
 
     /**
      * For downloading revenue report
-     *
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     public function downloadRevenueReport(): BinaryFileResponse
     {
@@ -2982,8 +2944,6 @@ class AdminController extends Controller
 
     /**
      * Revenue Tracker Page
-     *
-     * @return \Illuminate\View\View
      */
     public function revenueTrackers(): View
     {
@@ -3023,8 +2983,6 @@ class AdminController extends Controller
 
     /**
      * Gallery Page
-     *
-     * @return \Illuminate\View\View
      */
     public function gallery(): View
     {
@@ -3600,8 +3558,6 @@ class AdminController extends Controller
 
     /**
      * Preview Campaign Contents
-     *
-     * @return \Illuminate\View\View
      */
     public function preview_content(Request $request): View
     {
@@ -3746,8 +3702,6 @@ class AdminController extends Controller
 
     /**
      * Get Received Statistics By Affiliate, Get Total Received Revenue Statistics & Total Survey Takers Per Revenue Tracker / Affiliate
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function getDashboardGraphsStatisticsProcessor(Request $request): JsonResponse
     {
@@ -3993,8 +3947,6 @@ class AdminController extends Controller
 
     /**
      * Get Received Statistics By Affiliate, Get Total Received Revenue Statistics & Total Survey Takers Per Revenue Tracker / Affiliate
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function downloadAffiliateReport(Request $request): JsonResponse
     {
@@ -4131,8 +4083,6 @@ class AdminController extends Controller
 
     /**
      * Get Top Campaigns By Leads
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function getTopCampaignsByLeads(Request $request): JsonResponse
     {
@@ -4252,8 +4202,6 @@ class AdminController extends Controller
 
     /**
      * Downloading of searched duplicate leads
-     *
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     public function downloadSearchedDuplicateLeads(): BinaryFileResponse
     {
@@ -4477,8 +4425,6 @@ class AdminController extends Controller
 
     /**
      * Downloading of searched duplicate leads
-     *
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     public function downloadCreativeRevenueReports(): BinaryFileResponse
     {
@@ -4734,8 +4680,6 @@ class AdminController extends Controller
 
     /**
      * Will return active campaigns server side
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function activeCampaignsServerSide(Request $request): JsonResponse
     {

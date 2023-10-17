@@ -18,8 +18,6 @@ class SearchController extends Controller
 {
     /**
      * Display a listing of the searched resource (revenue trackers).
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function activeRevenueTrackers(Request $request): JsonResponse
     {
@@ -48,8 +46,6 @@ class SearchController extends Controller
 
     /**
      * Display a listing of the searched resource (active affiliates).
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function activeAffiliates(Request $request): JsonResponse
     {
@@ -74,8 +70,6 @@ class SearchController extends Controller
 
     /**
      * Display a listing of the searched resource (active affiliates).
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function activeAffiliatesIDName(Request $request): JsonResponse
     {

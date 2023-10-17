@@ -21,7 +21,6 @@ class LeadCounts implements LeadCountsInterface
 
     /**
      * @param  null  $affiliateID
-     * @param  string  $capType
      * @param  null  $timezone
      */
     public function executeReset($campaignCounts, $campaignID, $affiliateID = null, string $capType = 'Unlimited', $timezone = null, $updateMe = true)

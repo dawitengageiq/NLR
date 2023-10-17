@@ -36,8 +36,6 @@ class Leads
 
     /**
      * Set campaign order that will be used to fetch leads that are in the list of this order.
-     *
-     * @param  array  $campaignOrder
      */
     public function setCampaignOrder(array $campaignOrder)
     {
@@ -46,8 +44,6 @@ class Leads
 
     /**
      * Set revenue tracker id to be used on specific query
-     *
-     * @param  int  $revenueRrackerID
      */
     public function setRevenueTRrackerID(int $revenueRrackerID)
     {
@@ -70,8 +66,6 @@ class Leads
 
     /**
      * Check if there is leads
-     *
-     * @return bool
      */
     public function notExists(): bool
     {
@@ -84,8 +78,6 @@ class Leads
 
     /**
      * Get all leads
-     *
-     * @return array
      */
     public function get(): array
     {

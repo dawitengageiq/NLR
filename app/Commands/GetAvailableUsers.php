@@ -22,8 +22,6 @@ class GetAvailableUsers extends Command
 
     /**
      * Get users not existing to the table $db.
-     *
-     * @return mixed
      */
     public function handle(): void
     {

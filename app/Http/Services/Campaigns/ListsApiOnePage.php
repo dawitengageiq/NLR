@@ -121,11 +121,6 @@ class ListsApiOnePage extends Factories\ListsFactory implements \App\Http\Servic
 
     /**
      * Get the qualified campaigns
-     *
-     * @param  array  $userDetails
-     * @param  int  $limit
-     * @param  array  $qualifiedCampaigns
-     * @return array
      */
     public function getCampaignsContent(
         array $userDetails,
