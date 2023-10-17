@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\CampaignView;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Log;
 
 class CampaignViewsTableSeeder extends Seeder
 {

@@ -46,6 +46,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ZipCodeController;
 use App\Http\Controllers\ZipMasterController;
 use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes

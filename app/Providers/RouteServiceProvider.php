@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Http\Request;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\RateLimiter;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -39,11 +39,10 @@ class RouteServiceProvider extends ServiceProvider
                 require app_path('Http/routes.php');
             });
         });
-//
+        //
 
-        parent::boot($router);    }
-
-
+        parent::boot($router);
+    }
 
     /**
      * Configure the rate limiters for the application.
