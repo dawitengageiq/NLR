@@ -135,40 +135,40 @@ class AdminController extends Controller
     {
         //determine what page should be displayed base on the main section permission
         if ($this->dashboardPermitted || auth()->user()->isSuperUser()) {
-            return redirect()->action('AdminController@dashboard');
+            return redirect()->action([\App\Http\Controllers\AdminController::class, 'dashboard']);
         } elseif ($this->contactsPermitted) {
-            return redirect()->action('AdminController@contacts');
+            return redirect()->action([\App\Http\Controllers\AdminController::class, 'contacts']);
         } elseif ($this->affiliatesPermitted) {
-            return redirect()->action('AdminController@affiliates');
+            return redirect()->action([\App\Http\Controllers\AdminController::class, 'affiliates']);
         } elseif ($this->campaignsPermitted) {
-            return redirect()->action('AdminController@campaigns');
+            return redirect()->action([\App\Http\Controllers\AdminController::class, 'campaigns']);
         } elseif ($this->advertisersPermitted) {
-            return redirect()->action('AdminController@advertisers');
+            return redirect()->action([\App\Http\Controllers\AdminController::class, 'advertisers']);
         } elseif ($this->filterTypesPermitted) {
-            return redirect()->action('AdminController@filterTypes');
+            return redirect()->action([\App\Http\Controllers\AdminController::class, 'filterTypes']);
         } elseif ($this->reportsAndStatisticsPermitted) {
             if ($this->searchLeadsPermitted) {
-                return redirect()->action('AdminController@searchLeads');
+                return redirect()->action([\App\Http\Controllers\AdminController::class, 'searchLeads']);
             } elseif ($this->revenueStatisticsPermitted) {
-                return redirect()->action('AdminController@revenueStatistics');
+                return redirect()->action([\App\Http\Controllers\AdminController::class, 'revenueStatistics']);
             }
         } elseif ($this->revenueTrackersPermitted) {
-            return redirect()->action('AdminController@revenueTrackers');
+            return redirect()->action([\App\Http\Controllers\AdminController::class, 'revenueTrackers']);
         } elseif ($this->galleryPermitted) {
-            return redirect()->action('AdminController@gallery');
+            return redirect()->action([\App\Http\Controllers\AdminController::class, 'gallery']);
         } elseif ($this->zipMasterPermitted) {
-            return redirect()->action('AdminController@zip_master');
+            return redirect()->action([\App\Http\Controllers\AdminController::class, 'zip_master']);
         } elseif ($this->surveyTakersPermitted) {
-            return redirect()->action('AdminController@survey_takers');
+            return redirect()->action([\App\Http\Controllers\AdminController::class, 'survey_takers']);
         } elseif ($this->usersAndRolesPermitted) {
-            return redirect()->action('RoleController@index');
+            return redirect()->action([\App\Http\Controllers\RoleController::class, 'index']);
         } elseif ($this->surveyPathsPermitted) {
-            return redirect()->action('AdminController@surveyPaths');
+            return redirect()->action([\App\Http\Controllers\AdminController::class, 'surveyPaths']);
         } elseif ($this->settingsPermitted) {
-            return redirect()->action('AdminController@settings');
+            return redirect()->action([\App\Http\Controllers\AdminController::class, 'settings']);
         }
 
-        return redirect()->action('AdminController@dashboard');
+        return redirect()->action([\App\Http\Controllers\AdminController::class, 'dashboard']);
     }
 
     /**
