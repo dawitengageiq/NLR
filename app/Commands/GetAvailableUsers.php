@@ -25,7 +25,7 @@ class GetAvailableUsers extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         return User::leftJoin($this->db, 'users.id', '=', $this->db.'.id')
             ->where('account_type', 1)

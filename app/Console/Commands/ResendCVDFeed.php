@@ -38,7 +38,7 @@ class ResendCVDFeed extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Executing.....');
         $users = LeadUser::where('status', 1)->where('response', 'like', '%| CVD:%')

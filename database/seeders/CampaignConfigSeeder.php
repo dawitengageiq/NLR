@@ -11,7 +11,7 @@ class CampaignConfigSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $campaigns = App\Campaign::pluck('id')->toArray();
         // use the factory to create a Faker\Generator instance

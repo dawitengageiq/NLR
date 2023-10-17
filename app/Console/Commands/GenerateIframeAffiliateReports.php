@@ -37,7 +37,7 @@ class GenerateIframeAffiliateReports extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Initiating generating of Iframe Affiliate reports...');
 

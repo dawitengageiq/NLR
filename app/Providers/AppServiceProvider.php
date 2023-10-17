@@ -17,7 +17,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         Queue::after(function ($connection, $job, $data) {
 
@@ -61,7 +61,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->app->bind(
             \App\Helpers\Repositories\LeadDataInterface::class,

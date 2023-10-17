@@ -15,7 +15,7 @@ class CampaignListServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         // Bootstrap campaign list
         Lists::boot($this->app);
@@ -29,7 +29,7 @@ class CampaignListServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         // Required class
         Interfaces::bind($this->app);

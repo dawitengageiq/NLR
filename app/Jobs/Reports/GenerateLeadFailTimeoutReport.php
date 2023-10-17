@@ -27,7 +27,7 @@ class GenerateLeadFailTimeoutReport extends Job implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(Settings $settings)
+    public function handle(Settings $settings): void
     {
         if ($this->attempts() > 1) {
             return;

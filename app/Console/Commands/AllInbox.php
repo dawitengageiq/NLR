@@ -33,7 +33,7 @@ class AllInbox extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Executing AllInbox CURL...');
 

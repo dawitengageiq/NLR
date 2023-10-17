@@ -26,7 +26,7 @@ class AdminApplyToRunRequest extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function handle(Mailer $mailer)
+    public function handle(Mailer $mailer): void
     {
         if ($this->attempts() > 1) {
             return;

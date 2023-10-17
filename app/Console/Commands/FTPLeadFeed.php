@@ -37,7 +37,7 @@ class FTPLeadFeed extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $date = $this->option('date');
         if (empty($date)) {

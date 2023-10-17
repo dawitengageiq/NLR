@@ -41,7 +41,7 @@ class GetOneTrustEmailJob extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         Log::info('Get One Trust Date: '.$this->date);
         $page = 0;

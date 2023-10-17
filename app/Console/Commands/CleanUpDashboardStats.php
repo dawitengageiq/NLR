@@ -38,7 +38,7 @@ class CleanUpDashboardStats extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $date = Carbon::yesterday()->subDay(60)->toDateString();
         //DB::enableQueryLog();

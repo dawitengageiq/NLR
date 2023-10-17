@@ -13,7 +13,7 @@ class AdminSettingRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -23,7 +23,7 @@ class AdminSettingRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         Validator::extend('num_greater_than', function ($attribute, $value, $parameters) {
             $other = Request::get($parameters[0]);
@@ -51,7 +51,7 @@ class AdminSettingRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'max_high_reject_rate.num_greater_than' => 'Maximum percentage for high rejection rate should be greater than the minimum percentage.',

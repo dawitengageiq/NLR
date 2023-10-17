@@ -12,7 +12,7 @@ class ZipCodeSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $file_path = storage_path('app/zip_codes.xls');
         $excel = Excel::load($file_path, function ($reader) {

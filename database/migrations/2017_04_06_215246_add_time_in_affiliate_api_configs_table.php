@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('affiliate_api_configs', function (Blueprint $table) {
             $table->tinyInteger('time_interval')->default(24)->after('one_loading');
@@ -22,7 +22,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('affiliate_api_configs', function (Blueprint $table) {
             $table->dropColumn('time_interval');

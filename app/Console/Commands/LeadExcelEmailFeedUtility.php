@@ -46,7 +46,7 @@ class LeadExcelEmailFeedUtility extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Initiating lead csv data excel feed tasks...');
 

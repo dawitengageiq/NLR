@@ -31,7 +31,7 @@ class GenerateCakePageViewStatistics extends Job implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(AffiliateReportCurl $affiliateReportCurl)
+    public function handle(AffiliateReportCurl $affiliateReportCurl): void
     {
         $revenueTrackers = AffiliateRevenueTracker::all();
 

@@ -36,7 +36,7 @@ class GeneratePrepopStatisticsV2 extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         if ($this->attempts() > 1) {
             return;

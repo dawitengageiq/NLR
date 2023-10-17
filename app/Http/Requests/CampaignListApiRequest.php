@@ -103,7 +103,7 @@ class CampaignListApiRequest extends CampaignListRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         // Set data needed for error page if ....
         $this->setErrorPageData();

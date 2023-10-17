@@ -11,7 +11,7 @@ class SendLeadsServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         //
     }
@@ -21,7 +21,7 @@ class SendLeadsServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->app->bind(
             'App\Http\Services\Contracts\LeadInterface',

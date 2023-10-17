@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('affiliates', function (Blueprint $table) {
             $table->tinyInteger('type')->default(1)->after('id');
@@ -22,7 +22,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('affiliates', function (Blueprint $table) {
             $table->dropColumn('type');

@@ -37,7 +37,7 @@ class SendRegPathRevenueEmailReport extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Send affiliate reg path revenue report.....');
 

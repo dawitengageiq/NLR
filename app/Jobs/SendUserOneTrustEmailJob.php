@@ -47,7 +47,7 @@ class SendUserOneTrustEmailJob extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $done = [];
         $cc_emails = $this->cc_emails;

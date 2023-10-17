@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         if (! Schema::hasTable('lead_users_uniqueinfo')) {
             Schema::create('lead_users_uniqueinfo', function (Blueprint $table) {
@@ -50,7 +50,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         // Schema::drop('lead_user_unique_infos');
     }

@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('consolidated_graph', function (Blueprint $table) {
 
@@ -26,7 +26,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('consolidated_graph', function (Blueprint $table) {
             $table->dropColumn(['adsmith_revenue', 'adsmith_revenue_vs_views', 'adsmith_views']);

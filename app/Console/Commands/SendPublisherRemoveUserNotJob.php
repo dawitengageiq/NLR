@@ -66,7 +66,7 @@ class SendPublisherRemoveUserNotJob extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Send publisher remove users.....');
         Log::info('Send publisher remove users.....');

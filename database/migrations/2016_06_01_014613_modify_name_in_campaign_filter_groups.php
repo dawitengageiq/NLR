@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         //SHOW INDEX FROM campaign_filter_groups
         Schema::table('campaign_filter_groups', function ($table) {
@@ -23,7 +23,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('campaign_filter_groups', function (Blueprint $table) {
             $table->unique('name');

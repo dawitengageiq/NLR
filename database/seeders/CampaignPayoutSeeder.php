@@ -11,7 +11,7 @@ class CampaignPayoutSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         App\CampaignPayout::firstOrCreate([
             'campaign_id' => 1,

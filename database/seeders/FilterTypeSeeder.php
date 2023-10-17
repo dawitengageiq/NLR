@@ -11,7 +11,7 @@ class FilterTypeSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         App\FilterType::firstOrCreate([
             'type' => 'profile',

@@ -36,7 +36,7 @@ class SendUserOneTrustEmail extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Sends user the email for the request type they have......');
 

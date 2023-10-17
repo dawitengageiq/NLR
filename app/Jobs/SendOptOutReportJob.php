@@ -55,7 +55,7 @@ class SendOptOutReportJob extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         Log::info('Opt out report');
         if (count($this->users) == 0) {

@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('campaign_contents', function (Blueprint $table) {
             $table->string('name')->nullable();
@@ -29,7 +29,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('campaign_contents', function (Blueprint $table) {
             $table->dropColumn(['name', 'deal', 'description', 'fields', 'additional_fields', 'rules', 'sticker', 'cpa_creative_id']);

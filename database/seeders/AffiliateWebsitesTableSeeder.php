@@ -12,7 +12,7 @@ class AffiliateWebsitesTableSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         AffiliateWebsite::factory()->count(5)->create([
             'affiliate_id' => 7750,

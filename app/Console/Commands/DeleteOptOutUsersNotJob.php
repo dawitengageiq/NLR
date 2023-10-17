@@ -51,7 +51,7 @@ class DeleteOptOutUsersNotJob extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Deleting Opt out users.....');
         Log::info('Deleting Opt out users');

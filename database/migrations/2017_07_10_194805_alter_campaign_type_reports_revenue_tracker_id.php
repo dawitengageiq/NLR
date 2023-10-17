@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('campaign_type_reports', function (Blueprint $table) {
             $table->dropForeign('campaign_type_reports_revenue_tracker_id_foreign');
@@ -33,7 +33,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('campaign_type_reports', function (Blueprint $table) {
             $table->dropForeign('campaign_type_reports_revenue_tracker_id_foreign');

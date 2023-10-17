@@ -16,7 +16,7 @@ class GalleryRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -26,7 +26,7 @@ class GalleryRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         Validator::extend('image_exists', function ($attribute, $value, $parameters) {
             if (Request::get($parameters[1]) == 1) {
@@ -72,7 +72,7 @@ class GalleryRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'name.image_exists' => 'Image already exists.',

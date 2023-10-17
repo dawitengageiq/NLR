@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('consolidated_graph', function (Blueprint $table) {
             $table->decimal('coreg_p3_revenue', 10, 3)->unsigned()->default(0)->after('all_coreg_revenue_per_all_coreg_views');
@@ -37,7 +37,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('consolidated_graph', function (Blueprint $table) {
             $table->dropColumn(['coreg_p3_revenue', 'coreg_p4_revenue', 'cpa_views', 'pd_views', 'tb_views', 'iff_views', 'rexadz_views', 'coreg_p1_views', 'coreg_p2_views', 'coreg_p3_views', 'coreg_p4_views', 'all_coreg_views', 'all_mp_views']);

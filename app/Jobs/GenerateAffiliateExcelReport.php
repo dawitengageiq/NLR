@@ -44,7 +44,7 @@ class GenerateAffiliateExcelReport extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         Log::info("Generating Affiliate Excel Report for $this->date_from $this->date_to");
         $this->excel = new AffiliateReportExcelGeneratorHelper($this->date_from, $this->date_to, $this->type);

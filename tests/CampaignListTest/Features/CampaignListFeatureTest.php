@@ -11,7 +11,7 @@ class CampaignListFeatureTest extends BrowserKitTestCase
     /**
      * @test
      */
-    public function test_campaign_test_controller_class_exist()
+    public function test_campaign_test_controller_class_exist(): void
     {
         $this->assertTrue(class_exists('\\App\\Http\\Controllers\\Test\\CampaignListTestController'));
     }
@@ -19,7 +19,7 @@ class CampaignListFeatureTest extends BrowserKitTestCase
     /**
      * @test
      */
-    public function test_if_save_lead_user_job_is_running()
+    public function test_if_save_lead_user_job_is_running(): void
     {
         $this->getLeadsForValidator();
         $this->expectsJobs(SaveLeadUser::class);
@@ -29,7 +29,7 @@ class CampaignListFeatureTest extends BrowserKitTestCase
     /**
      * @test
      */
-    public function test_it_will_return_path_type()
+    public function test_it_will_return_path_type(): void
     {
         $response = new stdClass;
         $campaign = $this->getMockBuilder(CampaignListTestController::class)
@@ -47,7 +47,7 @@ class CampaignListFeatureTest extends BrowserKitTestCase
     /**
      * @test
      */
-    public function filter_campaign()
+    public function filter_campaign(): void
     {
         $response = new stdClass();
         $this->getLeadsForValidator();

@@ -39,7 +39,7 @@ class CleanWebsiteViewTracker extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Initiating website view cleanup');
         \Log::info('Initiating website view cleanup');

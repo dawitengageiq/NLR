@@ -33,7 +33,7 @@ class ResetCampaignTypeViews extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $campaign_type_job = (new \App\Jobs\ClearCampaignTypeView());
         dispatch($campaign_type_job);

@@ -36,7 +36,7 @@ class SendPublisherRemoveUser extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Send publisher remove users.....');
 

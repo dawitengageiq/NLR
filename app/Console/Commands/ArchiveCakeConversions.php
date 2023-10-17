@@ -33,7 +33,7 @@ class ArchiveCakeConversions extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Initiating archiving of cake conversions...');
 

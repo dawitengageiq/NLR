@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('affiliate_websites', function (Blueprint $table) {
             $table->float('payout')->after('website_description')->unsigned();
@@ -23,7 +23,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('affiliate_websites', function (Blueprint $table) {
             $table->dropColumn('payout');

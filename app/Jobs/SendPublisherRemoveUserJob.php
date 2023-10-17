@@ -101,7 +101,7 @@ class SendPublisherRemoveUserJob extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         if (count($this->users) == 0) {
             Log::info('No emails for opt out found.');

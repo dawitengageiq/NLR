@@ -35,7 +35,7 @@ class UpdateCpawallStatus extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Updated CPAWALL STATUS starting...');
         $job = (new \App\Jobs\UpdateCpawallStatusJob());

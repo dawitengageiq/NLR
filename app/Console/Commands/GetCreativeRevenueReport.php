@@ -38,7 +38,7 @@ class GetCreativeRevenueReport extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $date_yesterday = Carbon::yesterday()->toDateString();
         $this->info('Generating Report for '.$date_yesterday);

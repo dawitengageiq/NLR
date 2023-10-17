@@ -12,7 +12,7 @@ class UpdateUserRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -22,7 +22,7 @@ class UpdateUserRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         $validationEmailRule = 'required|email';
 
@@ -45,7 +45,7 @@ class UpdateUserRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'email.unique' => 'Email is already taken as a user or as a affiliate/advertiser contact.',

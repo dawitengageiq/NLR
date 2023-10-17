@@ -29,7 +29,7 @@ class SendBugReportsV2 extends Job implements ShouldQueue
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function handle(Settings $settings)
+    public function handle(Settings $settings): void
     {
         if ($this->attempts() > 1) {
             return;

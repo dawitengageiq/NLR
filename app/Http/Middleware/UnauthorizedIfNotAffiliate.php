@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use Illuminate\Http\Request;
 use Closure;
 use Illuminate\Http\Response;
 
@@ -13,7 +14,7 @@ class UnauthorizedIfNotAffiliate
      * @param  \Illuminate\Http\Request  $request
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next): \Symfony\Component\HttpFoundation\Response
     {
         if ($request->user()) {
             //if(!$request->user()->affiliate && !$request->user()->isAdministrator())

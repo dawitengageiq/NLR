@@ -29,7 +29,7 @@ class GetLeadUserSubscribedCampaignsJob extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $connection = config('app.type') == 'reports' ? 'secondary' : 'mysql';
         // DB::connection($connection)->enableQueryLog();

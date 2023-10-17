@@ -2,7 +2,7 @@
 
 class CheckJeremyClassTest extends BrowserKitTestCase
 {
-    public function testFailure()
+    public function testFailure(): void
     {
         // $this->assertClassHasAttribute('setData', 'App\Http\Services\Charts');
         $this->assertTrue(
@@ -12,7 +12,7 @@ class CheckJeremyClassTest extends BrowserKitTestCase
     }
     //this test passed
 
-    public function testConcreteMethod()
+    public function testConcreteMethod(): void
     {
         $stub = $this->getMockForAbstractClass('App\Http\Services\Factories\ChartFactory');
 

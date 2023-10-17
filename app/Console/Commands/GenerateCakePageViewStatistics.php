@@ -37,7 +37,7 @@ class GenerateCakePageViewStatistics extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Initiating generating of Page View Statistics...');
         $dateYesterdayStr = $this->option('from');

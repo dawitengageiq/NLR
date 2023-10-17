@@ -37,7 +37,7 @@ class GenerateClicksRegistrationStatisticsVer2 extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Initiating generating of clicks vs registration stats...');
         $date = $this->option('date');

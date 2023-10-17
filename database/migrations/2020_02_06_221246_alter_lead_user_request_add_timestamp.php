@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('lead_user_request', function (Blueprint $table) {
             $table->tinyInteger('is_sent')->default(0);
@@ -25,7 +25,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('lead_user_request', function (Blueprint $table) {
             $table->dropTimestamps();

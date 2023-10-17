@@ -11,7 +11,7 @@ class CategorySeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         App\Category::firstOrCreate([
             'name' => 'Regular',

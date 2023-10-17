@@ -9,7 +9,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         DB::statement('alter table revenue_tracker_cake_statistics modify payout DOUBLE(10,3) DEFAULT 0');
         DB::connection('secondary')->statement('alter table revenue_tracker_cake_statistics modify payout DOUBLE(10,3) DEFAULT 0');
@@ -20,7 +20,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         //
     }

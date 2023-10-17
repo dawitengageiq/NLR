@@ -19,7 +19,7 @@ class GetAdvertisersCompanyIDPair extends Command
      *
      * @return array
      */
-    public function handle()
+    public function handle(): int
     {
         //return Advertiser::orderBy('company')->lists('company','id');
 

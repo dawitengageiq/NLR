@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('affiliate_reports', function (Blueprint $table) {
             $table->dropForeign('affiliate_reports_affiliate_id_foreign');
@@ -23,7 +23,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('affiliate_reports', function (Blueprint $table) {
             $table->foreign('affiliate_id')->references('id')->on('affiliates')->onDelete('cascade');

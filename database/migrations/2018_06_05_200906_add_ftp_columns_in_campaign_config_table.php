@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('campaign_configs', function (Blueprint $table) {
             $table->boolean('ftp_sent')->default(0);
@@ -25,7 +25,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('campaign_configs', function (Blueprint $table) {
             $table->dropColumn(['ftp_sent', 'ftp_protocol', 'ftp_username', 'ftp_password']);

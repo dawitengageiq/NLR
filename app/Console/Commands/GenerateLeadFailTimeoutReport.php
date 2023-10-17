@@ -33,7 +33,7 @@ class GenerateLeadFailTimeoutReport extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $job = (new \App\Jobs\Reports\GenerateLeadFailTimeoutReport());
         dispatch($job);

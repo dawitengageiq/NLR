@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('affiliate_reports', function (Blueprint $table) {
             $table->integer('revenue_tracker_id')->unsigned()->change();
@@ -24,7 +24,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('affiliate_reports', function (Blueprint $table) {
             //$table->integer('revenue_tracker_id')->unsigned()->change();

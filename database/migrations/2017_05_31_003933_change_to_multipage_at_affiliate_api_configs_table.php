@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('affiliate_api_configs', function (Blueprint $table) {
             $table->renameColumn('one_loading', 'multi_page');
@@ -22,7 +22,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('affiliate_api_configs', function (Blueprint $table) {
             $table->dropColumn('multi_page');

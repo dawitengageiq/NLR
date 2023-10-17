@@ -33,7 +33,7 @@ class NoCPLReminder extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         Log::info('NO CPL Reminder....');
 

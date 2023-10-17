@@ -19,7 +19,7 @@ class ChartServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         //
     }
@@ -29,7 +29,7 @@ class ChartServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         // Required class
         Interfaces::bind($this->app);

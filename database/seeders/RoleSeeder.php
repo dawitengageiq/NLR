@@ -14,7 +14,7 @@ class RoleSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         //this is a super user account it is by default has all permissions
         $superUser = Role::firstOrNew([

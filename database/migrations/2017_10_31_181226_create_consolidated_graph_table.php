@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('consolidated_graph', function (Blueprint $table) {
 
@@ -53,7 +53,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         chema::drop('consolidated_graph');
     }

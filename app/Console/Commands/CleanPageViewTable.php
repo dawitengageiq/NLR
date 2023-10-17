@@ -39,7 +39,7 @@ class CleanPageViewTable extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Initiating Page Views cleanup');
         \Log::info('Initiating Page Views cleanup');

@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('affiliate_revenue_trackers', function (Blueprint $table) {
             $table->integer('mixed_coreg_order_by')->default(1);
@@ -25,7 +25,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('affiliate_revenue_trackers', function (Blueprint $table) {
             $table->dropColumn(['mixed_coreg_order_by', 'mixed_coreg_order_status', 'mixed_coreg_campaign_views', 'mixed_coreg_default_order']);

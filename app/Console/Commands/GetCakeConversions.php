@@ -35,7 +35,7 @@ class GetCakeConversions extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Executing fetching of cake conversion from Cake server...');
 

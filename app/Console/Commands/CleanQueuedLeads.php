@@ -37,7 +37,7 @@ class CleanQueuedLeads extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Initiating Queued Leads Cleanup');
         \Log::info('Initiating Queued Leads Cleanup');

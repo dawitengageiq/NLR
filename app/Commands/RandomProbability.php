@@ -21,7 +21,7 @@ class RandomProbability extends Command
      *
      * @return int|null
      */
-    public function handle()
+    public function handle(): int
     {
         $length = 0;
         $multiplier = 1000;

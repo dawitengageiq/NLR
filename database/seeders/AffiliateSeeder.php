@@ -12,7 +12,7 @@ class AffiliateSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         Affiliate::factory()->count(10000)->create();
     }

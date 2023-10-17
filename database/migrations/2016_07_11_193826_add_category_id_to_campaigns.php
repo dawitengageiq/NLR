@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('campaigns', function (Blueprint $table) {
             $table->integer('category_id')->unsigned()->index()->nullable();
@@ -23,7 +23,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('campaigns', function ($table) {
             $table->dropForeign('campaigns_category_id_foreign');

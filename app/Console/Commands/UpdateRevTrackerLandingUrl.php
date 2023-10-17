@@ -35,7 +35,7 @@ class UpdateRevTrackerLandingUrl extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Updating Revenue Tracker Landing URL');
 

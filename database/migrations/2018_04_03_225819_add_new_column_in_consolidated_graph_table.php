@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('consolidated_graph', function (Blueprint $table) {
             $table->decimal('cost_per_all_clicks', 10, 2)->unsigned()->default(0)->after('mp_per_views');
@@ -31,7 +31,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('consolidated_graph', function (Blueprint $table) {
             $table->dropColumn(

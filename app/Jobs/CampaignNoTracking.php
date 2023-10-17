@@ -36,7 +36,7 @@ class CampaignNoTracking extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         foreach ($this->campaigns as $id) {
             try {

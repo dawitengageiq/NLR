@@ -28,7 +28,7 @@ class ReorderCampaigns extends Job implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(Settings $setting)
+    public function handle(Settings $setting): void
     {
         // Log::info('REORDER');
         if ($this->attempts() > 1) {

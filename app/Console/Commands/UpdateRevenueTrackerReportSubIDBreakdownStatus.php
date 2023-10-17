@@ -39,7 +39,7 @@ class UpdateRevenueTrackerReportSubIDBreakdownStatus extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $rev_trackers = AffiliateRevenueTracker::where('subid_breakdown', '!=', DB::RAW('report_subid_breakdown_status'))->orWhere('rsib_s1', '!=', DB::RAW('sib_s1'))->orWhere('rsib_s2', '!=', DB::RAW('sib_s2'))
             ->orWhere('rsib_s3', '!=', DB::RAW('sib_s3'))->orWhere('rsib_s4', '!=', DB::RAW('sib_s4'))->get();

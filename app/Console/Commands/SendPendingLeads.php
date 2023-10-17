@@ -34,7 +34,7 @@ class SendPendingLeads extends Command
      *
      * @throws \ErrorException
      */
-    public function handle()
+    public function handle(): void
     {
         $curl = new Curl();
         //$curl->get('http://leadreactor.app/sendPendingLeads'); //development only

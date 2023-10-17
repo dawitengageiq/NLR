@@ -32,7 +32,7 @@ class SendLeadToAdvertiser extends Job implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(LeadData $leadData)
+    public function handle(LeadData $leadData): void
     {
         if ($this->attempts() > 1) {
             return;

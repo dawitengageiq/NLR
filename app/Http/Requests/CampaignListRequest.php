@@ -78,7 +78,7 @@ class CampaignListRequest extends FormRequest
     /**
      * Empty the rules for we are not using the default validation
      */
-    public function rules()
+    public function rules(): array
     {
         return [];
     }
@@ -89,7 +89,7 @@ class CampaignListRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         if ($this->incompleteRequestData()) {
             throw new CampaignListsResolverException('incomplete_parameters');

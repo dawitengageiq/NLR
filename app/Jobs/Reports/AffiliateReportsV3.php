@@ -53,7 +53,7 @@ class AffiliateReportsV3 extends Job implements ShouldQueue
      *
      * @throws \Sabre\Xml\LibXMLException
      */
-    public function handle(AffiliateReportCurl $affiliateReportCurl)
+    public function handle(AffiliateReportCurl $affiliateReportCurl): void
     {
         if ($this->attempts() > 1) {
             return;

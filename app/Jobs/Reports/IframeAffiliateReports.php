@@ -38,7 +38,7 @@ class IframeAffiliateReports extends Job implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(AffiliateReportCurl $affiliateReportCurl)
+    public function handle(AffiliateReportCurl $affiliateReportCurl): void
     {
         if ($this->attempts() > 1) {
             return;

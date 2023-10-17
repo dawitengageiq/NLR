@@ -14,7 +14,7 @@ class UserSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $admin = App\User::firstOrCreate([
             'email' => 'ariel@engageiq.com',

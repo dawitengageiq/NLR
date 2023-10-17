@@ -27,13 +27,13 @@ class SendLeadsFeaturesTest extends BrowserKitTestCase
      * @test
      * first of all, check if is string.
      */
-    public function test_if_leads_variables_is_type_of_string()
+    public function test_if_leads_variables_is_type_of_string(): void
     {
         $leads = is_string($this->leads);
         $this->assertTrue($leads);
     }
 
-    public function test_if_query_string_contains_data()
+    public function test_if_query_string_contains_data(): void
     {
         $query = explode('&', $this->leads);
         foreach ($query as $param => $val) {
@@ -44,7 +44,7 @@ class SendLeadsFeaturesTest extends BrowserKitTestCase
         $this->assertNotContains('eiq_affiliate_id=2', $ids);
     }
 
-    public function test_if_no_email_throws_the_error()
+    public function test_if_no_email_throws_the_error(): void
     {
         /**
          * eiq_email has no value, serves the purpose here
@@ -74,7 +74,7 @@ class SendLeadsFeaturesTest extends BrowserKitTestCase
         $this->assertContains(' Eiq Email Empty', $this->errors);
     }
 
-    public function test_if_no_affiliate_id_throws_the_error()
+    public function test_if_no_affiliate_id_throws_the_error(): void
     {
         /**
          * @test
@@ -107,7 +107,7 @@ class SendLeadsFeaturesTest extends BrowserKitTestCase
         $this->assertContains(' Eiq Affiliate Id Empty', $this->errors);
     }
 
-    public function test_if_no_campaign_id_throws_the_error()
+    public function test_if_no_campaign_id_throws_the_error(): void
     {
         /**
          * @test
@@ -144,7 +144,7 @@ class SendLeadsFeaturesTest extends BrowserKitTestCase
     /**
      * @test
      */
-    public function test_redirect_to_some_url_if_eiq_redirect_url_is_in_the_query_string()
+    public function test_redirect_to_some_url_if_eiq_redirect_url_is_in_the_query_string(): void
     {
         $this->leads = $this->leads.'http://www.google.com';
         $this->getLeadsForValidator();

@@ -35,7 +35,7 @@ class GeneratePageViewStatistics extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Initiating generating of Page View Statistics...');
         $date = $this->option('date');

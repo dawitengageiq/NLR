@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('affiliate_revenue_trackers', function (Blueprint $table) {
             $table->integer('exit_page_id')->unsigned()->index()->nullable();
@@ -23,7 +23,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('affiliate_revenue_trackers', function (Blueprint $table) {
             $table->dropForeign('affiliate_revenue_trackers_exit_page_id_foreign');

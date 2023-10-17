@@ -37,7 +37,7 @@ class GetOneTrustEmail extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Getting One Trust Emails.....');
         $date = $this->option('date');

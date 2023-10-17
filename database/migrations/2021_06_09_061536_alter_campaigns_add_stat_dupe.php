@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('campaigns', function (Blueprint $table) {
             $table->tinyInteger('status_dupe')->default(0);
@@ -26,7 +26,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('campaigns', function (Blueprint $table) {
             $table->dropColumn('status_dupe');

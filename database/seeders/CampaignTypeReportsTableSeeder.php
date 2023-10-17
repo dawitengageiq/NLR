@@ -11,7 +11,7 @@ class CampaignTypeReportsTableSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $campaignTypes = config('constants.CAMPAIGN_TYPES');
 

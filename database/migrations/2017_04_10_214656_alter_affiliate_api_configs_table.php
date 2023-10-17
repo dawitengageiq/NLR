@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('affiliate_api_configs', function (Blueprint $table) {
             $table->string('campaign_type_order', 100)->default('[1, 2, 8, 13]')->change();
@@ -23,7 +23,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('affiliate_api_configs', function (Blueprint $table) {
             $table->dropColumn(['campaign_type_order', 'display_limit']);

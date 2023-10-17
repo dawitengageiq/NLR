@@ -37,7 +37,7 @@ class ConsolidatedGraphGenerator extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $date = $this->argument('date') != '' ? $this->argument('date') : Carbon::yesterday()->toDateString();
 

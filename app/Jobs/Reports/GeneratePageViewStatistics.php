@@ -27,7 +27,7 @@ class GeneratePageViewStatistics extends Job implements ShouldQueue
         $this->date = $date;
     }
 
-    public function handle()
+    public function handle(): void
     {
         Log::info('Page Views Statistics Job Queue Start:');
 

@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('campaign_type_reports', function (Blueprint $table) {
             $table->string('s1')->nullable();
@@ -26,7 +26,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('campaign_type_reports', function (Blueprint $table) {
             $table->dropColumn(['s1', 's2', 's3', 's4', 's5']);

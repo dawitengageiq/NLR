@@ -40,7 +40,7 @@ class SendRegPathRevenueEmailReportJob extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         Log::info('Affilaite Reg Path Email Report');
         Log::info($this->from.' - '.$this->to);

@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('leads', function (Blueprint $table) {
             $table->unique(['lead_email', 'campaign_id'], 'leads_lead_email_campaign_id_unique_key');
@@ -25,7 +25,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('leads', function (Blueprint $table) {
             $table->dropUnique('leads_lead_email_campaign_id_unique_key');

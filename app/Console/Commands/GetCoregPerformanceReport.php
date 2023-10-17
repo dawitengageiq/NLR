@@ -42,7 +42,7 @@ class GetCoregPerformanceReport extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Generating Coreg Performance Report...');
 

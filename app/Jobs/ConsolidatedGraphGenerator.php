@@ -39,7 +39,7 @@ class ConsolidatedGraphGenerator extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $startTime = Carbon::now();
 

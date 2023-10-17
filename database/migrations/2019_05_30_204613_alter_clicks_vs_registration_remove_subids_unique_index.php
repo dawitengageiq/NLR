@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('clicks_vs_registration_statistics', function (Blueprint $table) {
 
@@ -27,7 +27,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         // Schema::table('clicks_vs_registration_statistics', function (Blueprint $table) {
         //     $table->unique(['affiliate_id', 'revenue_tracker_id', 's1', 's2', 's3', 's4', 's5', 'created_at'], 'subids_index');

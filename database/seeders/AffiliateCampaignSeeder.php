@@ -11,7 +11,7 @@ class AffiliateCampaignSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         App\AffiliateCampaign::firstOrCreate([
             'campaign_id' => 1,

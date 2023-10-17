@@ -10,7 +10,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('affiliate_reports', function (Blueprint $table) {
             $table->integer('reject_count')->default(0)->after('lead_count');
@@ -22,7 +22,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('affiliate_reports', function (Blueprint $table) {
             $table->dropColumn('reject_count');

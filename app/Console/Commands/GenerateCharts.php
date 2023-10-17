@@ -40,7 +40,7 @@ class GenerateCharts extends Command
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         if (Cache::has($this->argument('version').'_rejection_report')) {
             // set the data

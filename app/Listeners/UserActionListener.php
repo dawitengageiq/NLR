@@ -28,7 +28,7 @@ class UserActionListener implements ShouldQueue
      *
      * @return void
      */
-    public function handle(UserActionEvent $event)
+    public function handle(UserActionEvent $event): void
     {
         $logData = $event->logData;
 

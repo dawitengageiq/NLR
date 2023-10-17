@@ -33,7 +33,7 @@ class GenerateAffiliateWebsiteReport extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         Log::info('Affiliate Website Report Job Queue Start:');
         Log::info('Date: '.$this->date);

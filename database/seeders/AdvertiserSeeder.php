@@ -12,7 +12,7 @@ class AdvertiserSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         Advertiser::factory()->count(20)->create();
     }

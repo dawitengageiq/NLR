@@ -36,7 +36,7 @@ class DeleteOptOutUsers extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Deleting Opt out users.....');
 

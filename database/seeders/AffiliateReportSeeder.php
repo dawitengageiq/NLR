@@ -11,7 +11,7 @@ class AffiliateReportSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $faker = Faker\Factory::create();
         $rev_trackers = \App\AffiliateRevenueTracker::pluck('affiliate_id', 'revenue_tracker_id')->toArray();
