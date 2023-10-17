@@ -20,7 +20,7 @@ class CampaignConfigSeeder extends Seeder
         foreach ($campaigns as $campaign) {
             App\CampaignConfig::firstOrCreate([
                 'id' => $campaign,
-                'post_url' => $faker->url,
+                'post_url' => $faker->url(),
                 'post_header' => 'no header requried',
                 'post_data' => '{"email":"email","fname":"firstname","lname":"lastname","ipaddress":"ip","city":"city","state":"state","zip":"postal_code","dobday":"date_of_birthday","dobmonth":"date_of_birthmonth","dobyear":"date_of_birthyear"}',
                 'post_data_fixed_value' => '{"sr":"600"}',

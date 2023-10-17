@@ -38,7 +38,7 @@ class CampaignViewsTableSeeder extends Seeder
                             $campaignView = CampaignView::firstOrNew([
                                 'campaign_id' => $campaignID,
                                 // 'affiliate_id' => $revTrackerID,
-                                'session' => 'auto-generated-'.$faker->word.$faker->word.$faker->word.$faker->word,
+                                'session' => 'auto-generated-'.$faker->word().$faker->word().$faker->word().$faker->word(),
                                 // 'created_at' => $dateTime
                             ]);
 

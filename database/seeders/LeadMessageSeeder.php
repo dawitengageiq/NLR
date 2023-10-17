@@ -23,10 +23,10 @@ class LeadMessageSeeder extends Seeder
         foreach ($leadIDs as $leadID) {
             $data = LeadMessage::firstOrCreate([
                 'id' => $leadID,
-                //'value'		=>	$faker->sentence
+                //'value'		=>	$faker->sentence()
             ]);
 
-            $data->value = $faker->sentence;
+            $data->value = $faker->sentence();
             $data->save();
         }
     }

@@ -65,7 +65,7 @@ class PageViewStatisticsSeeder extends Seeder
                 'campaign_id' => $campaignID,
                 'affiliate_id' => $affiliateID,
                 'lead_status' => $faker->numberBetween(1, 2),
-                'lead_email' => $count.$faker->email,
+                'lead_email' => $count.$faker->email(),
                 'retry_count' => 0,
                 'payout' => 1,
                 'received' => 1,

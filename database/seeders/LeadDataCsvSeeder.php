@@ -26,8 +26,8 @@ class LeadDataCsvSeeder extends Seeder
                 'id' => $lead->id,
             ]);
 
-            //$data->value = '{"email":"'.$lead->lead_email.'","fname":"'.$faker->firstName.'","lname":"'.$faker->lastName.'","ipaddress":"'.$faker->ipv4.'","city":"'.$faker->city.'","state":"CAL","zip":"'.$faker->postcode.'","dobday":"23","dobmonth":"04","dobyear":"1988"}';
-            $data->value = '{"callback":"jQuery11110645003034519518_1477287179382","eiq_campaign_id":"'.$lead->campaign_id.'", "eiq_affiliate_id":"'.$lead->affiliate_id.'", "eiq_email":"'.$lead->lead_email.'", "rev_tracker":"CD7747", "first_name":"'.$faker->firstName.'", "last_name":"'.$faker->lastName.'", "zip":"90003", "gender":"M", "birth_date":"1985-07-29", "toluna-campaign":"YES"}';
+            //$data->value = '{"email":"'.$lead->lead_email.'","fname":"'.$faker->firstName().'","lname":"'.$faker->lastName().'","ipaddress":"'.$faker->ipv4().'","city":"'.$faker->city().'","state":"CAL","zip":"'.$faker->postcode().'","dobday":"23","dobmonth":"04","dobyear":"1988"}';
+            $data->value = '{"callback":"jQuery11110645003034519518_1477287179382","eiq_campaign_id":"'.$lead->campaign_id.'", "eiq_affiliate_id":"'.$lead->affiliate_id.'", "eiq_email":"'.$lead->lead_email.'", "rev_tracker":"CD7747", "first_name":"'.$faker->firstName().'", "last_name":"'.$faker->lastName().'", "zip":"90003", "gender":"M", "birth_date":"1985-07-29", "toluna-campaign":"YES"}';
             $data->save();
         }
     }
