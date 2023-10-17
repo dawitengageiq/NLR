@@ -18,7 +18,7 @@ class ClicksVsRegistrationSeeder extends Seeder
 
         foreach ($revenueTrackers as $tracker) {
             try {
-                factory(ClicksVsRegistrationStatistics::class, 1)->create([
+                ClicksVsRegistrationStatistics::factory()->count(1)->create([
                     'affiliate_id' => $tracker->affiliate_id,
                     'revenue_tracker_id' => $tracker->revenue_tracker_id,
                     'created_at' => $date,

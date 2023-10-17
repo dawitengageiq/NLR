@@ -12,6 +12,6 @@ class LeadUserSeeder extends Seeder
      */
     public function run()
     {
-        factory(LeadUser::class, 50)->create();
+        LeadUser::factory()->count(50)->create();
     }
 }

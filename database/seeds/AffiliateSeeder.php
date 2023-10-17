@@ -12,6 +12,6 @@ class AffiliateSeeder extends Seeder
      */
     public function run()
     {
-        factory(Affiliate::class, 10000)->create();
+        Affiliate::factory()->count(10000)->create();
     }
 }

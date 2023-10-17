@@ -12,6 +12,6 @@ class WebsitesViewTrackerTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(WebsitesViewTracker::class, 150)->create();
+        WebsitesViewTracker::factory()->count(150)->create();
     }
 }
