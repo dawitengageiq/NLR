@@ -12,7 +12,7 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
-        \App\Http\Middleware\CheckForMaintenanceMode::class,
+        \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
@@ -37,7 +37,6 @@ class Kernel extends HttpKernel
         'advertiser' => Middleware\UnauthorizedIfNotAdvertiser::class,
         'affiliate' => Middleware\UnauthorizedIfNotAffiliate::class,
         'auth' => \App\Http\Middleware\Authenticate::class,
-        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => Middleware\RedirectIfAuthenticated::class,
