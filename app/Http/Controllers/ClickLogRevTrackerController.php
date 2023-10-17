@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
 use App\AffiliateRevenueTracker;
 use App\ClickLogRevTrackers;
 use App\Http\Services;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ClickLogRevTrackerController extends Controller

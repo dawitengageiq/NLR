@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Illuminate\Http\JsonResponse;
 use App\Affiliate;
 use App\AffiliateReport;
 use App\AffiliateRevenueTracker;
@@ -22,10 +20,12 @@ use DB;
 use ErrorException;
 use File;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Storage;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class AffiliateReportController extends Controller
 {

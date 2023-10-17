@@ -2,8 +2,8 @@
 
 namespace App\Helpers\auth;
 
-use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
 trait CustomRegistersUsers

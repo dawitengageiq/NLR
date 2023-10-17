@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Illuminate\View\View;
-use Illuminate\Http\JsonResponse;
 use App\Advertiser;
 use App\Affiliate;
 use App\AffiliateRevenueTracker;
@@ -30,10 +27,13 @@ use Bus;
 use Carbon\Carbon;
 use DB;
 use Excel;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\View\View;
 use Log;
 use Session;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class AffiliateController extends Controller
 {

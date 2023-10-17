@@ -2,8 +2,6 @@
 
 namespace App\Helpers;
 
-use Illuminate\Http\JsonResponse;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use App\Affiliate;
 use App\AffiliateReport;
 use App\AffiliateRevenueTracker;
@@ -12,10 +10,12 @@ use App\Campaign;
 use App\RevenueTrackerCakeStatistic;
 use DB;
 use File;
+use Illuminate\Http\JsonResponse;
 use Log;
 use Maatwebsite\Excel\Facades\Excel;
 use PHPExcel_Cell_DataType;
 use Storage;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class AffiliateReportExcelGeneratorHelper
 {

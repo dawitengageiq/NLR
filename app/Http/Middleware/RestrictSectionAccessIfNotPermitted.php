@@ -2,10 +2,10 @@
 
 namespace App\Http\Middleware;
 
-use Illuminate\Http\Request;
 use App\Commands\GetUserActionPermission;
 use Bus;
 use Closure;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class RestrictSectionAccessIfNotPermitted

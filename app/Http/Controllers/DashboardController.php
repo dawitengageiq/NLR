@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
 use App\CampaignRevenueBreakdown;
 use App\OfferGoesDown;
 use App\PathSpeed;
@@ -10,6 +9,7 @@ use App\Setting;
 use Cache;
 use Carbon\Carbon;
 use DB;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Log;
 

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\View\View;
 use App\Campaign;
 use App\CampaignFullRejectionStatistics;
 use App\CampaignRejectionStatistic;
@@ -10,6 +9,7 @@ use App\Helpers\GetDateByRangeHelper;
 use App\Setting;
 use DB;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 use Log;
 
 class CampaignRejectionController extends Controller

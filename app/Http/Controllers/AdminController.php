@@ -2,10 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\RedirectResponse;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Illuminate\View\View;
-use Illuminate\Http\JsonResponse;
 use App\Action;
 use App\ActionRole;
 use App\Advertiser;
@@ -42,12 +38,16 @@ use DB;
 use Excel;
 use GetAdvertisersCompanyIDPair;
 use GetInternalAffiliatesCompanyIDPair;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Request as Input;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\View\View;
 use Log;
 use Session;
 use Storage;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class AdminController extends Controller
 {

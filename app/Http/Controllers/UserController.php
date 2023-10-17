@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\View\View;
-use Illuminate\Http\JsonResponse;
 use App\Http\Requests;
 use App\Http\Requests\AddUserRequest;
 use App\Http\Requests\ChangePasswordRequest;
@@ -12,8 +10,10 @@ use App\Role;
 use App\User;
 use DB;
 use File;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\View\View;
 use Log;
 
 class UserController extends Controller

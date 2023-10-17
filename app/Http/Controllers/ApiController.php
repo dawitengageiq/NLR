@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
 use App\Affiliate;
 use App\Campaign;
 use App\Lead;
@@ -16,6 +15,7 @@ use DB;
 use Exception;
 use Faker\Factory;
 use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Log;

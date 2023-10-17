@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
 use App\Affiliate;
 use App\AffiliateCampaign;
 use App\AffiliateRevenueTracker;
@@ -24,6 +23,7 @@ use Carbon\Carbon;
 use Curl\Curl;
 use DB;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Log;
 

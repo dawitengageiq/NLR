@@ -2,10 +2,10 @@
 
 namespace App\Http\Services\Consolidated;
 
-use Illuminate\Database\Eloquent\Builder;
 use App\ConsolidatedGraph;
 use Carbon\Carbon;
 use DB;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * Consolidate graph class.

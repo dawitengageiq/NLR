@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
 use App\LeadDataAdvArchive;
 use App\LeadDataCsvArchive;
 use App\LeadMessageArchive;
 use App\LeadSentResultArchive;
+use Illuminate\Http\JsonResponse;
 
 class LeadArchiveController extends Controller
 {

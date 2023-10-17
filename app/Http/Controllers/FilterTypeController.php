@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
 use App\Commands\GetUserActionPermission;
 use App\FilterType;
 use Bus;
 use DB;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class FilterTypeController extends Controller

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\View\View;
 use App\BannedAttempt;
 use App\Http\Requests;
 use App\Http\Services;
@@ -11,6 +10,7 @@ use App\Setting;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\View\View;
 use RevenueTracker;
 use Route;
 use SurveyStack;

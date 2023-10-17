@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use App\Affiliate;
 use App\Campaign;
 use App\CoregReport;
@@ -13,6 +12,7 @@ use Illuminate\Http\Request;
 use Log;
 use Maatwebsite\Excel\Facades\Excel;
 use PHPExcel_Style_NumberFormat;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class CoregReportController extends Controller
 {

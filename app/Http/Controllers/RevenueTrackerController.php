@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Illuminate\Http\JsonResponse;
 use App\AffiliateRevenueTracker;
 use App\Campaign;
 use App\CampaignTypeOrder;
@@ -15,8 +13,10 @@ use Bus;
 use Carbon\Carbon;
 use DB;
 use Excel;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Log;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class RevenueTrackerController extends Controller
 {

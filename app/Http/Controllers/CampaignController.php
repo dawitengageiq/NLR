@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Response;
-use Illuminate\Http\JsonResponse;
 use App\Affiliate;
 use App\AffiliateCampaign;
 use App\AffiliateCampaignRequest;
@@ -33,7 +31,9 @@ use Bus;
 use Carbon\Carbon;
 use DB;
 use File;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Storage;

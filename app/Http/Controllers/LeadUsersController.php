@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use App\LeadUser;
 use App\Setting;
 use Carbon\Carbon;
@@ -11,8 +9,10 @@ use Curl\Curl;
 use DateTime;
 use DB;
 use Excel;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Log;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class LeadUsersController extends Controller
 {

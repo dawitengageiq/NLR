@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Collection;
 use App\Resources\Resource;
 use App\Resources\UserActionLogDatatable as ResourceCollection;
 use App\Resources\UserActionLogDetailsDatatable as ResourceDetalsCollection;
 use App\UserActionLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class UserActionLogController extends Controller
 {
@@ -226,7 +226,7 @@ class UserActionLogController extends Controller
     /**
      *  Check if the arguments is valid
      */
-    protected function isInvalid(array $args, ?string $url = null): bool
+    protected function isInvalid(array $args, string $url = null): bool
     {
         foreach ($args as $required => $method) {
             if (method_exists($this, camelCase($method))) {
