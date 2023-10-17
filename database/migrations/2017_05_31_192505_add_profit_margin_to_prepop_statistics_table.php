@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AddProfitMarginToPrepopStatisticsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -28,4 +28,4 @@ class AddProfitMarginToPrepopStatisticsTable extends Migration
             $table->dropColumn('profit_margin');
         });
     }
-}
+};

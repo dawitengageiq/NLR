@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AddMoreFtpColumnsInCampaignConfigsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -31,4 +31,4 @@ class AddMoreFtpColumnsInCampaignConfigsTable extends Migration
             $table->dropColumn(['ftp_host', 'ftp_port', 'ftp_timeout']);
         });
     }
-}
+};

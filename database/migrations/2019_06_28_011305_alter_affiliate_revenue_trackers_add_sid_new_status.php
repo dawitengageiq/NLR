@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AlterAffiliateRevenueTrackersAddSidNewStatus extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -29,4 +29,4 @@ class AlterAffiliateRevenueTrackersAddSidNewStatus extends Migration
             $table->dropColumn(['new_subid_breakdown_status', 'report_subid_breakdown_status']);
         });
     }
-}
+};

@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateLeadSentResultsArchiveTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -31,4 +31,4 @@ class CreateLeadSentResultsArchiveTable extends Migration
     {
         Schema::drop('lead_sent_results_archive');
     }
-}
+};

@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AlterPageViewStatsAdsmith extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -28,4 +28,4 @@ class AlterPageViewStatsAdsmith extends Migration
             $table->dropColumn(['ads']);
         });
     }
-}
+};

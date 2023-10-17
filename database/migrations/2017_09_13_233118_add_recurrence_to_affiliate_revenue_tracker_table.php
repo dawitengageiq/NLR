@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AddRecurrenceToAffiliateRevenueTrackerTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -29,4 +29,4 @@ class AddRecurrenceToAffiliateRevenueTrackerTable extends Migration
             $table->dropColumn(['mixed_coreg_recurrence', 'mixed_coreg_daily']);
         });
     }
-}
+};

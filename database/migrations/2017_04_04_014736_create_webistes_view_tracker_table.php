@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateWebistesViewTrackerTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -32,4 +32,4 @@ class CreateWebistesViewTrackerTable extends Migration
     {
         Schema::drop('webistes_view_tracker');
     }
-}
+};

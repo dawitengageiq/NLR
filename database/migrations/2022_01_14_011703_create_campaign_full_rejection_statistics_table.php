@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateCampaignFullRejectionStatisticsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -35,4 +35,4 @@ class CreateCampaignFullRejectionStatisticsTable extends Migration
     {
         Schema::drop('campaign_full_rejection_statistics');
     }
-}
+};

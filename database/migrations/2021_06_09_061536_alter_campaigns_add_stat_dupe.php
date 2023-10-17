@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AlterCampaignsAddStatDupe extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -33,4 +33,4 @@ class AlterCampaignsAddStatDupe extends Migration
             $table->dropColumn('linkout_cake_status');
         });
     }
-}
+};

@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AlterAffiliateApiConfigsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -29,4 +29,4 @@ class AlterAffiliateApiConfigsTable extends Migration
             $table->dropColumn(['campaign_type_order', 'display_limit']);
         });
     }
-}
+};

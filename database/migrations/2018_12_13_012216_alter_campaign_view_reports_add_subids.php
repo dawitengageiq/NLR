@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AlterCampaignViewReportsAddSubids extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -32,4 +32,4 @@ class AlterCampaignViewReportsAddSubids extends Migration
             $table->dropColumn(['s1', 's2', 's3', 's4', 's5']);
         });
     }
-}
+};

@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AddAffiliateIdAsForeignKey extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -35,4 +35,4 @@ class AddAffiliateIdAsForeignKey extends Migration
             $table->dropIndex('affiliate_revenue_trackers_revenue_tracker_id_affiliate_id_index');
         });
     }
-}
+};

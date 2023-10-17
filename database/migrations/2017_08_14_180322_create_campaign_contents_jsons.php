@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateCampaignContentsJsons extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -35,4 +35,4 @@ class CreateCampaignContentsJsons extends Migration
             $table->dropColumn(['name', 'deal', 'description', 'fields', 'additional_fields', 'rules', 'sticker', 'cpa_creative_id']);
         });
     }
-}
+};

@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AlterCampaignRevenueViewStatisticsRemoveForeignKey extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -28,4 +28,4 @@ class AlterCampaignRevenueViewStatisticsRemoveForeignKey extends Migration
             $table->foreign('campaign_id')->references('id')->on('campaigns')->onDelete('cascade');
         });
     }
-}
+};

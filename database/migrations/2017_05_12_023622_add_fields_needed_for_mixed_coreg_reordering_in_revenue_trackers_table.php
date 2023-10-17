@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AddFieldsNeededForMixedCoregReorderingInRevenueTrackersTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -31,4 +31,4 @@ class AddFieldsNeededForMixedCoregReorderingInRevenueTrackersTable extends Migra
             $table->dropColumn(['mixed_coreg_order_by', 'mixed_coreg_order_status', 'mixed_coreg_campaign_views', 'mixed_coreg_default_order']);
         });
     }
-}
+};

@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AlterCampaignViewsTableAddUnique extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -28,4 +28,4 @@ class AlterCampaignViewsTableAddUnique extends Migration
             $table->dropUnique('campaign_views_campaign_id_session_unique_key');
         });
     }
-}
+};

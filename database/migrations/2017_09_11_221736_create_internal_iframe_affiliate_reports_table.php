@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateInternalIframeAffiliateReportsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -36,4 +36,4 @@ class CreateInternalIframeAffiliateReportsTable extends Migration
     {
         Schema::drop('iframe_affiliate_reports');
     }
-}
+};

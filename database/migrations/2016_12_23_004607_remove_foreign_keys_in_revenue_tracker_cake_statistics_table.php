@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class RemoveForeignKeysInRevenueTrackerCakeStatisticsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -32,4 +32,4 @@ class RemoveForeignKeysInRevenueTrackerCakeStatisticsTable extends Migration
             $table->foreign('cake_campaign_id')->references('campaign_id')->on('affiliate_revenue_trackers')->onDelete('cascade');
         });
     }
-}
+};

@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateClicksVsRegistrationStatsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -37,4 +37,4 @@ class CreateClicksVsRegistrationStatsTable extends Migration
     {
         Schema::drop('clicks_vs_registration_statistics');
     }
-}
+};

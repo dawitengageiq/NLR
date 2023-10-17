@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AddFtpColumnsInCampaignConfigTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -31,4 +31,4 @@ class AddFtpColumnsInCampaignConfigTable extends Migration
             $table->dropColumn(['ftp_sent', 'ftp_protocol', 'ftp_username', 'ftp_password']);
         });
     }
-}
+};

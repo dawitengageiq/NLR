@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AlterAffiliateRevenueTrackerTableCampaignOrderDetails extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -32,4 +32,4 @@ class AlterAffiliateRevenueTrackerTableCampaignOrderDetails extends Migration
             $table->dropColumn(['mixed_coreg_campaign_limit', 'order_type']);
         });
     }
-}
+};

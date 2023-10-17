@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AlterCampaignsTableSetCategoryToNullIfDelete extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -31,4 +31,4 @@ class AlterCampaignsTableSetCategoryToNullIfDelete extends Migration
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
         });
     }
-}
+};
