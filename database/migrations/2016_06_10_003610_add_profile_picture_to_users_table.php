@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AddProfilePictureToUsersTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -28,4 +28,4 @@ class AddProfilePictureToUsersTable extends Migration
             $table->dropColumn('profile_image');
         });
     }
-}
+};

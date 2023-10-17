@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreatePageViewStatisticsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -51,4 +51,4 @@ class CreatePageViewStatisticsTable extends Migration
     {
         Schema::drop('page_view_statistics');
     }
-}
+};

@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateLeadDataCsvsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -31,4 +31,4 @@ class CreateLeadDataCsvsTable extends Migration
     {
         Schema::drop('lead_data_csvs');
     }
-}
+};

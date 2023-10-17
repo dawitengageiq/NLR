@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateOfferGoesDownsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -31,4 +31,4 @@ class CreateOfferGoesDownsTable extends Migration
     {
         Schema::drop('offer_goes_downs');
     }
-}
+};

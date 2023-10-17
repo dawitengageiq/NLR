@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AlterAffiliateRevenueTrackersAddSubidBreakdownOption extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -41,4 +41,4 @@ class AlterAffiliateRevenueTrackersAddSubidBreakdownOption extends Migration
             $table->dropColumn(['sib_s1', 'sib_s2', 'sib_s3', 'sib_s4', 'nsib_s1', 'nsib_s2', 'nsib_s3', 'nsib_s4', 'rsib_s1', 'rsib_s2', 'rsib_s3', 'rsib_s4']);
         });
     }
-}
+};

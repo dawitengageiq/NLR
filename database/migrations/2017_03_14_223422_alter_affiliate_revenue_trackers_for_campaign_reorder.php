@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AlterAffiliateRevenueTrackersForCampaignReorder extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -31,4 +31,4 @@ class AlterAffiliateRevenueTrackersForCampaignReorder extends Migration
             $table->dropColumn(['order_by', 'order_status', 'views']);
         });
     }
-}
+};

@@ -25,7 +25,7 @@ class LeadDataAdvSeeder extends Seeder
                 'id' => $leadID,
             ]);
 
-            $data->value = $faker->url;
+            $data->value = $faker->url();
             $data->save();
         }
     }

@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class ModifyUniqueKeyInCampaignViewReports extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -30,4 +30,4 @@ class ModifyUniqueKeyInCampaignViewReports extends Migration
             $table->unique(['campaign_type_id', 'campaign_id'], 'campaign_type_id_campaign_id_unique_key');
         });
     }
-}
+};

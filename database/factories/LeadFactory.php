@@ -67,7 +67,7 @@ $factory->define(App\Lead::class, function (Faker\Generator $faker) {
         's5' => $faker->randomElement($subs),
         'lead_status' => 6,
         //'lead_status' => 1,
-        'lead_email' => $faker->email,
+        'lead_email' => $faker->email(),
         'retry_count' => 0,
         'payout' => $payout,
         'received' => $received,

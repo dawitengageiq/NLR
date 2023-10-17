@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 
-class ModifyEmailInLeadUsers extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -28,4 +28,4 @@ class ModifyEmailInLeadUsers extends Migration
             $table->unique('email');
         });
     }
-}
+};

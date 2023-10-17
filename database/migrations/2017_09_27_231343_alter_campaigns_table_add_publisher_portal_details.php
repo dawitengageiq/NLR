@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AlterCampaignsTableAddPublisherPortalDetails extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -29,4 +29,4 @@ class AlterCampaignsTableAddPublisherPortalDetails extends Migration
             $table->dropColumn(['publisher_name', 'is_external']);
         });
     }
-}
+};

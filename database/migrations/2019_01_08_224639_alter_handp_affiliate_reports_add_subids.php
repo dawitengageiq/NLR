@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AlterHandpAffiliateReportsAddSubids extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -31,4 +31,4 @@ class AlterHandpAffiliateReportsAddSubids extends Migration
             $table->dropColumn(['s2', 's3', 's4', 's5']);
         });
     }
-}
+};

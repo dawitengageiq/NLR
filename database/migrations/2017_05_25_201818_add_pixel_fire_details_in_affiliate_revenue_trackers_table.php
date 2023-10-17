@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AddPixelFireDetailsInAffiliateRevenueTrackersTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -29,4 +29,4 @@ class AddPixelFireDetailsInAffiliateRevenueTrackersTable extends Migration
             $table->dropColumn(['pixel', 'fire_at']);
         });
     }
-}
+};

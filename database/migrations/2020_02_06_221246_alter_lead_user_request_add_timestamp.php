@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AlterLeadUserRequestAddTimestamp extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -32,4 +32,4 @@ class AlterLeadUserRequestAddTimestamp extends Migration
             $table->dropColumn(['is_sent', 'is_deleted', 'is_reported']);
         });
     }
-}
+};

@@ -39,7 +39,7 @@ class LeadsSeeder extends Seeder
 
             $lead = Lead::firstOrNew([
                 'campaign_id' => $faker->randomElement($coregs),
-                'lead_email' => $faker->email,
+                'lead_email' => $faker->email(),
             ]);
 
             $lead->affiliate_id = $faker->randomElement($rev_trackers);

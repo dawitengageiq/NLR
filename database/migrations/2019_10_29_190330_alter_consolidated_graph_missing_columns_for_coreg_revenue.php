@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AlterConsolidatedGraphMissingColumnsForCoregRevenue extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -43,4 +43,4 @@ class AlterConsolidatedGraphMissingColumnsForCoregRevenue extends Migration
             $table->dropColumn(['coreg_p3_revenue', 'coreg_p4_revenue', 'cpa_views', 'pd_views', 'tb_views', 'iff_views', 'rexadz_views', 'coreg_p1_views', 'coreg_p2_views', 'coreg_p3_views', 'coreg_p4_views', 'all_coreg_views', 'all_mp_views']);
         });
     }
-}
+};

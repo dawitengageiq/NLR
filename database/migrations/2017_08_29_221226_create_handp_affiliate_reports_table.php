@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateHandpAffiliateReportsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -36,4 +36,4 @@ class CreateHandpAffiliateReportsTable extends Migration
     {
         Schema::drop('handp_affiliate_reports');
     }
-}
+};

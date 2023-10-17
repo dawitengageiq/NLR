@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 
-class AddOlrProgramIdInCampaignsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -27,4 +27,4 @@ class AddOlrProgramIdInCampaignsTable extends Migration
             $table->dropColumn(['olr_program_id']);
         });
     }
-}
+};
