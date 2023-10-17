@@ -27,8 +27,7 @@
         "laravelcollective/remote": "^6.2",
         "league/flysystem-sftp": "^1.0",
         "laravel/tinker": "^2.5",
-        "laravel/ui": "^3.0",
-        "fruitcake/laravel-cors": "^2.0"
+        "laravel/ui": "^3.0"
     },
     "require-dev": {
         "mockery/mockery": "^1.4.4",
